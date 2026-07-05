@@ -1,6 +1,9 @@
 /** Link de checkout Kiwify */
 export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
 
+/** Página de obrigado na Kiwify — cole a URL completa do seu domínio */
+export const POST_PURCHASE_URL = '/app.html?compra=1';
+
 /** Ícone do produto (calculadora) */
 export const PRODUCT_ICON = '/product-icon.png';
 

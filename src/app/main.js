@@ -4,7 +4,7 @@ import {
   cloneInputs,
   readInputsFromForm,
 } from '../lib/calculator.js';
-import { watchAuth, getUserLabel } from '../lib/auth.js';
+import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
 import {
   fullToSimple,
@@ -30,7 +30,7 @@ import {
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
 
-let currentUser = null;
+let currentUser = LOCAL_USER;
 let inputMode = 'simple';
 let simpleValues = { ...SIMPLE_DEFAULTS };
 let currentInputs = simpleToFull(SIMPLE_DEFAULTS);
@@ -83,7 +83,8 @@ async function bootstrap() {
 function maybeWelcome() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
-    showToast('Acesso liberado! Bora calcular seu lucro.');
+    sessionStorage.setItem('marmita_post_purchase', '1');
+    showToast('Compra confirmada! Comece pelo modo rápido.');
     window.history.replaceState({}, '', window.location.pathname);
   } else if (sessionStorage.getItem('marmita_demo_welcome') === '1') {
     showToast('Demo ativa — seus dados ficam neste celular.');
@@ -91,19 +92,26 @@ function maybeWelcome() {
   }
 }
 
-watchAuth((user) => {
-  if (!user) {
-    window.location.replace('/login.html');
-    return;
-  }
-  if (currentUser) return;
-  currentUser = {
-    uid: user.uid,
-    displayName: user.displayName,
-    email: user.email,
-  };
-  bootstrap();
-});
+function renderPostPurchaseBanner() {
+  if (sessionStorage.getItem('marmita_post_purchase') !== '1') return '';
+
+  return `
+    <div class="welcome-banner" id="welcome-banner">
+      <div class="welcome-banner-body">
+        <strong>Bem-vinda à sua calculadora!</strong>
+        <p>1. Preencha seus custos no modo rápido · 2. Toque em <em>Ver meu lucro</em> · 3. Abra o cardápio de 30 dias no menu de baixo.</p>
+      </div>
+      <button type="button" class="welcome-banner-close" id="welcome-banner-close" aria-label="Fechar">×</button>
+    </div>
+  `;
+}
+
+function dismissPostPurchaseBanner() {
+  sessionStorage.removeItem('marmita_post_purchase');
+  document.getElementById('welcome-banner')?.remove();
+}
+
+bootstrap();
 
 function maybeShowOnboarding() {
   if (hasSeenOnboarding()) return;
@@ -300,7 +308,7 @@ function renderCalcFooter() {
 function renderActiveView() {
   switch (activeView) {
     case 'calc':
-      return renderCalculatorForm();
+      return `${renderPostPurchaseBanner()}${renderCalculatorForm()}`;
     case 'results':
       return renderResults();
     case 'bonus':
@@ -322,7 +330,6 @@ function render() {
       <header class="app-topbar">
         <button type="button" class="icon-btn menu-btn" id="menu-toggle" aria-label="Abrir menu">${ICONS.menu}</button>
         <div class="topbar-center">
-          ${ICONS.logo}
           <div class="topbar-titles">
             <h1 class="topbar-title">${viewTitle}</h1>
             <p class="topbar-sub">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}</p>
@@ -795,7 +802,7 @@ function renderAccount() {
         <h2>Perguntas frequentes</h2>
         <details class="faq-item" open>
           <summary>Como começo?</summary>
-          <p>Use o <strong>modo rápido</strong>, coloque o custo de cada marmita e veja o lucro no topo enquanto digita.</p>
+          <p>Use o <strong>modo rápido</strong>, coloque o custo de cada marmita e toque em <strong>Ver meu lucro</strong>. O valor aparece no topo enquanto você digita.</p>
         </details>
         <details class="faq-item">
           <summary>Modo rápido vs completo?</summary>
@@ -926,6 +933,8 @@ function navigateTo(view) {
 }
 
 function bindEvents() {
+  document.getElementById('welcome-banner-close')?.addEventListener('click', dismissPostPurchaseBanner);
+
   document.getElementById('menu-toggle')?.addEventListener('click', openDrawer);
 
   root.querySelectorAll('[data-drawer-close]').forEach((el) => {
