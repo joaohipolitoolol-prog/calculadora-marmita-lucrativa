@@ -4,12 +4,89 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#E8651A">
   <title>Entrar | Calculadora Marmita Lucrativa</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <meta http-equiv="refresh" content="0;url=/app.html">
-  <script>window.location.replace('/app.html');</script>
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/login/login.css">
 </head>
-<body>
-  <p>Redirecionando para a calculadora… <a href="/app.html">Clique aqui</a> se não redirecionar.</p>
+<body class="auth-page">
+  <header class="auth-header">
+    <a href="/" class="auth-logo">
+      <img src="/favicon.svg" width="32" height="32" alt="">
+      Marmita Lucrativa
+    </a>
+  </header>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <h1>Acesse sua calculadora</h1>
+      <p class="auth-sub">Comprou? Crie sua conta com o código do e-mail. Já tem conta? Entre abaixo.</p>
+
+      <div id="config-alert" class="auth-alert info"></div>
+      <div id="form-alert" class="auth-alert"></div>
+
+      <div class="demo-hero">
+        <p>Quer só testar antes de comprar? A demo abre a calculadora completa neste celular.</p>
+        <button type="button" class="btn btn-demo" id="demo-enter-btn">Testar grátis agora</button>
+      </div>
+
+      <div class="demo-divider">ou entre com sua conta</div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-tab="login">Entrar</button>
+        <button type="button" class="auth-tab" data-tab="register">Criar conta</button>
+      </div>
+
+      <section id="panel-login" class="panel active">
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">E-mail</label>
+            <input id="login-email" name="email" type="email" autocomplete="email" required placeholder="seu@email.com">
+          </div>
+          <div class="form-group">
+            <label for="login-password">Senha</label>
+            <input id="login-password" name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Mínimo 6 caracteres">
+          </div>
+          <button type="submit" class="btn btn-primary auth-submit">Entrar na calculadora</button>
+        </form>
+        <div class="auth-links">
+          <button type="button" id="forgot-btn">Esqueci minha senha</button>
+        </div>
+      </section>
+
+      <section id="panel-register" class="panel">
+        <form id="register-form">
+          <div class="form-group">
+            <label for="register-name">Seu nome</label>
+            <input id="register-name" name="name" type="text" autocomplete="name" required placeholder="Como você quer ser chamada">
+          </div>
+          <div class="form-group">
+            <label for="register-email">E-mail</label>
+            <input id="register-email" name="email" type="email" autocomplete="email" required placeholder="seu@email.com">
+          </div>
+          <div class="form-group">
+            <label for="register-password">Senha</label>
+            <input id="register-password" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="Mínimo 6 caracteres">
+          </div>
+          <div class="form-group">
+            <label for="register-code">Código de acesso</label>
+            <input id="register-code" name="accessCode" type="text" required placeholder="Código recebido após a compra">
+            <p class="form-hint">Você recebe esse código no e-mail de confirmação da compra.</p>
+          </div>
+          <button type="submit" class="btn btn-primary auth-submit">Criar minha conta</button>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer class="auth-footer">
+    <p>Ainda não comprou? <a href="/#oferta">Ver oferta por R$ 27</a></p>
+  </footer>
+
+  <script type="module" src="/src/login/main.js"></script>
 </body>
 </html>

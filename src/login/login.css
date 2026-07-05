@@ -23,7 +23,10 @@
   color: var(--brown);
 }
 
-.auth-logo span { font-size: 1.6rem; }
+.auth-logo img {
+  flex-shrink: 0;
+  display: block;
+}
 
 .auth-main {
   flex: 1;

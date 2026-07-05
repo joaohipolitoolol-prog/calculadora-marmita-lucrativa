@@ -4,7 +4,7 @@ import {
   cloneInputs,
   readInputsFromForm,
 } from '../lib/calculator.js';
-import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
+import { watchAuth, getUserLabel } from '../lib/auth.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
 import {
   fullToSimple,
@@ -21,12 +21,16 @@ import {
   saveScenario,
 } from '../lib/storage.js';
 import { ICONS, VIEW_META } from './icons.js';
+import {
+  clearOnboardingSeen,
+  hasSeenOnboarding,
+  showOnboarding,
+} from './onboarding.js';
 
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
-const WELCOME_KEY = 'marmita_welcome_seen';
 
-const currentUser = LOCAL_USER;
+let currentUser = null;
 let inputMode = 'simple';
 let simpleValues = { ...SIMPLE_DEFAULTS };
 let currentInputs = simpleToFull(SIMPLE_DEFAULTS);
@@ -46,6 +50,21 @@ const STEPS = [
 
 const SIMULATION_VOLUMES = [10, 20, 30];
 
+const INSIGHTS = {
+  prejuizo: {
+    title: 'Ação urgente',
+    text: 'Seu preço está abaixo do custo real. Aumente para pelo menos o preço mínimo ou corte custos ocultos como embalagem e entrega.',
+  },
+  alerta: {
+    title: 'Dá para melhorar',
+    text: 'Você tem lucro, mas a margem está baixa. Teste o preço recomendado ou revise ingredientes e desperdício.',
+  },
+  lucro: {
+    title: 'Bom caminho',
+    text: 'Sua margem está saudável. Salve este cenário e compare quando mudar cardápio ou fornecedor.',
+  },
+};
+
 async function bootstrap() {
   const draft = await loadDraft(currentUser.uid);
   if (draft?.inputs) {
@@ -57,30 +76,38 @@ async function bootstrap() {
   currentResults = calculate(currentInputs);
   scenarios = await listScenarios(currentUser.uid);
   render();
-  maybeShowWelcome();
+  maybeWelcome();
+  maybeShowOnboarding();
 }
 
-function maybeShowWelcome() {
-  if (localStorage.getItem(WELCOME_KEY) === '1') return;
-  localStorage.setItem(WELCOME_KEY, '1');
+function maybeWelcome() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('compra') === '1') {
+    showToast('Acesso liberado! Bora calcular seu lucro.');
+    window.history.replaceState({}, '', window.location.pathname);
+  } else if (sessionStorage.getItem('marmita_demo_welcome') === '1') {
+    showToast('Demo ativa — seus dados ficam neste celular.');
+    sessionStorage.removeItem('marmita_demo_welcome');
+  }
+}
 
-  const overlay = document.createElement('div');
-  overlay.className = 'welcome-overlay';
-  overlay.innerHTML = `
-    <div class="welcome-card">
-      <div class="welcome-logo">${ICONS.logo}</div>
-      <h2>Sua calculadora está pronta</h2>
-      <p>Comece no <strong>modo rápido</strong>. Coloque seus custos por marmita e veja o lucro na hora.</p>
-      <ul class="welcome-tips">
-        <li>O lucro aparece no topo enquanto você digita</li>
-        <li>Toque em <strong>Ver meu lucro</strong> quando terminar</li>
-        <li>Quer detalhar tudo? Ative o <strong>modo completo</strong></li>
-      </ul>
-      <button type="button" class="btn btn-primary" id="welcome-close">Começar agora</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  overlay.querySelector('#welcome-close').addEventListener('click', () => overlay.remove());
+watchAuth((user) => {
+  if (!user) {
+    window.location.replace('/login.html');
+    return;
+  }
+  if (currentUser) return;
+  currentUser = {
+    uid: user.uid,
+    displayName: user.displayName,
+    email: user.email,
+  };
+  bootstrap();
+});
+
+function maybeShowOnboarding() {
+  if (hasSeenOnboarding()) return;
+  showOnboarding();
 }
 
 function showToast(message) {
@@ -107,14 +134,20 @@ function openDrawer() {
   root.querySelector('.drawer-overlay')?.classList.add('open');
 }
 
-function renderTopbarProfit() {
-  if (activeView !== 'calc') return '';
+function renderTopbarBadge() {
   const r = currentResults;
-  return `
-    <div class="topbar-profit ${r.status}" id="topbar-profit" title="Lucro por marmita">
-      <span class="topbar-profit-val">${money(r.profitPerUnit)}</span>
-    </div>
-  `;
+  if (activeView === 'calc') {
+    return `
+      <button type="button" class="topbar-badge ${r.status}" id="topbar-badge" data-view="results" title="Ver resultados">
+        <span class="topbar-badge-val">${money(r.profitPerUnit)}</span>
+        <span class="topbar-badge-sub">${percent(r.margin)}</span>
+      </button>
+    `;
+  }
+  if (activeView === 'results') {
+    return `<span class="topbar-badge ${r.status} static"><span class="topbar-badge-val">${percent(r.margin)}</span></span>`;
+  }
+  return '';
 }
 
 function renderDrawer() {
@@ -141,12 +174,39 @@ function renderDrawer() {
         <div class="drawer-brand">${ICONS.logo}<div><strong>Marmita Lucrativa</strong><small>${escapeHtml(getUserLabel(currentUser))}</small></div></div>
         <button type="button" class="icon-btn" data-drawer-close aria-label="Fechar menu">${ICONS.close}</button>
       </div>
+      <div class="drawer-summary ${currentResults.status}">
+        <span>Lucro/un</span>
+        <strong>${money(currentResults.profitPerUnit)}</strong>
+        <em>${percent(currentResults.margin)} margem</em>
+      </div>
       <nav class="drawer-nav">${navItems}</nav>
       <div class="drawer-foot">
         <span class="drawer-mode">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}</span>
         <a href="/" class="drawer-home">${ICONS.home}<span>Página inicial</span></a>
       </div>
     </aside>
+  `;
+}
+
+function renderTabBar() {
+  return `
+    <nav class="app-tabbar" aria-label="Navegação rápida">
+      ${Object.entries(VIEW_META)
+        .map(([id, meta]) => {
+          const badge =
+            id === 'results' && currentResults.status !== 'lucro'
+              ? `<span class="tab-badge ${currentResults.status}"></span>`
+              : '';
+          return `
+            <button type="button" class="tab-btn ${activeView === id ? 'active' : ''}" data-view="${id}">
+              <span class="tab-icon">${ICONS[meta.icon]}</span>
+              <span class="tab-label">${meta.label}</span>
+              ${badge}
+            </button>
+          `;
+        })
+        .join('')}
+    </nav>
   `;
 }
 
@@ -163,16 +223,49 @@ function renderModeToggle() {
   `;
 }
 
+function renderLiveSummary() {
+  const r = currentResults;
+  return `
+    <div class="live-summary ${r.status}" id="live-summary">
+      <div class="live-summary-main">
+        <div class="live-summary-item">
+          <span>Custo real</span>
+          <strong>${money(r.realCostPerUnit)}</strong>
+        </div>
+        <div class="live-summary-item highlight">
+          <span>Lucro/un</span>
+          <strong>${money(r.profitPerUnit)}</strong>
+        </div>
+        <div class="live-summary-item">
+          <span>Margem</span>
+          <strong>${percent(r.margin)}</strong>
+        </div>
+      </div>
+      <div class="live-summary-foot">
+        <span>${money(r.dailyProfit)}/dia</span>
+        <span>${money(r.monthlyProfit)}/mês</span>
+      </div>
+    </div>
+  `;
+}
+
 function renderStepBar() {
-  const pct = (openStep / STEPS.length) * 100;
   const step = STEPS[openStep - 1];
+  const pills = STEPS.map(
+    (s) => `
+      <button type="button" class="step-pill ${openStep === s.id ? 'active' : openStep > s.id ? 'done' : ''}" data-step="${s.id}" aria-label="Passo ${s.id}: ${s.label}">
+        ${openStep > s.id ? ICONS.check : s.id}
+      </button>
+    `
+  ).join('');
+
   return `
     <div class="step-bar">
-      <div class="step-bar-top">
+      <div class="step-pills">${pills}</div>
+      <div class="step-bar-head">
         <span class="step-bar-count">Passo ${openStep} de ${STEPS.length}</span>
         <span class="step-bar-name">${step.label}</span>
       </div>
-      <div class="step-bar-track"><div class="step-bar-fill" style="width:${pct}%"></div></div>
       <p class="step-bar-desc">${step.desc}</p>
     </div>
   `;
@@ -184,7 +277,7 @@ function renderCalcFooter() {
   if (inputMode === 'simple') {
     return `
       <div class="calc-footer-bar">
-        <button type="submit" form="calc-form" class="btn btn-primary btn-block">Ver meu lucro</button>
+        <button type="submit" form="calc-form" class="btn btn-primary btn-block">${ICONS.chart}<span>Ver meu lucro</span></button>
       </div>
     `;
   }
@@ -193,52 +286,73 @@ function renderCalcFooter() {
   return `
     <div class="calc-footer-bar">
       <div class="calc-footer-inner">
-        ${openStep > 1 ? `<button type="button" class="btn btn-ghost" id="prev-step">${ICONS.chevronLeft}<span>Voltar</span></button>` : '<span></span>'}
+        ${openStep > 1 ? `<button type="button" class="btn btn-ghost" id="prev-step">${ICONS.chevronLeft}<span>Voltar</span></button>` : ''}
         ${
           isLast
-            ? '<button type="submit" form="calc-form" class="btn btn-primary">Ver meu lucro</button>'
-            : `<button type="button" class="btn btn-primary" id="next-step"><span>Próximo</span>${ICONS.chevronRight}</button>`
+            ? `<button type="submit" form="calc-form" class="btn btn-primary btn-block">${ICONS.chart}<span>Ver meu lucro</span></button>`
+            : `<button type="button" class="btn btn-primary btn-block" id="next-step"><span>Próximo</span>${ICONS.chevronRight}</button>`
         }
       </div>
     </div>
   `;
 }
 
+function renderActiveView() {
+  switch (activeView) {
+    case 'calc':
+      return renderCalculatorForm();
+    case 'results':
+      return renderResults();
+    case 'bonus':
+      return renderBonus();
+    case 'account':
+      return renderAccount();
+    default:
+      return '';
+  }
+}
+
 function render() {
   const viewTitle = VIEW_META[activeView]?.label || 'App';
+  const shellClass = ['app-shell', activeView === 'calc' ? 'has-calc-footer' : '', 'has-tabbar'].filter(Boolean).join(' ');
 
   root.innerHTML = `
-    <div class="app-shell ${activeView === 'calc' ? 'has-calc-footer' : ''}">
+    <div class="${shellClass}">
       ${renderDrawer()}
       <header class="app-topbar">
         <button type="button" class="icon-btn menu-btn" id="menu-toggle" aria-label="Abrir menu">${ICONS.menu}</button>
         <div class="topbar-center">
           ${ICONS.logo}
-          <h1 class="topbar-title">${viewTitle}</h1>
+          <div class="topbar-titles">
+            <h1 class="topbar-title">${viewTitle}</h1>
+            <p class="topbar-sub">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}</p>
+          </div>
         </div>
-        ${renderTopbarProfit()}
+        ${renderTopbarBadge()}
       </header>
 
       <main class="app-content">
-        <section id="view-calc" class="view ${activeView === 'calc' ? 'active' : ''}">
-          ${renderCalculatorForm()}
-        </section>
-        <section id="view-results" class="view ${activeView === 'results' ? 'active' : ''}">
-          ${renderResults()}
-        </section>
-        <section id="view-bonus" class="view ${activeView === 'bonus' ? 'active' : ''}">
-          ${renderBonus()}
-        </section>
-        <section id="view-account" class="view ${activeView === 'account' ? 'active' : ''}">
-          ${renderAccount()}
-        </section>
+        ${renderActiveView()}
       </main>
 
       ${renderCalcFooter()}
+      ${renderTabBar()}
     </div>
   `;
 
   bindEvents();
+}
+
+function fieldGroup(title, desc, fieldsHtml) {
+  return `
+    <div class="field-group">
+      <div class="field-group-head">
+        <h3>${title}</h3>
+        ${desc ? `<p>${desc}</p>` : ''}
+      </div>
+      <div class="field-stack">${fieldsHtml}</div>
+    </div>
+  `;
 }
 
 function moneyField(id, name, label, value, hint = '') {
@@ -257,27 +371,37 @@ function moneyField(id, name, label, value, hint = '') {
 function renderSimpleForm() {
   const s = simpleValues;
   return `
-    <form id="calc-form">
+    <form id="calc-form" class="calc-form">
       ${renderModeToggle()}
-      <div class="simple-card">
-        <p class="simple-intro">Custo <strong>de cada marmita</strong> — rápido e direto.</p>
-        <div class="field-stack">
-          ${moneyField('simple_sellingPrice', 'simple_sellingPrice', 'Preço de venda', s.sellingPrice)}
-          ${moneyField('simple_foodCostPerUnit', 'simple_foodCostPerUnit', 'Ingredientes/marmita', s.foodCostPerUnit, 'Arroz, feijão, carne...')}
-          ${moneyField('simple_packaging', 'simple_packaging', 'Embalagem/marmita', s.packaging)}
-          ${moneyField('simple_gasPerUnit', 'simple_gasPerUnit', 'Gás, tempero, energia/marmita', s.gasPerUnit)}
-          ${moneyField('simple_delivery', 'simple_delivery', 'Entrega ou taxa/marmita', s.delivery)}
-          ${moneyField('simple_wastePerUnit', 'simple_wastePerUnit', 'Desperdício/marmita', s.wastePerUnit)}
-          <div class="field">
-            <label for="simple_marmitasPerDay">Marmitas por dia</label>
-            <input id="simple_marmitasPerDay" name="simple_marmitasPerDay" inputmode="numeric" value="${s.marmitasPerDay}">
-          </div>
-          <div class="field">
-            <label for="simple_targetMarginPercent">Margem ideal (%)</label>
-            <input id="simple_targetMarginPercent" name="simple_targetMarginPercent" inputmode="decimal" value="${s.targetMarginPercent}">
-            <span class="field-hint">Recomendado: 30%</span>
-          </div>
-        </div>
+      ${renderLiveSummary()}
+      <div class="form-card">
+        ${fieldGroup('Preço de venda', 'Quanto você cobra hoje por marmita.', moneyField('simple_sellingPrice', 'simple_sellingPrice', 'Preço de venda', s.sellingPrice))}
+        ${fieldGroup(
+          'Custos por marmita',
+          'Some tudo que entra em cada unidade vendida.',
+          `
+            ${moneyField('simple_foodCostPerUnit', 'simple_foodCostPerUnit', 'Ingredientes', s.foodCostPerUnit, 'Arroz, feijão, carne...')}
+            ${moneyField('simple_packaging', 'simple_packaging', 'Embalagem', s.packaging)}
+            ${moneyField('simple_gasPerUnit', 'simple_gasPerUnit', 'Gás, tempero, energia', s.gasPerUnit)}
+            ${moneyField('simple_delivery', 'simple_delivery', 'Entrega ou taxa', s.delivery)}
+            ${moneyField('simple_wastePerUnit', 'simple_wastePerUnit', 'Desperdício', s.wastePerUnit)}
+          `
+        )}
+        ${fieldGroup(
+          'Produção e meta',
+          null,
+          `
+            <div class="field">
+              <label for="simple_marmitasPerDay">Marmitas por dia</label>
+              <input id="simple_marmitasPerDay" name="simple_marmitasPerDay" inputmode="numeric" value="${s.marmitasPerDay}">
+            </div>
+            <div class="field">
+              <label for="simple_targetMarginPercent">Margem ideal (%)</label>
+              <input id="simple_targetMarginPercent" name="simple_targetMarginPercent" inputmode="decimal" value="${s.targetMarginPercent}">
+              <span class="field-hint">Recomendado: 30%</span>
+            </div>
+          `
+        )}
       </div>
     </form>
   `;
@@ -315,7 +439,7 @@ function renderStepPanel(stepId) {
   switch (stepId) {
     case 1:
       return `
-        <div class="step-panel">
+        <div class="form-card step-panel">
           <div class="field-stack">
             <div class="field">
               <label for="marmitasPerDay">Marmitas por dia</label>
@@ -330,15 +454,15 @@ function renderStepPanel(stepId) {
       `;
     case 2:
       return `
-        <div class="step-panel">
+        <div class="form-card step-panel">
           <div class="ingredient-list">${renderIngredientsStep()}</div>
           <button type="button" class="btn btn-secondary btn-add" id="add-ingredient">${ICONS.plus}<span>Adicionar ingrediente</span></button>
         </div>
       `;
     case 3:
       return `
-        <div class="step-panel">
-          <ul class="hidden-costs-list">
+        <div class="form-card step-panel">
+          <ul class="tip-list">
             <li>Embalagem e descartáveis</li>
             <li>Gás, tempero e energia</li>
             <li>Entrega ou taxa de app</li>
@@ -362,7 +486,7 @@ function renderStepPanel(stepId) {
       `;
     case 4:
       return `
-        <div class="step-panel">
+        <div class="form-card step-panel">
           <p class="step-panel-note">Deixe zero se não quiser incluir agora.</p>
           <div class="field-stack">
             <div class="field">
@@ -375,7 +499,7 @@ function renderStepPanel(stepId) {
       `;
     case 5:
       return `
-        <div class="step-panel">
+        <div class="form-card step-panel">
           <div class="field-stack">
             ${moneyField('sellingPrice', 'sellingPrice', 'Preço que cobra hoje', currentInputs.sellingPrice)}
             <div class="field">
@@ -393,8 +517,9 @@ function renderStepPanel(stepId) {
 
 function renderFullForm() {
   return `
-    <form id="calc-form">
+    <form id="calc-form" class="calc-form">
       ${renderModeToggle()}
+      ${renderLiveSummary()}
       ${renderStepBar()}
       ${renderStepPanel(openStep)}
     </form>
@@ -403,6 +528,50 @@ function renderFullForm() {
 
 function renderCalculatorForm() {
   return inputMode === 'simple' ? renderSimpleForm() : renderFullForm();
+}
+
+function renderBreakdownBars() {
+  const r = currentResults;
+  const items = [
+    { label: 'Comida', value: r.breakdown.foodCost },
+    { label: 'Desperdício', value: r.breakdown.wasteCost },
+    { label: 'Embalagem', value: r.breakdown.packagingPerUnit },
+    { label: 'Gás', value: r.breakdown.gasPerUnit },
+    { label: 'Temperos', value: r.breakdown.spicesPerUnit },
+    { label: 'Entrega', value: r.breakdown.deliveryPerUnit },
+    { label: 'Seu tempo', value: r.breakdown.timePerUnit },
+    { label: 'Taxa app', value: r.breakdown.platformFee },
+  ].filter((i) => i.value > 0);
+
+  const total = items.reduce((s, i) => s + i.value, 0) || 1;
+
+  return `
+    <div class="breakdown-bars">
+      ${items
+        .map(
+          (item) => `
+            <div class="breakdown-bar-row">
+              <div class="breakdown-bar-label"><span>${item.label}</span><strong>${money(item.value)}</strong></div>
+              <div class="breakdown-bar-track"><div class="breakdown-bar-fill" style="width:${(item.value / total) * 100}%"></div></div>
+            </div>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderInsight() {
+  const insight = INSIGHTS[currentResults.status];
+  return `
+    <div class="insight-card ${currentResults.status}">
+      <div class="insight-icon">${currentResults.status === 'lucro' ? ICONS.trendUp : currentResults.status === 'prejuizo' ? ICONS.trendDown : ICONS.info}</div>
+      <div>
+        <strong>${insight.title}</strong>
+        <p>${insight.text}</p>
+      </div>
+    </div>
+  `;
 }
 
 function renderSimulation() {
@@ -465,15 +634,8 @@ function renderResultsDetails() {
 
     <div class="section-card">
       <h2>Raio-x do custo</h2>
-      <ul class="breakdown-list">
-        <li><span>Comida</span><strong>${money(r.breakdown.foodCost)}</strong></li>
-        <li><span>Desperdício</span><strong>${money(r.breakdown.wasteCost)}</strong></li>
-        <li><span>Embalagem</span><strong>${money(r.breakdown.packagingPerUnit)}</strong></li>
-        <li><span>Gás/un</span><strong>${money(r.breakdown.gasPerUnit)}</strong></li>
-        <li><span>Temperos/un</span><strong>${money(r.breakdown.spicesPerUnit)}</strong></li>
-        <li><span>Entrega</span><strong>${money(r.breakdown.deliveryPerUnit)}</strong></li>
-        <li><span>Seu tempo</span><strong>${money(r.breakdown.timePerUnit)}</strong></li>
-        <li><span>Taxa plataforma</span><strong>${money(r.breakdown.platformFee)}</strong></li>
+      ${renderBreakdownBars()}
+      <ul class="breakdown-list compact">
         <li><span>Custo total</span><strong>${money(r.realCostPerUnit + r.breakdown.platformFee)}</strong></li>
       </ul>
     </div>
@@ -502,42 +664,46 @@ function renderResults() {
       : `${money(r.dailyProfit)}/dia · ${money(r.monthlyProfit)}/mês`;
 
   return `
-    <div class="results-hero ${r.status}">
-      <small>${statusText}</small>
-      <h2>${money(r.profitPerUnit)}</h2>
-      <p>Lucro por marmita · ${statusDetail}</p>
-    </div>
-
-    <div class="price-action">
-      <div class="price-action-card ideal">
-        <span>Preço recomendado</span>
-        <strong>${money(r.idealPrice)}</strong>
-        <em>Meta ${percent(Math.min(target, 80))} de margem</em>
+    <div class="results-page">
+      <div class="results-hero ${r.status}">
+        <small>${statusText}</small>
+        <h2>${money(r.profitPerUnit)}</h2>
+        <p>Lucro por marmita · ${statusDetail}</p>
+        <span class="results-hero-badge">${percent(r.margin)} de margem</span>
       </div>
-      <div class="price-action-card">
-        <span>Preço mínimo</span>
-        <strong>${money(r.minPrice)}</strong>
-        <em>Abaixo disso = prejuízo</em>
-      </div>
-    </div>
 
-    <div class="results-actions">
-      <button type="button" class="btn btn-secondary" id="save-scenario-results">Salvar cenário</button>
-      <button type="button" class="btn btn-primary" data-view="calc">Ajustar números</button>
-    </div>
+      ${renderInsight()}
 
-    <details class="results-details">
-      <summary>Ver mais detalhes</summary>
-      <div class="results-details-body">
-        ${renderResultsDetails()}
+      <div class="price-action">
+        <div class="price-action-card ideal">
+          <span>Preço recomendado</span>
+          <strong>${money(r.idealPrice)}</strong>
+          <em>Meta ${percent(Math.min(target, 80))} de margem</em>
+          <button type="button" class="btn btn-sm btn-ideal" id="apply-ideal-price">${ICONS.check}<span>Usar este preço</span></button>
+        </div>
+        <div class="price-action-card">
+          <span>Preço mínimo</span>
+          <strong>${money(r.minPrice)}</strong>
+          <em>Abaixo disso = prejuízo</em>
+        </div>
       </div>
-    </details>
+
+      <div class="results-actions">
+        <button type="button" class="btn btn-secondary" id="save-scenario-results">${ICONS.save}<span>Salvar</span></button>
+        <button type="button" class="btn btn-primary" data-view="calc">${ICONS.edit}<span>Ajustar</span></button>
+      </div>
+
+      <details class="results-details">
+        <summary>Ver análise completa</summary>
+        <div class="results-details-body">${renderResultsDetails()}</div>
+      </details>
+    </div>
   `;
 }
 
 function renderScenarioList() {
   if (!scenarios.length) {
-    return '<p class="empty-state">Nenhum cenário salvo ainda.</p>';
+    return '<p class="empty-state">Nenhum cenário salvo. Salve diferentes combinações de preço e custo.</p>';
   }
 
   return `
@@ -547,9 +713,13 @@ function renderScenarioList() {
           const name = escapeHtml(item.name || 'Meu cenário');
           const price = money(item.results?.sellingPrice ?? item.inputs?.sellingPrice ?? 0);
           const profit = money(item.results?.profitPerUnit ?? 0);
+          const status = item.results?.status || 'lucro';
           return `
-            <li class="scenario-item">
-              <h3>${name}</h3>
+            <li class="scenario-item ${status}">
+              <div class="scenario-item-top">
+                <h3>${name}</h3>
+                <span class="scenario-status ${status}"></span>
+              </div>
               <p>Preço ${price} · Lucro ${profit}/un</p>
               <div class="scenario-actions">
                 <button type="button" class="load" data-load="${item.id}">Carregar</button>
@@ -563,65 +733,141 @@ function renderScenarioList() {
   `;
 }
 
-function renderBonus() {
-  return `
-    <div class="section-card bonus-header-card">
-      <h2>Cardápio Lucrativo de 30 Dias</h2>
-      <p>Ideias para variar sem perder margem. Simule o custo na calculadora antes de fixar o prato.</p>
-      <input type="search" class="bonus-search" id="bonus-search" placeholder="Buscar prato ou dia...">
-    </div>
-    <div class="menu-list" id="menu-list">
-      ${renderMenuItems(CARDAPIO_30_DIAS)}
-    </div>
-  `;
-}
+function renderMenuByWeek() {
+  const weeks = [];
+  for (let i = 0; i < CARDAPIO_30_DIAS.length; i += 7) {
+    weeks.push(CARDAPIO_30_DIAS.slice(i, i + 7));
+  }
 
-function renderMenuItems(items) {
-  return items
+  return weeks
     .map(
-      (item) => `
-        <article class="menu-item" data-search="${escapeHtml(`${item.dia} ${item.prato} ${item.dica}`.toLowerCase())}">
-          <strong>Dia ${item.dia}</strong>
-          <span>${escapeHtml(item.prato)}</span>
-          <em>${escapeHtml(item.dica)}</em>
-        </article>
+      (week, wi) => `
+        <details class="menu-week" ${wi === 0 ? 'open' : ''}>
+          <summary>Semana ${wi + 1} · Dias ${week[0].dia}–${week[week.length - 1].dia}</summary>
+          <div class="menu-week-body">
+            ${week
+              .map(
+                (item) => `
+                  <article class="menu-item" data-search="${escapeHtml(`${item.dia} ${item.prato} ${item.dica}`.toLowerCase())}">
+                    <div class="menu-item-head">
+                      <strong>Dia ${item.dia}</strong>
+                      <span>${escapeHtml(item.prato)}</span>
+                    </div>
+                    <em>${escapeHtml(item.dica)}</em>
+                  </article>
+                `
+              )
+              .join('')}
+          </div>
+        </details>
       `
     )
     .join('');
 }
 
+function renderBonus() {
+  return `
+    <div class="bonus-page">
+      <div class="section-card bonus-header-card">
+        <h2>Cardápio de 30 Dias</h2>
+        <p>Ideias para variar sem perder margem. Simule o custo antes de fixar o prato.</p>
+        <div class="search-wrap">
+          ${ICONS.search}
+          <input type="search" class="bonus-search" id="bonus-search" placeholder="Buscar prato ou dia..." autocomplete="off">
+        </div>
+      </div>
+      <div class="menu-list" id="menu-list">${renderMenuByWeek()}</div>
+      <p class="menu-empty hidden" id="menu-empty">Nenhum prato encontrado.</p>
+    </div>
+  `;
+}
+
 function renderAccount() {
   return `
-    <div class="section-card account-card">
-      <div class="account-avatar">${ICONS.logo}</div>
-      <h2>Como usar</h2>
-      <ol class="help-list">
-        <li>Use o <strong>modo rápido</strong> para começar em 2 minutos</li>
-        <li>O lucro no topo atualiza enquanto você digita</li>
-        <li>Em <strong>Resultados</strong>, veja o preço recomendado</li>
-        <li>Ative o <strong>modo completo</strong> para detalhar tudo</li>
-        <li>Consulte o <strong>Cardápio de 30 dias</strong> para variar</li>
-      </ol>
-    </div>
-    <div class="section-card">
-      <h2>Seus dados</h2>
-      <p class="account-note">Tudo fica salvo neste celular. Login na nuvem virá em breve.</p>
-      <button type="button" class="btn btn-secondary" id="reset-data">Limpar meus dados</button>
+    <div class="help-page">
+      <div class="quick-cards">
+        <button type="button" class="quick-card" data-view="calc">${ICONS.calc}<span>Calcular</span></button>
+        <button type="button" class="quick-card" data-view="results">${ICONS.chart}<span>Resultados</span></button>
+        <button type="button" class="quick-card" data-view="bonus">${ICONS.book}<span>Cardápio</span></button>
+      </div>
+
+      <div class="section-card">
+        <h2>Perguntas frequentes</h2>
+        <details class="faq-item" open>
+          <summary>Como começo?</summary>
+          <p>Use o <strong>modo rápido</strong>, coloque o custo de cada marmita e veja o lucro no topo enquanto digita.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Modo rápido vs completo?</summary>
+          <p>O rápido é direto por marmita. O completo divide produção, ingredientes, extras e tempo — ideal quando quer precisão total.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Meus dados ficam salvos?</summary>
+          <p>Sim, neste celular. Rascunho e cenários salvos ficam no navegador até você limpar.</p>
+        </details>
+        <details class="faq-item">
+          <summary>O que é preço recomendado?</summary>
+          <p>É o valor para atingir sua margem ideal com os custos atuais. Use o botão "Usar este preço" nos resultados.</p>
+        </details>
+      </div>
+
+      <div class="section-card">
+        <h2>Seus dados</h2>
+        <p class="account-note">Tudo fica salvo neste aparelho. Login na nuvem virá em breve.</p>
+        <button type="button" class="btn btn-secondary" id="replay-onboarding">${ICONS.help}<span>Ver tutorial de novo</span></button>
+        <button type="button" class="btn btn-secondary btn-danger-text" id="reset-data">Limpar meus dados</button>
+      </div>
     </div>
   `;
 }
 
 function updateLivePreview() {
-  const pill = document.getElementById('topbar-profit');
-  if (!pill) return;
-
   const r = currentResults;
-  pill.className = `topbar-profit ${r.status}`;
-  pill.querySelector('.topbar-profit-val').textContent = money(r.profitPerUnit);
 
-  root.querySelectorAll('.drawer-badge').forEach((el) => {
-    el.className = `drawer-badge ${r.status}`;
+  const badge = document.getElementById('topbar-badge');
+  if (badge) {
+    badge.className = `topbar-badge ${r.status}`;
+    badge.querySelector('.topbar-badge-val').textContent = money(r.profitPerUnit);
+    badge.querySelector('.topbar-badge-sub').textContent = percent(r.margin);
+  }
+
+  const summary = document.getElementById('live-summary');
+  if (summary) {
+    summary.className = `live-summary ${r.status}`;
+    const items = summary.querySelectorAll('.live-summary-item strong');
+    if (items.length >= 3) {
+      items[0].textContent = money(r.realCostPerUnit);
+      items[1].textContent = money(r.profitPerUnit);
+      items[2].textContent = percent(r.margin);
+    }
+    const foot = summary.querySelectorAll('.live-summary-foot span');
+    if (foot.length >= 2) {
+      foot[0].textContent = `${money(r.dailyProfit)}/dia`;
+      foot[1].textContent = `${money(r.monthlyProfit)}/mês`;
+    }
+  }
+
+  root.querySelectorAll('.drawer-badge, .tab-badge').forEach((el) => {
+    el.className = el.className.replace(/\b(lucro|alerta|prejuizo)\b/g, '').trim();
+    el.classList.add(r.status);
   });
+
+  const drawerSummary = root.querySelector('.drawer-summary');
+  if (drawerSummary) {
+    drawerSummary.className = `drawer-summary ${r.status}`;
+    drawerSummary.querySelector('strong').textContent = money(r.profitPerUnit);
+    drawerSummary.querySelector('em').textContent = `${percent(r.margin)} margem`;
+  }
+}
+
+function applyIdealPrice() {
+  const ideal = currentResults.idealPrice;
+  currentInputs.sellingPrice = ideal;
+  simpleValues.sellingPrice = ideal;
+  currentResults = calculate(currentInputs);
+  persistState();
+  showToast(`Preço atualizado para ${money(ideal)}`);
+  render();
 }
 
 function saveScenarioFlow() {
@@ -633,9 +879,7 @@ function saveScenarioFlow() {
     });
     scenarios = await listScenarios(currentUser.uid);
     showToast('Cenário salvo!');
-    if (activeView !== 'results') {
-      activeView = 'results';
-    }
+    if (activeView !== 'results') activeView = 'results';
     render();
   });
 }
@@ -673,6 +917,9 @@ function showSaveModal(onSave) {
 }
 
 function navigateTo(view) {
+  if (view !== activeView) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
   activeView = view;
   closeDrawer();
   render();
@@ -705,6 +952,15 @@ function bindEvents() {
     });
   });
 
+  root.querySelectorAll('[data-step]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const form = document.getElementById('calc-form');
+      if (form) updateFromForm(form);
+      openStep = parseNumber(btn.dataset.step);
+      render();
+    });
+  });
+
   document.getElementById('next-step')?.addEventListener('click', () => {
     const form = document.getElementById('calc-form');
     if (form) updateFromForm(form);
@@ -723,14 +979,14 @@ function bindEvents() {
     }
   });
 
+  document.getElementById('apply-ideal-price')?.addEventListener('click', applyIdealPrice);
+
   const form = document.getElementById('calc-form');
   if (form) {
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       updateFromForm(form);
-      activeView = 'results';
-      closeDrawer();
-      render();
+      navigateTo('results');
       showToast(
         currentResults.status === 'prejuizo'
           ? 'Prejuízo detectado — hora de ajustar!'
@@ -766,17 +1022,24 @@ function bindEvents() {
     });
   }
 
-  document.getElementById('save-scenario-results')?.addEventListener('click', () => {
-    saveScenarioFlow();
-  });
+  document.getElementById('save-scenario-results')?.addEventListener('click', saveScenarioFlow);
 
   const bonusSearch = document.getElementById('bonus-search');
   if (bonusSearch) {
     bonusSearch.addEventListener('input', () => {
       const q = bonusSearch.value.trim().toLowerCase();
+      let visible = 0;
       document.querySelectorAll('#menu-list .menu-item').forEach((item) => {
-        item.style.display = !q || item.dataset.search.includes(q) ? '' : 'none';
+        const show = !q || item.dataset.search.includes(q);
+        item.style.display = show ? '' : 'none';
+        if (show) visible += 1;
       });
+      document.querySelectorAll('#menu-list .menu-week').forEach((week) => {
+        const hasVisible = [...week.querySelectorAll('.menu-item')].some((i) => i.style.display !== 'none');
+        week.style.display = hasVisible ? '' : 'none';
+        if (hasVisible) week.open = true;
+      });
+      document.getElementById('menu-empty')?.classList.toggle('hidden', visible > 0);
     });
   }
 
@@ -804,10 +1067,15 @@ function bindEvents() {
     });
   });
 
+  document.getElementById('replay-onboarding')?.addEventListener('click', () => {
+    showOnboarding();
+  });
+
   document.getElementById('reset-data')?.addEventListener('click', () => {
     if (!window.confirm('Apagar rascunho e cenários salvos neste aparelho?')) return;
     clearDraft(currentUser.uid);
     localStorage.removeItem(`marmita_scenarios_${currentUser.uid}`);
+    clearOnboardingSeen();
     inputMode = 'simple';
     simpleValues = { ...SIMPLE_DEFAULTS };
     currentInputs = simpleToFull(SIMPLE_DEFAULTS);
@@ -817,7 +1085,6 @@ function bindEvents() {
     navigateTo('calc');
     showToast('Dados limpos. Começando do zero.');
   });
-
 }
 
 document.addEventListener('keydown', (e) => {
@@ -835,5 +1102,3 @@ function updateFromForm(form) {
   currentResults = calculate(currentInputs);
   persistState();
 }
-
-bootstrap();

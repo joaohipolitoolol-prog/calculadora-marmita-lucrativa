@@ -42,7 +42,7 @@ watchAuth((user) => redirectIfAuthenticated(user));
 if (isDemoMode()) {
   showAlert(
     configAlert,
-    '🎉 Demo liberada! Entre sem pagar nada — seus dados ficam só neste navegador.',
+    'Comprou? Use a aba Criar conta com o código do e-mail. Quer só testar? Use o botão verde acima.',
     'success'
   );
 } else if (!isFirebaseConfigured) {
@@ -59,12 +59,16 @@ document.getElementById('demo-enter-btn')?.addEventListener('click', async () =>
   } catch (error) {
     showAlert(formAlert, error.message, 'error');
     btn.disabled = false;
-    btn.textContent = '🚀 Entrar na demo grátis';
+    btn.textContent = 'Testar grátis agora';
   }
 });
 
 if (new URLSearchParams(window.location.search).get('demo') === '1') {
   document.getElementById('demo-enter-btn')?.click();
+}
+
+if (new URLSearchParams(window.location.search).get('compra') === '1') {
+  setTab('register');
 }
 
 loginForm.addEventListener('submit', async (event) => {
@@ -105,7 +109,7 @@ registerForm.addEventListener('submit', async (event) => {
     );
     showAlert(formAlert, 'Conta criada! Redirecionando...', 'success');
     setTimeout(() => {
-      window.location.href = '/app.html';
+      window.location.href = '/app.html?compra=1';
     }, 700);
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');

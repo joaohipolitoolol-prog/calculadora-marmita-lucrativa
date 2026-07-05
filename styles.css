@@ -59,12 +59,32 @@ a {
   color: var(--brown);
 }
 
-.site-logo span {
-  font-size: 1.35rem;
+.site-logo img {
+  flex-shrink: 0;
+  display: block;
 }
 
 .header-enter {
-  display: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: transparent;
+  opacity: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stealth-link {
+  color: transparent;
+  opacity: 0;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ===== Typography ===== */
@@ -349,6 +369,37 @@ h3 {
   margin-bottom: var(--space-md);
 }
 
+@media (max-width: 639px) {
+  .demo-inputs.is-collapsed .demo-field.demo-extra {
+    display: none;
+  }
+}
+
+.demo-expand-btn {
+  width: 100%;
+  margin: -4px 0 var(--space-md);
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--orange);
+  background: rgba(232, 101, 26, 0.08);
+  border: 1.5px dashed rgba(232, 101, 26, 0.35);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.demo-expand-btn[hidden] {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .demo-expand-btn {
+    display: none;
+  }
+}
+
 .demo-field {
   display: flex;
   flex-direction: column;
@@ -483,6 +534,46 @@ h3 {
   color: var(--brown);
   line-height: 1.5;
   margin-bottom: 14px;
+}
+
+/* ===== Prova social ===== */
+.testimonial {
+  padding-top: 0;
+}
+
+.review-card {
+  margin: 0;
+  background: var(--white);
+  border: 1.5px solid var(--gray-border);
+  border-left: 4px solid var(--orange);
+  border-radius: var(--radius);
+  padding: 20px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.review-card p {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--brown);
+  font-style: italic;
+  margin-bottom: 14px;
+}
+
+.review-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.review-meta strong {
+  font-size: 0.88rem;
+  color: var(--brown);
+}
+
+.review-meta span {
+  font-size: 0.78rem;
+  color: var(--gray);
+  font-weight: 600;
 }
 
 /* Legacy calc labels (used in demo) */
@@ -1202,9 +1293,65 @@ h3 {
   line-height: 1.55;
 }
 
+.final-cta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: stretch;
+  text-align: left;
+}
+
+.final-cta-perks {
+  list-style: none;
+  margin: 0;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+}
+
+.final-cta-perks li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.final-cta-perks li + li {
+  margin-top: 10px;
+}
+
+.final-cta-perks li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--orange-light);
+  font-weight: 800;
+}
+
 .final-cta .btn-primary {
-  max-width: 360px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .final-cta-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .final-cta-row .btn-primary {
+    flex: 0 0 240px;
+  }
+
+  .final-cta-perks {
+    flex: 1;
+  }
 }
 
 .footer {

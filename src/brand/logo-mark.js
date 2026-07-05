@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Marmita Lucrativa">
+/** Marca única — marmita com comida (fonte da verdade para favicon + app) */
+export const LOGO_VIEWBOX = '0 0 32 32';
+
+export const LOGO_MARK_PATHS = `
   <defs>
     <linearGradient id="marmita-lid" x1="16" y1="4" x2="16" y2="11" gradientUnits="userSpaceOnUse">
       <stop stop-color="#F07830"/>
@@ -25,4 +28,16 @@
   <circle cx="15.8" cy="23.8" r="3.5" fill="#5FA34E"/>
   <path d="M14.2 22.2v3.2M15.8 21.5v4.6M17.4 22.5v3" stroke="#4A8A3C" stroke-width="1" stroke-linecap="round"/>
   <ellipse cx="16" cy="11" rx="11" ry="1.2" fill="#fff" opacity="0.06"/>
-</svg>
+`;
+
+export function logoMarkSvg({ width = 32, height = 32, ariaHidden = true, className = '' } = {}) {
+  const a11y = ariaHidden
+    ? 'aria-hidden="true"'
+    : 'role="img" aria-label="Marmita Lucrativa"';
+  const cls = className ? ` class="${className}"` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}" width="${width}" height="${height}" ${a11y}${cls}>${LOGO_MARK_PATHS}</svg>`;
+}
+
+export function logoMarkFaviconDoc() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}" role="img" aria-label="Marmita Lucrativa">${LOGO_MARK_PATHS}\n</svg>\n`;
+}

@@ -1,3 +1,5 @@
+import { logoMarkSvg } from '../brand/logo-mark.js';
+
 /** Ícones SVG inline — stroke, 24×24 */
 const svg = (paths, viewBox = '0 0 24 24') =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
@@ -20,24 +22,22 @@ export const ICONS = {
   chevronLeft: svg('<polyline points="15 18 9 12 15 6"/>'),
   chevronRight: svg('<polyline points="9 18 15 12 9 6"/>'),
   home: svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
-  logo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
-    <rect x="3" y="5" width="26" height="23" rx="2.5" fill="#2B2B2B"/>
-    <rect x="4.5" y="6.5" width="23" height="20" rx="1.5" fill="#141414"/>
-    <rect x="4.5" y="15" width="23" height="1.2" fill="#252525"/>
-    <rect x="16" y="6.5" width="1.2" height="8.5" fill="#252525"/>
-    <rect x="5.5" y="7.5" width="9.5" height="6.5" rx="1" fill="#E07A5F"/>
-    <rect x="17.5" y="7.5" width="9.5" height="6.5" rx="1" fill="#F3F0E8"/>
-    <rect x="5.5" y="16.5" width="10.5" height="9" rx="1" fill="#5FA34E"/>
-    <rect x="17.5" y="16.5" width="9.5" height="9" rx="1" fill="#5C4636"/>
-    <ellipse cx="22.2" cy="20.5" rx="3.2" ry="2.6" fill="#F2D56B"/>
-  </svg>`,
+  logo: logoMarkSvg({ width: 28, height: 28 }),
   plus: svg('<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'),
   trash: svg('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
+  save: svg('<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>'),
+  search: svg('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
+  trendUp: svg('<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'),
+  trendDown: svg('<polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/>'),
+  dollar: svg('<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'),
+  edit: svg('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>'),
+  check: svg('<polyline points="20 6 9 17 4 12"/>'),
+  info: svg('<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'),
 };
 
 export const VIEW_META = {
   calc: { label: 'Calcular', icon: 'calc' },
   results: { label: 'Resultados', icon: 'chart' },
   bonus: { label: 'Cardápio', icon: 'book' },
-  account: { label: 'Ajuda', icon: 'help' },
+  account: { label: 'Conta', icon: 'help' },
 };
