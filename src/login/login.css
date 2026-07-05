@@ -26,6 +26,7 @@
 .auth-logo img {
   flex-shrink: 0;
   display: block;
+  border-radius: 8px;
 }
 
 .auth-main {

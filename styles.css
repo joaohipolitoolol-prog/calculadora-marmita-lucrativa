@@ -62,6 +62,7 @@ a {
 .site-logo img {
   flex-shrink: 0;
   display: block;
+  border-radius: 6px;
 }
 
 .header-enter {

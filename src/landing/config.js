@@ -1,5 +1,8 @@
-/** Troque aqui se o link da Cakto mudar */
-export const CHECKOUT_URL = 'https://pay.cakto.com.br/3choscs_965728';
+/** Link de checkout Kiwify */
+export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
+
+/** Ícone do produto (calculadora) */
+export const PRODUCT_ICON = '/product-icon.png';
 
 /** Meta Pixel — painel de anúncios Meta */
 export const META_PIXEL_ID = '1369803401885896';

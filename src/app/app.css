@@ -41,7 +41,8 @@ body.drawer-open { overflow: hidden; }
   min-width: 0;
 }
 
-.topbar-center > svg { flex-shrink: 0; width: 26px; height: 26px; }
+.topbar-center > svg,
+.topbar-center > .app-logo-img { flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px; }
 
 .topbar-titles { min-width: 0; }
 
@@ -1482,9 +1483,11 @@ body.onboarding-open {
   height: 80px;
 }
 
-.onboarding-visual.is-logo svg {
+.onboarding-visual.is-logo svg,
+.onboarding-visual.is-logo .app-logo-img {
   width: 64px;
   height: 64px;
+  border-radius: 12px;
 }
 
 .onboarding-visual svg {

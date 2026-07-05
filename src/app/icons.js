@@ -1,4 +1,4 @@
-import { logoMarkSvg } from '../brand/logo-mark.js';
+import { PRODUCT_ICON } from '../landing/config.js';
 
 /** Ícones SVG inline — stroke, 24×24 */
 const svg = (paths, viewBox = '0 0 24 24') =>
@@ -22,7 +22,7 @@ export const ICONS = {
   chevronLeft: svg('<polyline points="15 18 9 12 15 6"/>'),
   chevronRight: svg('<polyline points="9 18 15 12 9 6"/>'),
   home: svg('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
-  logo: logoMarkSvg({ width: 28, height: 28 }),
+  logo: `<img src="${PRODUCT_ICON}" width="28" height="28" alt="" class="app-logo-img" aria-hidden="true">`,
   plus: svg('<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'),
   trash: svg('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
   save: svg('<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>'),
