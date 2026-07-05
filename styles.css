@@ -839,8 +839,9 @@ h3 {
 }
 
 .pain-icon svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .pain-icon-pack {
