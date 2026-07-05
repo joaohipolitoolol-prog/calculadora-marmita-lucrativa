@@ -1,0 +1,603 @@
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --orange: #E8651A;
+  --orange-dark: #C4520F;
+  --orange-light: #FFF3EB;
+  --yellow: #F5A623;
+  --brown: #5C3D2E;
+  --brown-light: #8B6B5A;
+  --green: #2D8A4E;
+  --green-light: #E8F5EC;
+  --cream: #FFF9F2;
+  --white: #FFFFFF;
+  --gray: #6B5E57;
+  --gray-light: #F0EBE6;
+  --shadow: 0 4px 20px rgba(92, 61, 46, 0.12);
+  --radius: 16px;
+  --radius-sm: 12px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--brown);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ===== Typography ===== */
+h1 {
+  font-size: clamp(1.75rem, 6vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--brown);
+}
+
+h2 {
+  font-size: clamp(1.35rem, 4.5vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--brown);
+}
+
+h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.section-text {
+  color: var(--gray);
+  font-size: 1rem;
+  margin-top: 12px;
+}
+
+.section-label {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--orange);
+  margin-bottom: 20px;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 1rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-align: center;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: var(--white);
+  padding: 16px 28px;
+  box-shadow: 0 4px 16px rgba(232, 101, 26, 0.35);
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: var(--orange-dark);
+}
+
+.btn-large {
+  padding: 18px 32px;
+  font-size: 1.05rem;
+}
+
+/* ===== Hero ===== */
+.hero {
+  background: linear-gradient(160deg, var(--orange-light) 0%, var(--cream) 60%);
+  padding: 40px 0 32px;
+  text-align: center;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--white);
+  color: var(--orange);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 50px;
+  margin-bottom: 20px;
+  border: 2px solid var(--orange);
+}
+
+.hero h1 {
+  margin-bottom: 16px;
+}
+
+.subheadline {
+  color: var(--gray);
+  font-size: 1rem;
+  margin-bottom: 28px;
+  line-height: 1.55;
+}
+
+/* ===== Phone Mockup ===== */
+.mockup-section {
+  padding: 8px 0 40px;
+  background: var(--cream);
+}
+
+.phone-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.phone {
+  width: 260px;
+  background: #1a1a1a;
+  border-radius: 36px;
+  padding: 12px;
+  box-shadow: 0 20px 50px rgba(92, 61, 46, 0.25), inset 0 0 0 2px #333;
+  position: relative;
+}
+
+.phone-notch {
+  width: 80px;
+  height: 22px;
+  background: #1a1a1a;
+  border-radius: 0 0 14px 14px;
+  margin: -4px auto 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.phone-screen {
+  background: var(--white);
+  border-radius: 26px;
+  overflow: hidden;
+  min-height: 420px;
+}
+
+.calc-app {
+  padding: 16px 14px;
+  background: linear-gradient(180deg, var(--orange-light) 0%, var(--white) 30%);
+}
+
+.calc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.calc-icon {
+  font-size: 1.6rem;
+}
+
+.calc-header strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--brown);
+}
+
+.calc-header small {
+  font-size: 0.7rem;
+  color: var(--gray);
+}
+
+.calc-card {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 8px;
+}
+
+.calc-card.highlight {
+  background: var(--green-light);
+  border: 2px solid var(--green);
+  text-align: center;
+  padding: 14px;
+}
+
+.calc-card.wide {
+  text-align: center;
+  padding: 14px;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.calc-grid .calc-card {
+  margin-bottom: 0;
+}
+
+.calc-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 2px;
+}
+
+.calc-value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--brown);
+}
+
+.calc-value.green {
+  color: var(--green);
+}
+
+.calc-value.orange {
+  color: var(--orange);
+}
+
+.calc-value.big {
+  font-size: 1.4rem;
+}
+
+.calc-card.highlight .calc-value {
+  font-size: 1.5rem;
+}
+
+.calc-footer {
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--green);
+  margin-top: 6px;
+}
+
+/* ===== Sections ===== */
+.section {
+  padding: 48px 0;
+}
+
+.section:nth-child(even) {
+  background: var(--white);
+}
+
+.pain h2,
+.solution h2,
+.features h2,
+.audience h2 {
+  margin-bottom: 4px;
+}
+
+/* ===== Pain List ===== */
+.pain-list {
+  list-style: none;
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pain-list li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--gray-light);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.pain-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pain-list strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.pain-list p {
+  font-size: 0.88rem;
+  color: var(--gray);
+}
+
+/* ===== Solution ===== */
+.solution-box {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.solution-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--orange-light);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  border-left: 4px solid var(--orange);
+}
+
+.solution-item span {
+  font-size: 1.5rem;
+}
+
+.solution-item p {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* ===== Features Grid ===== */
+.feature-grid {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.feature-card {
+  background: var(--white);
+  border: 2px solid var(--gray-light);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  position: relative;
+}
+
+.features {
+  background: var(--cream);
+}
+
+.feature-num {
+  display: inline-block;
+  background: var(--orange);
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.feature-card h3 {
+  margin-bottom: 4px;
+}
+
+.feature-card p {
+  font-size: 0.88rem;
+  color: var(--gray);
+}
+
+/* ===== Audience ===== */
+.audience-list {
+  list-style: none;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audience-list li {
+  background: var(--green-light);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--brown);
+}
+
+/* ===== Offer ===== */
+.offer {
+  background: linear-gradient(180deg, var(--orange-light) 0%, var(--cream) 100%);
+  padding: 48px 0 56px;
+}
+
+.offer-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  border: 2px solid var(--orange);
+}
+
+.offer-tag {
+  display: inline-block;
+  background: var(--orange);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 5px 14px;
+  border-radius: 50px;
+  margin-bottom: 16px;
+}
+
+.offer-card h2 {
+  margin-bottom: 8px;
+}
+
+.offer-desc {
+  color: var(--gray);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.price-box {
+  background: var(--orange-light);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.price-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray);
+  margin-bottom: 4px;
+}
+
+.price {
+  display: block;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--orange);
+  line-height: 1;
+}
+
+.price-note {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-top: 6px;
+}
+
+.bonus {
+  margin-top: 28px;
+  background: var(--gray-light);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: left;
+}
+
+.bonus-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--orange);
+  margin-bottom: 8px;
+}
+
+.bonus h3 {
+  margin-bottom: 4px;
+}
+
+.bonus p {
+  font-size: 0.88rem;
+  color: var(--gray);
+}
+
+.guarantee {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--green-light);
+  border-radius: var(--radius);
+  text-align: left;
+  border: 1px solid rgba(45, 138, 78, 0.2);
+}
+
+.guarantee span {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.guarantee strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.guarantee p {
+  font-size: 0.85rem;
+  color: var(--gray);
+}
+
+/* ===== Final CTA ===== */
+.final-cta {
+  text-align: center;
+  padding: 48px 0;
+  background: var(--brown);
+  color: var(--white);
+}
+
+.final-cta h2 {
+  color: var(--white);
+  margin-bottom: 10px;
+}
+
+.final-cta p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 24px;
+  font-size: 0.95rem;
+}
+
+.final-cta .btn-primary {
+  max-width: 360px;
+}
+
+/* ===== Footer ===== */
+.footer {
+  background: #3D2A20;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 0.78rem;
+}
+
+/* ===== Desktop tweaks ===== */
+@media (min-width: 640px) {
+  .container {
+    max-width: 560px;
+  }
+
+  .phone {
+    width: 280px;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .feature-grid .feature-card:last-child {
+    grid-column: 1 / -1;
+  }
+}
