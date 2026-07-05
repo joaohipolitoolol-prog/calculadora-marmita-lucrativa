@@ -396,6 +396,17 @@ body.drawer-open { overflow: hidden; }
   color: var(--orange);
 }
 
+.welcome-banner-wa {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #128c7e;
+  text-decoration: none;
+}
+
+.welcome-banner-wa:hover { text-decoration: underline; }
+
 .welcome-banner-close {
   flex-shrink: 0;
   width: 28px;

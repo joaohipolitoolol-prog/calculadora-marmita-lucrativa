@@ -5,6 +5,7 @@ import {
   readInputsFromForm,
 } from '../lib/calculator.js';
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
+import { WHATSAPP_PURCHASE_LINK } from '../landing/config.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
 import {
   fullToSimple,
@@ -100,6 +101,7 @@ function renderPostPurchaseBanner() {
       <div class="welcome-banner-body">
         <strong>Bem-vinda à sua calculadora!</strong>
         <p>1. Preencha seus custos no modo rápido · 2. Toque em <em>Ver meu lucro</em> · 3. Abra o cardápio de 30 dias no menu de baixo.</p>
+        <a href="${WHATSAPP_PURCHASE_LINK}" class="welcome-banner-wa" target="_blank" rel="noopener noreferrer">Precisa de ajuda? Chama no WhatsApp</a>
       </div>
       <button type="button" class="welcome-banner-close" id="welcome-banner-close" aria-label="Fechar">×</button>
     </div>
