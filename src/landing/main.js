@@ -1,6 +1,16 @@
 import { CHECKOUT_URL, CTA_LABEL, HERO_CTA_LABEL } from './config.js';
 import { initDemo } from './demo.js';
 
+function trackInitiateCheckout() {
+  if (typeof window.fbq === 'function') {
+    window.fbq('track', 'InitiateCheckout', {
+      value: 27,
+      currency: 'BRL',
+      content_name: 'Calculadora Marmita Lucrativa',
+    });
+  }
+}
+
 const logo = document.querySelector('.site-logo');
 if (logo) {
   logo.addEventListener('click', (e) => {
@@ -18,6 +28,7 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
   link.href = CHECKOUT_URL;
   link.textContent = link.dataset.checkoutHero !== undefined ? HERO_CTA_LABEL : CTA_LABEL;
   link.setAttribute('rel', 'noopener');
+  link.addEventListener('click', trackInitiateCheckout);
 });
 
 initDemo();
