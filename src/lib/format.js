@@ -12,11 +12,23 @@ export function percent(value) {
 
 export function parseNumber(value) {
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
-  const cleaned = String(value ?? '')
-    .replace(/\s/g, '')
-    .replace(/\./g, '')
-    .replace(',', '.');
-  const n = parseFloat(cleaned);
+
+  let s = String(value ?? '').trim();
+  if (!s) return 0;
+
+  s = s.replace(/R\$\s?/gi, '').replace(/\s/g, '');
+  if (!s) return 0;
+
+  const hasComma = s.includes(',');
+  const hasDot = s.includes('.');
+
+  if (hasComma && hasDot) {
+    s = s.replace(/\./g, '').replace(',', '.');
+  } else if (hasComma) {
+    s = s.replace(',', '.');
+  }
+
+  const n = parseFloat(s);
   return Number.isFinite(n) ? n : 0;
 }
 

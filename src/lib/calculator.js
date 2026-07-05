@@ -4,20 +4,20 @@ export const DEFAULT_INPUTS = {
   marmitasPerDay: 20,
   workDaysPerMonth: 22,
   targetMarginPercent: 30,
-  sellingPrice: 15,
-  packagingPerUnit: 1.5,
-  gasMonthly: 120,
-  spicesMonthly: 80,
+  sellingPrice: 18,
+  packagingPerUnit: 1.2,
+  gasMonthly: 396,
+  spicesMonthly: 0,
   deliveryPerUnit: 2,
   platformFeePercent: 0,
   wastePercent: 8,
-  hoursPerDay: 4,
-  hourlyRate: 15,
+  hoursPerDay: 0,
+  hourlyRate: 0,
   ingredients: [
     { name: 'Arroz', batchCost: 8, portions: 20 },
     { name: 'Feijão', batchCost: 12, portions: 20 },
-    { name: 'Carne/Frango', batchCost: 80, portions: 20 },
-    { name: 'Acompanhamentos', batchCost: 25, portions: 20 },
+    { name: 'Carne/Frango', batchCost: 160, portions: 20 },
+    { name: 'Acompanhamentos', batchCost: 24, portions: 20 },
   ],
 };
 
@@ -67,7 +67,7 @@ export function calculate(inputs) {
   const margin = sellingPrice > 0 ? (profitPerUnit / sellingPrice) * 100 : 0;
 
   const minPrice = feeRate < 1 ? baseCost / (1 - feeRate) : baseCost;
-  const targetMargin = targetMarginPercent / 100;
+  const targetMargin = Math.min(Math.max(targetMarginPercent, 0), 80) / 100;
   const idealDenominator = 1 - feeRate - targetMargin;
   const idealPrice = idealDenominator > 0 ? baseCost / idealDenominator : minPrice;
 

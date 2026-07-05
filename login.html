@@ -6,82 +6,10 @@
   <meta name="robots" content="noindex">
   <title>Entrar | Calculadora Marmita Lucrativa</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/login/login.css">
+  <meta http-equiv="refresh" content="0;url=/app.html">
+  <script>window.location.replace('/app.html');</script>
 </head>
-<body class="auth-page">
-  <header class="auth-header">
-    <a href="/" class="auth-logo"><span>🍱</span> Marmita Lucrativa</a>
-  </header>
-
-  <main class="auth-main">
-    <div class="auth-card">
-      <h1>Acesse sua calculadora</h1>
-      <p class="auth-sub">Entre com e-mail e senha para ver seus números e salvar cenários.</p>
-
-      <div id="config-alert" class="auth-alert info"></div>
-      <div id="form-alert" class="auth-alert"></div>
-
-      <div class="demo-hero">
-        <p>Entre direto, sem cadastro. Números de exemplo prontos pra você mexer.</p>
-        <button type="button" id="demo-enter-btn" class="btn btn-demo auth-submit">🚀 Entrar na demo grátis</button>
-      </div>
-
-      <div class="demo-divider">ou use sua conta</div>
-
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab active" data-tab="login">Entrar</button>
-        <button type="button" class="auth-tab" data-tab="register">Criar conta</button>
-      </div>
-
-      <section id="panel-login" class="panel active">
-        <form id="login-form">
-          <div class="form-group">
-            <label for="login-email">E-mail</label>
-            <input id="login-email" name="email" type="email" autocomplete="email" required placeholder="seu@email.com">
-          </div>
-          <div class="form-group">
-            <label for="login-password">Senha</label>
-            <input id="login-password" name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Mínimo 6 caracteres">
-          </div>
-          <button type="submit" class="btn btn-primary auth-submit">Entrar na calculadora</button>
-        </form>
-        <div class="auth-links">
-          <button type="button" id="forgot-btn">Esqueci minha senha</button>
-        </div>
-      </section>
-
-      <section id="panel-register" class="panel">
-        <form id="register-form">
-          <div class="form-group">
-            <label for="register-name">Seu nome</label>
-            <input id="register-name" name="name" type="text" autocomplete="name" required placeholder="Como você quer ser chamada">
-          </div>
-          <div class="form-group">
-            <label for="register-email">E-mail</label>
-            <input id="register-email" name="email" type="email" autocomplete="email" required placeholder="seu@email.com">
-          </div>
-          <div class="form-group">
-            <label for="register-password">Senha</label>
-            <input id="register-password" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="Mínimo 6 caracteres">
-          </div>
-          <div class="form-group">
-            <label for="register-code">Código de acesso</label>
-            <input id="register-code" name="accessCode" type="text" required placeholder="Código recebido após a compra">
-            <p class="form-hint">Você recebe esse código no e-mail de confirmação da compra.</p>
-          </div>
-          <button type="submit" class="btn btn-primary auth-submit">Criar minha conta</button>
-        </form>
-      </section>
-    </div>
-  </main>
-
-  <footer class="auth-footer">
-    <p>Ainda não comprou? <a href="/#oferta">Ver oferta por R$ 27</a></p>
-  </footer>
-
-  <script type="module" src="/src/login/main.js"></script>
+<body>
+  <p>Redirecionando para a calculadora… <a href="/app.html">Clique aqui</a> se não redirecionar.</p>
 </body>
 </html>
