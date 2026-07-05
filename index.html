@@ -51,32 +51,33 @@
         <div class="demo-inputs">
           <label class="demo-field">
             <span>Preço de venda (R$)</span>
-            <input type="number" inputmode="decimal" data-demo="sellingPrice" value="18" min="5" step="0.5">
+            <input type="text" inputmode="decimal" data-demo="sellingPrice" value="18" autocomplete="off">
           </label>
           <label class="demo-field">
             <span>Ingredientes por marmita (R$)</span>
-            <input type="number" inputmode="decimal" data-demo="foodCost" value="10.20" min="0" step="0.1">
+            <input type="text" inputmode="decimal" data-demo="foodCost" value="10,20" autocomplete="off">
           </label>
           <label class="demo-field">
             <span>Embalagem por marmita (R$)</span>
-            <input type="number" inputmode="decimal" data-demo="packaging" value="1.20" min="0" step="0.1">
+            <input type="text" inputmode="decimal" data-demo="packaging" value="1,20" autocomplete="off">
           </label>
           <label class="demo-field">
             <span>Gás, tempero e energia (R$)</span>
-            <input type="number" inputmode="decimal" data-demo="gasSpices" value="0.90" min="0" step="0.1">
+            <input type="text" inputmode="decimal" data-demo="gasSpices" value="0,90" autocomplete="off">
           </label>
           <label class="demo-field">
             <span>Entrega ou taxa (R$)</span>
-            <input type="number" inputmode="decimal" data-demo="delivery" value="2.00" min="0" step="0.1">
+            <input type="text" inputmode="decimal" data-demo="delivery" value="2,00" autocomplete="off">
           </label>
           <label class="demo-field">
             <span>Desperdício por marmita (R$)</span>
-            <input type="number" inputmode="decimal" data-demo="waste" value="0.80" min="0" step="0.1">
+            <input type="text" inputmode="decimal" data-demo="waste" value="0,80" autocomplete="off">
           </label>
           <label class="demo-field">
             <span>Marmitas por dia</span>
-            <input type="number" inputmode="numeric" data-demo="marmitasPerDay" value="20" min="1" step="1">
+            <input type="text" inputmode="numeric" data-demo="marmitasPerDay" value="20" autocomplete="off">
           </label>
+          <input type="hidden" data-demo="targetMargin" value="30">
         </div>
 
         <div class="demo-results">
