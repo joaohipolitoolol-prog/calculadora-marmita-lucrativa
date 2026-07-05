@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Descubra o custo real da sua marmita, quanto sobra no bolso e qual preço cobrar para não vender no prejuízo.">
+  <meta name="description" content="Descubra em poucos minutos o custo real da sua marmita, o lucro por unidade e o preço certo para vender sem trabalhar no prejuízo.">
   <title>Calculadora Marmita Lucrativa</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -14,159 +15,189 @@
 
   <header class="site-header">
     <div class="container site-header-inner">
-      <a href="/" class="site-logo"><span>🍱</span> Marmita Lucrativa</a>
-      <button type="button" class="btn btn-demo btn-compact" data-demo-enter>Testar demo</button>
+      <a href="#" class="site-logo" aria-label="Voltar ao topo"><span>🍱</span> Marmita Lucrativa</a>
+      <a href="/login.html" class="header-enter">Entrar</a>
     </div>
   </header>
 
   <!-- Hero -->
-  <header class="hero">
+  <section class="hero">
     <div class="container">
-      <span class="badge badge-pulse">🔥 Demo liberada — teste agora</span>
-      <h1>Você sabe se sua marmita <em>dá lucro</em> ou só gira dinheiro?</h1>
+      <h1>Você vende marmita todo dia, mas sabe quanto <em>realmente sobra</em> no seu bolso?</h1>
       <p class="subheadline">
-        Descubra em poucos minutos o custo real da sua marmita, quanto sobra no seu bolso e qual preço você deveria cobrar para não vender no prejuízo.
+        Coloque seus custos e descubra em poucos minutos o custo real da sua marmita, o lucro por unidade e o preço certo para vender sem trabalhar no prejuízo.
       </p>
       <div class="hero-cta-stack">
-        <button type="button" class="btn btn-demo btn-large" data-demo-enter>🚀 Testar demo grátis agora</button>
-        <a href="#oferta" class="btn btn-primary">Quero comprar por R$ 27</a>
+        <a href="https://checkout.kiwify.com.br/SEU-LINK-AQUI" class="btn btn-primary btn-large" data-checkout>Quero descobrir meu lucro agora</a>
       </div>
-      <p class="hero-access"><a href="/login.html">Já sou aluna → entrar</a></p>
 
       <div class="trust-row">
         <div class="trust-item"><span>📱</span>No celular</div>
-        <div class="trust-item"><span>⚡</span>2 minutos</div>
+        <div class="trust-item"><span>⚡</span>Poucos minutos</div>
         <div class="trust-item"><span>🛡️</span>7 dias garantia</div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <!-- Insert criativo -->
-  <div class="container">
-    <div class="insert insert-reveal insert-chat">
-      <div class="chat-bubble chat-them">Quanto tá a marmita hoje?</div>
-      <div class="chat-bubble chat-me">R$ 15, tá baratinho 😅</div>
-      <div class="chat-bubble chat-them chat-punch">Barato pra cliente. Caro pra você se não souber o custo.</div>
-    </div>
-  </div>
-
-  <!-- Mockup -->
-  <section class="mockup-section">
+  <!-- Demo interativa -->
+  <section class="demo-section" id="demo">
     <div class="container">
-      <p class="section-label">Veja como funciona</p>
-      <div class="phone-wrap">
-        <div class="phone">
-          <div class="phone-notch"></div>
-          <div class="phone-screen">
-            <div class="calc-app">
-              <div class="calc-header">
-                <span class="calc-icon">🍱</span>
-                <div>
-                  <strong>Marmita Lucrativa</strong>
-                  <small>Seu resultado agora</small>
-                </div>
-              </div>
-              <div class="calc-card highlight">
-                <span class="calc-label">Lucro por marmita</span>
-                <span class="calc-value green">R$ 4,80</span>
-              </div>
-              <div class="calc-grid">
-                <div class="calc-card">
-                  <span class="calc-label">Custo real</span>
-                  <span class="calc-value">R$ 10,20</span>
-                </div>
-                <div class="calc-card">
-                  <span class="calc-label">Margem</span>
-                  <span class="calc-value">32%</span>
-                </div>
-                <div class="calc-card">
-                  <span class="calc-label">Preço mínimo</span>
-                  <span class="calc-value">R$ 13,50</span>
-                </div>
-                <div class="calc-card">
-                  <span class="calc-label">Preço ideal</span>
-                  <span class="calc-value orange">R$ 16,00</span>
-                </div>
-              </div>
-              <div class="calc-card wide">
-                <span class="calc-label">Lucro do dia (20 marmitas)</span>
-                <span class="calc-value green big">R$ 96,00</span>
-              </div>
-              <div class="calc-footer">✓ Inclui embalagem, gás, entrega e mais</div>
+      <p class="section-label">Experimente agora</p>
+      <h2>Mexe nos números e vê seu lucro na hora</h2>
+      <p class="section-text demo-intro">Sem cadastro. Ajuste os valores abaixo como se fossem os seus.</p>
+
+      <div class="demo-widget" id="lp-demo">
+        <div class="demo-inputs">
+          <label class="demo-field">
+            <span>Preço de venda (R$)</span>
+            <input type="number" inputmode="decimal" data-demo="sellingPrice" value="18" min="0" step="0.5">
+          </label>
+          <label class="demo-field">
+            <span>Ingredientes por marmita (R$)</span>
+            <input type="number" inputmode="decimal" data-demo="foodCost" value="10.20" min="0" step="0.1">
+          </label>
+          <label class="demo-field">
+            <span>Embalagem por marmita (R$)</span>
+            <input type="number" inputmode="decimal" data-demo="packaging" value="1.20" min="0" step="0.1">
+          </label>
+          <label class="demo-field">
+            <span>Gás, tempero e energia (R$)</span>
+            <input type="number" inputmode="decimal" data-demo="gasSpices" value="0.90" min="0" step="0.1">
+          </label>
+          <label class="demo-field">
+            <span>Entrega ou taxa (R$)</span>
+            <input type="number" inputmode="decimal" data-demo="delivery" value="2.00" min="0" step="0.1">
+          </label>
+          <label class="demo-field">
+            <span>Desperdício por marmita (R$)</span>
+            <input type="number" inputmode="decimal" data-demo="waste" value="0.80" min="0" step="0.1">
+          </label>
+          <label class="demo-field">
+            <span>Marmitas por dia</span>
+            <input type="number" inputmode="numeric" data-demo="marmitasPerDay" value="20" min="1" step="1">
+          </label>
+        </div>
+
+        <div class="demo-results">
+          <div class="demo-result-main" data-out-card="profit">
+            <span class="calc-label">Seu lucro real</span>
+            <span class="calc-value green" data-out="profit">R$ 2,90</span>
+          </div>
+          <div class="demo-result-grid">
+            <div class="demo-result-item">
+              <span class="calc-label">Custo real</span>
+              <span class="calc-value" data-out="cost">R$ 15,10</span>
+            </div>
+            <div class="demo-result-item">
+              <span class="calc-label">Margem atual</span>
+              <span class="calc-value warn" data-out="margin">16,1%</span>
+            </div>
+            <div class="demo-result-item wide">
+              <span class="calc-label">Lucro do dia</span>
+              <span class="calc-value green" data-out="daily">R$ 58,00</span>
+            </div>
+            <div class="demo-result-item wide alert-card" data-out="alert-box">
+              <span class="calc-label">⚠️ Alerta</span>
+              <span class="calc-value alert" data-out="alert-text">Sua margem está baixa</span>
+            </div>
+            <div class="demo-result-item wide price-rec">
+              <span class="calc-label">Preço recomendado</span>
+              <span class="calc-value orange" data-out="ideal">R$ 21,57</span>
             </div>
           </div>
         </div>
       </div>
+
+      <p class="demo-footnote">Versão simplificada para testar. A calculadora completa inclui mais custos, simulações e cenários salvos.</p>
     </div>
   </section>
 
-  <!-- Demo strip -->
-  <section class="demo-strip">
+  <!-- Exemplo R$18 -->
+  <section class="section example">
     <div class="container">
-      <div class="insert insert-reveal demo-box">
-        <span class="demo-tag">Zero enrolação</span>
-        <h2>Quer ver por dentro antes de comprar?</h2>
-        <p>Clica na demo, mexe nos números e descobre em 2 minutos se sua marmita paga ou só ocupa a panela.</p>
-        <button type="button" class="btn btn-demo btn-large" data-demo-enter>Entrar na demo agora — é grátis</button>
-        <small>Sem cartão · Sem baixar app · Direto no celular</small>
+      <h2>Uma marmita de R$18 pode não dar o lucro que você imagina</h2>
+      <p class="section-text">
+        Muita gente olha só para arroz, feijão e carne. Mas quando coloca embalagem, gás, tempero, entrega, taxa e desperdício na conta, o lucro pode ser muito menor do que parecia.
+      </p>
+
+      <div class="breakdown insert-reveal">
+        <div class="breakdown-row">
+          <span>Preço de venda</span>
+          <strong>R$ 18,00</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Ingredientes por unidade</span>
+          <strong>R$ 10,20</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Embalagem</span>
+          <strong>R$ 1,20</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Gás, tempero e energia</span>
+          <strong>R$ 0,90</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Entrega ou taxa</span>
+          <strong>R$ 2,00</strong>
+        </div>
+        <div class="breakdown-row">
+          <span>Desperdício e sobra</span>
+          <strong>R$ 0,80</strong>
+        </div>
+        <div class="breakdown-row breakdown-total">
+          <span>Custo real</span>
+          <strong class="cost">R$ 15,10</strong>
+        </div>
+        <div class="breakdown-row breakdown-profit">
+          <span>Lucro real</span>
+          <strong class="profit">R$ 2,90</strong>
+        </div>
       </div>
+
+      <p class="example-closing">
+        Agora imagina vender 20 marmitas no dia e descobrir que trabalhou horas para sobrar muito menos do que parecia.
+      </p>
     </div>
   </section>
-
-  <!-- Insert antes/depois -->
-  <div class="container">
-    <div class="insert insert-reveal insert-compare">
-      <div class="compare-card compare-bad">
-        <span>No achismo</span>
-        <strong>R$ 15</strong>
-        <p>"Acho que sobrou uns R$ 500 no mês..."</p>
-      </div>
-      <div class="compare-arrow">→</div>
-      <div class="compare-card compare-good">
-        <span>Com a calculadora</span>
-        <strong>R$ 4,80</strong>
-        <p>Lucro real por marmita. Sem ilusão.</p>
-      </div>
-    </div>
-  </div>
 
   <!-- Dor -->
   <section class="section pain">
     <div class="container">
       <div class="section-head">
         <p class="section-label">● A dor real</p>
-        <h2>O problema não é vender pouco. É vender sem saber o número.</h2>
+        <h2>Às vezes você não precisa vender mais. Precisa parar de vender errado.</h2>
         <p class="section-text">
-          Muita gente calcula só arroz, feijão e carne — e acha que está no lucro. Só que na hora de fechar o mês, o dinheiro some.
+          Muita gente vende 20, 30 ou 40 marmitas por dia e mesmo assim termina o mês apertada. O problema é que o preço foi colocado no achismo. E quando você esquece embalagem, gás, entrega, taxa e desperdício, o lucro some sem você perceber.
         </p>
       </div>
       <ul class="pain-list">
         <li>
           <span class="pain-icon">📦</span>
           <div>
-            <strong>Embalagem e marmita</strong>
-            <p>Cada unidade tem custo. Vende 30 por dia e nem percebe.</p>
+            <strong>Embalagem e descartáveis</strong>
+            <p>Cada unidade tem um custo que muita gente esquece.</p>
           </div>
         </li>
         <li>
           <span class="pain-icon">🔥</span>
           <div>
-            <strong>Gás, tempero e temperos</strong>
-            <p>Entram no prato, mas quase nunca entram na conta.</p>
+            <strong>Gás, tempero e energia</strong>
+            <p>Eles entram no preparo, mas quase nunca entram na conta.</p>
           </div>
         </li>
         <li>
           <span class="pain-icon">🛵</span>
           <div>
-            <strong>Entrega, taxa e app</strong>
-            <p>Comissão e frete comem sua margem sem você ver.</p>
+            <strong>Entrega, taxa e aplicativo</strong>
+            <p>Comissão e frete comem sua margem sem você perceber.</p>
           </div>
         </li>
         <li>
           <span class="pain-icon">🗑️</span>
           <div>
             <strong>Desperdício e sobra</strong>
-            <p>O que vai pro lixo também sai do seu bolso.</p>
+            <p>O que vai para o lixo também sai do seu bolso.</p>
           </div>
         </li>
         <li>
@@ -177,20 +208,15 @@
           </div>
         </li>
       </ul>
-
-      <div class="insert insert-reveal insert-quote">
-        <p>"Eu vendia 35 marmitas por dia e no fim do mês não entendia pra onde ia o dinheiro. Quando coloquei embalagem, gás e entrega na conta, vi que tava quase no zero."</p>
-        <span>— o tipo de história que a gente ouve todo dia</span>
-      </div>
     </div>
   </section>
 
   <!-- Solução -->
   <section class="section solution">
     <div class="container">
-      <h2>A Calculadora Marmita Lucrativa resolve isso na prática</h2>
+      <h2>Você só preenche. Ela faz a conta.</h2>
       <p class="section-text">
-        É uma ferramenta simples que você usa pelo celular. Coloca os custos, o preço que cobra hoje e pronto — ela mostra se você está ganhando ou só girando dinheiro.
+        Você coloca quanto gastou, quantas marmitas fez e por quanto vende. A Calculadora Marmita Lucrativa mostra seu custo real, seu lucro por unidade, sua margem e o preço recomendado.
       </p>
       <div class="solution-box">
         <div class="solution-item">
@@ -206,12 +232,40 @@
           <p>Feita pra quem vende marmita de verdade</p>
         </div>
       </div>
-
-      <div class="insert insert-reveal insert-highlight">
-        <strong>Traduzindo:</strong> você não precisa de planilha de Excel. Precisa saber se sobra dinheiro no bolso ou só no WhatsApp.
-      </div>
     </div>
   </section>
+
+  <!-- Como funciona -->
+  <section class="section how">
+    <div class="container">
+      <h2>Como funciona</h2>
+      <ol class="steps-list">
+        <li class="step-card">
+          <span class="step-num">1</span>
+          <div>
+            <h3>Preencha seus custos</h3>
+            <p>Ingredientes, embalagem, gás, entrega, taxa e outros gastos.</p>
+          </div>
+        </li>
+        <li class="step-card">
+          <span class="step-num">2</span>
+          <div>
+            <h3>Informe quantas marmitas você fez</h3>
+            <p>A calculadora divide tudo automaticamente por unidade.</p>
+          </div>
+        </li>
+        <li class="step-card">
+          <span class="step-num">3</span>
+          <div>
+            <h3>Veja seu lucro real</h3>
+            <p>Ela mostra custo, margem, lucro e preço recomendado.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- O que ela calcula -->
   <section class="section features">
     <div class="container">
       <h2>O que ela calcula</h2>
@@ -219,54 +273,74 @@
         <div class="feature-card">
           <span class="feature-num">01</span>
           <h3>Custo real por marmita</h3>
-          <p>Tudo que entra no prato e no processo, sem esquecer nada.</p>
+          <p>Veja quanto cada unidade realmente custa.</p>
         </div>
         <div class="feature-card">
           <span class="feature-num">02</span>
           <h3>Lucro por unidade</h3>
-          <p>Quanto sobra de verdade em cada marmita vendida.</p>
+          <p>Descubra quanto sobra no seu bolso em cada venda.</p>
         </div>
         <div class="feature-card">
           <span class="feature-num">03</span>
           <h3>Margem de lucro</h3>
-          <p>Veja a porcentagem que você está ganhando.</p>
+          <p>Entenda se sua margem está baixa, saudável ou perigosa.</p>
         </div>
         <div class="feature-card">
           <span class="feature-num">04</span>
           <h3>Preço mínimo</h3>
-          <p>O valor abaixo do qual você vende no prejuízo.</p>
+          <p>Saiba o valor mínimo para não vender no prejuízo.</p>
         </div>
         <div class="feature-card">
           <span class="feature-num">05</span>
           <h3>Preço ideal</h3>
-          <p>Quanto cobrar para ter lucro saudável.</p>
+          <p>Tenha uma sugestão de preço para vender com margem melhor.</p>
         </div>
         <div class="feature-card">
           <span class="feature-num">06</span>
           <h3>Simulação de lucro diário</h3>
-          <p>Projete quanto entra no bolso por dia e por mês.</p>
+          <p>Veja quanto pode sobrar vendendo 10, 20 ou 30 marmitas por dia.</p>
         </div>
-      </div>
-
-      <div class="insert insert-reveal insert-pill-row">
-        <span class="pill">📦 Embalagem</span>
-        <span class="pill">🔥 Gás</span>
-        <span class="pill">🛵 Entrega</span>
-        <span class="pill">⏱️ Seu tempo</span>
-        <span class="pill pill-accent">= custo real</span>
       </div>
     </div>
   </section>
+
+  <!-- O que vem no acesso -->
+  <section class="section you-get">
+    <div class="container">
+      <h2>O que vem no acesso</h2>
+      <ul class="checklist">
+        <li><span class="check">✓</span> Calculadora online de lucro da marmita</li>
+        <li><span class="check">✓</span> Simulador de preço ideal</li>
+        <li><span class="check">✓</span> Simulador de lucro diário</li>
+        <li><span class="check">✓</span> Cálculo de margem de lucro</li>
+        <li><span class="check">✓</span> Lista de custos escondidos</li>
+        <li><span class="check bonus">🎁</span> <strong>Bônus:</strong> Cardápio Lucrativo de 30 Dias</li>
+        <li><span class="check">✓</span> Guia rápido de uso</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Para quem é -->
   <section class="section audience">
     <div class="container">
       <h2>Para quem é</h2>
       <ul class="audience-list">
         <li>✅ Quem vende marmita em casa</li>
+        <li>✅ Quem vende pelo WhatsApp ou Instagram</li>
         <li>✅ Quem está começando agora</li>
-        <li>✅ Quem vende pelo WhatsApp</li>
         <li>✅ Quem sente que vende muito e sobra pouco</li>
         <li>✅ Quem coloca preço no achismo</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- Confiança -->
+  <section class="section trust-origin">
+    <div class="container">
+      <h2>Por que criamos essa calculadora?</h2>
+      <p class="section-text">
+        Criamos essa ferramenta para quem vende marmita em casa e precisa parar de colocar preço no achismo. A ideia é simples: você preenche seus custos e enxerga na hora se está lucrando de verdade ou trabalhando quase de graça.
+      </p>
     </div>
   </section>
 
@@ -274,31 +348,31 @@
   <section class="section offer" id="oferta">
     <div class="container">
       <div class="offer-card">
-        <p class="offer-tag">Oferta especial</p>
+        <p class="offer-tag">Preço de lançamento</p>
         <h2>Calculadora Marmita Lucrativa</h2>
-        <p class="offer-desc">Pare de chutar preço. Saiba quanto você ganha de verdade em cada marmita.</p>
+        <p class="offer-desc">
+          Para descobrir quanto sua marmita realmente custa, quanto sobra em cada venda e qual preço você deveria cobrar.
+        </p>
 
         <div class="price-box">
-          <span class="price-label">Por apenas</span>
+          <span class="price-label">Preço de lançamento</span>
           <span class="price">R$ 27</span>
-          <span class="price-note">pagamento único · acesso imediato</span>
+          <span class="price-note">Pagamento único · Acesso imediato</span>
         </div>
 
-        <a href="#oferta" class="btn btn-primary btn-large">Quero garantir minha calculadora</a>
-        <button type="button" class="btn btn-demo" data-demo-enter>Prefiro testar a demo primeiro</button>
-        <p class="offer-access">Após a compra, crie sua conta em <a href="/login.html">login</a> com o código de acesso.</p>
+        <a href="https://checkout.kiwify.com.br/SEU-LINK-AQUI" class="btn btn-primary btn-large" data-checkout>Quero descobrir meu lucro agora</a>
 
         <div class="bonus">
-          <span class="bonus-badge">🎁 Bônus</span>
+          <span class="bonus-badge">🎁 Bônus incluso</span>
           <h3>Cardápio Lucrativo de 30 Dias</h3>
-          <p>Ideias de pratos para variar o cardápio sem perder margem.</p>
+          <p>Ideias simples de pratos para variar o cardápio sem perder margem.</p>
         </div>
 
         <div class="guarantee">
           <span>🛡️</span>
           <div>
             <strong>Garantia de 7 dias</strong>
-            <p>Se não fizer sentido pra você, devolvemos seu dinheiro. Sem enrolação.</p>
+            <p>Teste por 7 dias. Se a calculadora não te ajudar a enxergar melhor seus preços, é só pedir o dinheiro de volta.</p>
           </div>
         </div>
       </div>
@@ -310,21 +384,24 @@
     <div class="container">
       <h2>Chega de trabalhar e não saber se está lucrando.</h2>
       <p>Descubra seus números hoje e cobre o preço certo amanhã.</p>
-      <button type="button" class="btn btn-demo btn-large" data-demo-enter>Abrir demo grátis</button>
-      <a href="#oferta" class="btn btn-ghost">Ver oferta R$ 27</a>
+      <a href="https://checkout.kiwify.com.br/SEU-LINK-AQUI" class="btn btn-primary btn-large" data-checkout>Quero descobrir meu lucro agora</a>
     </div>
   </section>
 
-  <div id="demo-sticky" class="demo-sticky">
-    <div class="container demo-sticky-inner">
-      <p><strong>Demo liberada</strong> — veja sua margem real agora</p>
-      <button type="button" class="btn btn-demo btn-compact" data-demo-enter>Testar grátis</button>
+  <div id="purchase-sticky" class="purchase-sticky">
+    <div class="container purchase-sticky-inner">
+      <div class="purchase-sticky-text">
+        <strong>R$ 27</strong>
+        <span>Preço de lançamento</span>
+      </div>
+      <a href="https://checkout.kiwify.com.br/SEU-LINK-AQUI" class="btn btn-primary btn-compact" data-checkout>Comprar agora</a>
     </div>
   </div>
 
   <footer class="footer">
     <div class="container">
       <p>© 2026 Calculadora Marmita Lucrativa. Todos os direitos reservados.</p>
+      <p class="footer-login"><a href="/login.html">Já sou aluna — entrar</a></p>
     </div>
   </footer>
 

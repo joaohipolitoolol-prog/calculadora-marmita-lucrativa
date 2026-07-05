@@ -1,29 +1,23 @@
-import { enterDemo } from '../lib/auth.js';
+import { CHECKOUT_URL } from './config.js';
+import { initDemo } from './demo.js';
 
-const demoButtons = document.querySelectorAll('[data-demo-enter]');
-
-demoButtons.forEach((btn) => {
-  btn.addEventListener('click', async () => {
-    const label = btn.textContent;
-    btn.disabled = true;
-    btn.classList.add('loading');
-    btn.textContent = 'Abrindo demo...';
-
-    try {
-      await enterDemo();
-      window.location.href = '/app.html';
-    } catch (error) {
-      btn.disabled = false;
-      btn.classList.remove('loading');
-      btn.textContent = label;
-      window.location.href = '/login.html?demo=1';
-    }
+const logo = document.querySelector('.site-logo');
+if (logo) {
+  logo.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+}
+
+document.querySelectorAll('[data-checkout]').forEach((link) => {
+  link.href = CHECKOUT_URL;
 });
 
-const sticky = document.getElementById('demo-sticky');
+initDemo();
+
+const sticky = document.getElementById('purchase-sticky');
 if (sticky) {
-  const showAfter = 480;
+  const showAfter = 420;
   const onScroll = () => {
     sticky.classList.toggle('visible', window.scrollY > showAfter);
   };
@@ -39,7 +33,7 @@ if (inserts.length && 'IntersectionObserver' in window) {
         if (entry.isIntersecting) entry.target.classList.add('visible');
       });
     },
-    { threshold: 0.2 }
+    { threshold: 0.15 }
   );
   inserts.forEach((el) => observer.observe(el));
 }
