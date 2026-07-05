@@ -1,0 +1,42 @@
+/* Design tokens compartilhados */
+:root {
+  --orange: #E8651A;
+  --orange-dark: #C4520F;
+  --orange-light: #FFF3EB;
+  --yellow: #F5A623;
+  --yellow-soft: #FFF8E7;
+  --brown: #3D2A20;
+  --brown-mid: #5C3D2E;
+  --brown-light: #8B6B5A;
+  --green: #1F7A42;
+  --green-bright: #2D9B58;
+  --green-light: #E8F5EC;
+  --red: #C0392B;
+  --red-light: #FEF3F2;
+  --cream: #FFFBF7;
+  --white: #FFFFFF;
+  --gray: #6B5E57;
+  --gray-light: #F3EDE8;
+  --gray-border: #E8DFD6;
+  --shadow-sm: 0 2px 8px rgba(61, 42, 32, 0.06);
+  --shadow: 0 8px 28px rgba(61, 42, 32, 0.1);
+  --shadow-lg: 0 16px 48px rgba(61, 42, 32, 0.14);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
+  --space-xs: 6px;
+  --space-sm: 10px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --font: 'Nunito', system-ui, sans-serif;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --focus-ring: 0 0 0 3px rgba(232, 101, 26, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

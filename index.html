@@ -12,18 +12,43 @@
 </head>
 <body>
 
+  <header class="site-header">
+    <div class="container site-header-inner">
+      <a href="/" class="site-logo"><span>🍱</span> Marmita Lucrativa</a>
+      <button type="button" class="btn btn-demo btn-compact" data-demo-enter>Testar demo</button>
+    </div>
+  </header>
+
   <!-- Hero -->
   <header class="hero">
     <div class="container">
-      <span class="badge">Ferramenta prática para quem vende marmita</span>
-      <h1>Você sabe se sua marmita dá lucro ou só gira dinheiro?</h1>
+      <span class="badge badge-pulse">🔥 Demo liberada — teste agora</span>
+      <h1>Você sabe se sua marmita <em>dá lucro</em> ou só gira dinheiro?</h1>
       <p class="subheadline">
         Descubra em poucos minutos o custo real da sua marmita, quanto sobra no seu bolso e qual preço você deveria cobrar para não vender no prejuízo.
       </p>
-      <a href="/login.html" class="btn btn-primary">Quero calcular meu lucro agora</a>
-      <p class="hero-access"><a href="/login.html">Já tenho acesso → entrar</a></p>
+      <div class="hero-cta-stack">
+        <button type="button" class="btn btn-demo btn-large" data-demo-enter>🚀 Testar demo grátis agora</button>
+        <a href="#oferta" class="btn btn-primary">Quero comprar por R$ 27</a>
+      </div>
+      <p class="hero-access"><a href="/login.html">Já sou aluna → entrar</a></p>
+
+      <div class="trust-row">
+        <div class="trust-item"><span>📱</span>No celular</div>
+        <div class="trust-item"><span>⚡</span>2 minutos</div>
+        <div class="trust-item"><span>🛡️</span>7 dias garantia</div>
+      </div>
     </div>
   </header>
+
+  <!-- Insert criativo -->
+  <div class="container">
+    <div class="insert insert-reveal insert-chat">
+      <div class="chat-bubble chat-them">Quanto tá a marmita hoje?</div>
+      <div class="chat-bubble chat-me">R$ 15, tá baratinho 😅</div>
+      <div class="chat-bubble chat-them chat-punch">Barato pra cliente. Caro pra você se não souber o custo.</div>
+    </div>
+  </div>
 
   <!-- Mockup -->
   <section class="mockup-section">
@@ -75,13 +100,46 @@
     </div>
   </section>
 
+  <!-- Demo strip -->
+  <section class="demo-strip">
+    <div class="container">
+      <div class="insert insert-reveal demo-box">
+        <span class="demo-tag">Zero enrolação</span>
+        <h2>Quer ver por dentro antes de comprar?</h2>
+        <p>Clica na demo, mexe nos números e descobre em 2 minutos se sua marmita paga ou só ocupa a panela.</p>
+        <button type="button" class="btn btn-demo btn-large" data-demo-enter>Entrar na demo agora — é grátis</button>
+        <small>Sem cartão · Sem baixar app · Direto no celular</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- Insert antes/depois -->
+  <div class="container">
+    <div class="insert insert-reveal insert-compare">
+      <div class="compare-card compare-bad">
+        <span>No achismo</span>
+        <strong>R$ 15</strong>
+        <p>"Acho que sobrou uns R$ 500 no mês..."</p>
+      </div>
+      <div class="compare-arrow">→</div>
+      <div class="compare-card compare-good">
+        <span>Com a calculadora</span>
+        <strong>R$ 4,80</strong>
+        <p>Lucro real por marmita. Sem ilusão.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Dor -->
   <section class="section pain">
     <div class="container">
-      <h2>O problema não é vender pouco. É vender sem saber o número.</h2>
-      <p class="section-text">
-        Muita gente calcula só arroz, feijão e carne — e acha que está no lucro. Só que na hora de fechar o mês, o dinheiro some.
-      </p>
+      <div class="section-head">
+        <p class="section-label">● A dor real</p>
+        <h2>O problema não é vender pouco. É vender sem saber o número.</h2>
+        <p class="section-text">
+          Muita gente calcula só arroz, feijão e carne — e acha que está no lucro. Só que na hora de fechar o mês, o dinheiro some.
+        </p>
+      </div>
       <ul class="pain-list">
         <li>
           <span class="pain-icon">📦</span>
@@ -119,6 +177,11 @@
           </div>
         </li>
       </ul>
+
+      <div class="insert insert-reveal insert-quote">
+        <p>"Eu vendia 35 marmitas por dia e no fim do mês não entendia pra onde ia o dinheiro. Quando coloquei embalagem, gás e entrega na conta, vi que tava quase no zero."</p>
+        <span>— o tipo de história que a gente ouve todo dia</span>
+      </div>
     </div>
   </section>
 
@@ -143,10 +206,12 @@
           <p>Feita pra quem vende marmita de verdade</p>
         </div>
       </div>
+
+      <div class="insert insert-reveal insert-highlight">
+        <strong>Traduzindo:</strong> você não precisa de planilha de Excel. Precisa saber se sobra dinheiro no bolso ou só no WhatsApp.
+      </div>
     </div>
   </section>
-
-  <!-- O que calcula -->
   <section class="section features">
     <div class="container">
       <h2>O que ela calcula</h2>
@@ -182,10 +247,16 @@
           <p>Projete quanto entra no bolso por dia e por mês.</p>
         </div>
       </div>
+
+      <div class="insert insert-reveal insert-pill-row">
+        <span class="pill">📦 Embalagem</span>
+        <span class="pill">🔥 Gás</span>
+        <span class="pill">🛵 Entrega</span>
+        <span class="pill">⏱️ Seu tempo</span>
+        <span class="pill pill-accent">= custo real</span>
+      </div>
     </div>
   </section>
-
-  <!-- Para quem é -->
   <section class="section audience">
     <div class="container">
       <h2>Para quem é</h2>
@@ -213,7 +284,8 @@
           <span class="price-note">pagamento único · acesso imediato</span>
         </div>
 
-        <a href="/login.html" class="btn btn-primary btn-large">Quero garantir minha calculadora</a>
+        <a href="#oferta" class="btn btn-primary btn-large">Quero garantir minha calculadora</a>
+        <button type="button" class="btn btn-demo" data-demo-enter>Prefiro testar a demo primeiro</button>
         <p class="offer-access">Após a compra, crie sua conta em <a href="/login.html">login</a> com o código de acesso.</p>
 
         <div class="bonus">
@@ -238,9 +310,17 @@
     <div class="container">
       <h2>Chega de trabalhar e não saber se está lucrando.</h2>
       <p>Descubra seus números hoje e cobre o preço certo amanhã.</p>
-      <a href="/login.html" class="btn btn-primary">Quero calcular meu lucro agora</a>
+      <button type="button" class="btn btn-demo btn-large" data-demo-enter>Abrir demo grátis</button>
+      <a href="#oferta" class="btn btn-ghost">Ver oferta R$ 27</a>
     </div>
   </section>
+
+  <div id="demo-sticky" class="demo-sticky">
+    <div class="container demo-sticky-inner">
+      <p><strong>Demo liberada</strong> — veja sua margem real agora</p>
+      <button type="button" class="btn btn-demo btn-compact" data-demo-enter>Testar grátis</button>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container">
@@ -248,5 +328,6 @@
     </div>
   </footer>
 
+  <script type="module" src="/src/landing/main.js"></script>
 </body>
 </html>

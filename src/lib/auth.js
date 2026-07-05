@@ -143,6 +143,32 @@ export function getUserLabel(user) {
   return user.displayName || user.email?.split('@')[0] || 'Usuário';
 }
 
+export const DEMO_GUEST = {
+  name: 'Visitante Demo',
+  email: 'demo@marmitalucrativa.app',
+  password: 'demo1234',
+};
+
+export async function enterDemo() {
+  if (!isDemoMode()) {
+    throw new Error('Demo disponível apenas enquanto Firebase não está configurado.');
+  }
+
+  const users = readDemoUsers();
+  let user = users.find((u) => u.email === DEMO_GUEST.email);
+
+  if (!user) {
+    user = createDemoUser(DEMO_GUEST.name, DEMO_GUEST.email, DEMO_GUEST.password);
+    user.isGuestDemo = true;
+    users.push(user);
+    writeDemoUsers(users);
+  }
+
+  setDemoSession(user);
+  sessionStorage.setItem('marmita_demo_welcome', '1');
+  return toPublicUser(user);
+}
+
 function toPublicUser(user) {
   return {
     uid: user.uid,

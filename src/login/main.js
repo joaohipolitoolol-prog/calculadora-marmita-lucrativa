@@ -1,5 +1,6 @@
 import { isFirebaseConfigured } from '../lib/firebase.js';
 import {
+  enterDemo,
   isDemoMode,
   login,
   register,
@@ -41,11 +42,29 @@ watchAuth((user) => redirectIfAuthenticated(user));
 if (isDemoMode()) {
   showAlert(
     configAlert,
-    'Modo demonstração ativo (dados salvos neste navegador). Para produção, configure Firebase no .env.local e na Vercel.',
-    'info'
+    '🎉 Demo liberada! Entre sem pagar nada — seus dados ficam só neste navegador.',
+    'success'
   );
 } else if (!isFirebaseConfigured) {
   showAlert(configAlert, 'Firebase parcialmente configurado. Revise o .env.local.', 'info');
+}
+
+document.getElementById('demo-enter-btn')?.addEventListener('click', async () => {
+  const btn = document.getElementById('demo-enter-btn');
+  btn.disabled = true;
+  btn.textContent = 'Abrindo sua demo...';
+  try {
+    await enterDemo();
+    window.location.href = '/app.html';
+  } catch (error) {
+    showAlert(formAlert, error.message, 'error');
+    btn.disabled = false;
+    btn.textContent = '🚀 Entrar na demo grátis';
+  }
+});
+
+if (new URLSearchParams(window.location.search).get('demo') === '1') {
+  document.getElementById('demo-enter-btn')?.click();
 }
 
 loginForm.addEventListener('submit', async (event) => {
