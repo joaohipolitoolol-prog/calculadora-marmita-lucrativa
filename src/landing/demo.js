@@ -1,19 +1,11 @@
 import { money, percent, parseNumber } from '../lib/format.js';
 
 const TARGET_MARGIN = 30;
-
-const DEFAULTS = {
-  sellingPrice: 18,
-  foodCost: 10.2,
-  packaging: 1.2,
-  gasSpices: 0.9,
-  delivery: 2,
-  waste: 0.8,
-  marmitasPerDay: 20,
-};
+const MIN_SELLING_PRICE = 5;
 
 function calcDemo(values) {
-  const sellingPrice = Math.max(parseNumber(values.sellingPrice), 0);
+  const sellingPriceRaw = parseNumber(values.sellingPrice);
+  const sellingPrice = sellingPriceRaw >= MIN_SELLING_PRICE ? sellingPriceRaw : MIN_SELLING_PRICE;
   const foodCost = Math.max(parseNumber(values.foodCost), 0);
   const packaging = Math.max(parseNumber(values.packaging), 0);
   const gasSpices = Math.max(parseNumber(values.gasSpices), 0);
@@ -23,21 +15,55 @@ function calcDemo(values) {
 
   const realCost = foodCost + packaging + gasSpices + delivery + waste;
   const profit = sellingPrice - realCost;
-  const margin = sellingPrice > 0 ? (profit / sellingPrice) * 100 : 0;
-  const idealPrice = realCost / (1 - TARGET_MARGIN / 100);
   const dailyProfit = profit * marmitasPerDay;
+  const idealPrice = realCost / (1 - TARGET_MARGIN / 100);
+
+  let marginLabel = '—';
+  let marginClass = 'warn';
+
+  if (sellingPriceRaw >= MIN_SELLING_PRICE) {
+    const margin = (profit / sellingPrice) * 100;
+    if (margin < -100) {
+      marginLabel = 'Prejuízo alto';
+      marginClass = 'red';
+    } else {
+      marginLabel = percent(margin);
+      marginClass = profit < 0 ? 'red' : margin < TARGET_MARGIN ? 'warn' : 'green';
+    }
+  }
 
   let status = 'lucro';
   let alertText = '';
   if (profit < 0) {
     status = 'prejuizo';
-    alertText = 'Você está vendendo no prejuízo';
-  } else if (margin < TARGET_MARGIN) {
+    alertText = `Cada marmita sai R$ ${Math.abs(profit).toFixed(2).replace('.', ',')} abaixo do custo`;
+  } else if (profit / sellingPrice < TARGET_MARGIN / 100) {
     status = 'alerta';
-    alertText = 'Sua margem está baixa';
+    alertText = 'Sua margem está abaixo do ideal (30%)';
   }
 
-  return { sellingPrice, realCost, profit, margin, idealPrice, dailyProfit, status, alertText };
+  let impactText = '';
+  if (sellingPriceRaw >= MIN_SELLING_PRICE) {
+    if (profit >= 0) {
+      impactText = `${marmitasPerDay} marmitas/dia × ${money(profit)} = ${money(dailyProfit)} no bolso por dia`;
+    } else {
+      impactText = `${marmitasPerDay} marmitas/dia × ${money(Math.abs(profit))} de prejuízo = ${money(Math.abs(dailyProfit))} saindo do bolso por dia`;
+    }
+  }
+
+  return {
+    sellingPrice,
+    realCost,
+    profit,
+    marginLabel,
+    marginClass,
+    idealPrice,
+    dailyProfit,
+    status,
+    alertText,
+    impactText,
+    invalidPrice: sellingPriceRaw > 0 && sellingPriceRaw < MIN_SELLING_PRICE,
+  };
 }
 
 function readValues(root) {
@@ -56,9 +82,20 @@ function readValues(root) {
 function renderResults(root, r) {
   root.querySelector('[data-out="profit"]').textContent = money(r.profit);
   root.querySelector('[data-out="cost"]').textContent = money(r.realCost);
-  root.querySelector('[data-out="margin"]').textContent = percent(r.margin);
+  root.querySelector('[data-out="margin"]').textContent = r.marginLabel;
   root.querySelector('[data-out="ideal"]').textContent = money(r.idealPrice);
-  root.querySelector('[data-out="daily"]').textContent = money(r.dailyProfit);
+  root.querySelector('[data-out="daily"]').textContent = money(Math.abs(r.dailyProfit));
+
+  const dailyLabel = root.querySelector('[data-out="daily-label"]');
+  if (dailyLabel) {
+    dailyLabel.textContent = r.profit >= 0 ? 'Lucro do dia' : 'Prejuízo do dia';
+  }
+
+  const impactEl = root.querySelector('[data-out="impact"]');
+  if (impactEl) {
+    impactEl.textContent = r.impactText;
+    impactEl.hidden = !r.impactText;
+  }
 
   const profitCard = root.querySelector('[data-out-card="profit"]');
   const profitEl = root.querySelector('[data-out="profit"]');
@@ -77,7 +114,7 @@ function renderResults(root, r) {
   dailyEl.classList.add(r.profit >= 0 ? 'green' : 'red');
 
   marginEl.classList.remove('warn', 'green', 'red');
-  marginEl.classList.add(r.status === 'prejuizo' ? 'red' : r.status === 'alerta' ? 'warn' : 'green');
+  marginEl.classList.add(r.marginClass);
 
   if (r.alertText) {
     alertBox.hidden = false;

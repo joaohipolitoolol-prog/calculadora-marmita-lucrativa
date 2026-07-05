@@ -28,14 +28,14 @@
         Coloque seus custos e descubra em poucos minutos o custo real da sua marmita, o lucro por unidade e o preço certo para vender sem trabalhar no prejuízo.
       </p>
       <div class="hero-cta-stack">
-        <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Quero a calculadora — R$ 27</a>
-        <p class="hero-price-note">Pagamento único · Acesso imediato · Garantia de 7 dias</p>
+        <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Garantir acesso por R$ 27</a>
+        <p class="hero-price-note">Pagamento único · Acesso imediato no celular · Reembolso total em 7 dias</p>
       </div>
 
       <div class="trust-row">
-        <div class="trust-item"><span>📱</span>No celular</div>
-        <div class="trust-item"><span>⚡</span>Poucos minutos</div>
-        <div class="trust-item"><span>🛡️</span>7 dias garantia</div>
+        <div class="trust-item"><span class="trust-icon trust-icon-phone" aria-hidden="true"></span>No celular</div>
+        <div class="trust-item"><span class="trust-icon trust-icon-time" aria-hidden="true"></span>Poucos minutos</div>
+        <div class="trust-item"><span class="trust-icon trust-icon-shield" aria-hidden="true"></span>7 dias garantia</div>
       </div>
     </div>
   </section>
@@ -51,7 +51,7 @@
         <div class="demo-inputs">
           <label class="demo-field">
             <span>Preço de venda (R$)</span>
-            <input type="number" inputmode="decimal" data-demo="sellingPrice" value="18" min="0" step="0.5">
+            <input type="number" inputmode="decimal" data-demo="sellingPrice" value="18" min="5" step="0.5">
           </label>
           <label class="demo-field">
             <span>Ingredientes por marmita (R$)</span>
@@ -94,9 +94,10 @@
               <span class="calc-value warn" data-out="margin">16,1%</span>
             </div>
             <div class="demo-result-item wide">
-              <span class="calc-label">Lucro do dia</span>
+              <span class="calc-label" data-out="daily-label">Lucro do dia</span>
               <span class="calc-value green" data-out="daily">R$ 58,00</span>
             </div>
+            <p class="demo-impact" data-out="impact">20 marmitas/dia × R$ 2,90 = R$ 58,00 no bolso por dia</p>
             <div class="demo-result-item wide alert-card" data-out="alert-box">
               <span class="calc-label">⚠️ Alerta</span>
               <span class="calc-value alert" data-out="alert-text">Sua margem está baixa</span>
@@ -111,7 +112,7 @@
 
       <div class="demo-cta">
         <p>Gostou do que viu? A calculadora completa salva seus números, simula cenários e mostra o preço ideal pra você.</p>
-        <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Quero a calculadora — R$ 27</a>
+        <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Quero ver meu lucro de verdade — R$ 27</a>
       </div>
 
       <p class="demo-footnote">Isso é só um gostinho. Na versão completa você salva seus custos e vê quanto pode sobrar por dia e por mês.</p>
@@ -179,35 +180,35 @@
       </div>
       <ul class="pain-list">
         <li>
-          <span class="pain-icon">📦</span>
+          <span class="pain-icon pain-icon-pack" aria-hidden="true"></span>
           <div>
             <strong>Embalagem e descartáveis</strong>
             <p>Cada unidade tem um custo que muita gente esquece.</p>
           </div>
         </li>
         <li>
-          <span class="pain-icon">🔥</span>
+          <span class="pain-icon pain-icon-fire" aria-hidden="true"></span>
           <div>
             <strong>Gás, tempero e energia</strong>
             <p>Eles entram no preparo, mas quase nunca entram na conta.</p>
           </div>
         </li>
         <li>
-          <span class="pain-icon">🛵</span>
+          <span class="pain-icon pain-icon-delivery" aria-hidden="true"></span>
           <div>
             <strong>Entrega, taxa e aplicativo</strong>
             <p>Comissão e frete comem sua margem sem você perceber.</p>
           </div>
         </li>
         <li>
-          <span class="pain-icon">🗑️</span>
+          <span class="pain-icon pain-icon-waste" aria-hidden="true"></span>
           <div>
             <strong>Desperdício e sobra</strong>
             <p>O que vai para o lixo também sai do seu bolso.</p>
           </div>
         </li>
         <li>
-          <span class="pain-icon">⏱️</span>
+          <span class="pain-icon pain-icon-time" aria-hidden="true"></span>
           <div>
             <strong>Seu tempo na cozinha</strong>
             <p>Trabalhar horas por R$ 2 de lucro não é negócio.</p>
@@ -226,15 +227,15 @@
       </p>
       <div class="solution-box">
         <div class="solution-item">
-          <span>📱</span>
+          <span class="solution-mark" aria-hidden="true"></span>
           <p>Funciona no celular, sem planilha complicada</p>
         </div>
         <div class="solution-item">
-          <span>⚡</span>
+          <span class="solution-mark" aria-hidden="true"></span>
           <p>Resultado em poucos minutos</p>
         </div>
         <div class="solution-item">
-          <span>🎯</span>
+          <span class="solution-mark" aria-hidden="true"></span>
           <p>Feita pra quem vende marmita de verdade</p>
         </div>
       </div>
@@ -271,38 +272,70 @@
     </div>
   </section>
 
+  <!-- O que você recebe -->
+  <section class="section product-clear">
+    <div class="container">
+      <h2>O que você recebe — sem mistério</h2>
+      <p class="section-text">É uma <strong>ferramenta online</strong> que abre no celular. Não é PDF, não é planilha, não é curso com dezenas de aulas.</p>
+      <ol class="access-steps">
+        <li>
+          <span class="access-num">1</span>
+          <div>
+            <strong>Você compra aqui</strong>
+            <p>Pagamento único de R$ 27 pela Cakto. Sem mensalidade.</p>
+          </div>
+        </li>
+        <li>
+          <span class="access-num">2</span>
+          <div>
+            <strong>Recebe o acesso na hora</strong>
+            <p>Link e instruções no e-mail da compra para criar sua senha.</p>
+          </div>
+        </li>
+        <li>
+          <span class="access-num">3</span>
+          <div>
+            <strong>Entra no celular e preenche</strong>
+            <p>Coloca seus custos reais — ingredientes, embalagem, gás, entrega e mais.</p>
+          </div>
+        </li>
+        <li>
+          <span class="access-num">4</span>
+          <div>
+            <strong>Vê lucro, margem e preço ideal</strong>
+            <p>Na hora. Pode salvar e voltar quando quiser.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
   <!-- O que ela calcula -->
   <section class="section features">
     <div class="container">
       <h2>O que ela calcula</h2>
       <div class="feature-grid">
         <div class="feature-card">
-          <span class="feature-num">01</span>
           <h3>Custo real por marmita</h3>
           <p>Veja quanto cada unidade realmente custa.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-num">02</span>
           <h3>Lucro por unidade</h3>
           <p>Descubra quanto sobra no seu bolso em cada venda.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-num">03</span>
           <h3>Margem de lucro</h3>
           <p>Entenda se sua margem está baixa, saudável ou perigosa.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-num">04</span>
           <h3>Preço mínimo</h3>
           <p>Saiba o valor mínimo para não vender no prejuízo.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-num">05</span>
           <h3>Preço ideal</h3>
           <p>Tenha uma sugestão de preço para vender com margem melhor.</p>
         </div>
         <div class="feature-card">
-          <span class="feature-num">06</span>
           <h3>Simulação de lucro diário</h3>
           <p>Veja quanto pode sobrar vendendo 10, 20 ou 30 marmitas por dia.</p>
         </div>
@@ -320,9 +353,38 @@
         <li><span class="check">✓</span> Simulador de lucro diário</li>
         <li><span class="check">✓</span> Cálculo de margem de lucro</li>
         <li><span class="check">✓</span> Lista de custos escondidos</li>
-        <li><span class="check bonus">🎁</span> <strong>Bônus:</strong> Cardápio Lucrativo de 30 Dias</li>
         <li><span class="check">✓</span> Guia rápido de uso</li>
+        <li><span class="check">✓</span> Acesso vitalício — paga uma vez só</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- Bônus -->
+  <section class="section bonus-stack">
+    <div class="container">
+      <p class="section-label">Bônus de lançamento</p>
+      <h2>Leve o Cardápio Lucrativo de 30 Dias grátis</h2>
+      <p class="section-text">Ideias simples de pratos para variar o cardápio sem perder margem — incluso na compra de hoje.</p>
+
+      <div class="value-stack insert-reveal">
+        <div class="value-row">
+          <span>Calculadora Marmita Lucrativa (acesso completo)</span>
+          <strong>R$ 27</strong>
+        </div>
+        <div class="value-row value-bonus">
+          <span>Cardápio Lucrativo de 30 Dias</span>
+          <div class="value-prices">
+            <s>R$ 47</s>
+            <strong>Grátis</strong>
+          </div>
+        </div>
+        <div class="value-row value-total">
+          <span>Total hoje</span>
+          <strong>R$ 27</strong>
+        </div>
+      </div>
+
+      <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Quero calculadora + cardápio — R$ 27</a>
     </div>
   </section>
 
@@ -343,10 +405,29 @@
   <!-- Confiança -->
   <section class="section trust-origin">
     <div class="container">
-      <h2>Por que criamos essa calculadora?</h2>
+      <h2>Feita por quem conhece a rotina da marmita</h2>
       <p class="section-text">
-        Criamos essa ferramenta para quem vende marmita em casa e precisa parar de colocar preço no achismo. A ideia é simples: você preenche seus custos e enxerga na hora se está lucrando de verdade ou trabalhando quase de graça.
+        Não nasceu de planilha genérica nem de curso teórico. Surgiu da necessidade real de quem vende marmita em casa — pelo WhatsApp, pro bairro, pra vizinho — e precisava saber, de forma simples, se valia a pena continuar no preço que estava cobrando.
       </p>
+      <p class="section-text trust-note">
+        A ideia é direta: você preenche seus custos e enxerga na hora se está lucrando de verdade ou trabalhando quase de graça.
+      </p>
+    </div>
+  </section>
+
+  <!-- Garantia -->
+  <section class="section guarantee-block">
+    <div class="container">
+      <div class="guarantee-card">
+        <div class="guarantee-badge">Garantia incondicional</div>
+        <h2>7 dias para testar sem risco</h2>
+        <p>Compre, use a calculadora com seus números reais e veja se faz sentido pra você. Se em até 7 dias achar que não te ajudou, manda um e-mail e devolvemos <strong>100% do valor</strong>. Sem perguntas, sem burocracia.</p>
+        <ul class="guarantee-list">
+          <li>Reembolso total, não parcial</li>
+          <li>Sem precisar justificar</li>
+          <li>O risco é nosso, não seu</li>
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -355,30 +436,31 @@
     <div class="container">
       <div class="offer-card">
         <p class="offer-tag">Preço de lançamento</p>
+        <p class="offer-urgency">Valor promocional — pode subir quando sair dessa fase de lançamento.</p>
         <h2>Calculadora Marmita Lucrativa</h2>
         <p class="offer-desc">
-          Para descobrir quanto sua marmita realmente custa, quanto sobra em cada venda e qual preço você deveria cobrar.
+          Ferramenta online no celular para descobrir quanto sua marmita realmente custa, quanto sobra em cada venda e qual preço você deveria cobrar.
         </p>
 
         <div class="price-box">
           <span class="price-label">Preço de lançamento</span>
           <span class="price">R$ 27</span>
-          <span class="price-note">Pagamento único · Acesso imediato</span>
+          <span class="price-note">Pagamento único · Sem mensalidade · Acesso imediato</span>
         </div>
 
-        <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Quero a calculadora — R$ 27</a>
+        <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Garantir acesso + bônus — R$ 27</a>
 
         <div class="bonus">
-          <span class="bonus-badge">🎁 Bônus incluso</span>
+          <span class="bonus-badge">🎁 Incluso grátis</span>
           <h3>Cardápio Lucrativo de 30 Dias</h3>
-          <p>Ideias simples de pratos para variar o cardápio sem perder margem.</p>
+          <p>Ideias simples de pratos para variar o cardápio sem perder margem. <s>R$ 47</s> → grátis hoje.</p>
         </div>
 
-        <div class="guarantee">
-          <span>🛡️</span>
+        <div class="guarantee guarantee-compact">
+          <span class="guarantee-icon" aria-hidden="true"></span>
           <div>
-            <strong>Garantia de 7 dias</strong>
-            <p>Teste por 7 dias. Se a calculadora não te ajudar a enxergar melhor seus preços, é só pedir o dinheiro de volta.</p>
+            <strong>Reembolso total em 7 dias</strong>
+            <p>Não gostou? Devolvemos cada centavo. Basta enviar um e-mail dentro do prazo.</p>
           </div>
         </div>
       </div>
@@ -390,7 +472,7 @@
     <div class="container">
       <h2>Chega de trabalhar e não saber se está lucrando.</h2>
       <p>Descubra seus números hoje e cobre o preço certo amanhã.</p>
-      <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Quero a calculadora — R$ 27</a>
+      <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-large" data-checkout>Quero parar de vender no achismo — R$ 27</a>
     </div>
   </section>
 
@@ -398,7 +480,7 @@
     <div class="container purchase-sticky-inner">
       <div class="purchase-sticky-text">
         <strong>R$ 27</strong>
-        <span>Preço de lançamento</span>
+        <span>Preço de lançamento · pode subir</span>
       </div>
       <a href="https://pay.cakto.com.br/3choscs_965728" class="btn btn-primary btn-compact" data-checkout>Comprar — R$ 27</a>
     </div>

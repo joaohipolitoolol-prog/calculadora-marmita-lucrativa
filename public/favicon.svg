@@ -1,7 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Marmita Lucrativa">
-  <rect width="32" height="32" rx="8" fill="#E8651A"/>
-  <rect x="6" y="7" width="20" height="18" rx="4" fill="#FFFBF7"/>
-  <rect x="8" y="9" width="8" height="6" rx="1.5" fill="#1F7A42"/>
-  <rect x="17" y="9" width="7" height="6" rx="1.5" fill="#F5A623"/>
-  <rect x="8" y="17" width="16" height="6" rx="1.5" fill="#3D2A20" opacity="0.18"/>
+  <!-- bandeja (como o emoji 🍱) -->
+  <rect x="3" y="5" width="26" height="23" rx="2.5" fill="#2B2B2B"/>
+  <rect x="4.5" y="6.5" width="23" height="20" rx="1.5" fill="#141414"/>
+  <!-- divisórias internas -->
+  <rect x="4.5" y="15" width="23" height="1.2" fill="#252525"/>
+  <rect x="16" y="6.5" width="1.2" height="8.5" fill="#252525"/>
+  <!-- salmão / proteína -->
+  <rect x="5.5" y="7.5" width="9.5" height="6.5" rx="1" fill="#E07A5F"/>
+  <rect x="6.5" y="9" width="7" height="1" rx="0.5" fill="#C9624A" opacity="0.55"/>
+  <!-- arroz -->
+  <rect x="17.5" y="7.5" width="9.5" height="6.5" rx="1" fill="#F3F0E8"/>
+  <circle cx="19.5" cy="9.5" r="0.7" fill="#DDD8CE"/>
+  <circle cx="22" cy="10.5" r="0.6" fill="#DDD8CE"/>
+  <circle cx="24.5" cy="9.8" r="0.55" fill="#DDD8CE"/>
+  <circle cx="21" cy="12" r="0.5" fill="#DDD8CE"/>
+  <!-- vegetais -->
+  <rect x="5.5" y="16.5" width="10.5" height="9" rx="1" fill="#5FA34E"/>
+  <rect x="7" y="18" width="2" height="5" rx="1" fill="#4A8A3C"/>
+  <rect x="10.5" y="17.5" width="2" height="6" rx="1" fill="#4A8A3C"/>
+  <rect x="14" y="18.5" width="1.5" height="4.5" rx="0.75" fill="#4A8A3C"/>
+  <!-- ovo -->
+  <rect x="17.5" y="16.5" width="9.5" height="9" rx="1" fill="#5C4636"/>
+  <ellipse cx="22.2" cy="20.5" rx="3.2" ry="2.6" fill="#F2D56B"/>
+  <ellipse cx="21.5" cy="19.8" rx="1.2" ry="0.9" fill="#FAE89A" opacity="0.7"/>
 </svg>
