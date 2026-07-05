@@ -207,7 +207,14 @@ h3 {
 .hero-cta-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+}
+
+.hero-price-note {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  line-height: 1.4;
 }
 
 .badge {
@@ -433,6 +440,24 @@ h3 {
   font-size: 0.82rem;
   color: var(--gray);
   line-height: 1.45;
+  text-align: center;
+}
+
+.demo-cta {
+  margin-top: var(--space-lg);
+  text-align: center;
+  background: var(--orange-light);
+  border: 1.5px solid rgba(232, 101, 26, 0.25);
+  border-radius: var(--radius);
+  padding: 20px 18px;
+}
+
+.demo-cta p {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--brown);
+  line-height: 1.5;
+  margin-bottom: 14px;
 }
 
 /* Legacy calc labels (used in demo) */
