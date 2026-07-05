@@ -1,4 +1,4 @@
-import { CHECKOUT_URL, CTA_LABEL } from './config.js';
+import { CHECKOUT_URL, CTA_LABEL, HERO_CTA_LABEL } from './config.js';
 import { initDemo } from './demo.js';
 
 const logo = document.querySelector('.site-logo');
@@ -16,7 +16,7 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
     return;
   }
   link.href = CHECKOUT_URL;
-  link.textContent = CTA_LABEL;
+  link.textContent = link.dataset.checkoutHero !== undefined ? HERO_CTA_LABEL : CTA_LABEL;
   link.setAttribute('rel', 'noopener');
 });
 
