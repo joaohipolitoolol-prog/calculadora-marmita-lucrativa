@@ -10,8 +10,14 @@ if (logo) {
 }
 
 document.querySelectorAll('[data-checkout]').forEach((link) => {
+  if (!CHECKOUT_URL || CHECKOUT_URL.includes('SEU-LINK')) {
+    link.setAttribute('aria-disabled', 'true');
+    link.addEventListener('click', (e) => e.preventDefault());
+    return;
+  }
   link.href = CHECKOUT_URL;
   link.textContent = CTA_LABEL;
+  link.setAttribute('rel', 'noopener');
 });
 
 initDemo();

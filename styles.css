@@ -1077,8 +1077,14 @@ h3 {
   gap: 6px;
 }
 
-.value-bonus strong {
+.value-bonus strong,
+.value-included {
   color: var(--green);
+}
+
+.value-included {
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .value-total {
@@ -1093,6 +1099,44 @@ h3 {
 
 .bonus-stack .btn-primary {
   margin-top: var(--space-md);
+}
+
+/* ===== Order bump ===== */
+.order-bump {
+  background: var(--white);
+}
+
+.order-bump-card {
+  background: linear-gradient(165deg, #fff8f0 0%, var(--white) 100%);
+  border: 2px dashed rgba(232, 101, 26, 0.35);
+  border-radius: var(--radius);
+  padding: 22px 18px;
+  text-align: center;
+}
+
+.order-bump-card h2 {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+.order-bump-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brown);
+  margin-bottom: 12px;
+}
+
+.order-bump-price strong {
+  color: var(--orange);
+  font-size: 1.1rem;
+}
+
+.order-bump-note {
+  margin: 12px 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gray);
+  line-height: 1.45;
 }
 
 /* ===== You get checklist ===== */
