@@ -1,4 +1,4 @@
-import { CHECKOUT_URL } from './config.js';
+import { CHECKOUT_URL, CTA_LABEL } from './config.js';
 import { initDemo } from './demo.js';
 
 const logo = document.querySelector('.site-logo');
@@ -11,6 +11,7 @@ if (logo) {
 
 document.querySelectorAll('[data-checkout]').forEach((link) => {
   link.href = CHECKOUT_URL;
+  link.textContent = CTA_LABEL;
 });
 
 initDemo();
