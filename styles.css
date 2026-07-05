@@ -133,6 +133,28 @@ h3 {
   text-align: center;
 }
 
+.hero-access {
+  margin-top: 14px;
+  font-size: 0.9rem;
+}
+
+.hero-access a {
+  color: var(--orange);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.offer-access {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--gray);
+}
+
+.offer-access a {
+  color: var(--orange);
+  font-weight: 700;
+}
+
 .badge {
   display: inline-block;
   background: var(--white);
