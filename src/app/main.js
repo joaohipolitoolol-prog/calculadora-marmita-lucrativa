@@ -749,6 +749,31 @@ function renderScenarioList() {
   `;
 }
 
+function recipeTipoSlug(tipo) {
+  const map = {
+    Frutal: 'frutal',
+    Cremosa: 'cremosa',
+    Rellena: 'rellena',
+    'Estilo postre': 'postre',
+    Bañada: 'banada',
+  };
+  return map[tipo] || 'default';
+}
+
+function recipeSearchBlob(item) {
+  return [
+    item.dia,
+    item.nombre,
+    item.tipo,
+    item.dificultad,
+    item.consejo,
+    ...(item.ingredientes || []),
+    ...(item.pasos || []),
+  ]
+    .join(' ')
+    .toLowerCase();
+}
+
 function renderMenuByWeek() {
   const weeks = [];
   for (let i = 0; i < RECETAS_PALETAS.length; i += 7) {
@@ -764,14 +789,36 @@ function renderMenuByWeek() {
             ${week
               .map(
                 (item) => `
-                  <article class="menu-item" data-search="${escapeHtml(`${item.dia} ${item.nombre} ${item.tipo} ${item.dica}`.toLowerCase())}">
-                    <div class="menu-item-head">
-                      <strong>Día ${item.dia}</strong>
-                      <span class="menu-item-type">${escapeHtml(item.tipo)}</span>
+                  <details class="menu-item" data-search="${escapeHtml(recipeSearchBlob(item))}">
+                    <summary class="menu-item-summary">
+                      <div class="menu-item-summary-main">
+                        <div class="menu-item-head">
+                          <span class="menu-item-day">Receta ${item.dia}</span>
+                          <span class="menu-item-type menu-item-type--${recipeTipoSlug(item.tipo)}">${escapeHtml(item.tipo)}</span>
+                        </div>
+                        <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
+                        <span class="menu-item-preview">${escapeHtml(item.ingredientes?.[0] || '')}${item.ingredientes?.length > 1 ? ' · +' + (item.ingredientes.length - 1) + ' más' : ''}</span>
+                      </div>
+                      <span class="menu-item-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
+                    </summary>
+                    <div class="menu-item-body">
+                      <div class="menu-item-meta">
+                        <span>${escapeHtml(item.prep)} prep</span>
+                        <span>${escapeHtml(item.congelacion)} frío</span>
+                        <span>Rinde ${escapeHtml(item.rendimiento)}</span>
+                        <span>${escapeHtml(item.dificultad)}</span>
+                      </div>
+                      <h4 class="menu-item-section-title">Ingredientes</h4>
+                      <ul class="menu-item-ingredients">
+                        ${(item.ingredientes || []).map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
+                      </ul>
+                      <h4 class="menu-item-section-title">Preparación</h4>
+                      <ol class="menu-item-steps">
+                        ${(item.pasos || []).map((step) => `<li>${escapeHtml(step)}</li>`).join('')}
+                      </ol>
+                      <p class="menu-item-tip"><strong>Tip de venta:</strong> ${escapeHtml(item.consejo || '')}</p>
                     </div>
-                    <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
-                    <em>${escapeHtml(item.dica)}</em>
-                  </article>
+                  </details>
                 `
               )
               .join('')}
@@ -787,7 +834,8 @@ function renderBonus() {
     <div class="bonus-page">
       <div class="section-card bonus-header-card">
         <h2>30 Recetas de Paletas</h2>
-        <p>Cremosas, frutales, rellenas y estilo postre. Calcula el costo antes de fijar el precio.</p>
+        <p>Cremosas, frutales, rellenas y estilo postre — con ingredientes, pasos y tips de venta.</p>
+        <p class="bonus-hint">Toca una receta para ver la preparación completa.</p>
         <div class="search-wrap">
           ${ICONS.search}
           <input type="search" class="bonus-search" id="bonus-search" placeholder="Buscar receta o tipo..." autocomplete="off">

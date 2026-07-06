@@ -1,36 +1,7 @@
-/** 30 recetas de paletas — Kit Paletas de WhatsApp */
-export const RECETAS_PALETAS = [
-  { dia: 1, nombre: 'Paletas de fresas con crema en vaso', tipo: 'Cremosa', dica: 'En vaso plástico, crema + fresas picadas arriba. Muy visual para WhatsApp.' },
-  { dia: 2, nombre: 'Paleta de mango natural', tipo: 'Frutal', dica: 'Pulpa de mango maduro, sin necesidad de azúcar extra si está dulce.' },
-  { dia: 3, nombre: 'Paleta de limón con chía', tipo: 'Frutal', dica: 'Refrescante y económica. Ideal para días calurosos.' },
-  { dia: 4, nombre: 'Paleta de chocolate con leche', tipo: 'Cremosa', dica: 'Cacao amargo + leche condensada = sabor premium, bajo costo.' },
-  { dia: 5, nombre: 'Paleta de piña colada', tipo: 'Cremosa', dica: 'Piña + coco rallado. Nombre atractivo para el menú.' },
-  { dia: 6, nombre: 'Paleta de sandía', tipo: 'Frutal', dica: 'Muy barata en temporada. Alto volumen de venta.' },
-  { dia: 7, nombre: 'Paleta de vainilla con galleta', tipo: 'Estilo postre', dica: 'Trozos de galleta dentro dan textura y valor percibido.' },
-  { dia: 8, nombre: 'Paleta de maracuyá', tipo: 'Frutal', dica: 'Sabor intenso. Puedes cobrar un poco más que las básicas.' },
-  { dia: 9, nombre: 'Paleta bañada en salsa de fresa', tipo: 'Bañada', dica: 'Prepara en vaso y baña en salsa espesa. Cobrar más por presentación.' },
-  { dia: 10, nombre: 'Paleta de coco cremosa', tipo: 'Cremosa', dica: 'Leche de coco + crema. Clásica que siempre se vende.' },
-  { dia: 11, nombre: 'Paleta de frutos rojos mix', tipo: 'Frutal', dica: 'Mezcla fresa, mora y arándano congelados del súper.' },
-  { dia: 12, nombre: 'Paleta de café con leche', tipo: 'Estilo postre', dica: 'Para adultos. Buena opción en combos familiares.' },
-  { dia: 13, nombre: 'Paleta de plátano con canela', tipo: 'Frutal', dica: 'Plátano maduro barato. Canela le da toque casero.' },
-  { dia: 14, nombre: 'Paleta de oreo', tipo: 'Estilo postre', dica: 'Galletas trituradas dentro y encima. Muy visual en fotos.' },
-  { dia: 15, nombre: 'Paleta de durazno', tipo: 'Frutal', dica: 'Durazno en almíbar o natural. Color bonito para el menú.' },
-  { dia: 16, nombre: 'Paleta rellena de mermelada de frutos rojos', tipo: 'Rellena', dica: 'Centro de mermelada casera o comprada. Fácil de armar.' },
-  { dia: 17, nombre: 'Paleta de yogur con miel', tipo: 'Cremosa', dica: 'Yogur natural + miel. Opción "más saludable" para clientes.' },
-  { dia: 18, nombre: 'Paleta de naranja', tipo: 'Frutal', dica: 'Jugo natural o pulpa. Clásica de barrio, siempre funciona.' },
-  { dia: 19, nombre: 'Paleta de chispas de chocolate', tipo: 'Cremosa', dica: 'Base de vainilla + chispas. Los niños la piden mucho.' },
-  { dia: 20, nombre: 'Paleta bañada en chocolate', tipo: 'Rellena', dica: 'Baño de chocolate derretido. Cobrar más por presentación.' },
-  { dia: 21, nombre: 'Paleta de guayaba', tipo: 'Frutal', dica: 'Fruta local y económica en muchos países LATAM.' },
-  { dia: 22, nombre: 'Paleta de arroz con leche', tipo: 'Estilo postre', dica: 'Sabor nostálgico. Diferenciador en tu menú.' },
-  { dia: 23, nombre: 'Paleta de kiwi y limón', tipo: 'Frutal', dica: 'Color verde vibrante. Excelente para fotos de WhatsApp.' },
-  { dia: 24, nombre: 'Paleta rellena de crema de avellanas', tipo: 'Rellena', dica: 'Relleno tipo crema de avellanas o maní. Sabor premium.' },
-  { dia: 25, nombre: 'Paleta de tres leches', tipo: 'Estilo postre', dica: 'Versión helada del clásico. Alta demanda en eventos.' },
-  { dia: 26, nombre: 'Paleta de uva', tipo: 'Frutal', dica: 'Uvas licuadas con un poco de limón. Dulce natural.' },
-  { dia: 27, nombre: 'Paleta de coco y chocolate', tipo: 'Cremosa', dica: 'Capas visibles de coco y chocolate. Muy vendible.' },
-  { dia: 28, nombre: 'Paleta de manzana verde', tipo: 'Frutal', dica: 'Toque ácido refrescante. Buena para combinar en packs.' },
-  { dia: 29, nombre: 'Paleta de brownie', tipo: 'Estilo postre', dica: 'Trozos de brownie dentro. Producto estrella para fines de semana.' },
-  { dia: 30, nombre: 'Paleta arcoíris de frutas', tipo: 'Frutal', dica: 'Capas de colores con distintas frutas. Ideal para foto de portada del menú.' },
-];
+import recetasData from './recetas-paletas.json';
+
+/** 30 recetas completas — sincronizadas con el kit PDF */
+export const RECETAS_PALETAS = recetasData;
 
 export const MENSAJES_WHATSAPP = [
   { categoria: 'Estado / Story', texto: '🍭 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.' },
