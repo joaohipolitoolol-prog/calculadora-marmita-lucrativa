@@ -23,12 +23,17 @@ export const META_PIXEL_ID = '1369803401885896';
 /** Preço principal em USD — fonte única para LP e pixel */
 export const MAIN_PRICE = 5;
 export const MAIN_PRICE_LABEL = 'US$ 5';
+export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 5';
 
 /** URL do site — usada no og:image (atualizar com seu domínio) */
 export const SITE_URL = 'https://calculadora-marmita-lucrativa.vercel.app';
 
-export const OG_IMAGE = `${SITE_URL}/paletas/hero-fresas-crema.png`;
+export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.png`;
 
 export const HERO_CTA_LABEL = 'Quiero mi Kit de Paletas';
+
+export const CALC_CTA_LABEL = 'Quiero preparar, calcular y publicar';
+
+export const OFFER_CTA_LABEL = 'Quiero acceder al kit';
 
 export const CTA_LABEL = HERO_CTA_LABEL;

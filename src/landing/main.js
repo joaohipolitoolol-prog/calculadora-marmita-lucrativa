@@ -1,9 +1,12 @@
 import {
+  CALC_CTA_LABEL,
   CHECKOUT_URL,
   CTA_LABEL,
   HERO_CTA_LABEL,
   MAIN_PRICE,
   MAIN_PRICE_LABEL,
+  OFFER_CTA_LABEL,
+  PRICE_ACCESS_LABEL,
 } from './config.js';
 import { initDemo } from './demo.js';
 
@@ -19,6 +22,10 @@ function trackInitiateCheckout() {
 
 document.querySelectorAll('[data-price]').forEach((el) => {
   el.textContent = MAIN_PRICE_LABEL;
+});
+
+document.querySelectorAll('[data-price-access]').forEach((el) => {
+  el.textContent = PRICE_ACCESS_LABEL;
 });
 
 const logo = document.querySelector('.site-logo');
@@ -38,6 +45,10 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
   link.href = CHECKOUT_URL;
   if (link.dataset.checkoutHero !== undefined) {
     link.textContent = HERO_CTA_LABEL;
+  } else if (link.dataset.checkoutOffer !== undefined) {
+    link.textContent = OFFER_CTA_LABEL;
+  } else if (link.dataset.checkoutCalc !== undefined) {
+    link.textContent = CALC_CTA_LABEL;
   } else if (!link.dataset.checkoutCustom) {
     link.textContent = CTA_LABEL;
   }
