@@ -11,7 +11,7 @@ import {
   readInputsFromForm,
 } from '../lib/calculator.js';
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
-import { WHATSAPP_PURCHASE_LINK } from '../landing/config.js';
+import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
 import {
   fullToSimple,
@@ -995,6 +995,13 @@ function renderKitAyuda() {
         <summary>¿Qué es el precio sugerido?</summary>
         <p>Es el valor para alcanzar tu margen ideal con los costos actuales. Usa "Aplicar este precio" en los resultados.</p>
       </details>
+    </div>
+
+    <div class="section-card">
+      <h2>Soporte por WhatsApp</h2>
+      <p class="section-text">¿Compraste el kit y tienes dudas de acceso? Escríbenos con tu correo de compra.</p>
+      <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-primary btn-large" target="_blank" rel="noopener noreferrer">Confirmar mi compra por WhatsApp</a>
+      <p class="account-note">${WHATSAPP_DISPLAY}</p>
     </div>
 
     <div class="section-card">

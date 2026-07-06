@@ -4,11 +4,20 @@ export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
 /** Página pós-compra — área de descarga del kit */
 export const POST_PURCHASE_URL = 'https://calculadora-marmita-lucrativa.vercel.app/paletas-de-whatsapp/entrega.html';
 
-/** WhatsApp suporte pós-compra */
+/** WhatsApp suporte pós-compra — +44 7402 867442 */
 export const WHATSAPP_NUMBER = '447402867442';
 
-export const WHATSAPP_PURCHASE_MESSAGE =
-  '¡Hola! Acabo de comprar el Kit Paletas de WhatsApp. ¿Me ayudas a empezar?';
+export const WHATSAPP_DISPLAY = '+44 7402 867442';
+
+export const WHATSAPP_PURCHASE_MESSAGE = `¡Hola! 👋 Acabo de comprar el Kit Paletas de WhatsApp.
+
+📧 Mi correo de compra: [escribe tu correo]
+
+Quiero confirmar mi acceso y empezar con recetas, calculadora y menú.
+
+¿Me ayudas si hace falta?
+
+Gracias 🍓`;
 
 export function getWhatsAppLink(message = WHATSAPP_PURCHASE_MESSAGE) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
