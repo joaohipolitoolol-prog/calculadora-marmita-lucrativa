@@ -9,7 +9,7 @@
  */
 
 /** Link de checkout del upsell (Kiwify one-click — crear producto US$17 / R$67) */
-export const UPSELL_CHECKOUT_URL = 'COLOCAR_LINK_DO_UPSELL_AQUI';
+export const UPSELL_CHECKOUT_URL = 'https://pay.kiwify.com/XblcKD0';
 
 /** Página de acceso al kit principal después de rechazar el upsell */
 export const ACCESS_URL =
