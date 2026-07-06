@@ -28,7 +28,7 @@ export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 5';
 /** URL do site — usada no og:image (atualizar com seu domínio) */
 export const SITE_URL = 'https://calculadora-marmita-lucrativa.vercel.app';
 
-export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.png`;
+export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp`;
 
 export const HERO_CTA_LABEL = 'Quiero mi Kit de Paletas';
 

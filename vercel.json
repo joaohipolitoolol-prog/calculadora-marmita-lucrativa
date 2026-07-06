@@ -4,6 +4,7 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
-    { "source": "/app", "destination": "/app.html" }
+    { "source": "/app", "destination": "/app.html" },
+    { "source": "/paletas-de-whatsapp", "destination": "/paletas-de-whatsapp/entrega.html" }
   ]
 }

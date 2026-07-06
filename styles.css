@@ -690,6 +690,10 @@ h3 {
   background: var(--pink-light);
 }
 
+.hero-flavor-grid__item[loading="lazy"] {
+  content-visibility: auto;
+}
+
 .hero-visual {
   margin: 0 auto 12px;
   max-width: 100%;

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Menú Editable Paletas</title><style>
+<!DOCTYPE html><html lang="es" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Menú Editable Paletas</title><style>
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
@@ -506,6 +506,31 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   .page { page-break-after: always; }
 }
 
+[data-theme="dark"] {
+  --crema: #1a1218; --chocolate: #fdf4ef; --gris: #b8a8a0; --gris-claro: #2a2228;
+  --rosa: #ff6b9d; --blanco: #2a2228;
+}
+[data-theme="dark"] body { background: #120d0f; color: #fdf4ef; }
+[data-theme="dark"] .page { background: #1a1218; }
+[data-theme="dark"] .cover { background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }
+[data-theme="dark"] .menu-modelo { background: #2a2228 !important; border-color: rgba(255,107,157,0.3); }
+[data-theme="dark"] .mensaje { background: #1e2a22; }
+[data-theme="dark"] input, [data-theme="dark"] textarea { color: #fdf4ef; }
+.theme-float {
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(255,79,139,0.3);
+  background: var(--blanco, #fff); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.theme-float svg { width: 22px; height: 22px; position: absolute; transition: 0.3s; }
+.theme-float .icon-sun { color: #f5a623; }
+.theme-float .icon-moon { color: #a78bfa; }
+[data-theme="light"] .theme-float .icon-sun { opacity:1; transform:scale(1); }
+[data-theme="light"] .theme-float .icon-moon { opacity:0; transform:scale(0.4); }
+[data-theme="dark"] .theme-float .icon-sun { opacity:0; transform:scale(0.4); }
+[data-theme="dark"] .theme-float .icon-moon { opacity:1; transform:scale(1); }
+[data-theme="dark"] .theme-float { background: #2a2228; border-color: rgba(255,107,157,0.4); }
 .menu-edit { max-width: 500px; margin: 0 auto; }
 input, textarea { border: none; border-bottom: 2px dashed var(--rosa); background: transparent; font-family: inherit; font-size: inherit; color: var(--chocolate); width: 100%; padding: 4px; }
 input:focus, textarea:focus { outline: 2px solid var(--rosa); border-radius: 4px; }
@@ -521,8 +546,13 @@ input:focus, textarea:focus { outline: 2px solid var(--rosa); border-radius: 4px
   font-size: 13px; white-space: pre-wrap; display: none;
 }
 .preview-box.visible { display: block; }
-@media print { input, textarea { border-bottom: 1px solid #ccc; } .btn-copy { display: none; } }
+@media print { input, textarea { border-bottom: 1px solid #ccc; } .btn-copy, .theme-float { display: none; } }
 </style></head><body>
+
+<button type="button" class="theme-float" id="themeToggle" aria-label="Cambiar tema">
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
+</button>
 
 <div class="page cover"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
 
@@ -615,5 +645,17 @@ function generarPremium() {
   ];
   copiar(t.join('\n'), 'preview3');
 }
+(function() {
+  const KEY = 'paletas-kit-theme';
+  const root = document.documentElement;
+  const saved = localStorage.getItem(KEY);
+  if (saved) root.setAttribute('data-theme', saved);
+  else if (matchMedia('(prefers-color-scheme:dark)').matches) root.setAttribute('data-theme','dark');
+  document.getElementById('themeToggle').onclick = () => {
+    const n = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', n);
+    localStorage.setItem(KEY, n);
+  };
+})();
 </script>
 </body></html>
