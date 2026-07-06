@@ -10,6 +10,7 @@ export default defineConfig({
         app: resolve(__dirname, 'app.html'),
         membros: resolve(__dirname, 'membros.html'),
         upsell: resolve(__dirname, 'upsell-paletas-premium.html'),
+        admin: resolve(__dirname, 'admin.html'),
       },
     },
   },

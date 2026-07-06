@@ -1,40 +1,36 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#E8437A">
+  <meta name="theme-color" content="#120d0f">
   <title>Entrar | Paletas de WhatsApp</title>
   <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/favicon.svg?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/login/login.css">
 </head>
 <body class="auth-page">
+  <div class="auth-bg" aria-hidden="true"></div>
+
   <header class="auth-header">
     <a href="/" class="auth-logo">
-      <span aria-hidden="true">🍓</span>
-      Paletas de WhatsApp
+      <span class="auth-logo-icon">🍭</span>
+      <span>Paletas de WhatsApp</span>
     </a>
   </header>
 
   <main class="auth-main">
     <div class="auth-card">
+      <div class="auth-card-top"></div>
+      <p class="auth-eyebrow" id="purchase-banner" hidden>✓ Compra confirmada</p>
       <h1>Accede a tu kit</h1>
-      <p class="auth-sub">¿Compraste? Crea tu cuenta con el código del correo. ¿Ya tienes cuenta? Entra abajo.</p>
+      <p class="auth-sub">Crea tu cuenta con el código del correo de compra, o entra si ya tienes una.</p>
 
       <div id="config-alert" class="auth-alert info"></div>
       <div id="form-alert" class="auth-alert"></div>
-
-      <div class="demo-hero">
-        <p>¿Quieres probar antes de comprar? La demo abre el kit completo en este celular.</p>
-        <button type="button" class="btn btn-demo" id="demo-enter-btn">Probar gratis ahora</button>
-      </div>
-
-      <div class="demo-divider">o entra con tu cuenta</div>
 
       <div class="auth-tabs">
         <button type="button" class="auth-tab active" data-tab="login">Entrar</button>
@@ -51,7 +47,7 @@
             <label for="login-password">Contraseña</label>
             <input id="login-password" name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Mínimo 6 caracteres">
           </div>
-          <button type="submit" class="btn btn-primary auth-submit">Entrar al kit</button>
+          <button type="submit" class="btn btn-primary auth-submit">Entrar al área de miembros</button>
         </form>
         <div class="auth-links">
           <button type="button" id="forgot-btn">Olvidé mi contraseña</button>
@@ -62,11 +58,11 @@
         <form id="register-form">
           <div class="form-group">
             <label for="register-name">Tu nombre</label>
-            <input id="register-name" name="name" type="text" autocomplete="name" required placeholder="¿Cómo quieres que te llamemos?">
+            <input id="register-name" name="name" type="text" autocomplete="name" required placeholder="¿Cómo te llamamos?">
           </div>
           <div class="form-group">
             <label for="register-email">Correo electrónico</label>
-            <input id="register-email" name="email" type="email" autocomplete="email" required placeholder="tu@email.com">
+            <input id="register-email" name="email" type="email" autocomplete="email" required placeholder="El mismo de la compra">
           </div>
           <div class="form-group">
             <label for="register-password">Contraseña</label>
@@ -74,8 +70,8 @@
           </div>
           <div class="form-group">
             <label for="register-code">Código de acceso</label>
-            <input id="register-code" name="accessCode" type="text" required placeholder="Código recibido después de la compra">
-            <p class="form-hint">Recibes este código en el correo de confirmación de la compra.</p>
+            <input id="register-code" name="accessCode" type="text" required placeholder="Código del correo de compra">
+            <p class="form-hint">Lo recibes en el email de confirmación de Kiwify.</p>
           </div>
           <button type="submit" class="btn btn-primary auth-submit">Crear mi cuenta</button>
         </form>
@@ -84,7 +80,7 @@
   </main>
 
   <footer class="auth-footer">
-    <p>¿Aún no compraste? <a href="/#oferta">Ver oferta · US$ 5</a></p>
+    <p>¿Aún no compraste? <a href="/#oferta">Ver kit · US$ 5</a></p>
   </footer>
 
   <script type="module" src="/src/login/main.js"></script>

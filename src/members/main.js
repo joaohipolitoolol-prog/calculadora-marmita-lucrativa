@@ -1,5 +1,6 @@
 import { WHATSAPP_PURCHASE_LINK } from '../landing/config.js';
 import { getUserLabel, logout, watchAuth } from '../lib/auth.js';
+import { getUserProfile } from '../lib/user-profile.js';
 
 const THEME_KEY = 'paletas-kit-theme';
 const PREMIUM_KEY = 'paletas_premium';
@@ -39,12 +40,13 @@ function unlockPremiumFromQuery() {
   }
 }
 
-function hasPremium() {
+function hasPremium(profile) {
+  if (profile?.hasPremium) return true;
   return localStorage.getItem(PREMIUM_KEY) === '1';
 }
 
-function renderPremiumSection() {
-  if (!hasPremium()) return;
+function renderPremiumSection(profile) {
+  if (!hasPremium(profile)) return;
 
   const host = document.getElementById('premium-downloads');
   if (!host) return;
@@ -95,16 +97,19 @@ function bindUserUI(user) {
   });
 }
 
-watchAuth((user) => {
+watchAuth(async (user) => {
   if (!user) {
     window.location.replace(getRedirectLogin());
     return;
   }
 
+  const profile = await getUserProfile(user.uid);
+  if (profile?.hasPremium) localStorage.setItem(PREMIUM_KEY, '1');
+
   unlockPremiumFromQuery();
   initTheme();
   bindUserUI(user);
-  renderPremiumSection();
+  renderPremiumSection(profile);
 
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {

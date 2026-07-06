@@ -1,4 +1,6 @@
 import { isFirebaseConfigured } from './firebase.js';
+import { validateAccessCodeFromDb, consumeAccessCode } from './access-codes-db.js';
+import { createUserProfile, syncAdminFlag } from './user-profile.js';
 
 const DEMO_USERS_KEY = 'marmita_demo_users';
 const DEMO_SESSION_KEY = 'marmita_demo_session';
@@ -41,9 +43,9 @@ export function isDemoMode() {
   return !isFirebaseConfigured;
 }
 
-export function validateAccessCode(code) {
-  const expected = import.meta.env.VITE_ACCESS_CODE || 'marmita27';
-  return String(code).trim().toLowerCase() === String(expected).trim().toLowerCase();
+export async function validateAccessCode(code) {
+  const result = await validateAccessCodeFromDb(code);
+  return result.valid;
 }
 
 export async function login(email, password) {
@@ -51,7 +53,7 @@ export async function login(email, password) {
     const users = readDemoUsers();
     const user = users.find((u) => u.email === email.trim().toLowerCase());
     if (!user || user.password !== password) {
-      throw new Error('E-mail ou senha incorretos.');
+      throw new Error('Correo o contraseña incorrectos.');
     }
     setDemoSession(user);
     return toPublicUser(user);
@@ -64,21 +66,34 @@ export async function login(email, password) {
   return result.user;
 }
 
-export async function register(name, email, password, accessCode) {
-  if (!validateAccessCode(accessCode)) {
-    throw new Error('Código de acesso inválido. Use o código enviado após a compra.');
+export async function register(name, email, password, accessCode, options = {}) {
+  const codeResult = await validateAccessCodeFromDb(accessCode);
+  if (!codeResult.valid) {
+    throw new Error(
+      codeResult.reason || 'Código de acceso inválido. Usa el código enviado después de la compra.'
+    );
   }
+
+  const urlPremium = new URLSearchParams(window.location.search).get('premium') === '1';
+  const hasPremium =
+    Boolean(options.hasPremium) ||
+    urlPremium ||
+    codeResult.hasPremium ||
+    codeResult.type === 'premium' ||
+    codeResult.type === 'both';
 
   if (isDemoMode()) {
     const normalizedEmail = email.trim().toLowerCase();
     const users = readDemoUsers();
     if (users.some((u) => u.email === normalizedEmail)) {
-      throw new Error('Este e-mail já está cadastrado.');
+      throw new Error('Este correo ya está registrado.');
     }
     const user = createDemoUser(name, normalizedEmail, password);
+    user.hasPremium = hasPremium;
     users.push(user);
     writeDemoUsers(users);
     setDemoSession(user);
+    if (hasPremium) localStorage.setItem('paletas_premium', '1');
     return toPublicUser(user);
   }
 
@@ -87,12 +102,24 @@ export async function register(name, email, password, accessCode) {
   const auth = requireFirebase();
   const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
   await updateProfile(result.user, { displayName: name.trim() });
+
+  await createUserProfile(result.user.uid, {
+    email: result.user.email,
+    displayName: name.trim(),
+    hasPremium,
+    accessCodeUsed: accessCode,
+  });
+  await consumeAccessCode(codeResult);
+  await syncAdminFlag(result.user.uid, result.user.email);
+
+  if (hasPremium) localStorage.setItem('paletas_premium', '1');
+
   return result.user;
 }
 
 export async function resetPassword(email) {
   if (isDemoMode()) {
-    throw new Error('Recuperação de senha disponível apenas com Firebase configurado.');
+    throw new Error('Recuperación de contraseña disponible solo con Firebase configurado.');
   }
 
   const { requireFirebase } = await import('./firebase.js');
@@ -133,8 +160,12 @@ export function watchAuth(callback) {
 export function redirectIfAuthenticated(user, target) {
   if (!user) return;
   const params = new URLSearchParams(window.location.search);
+  if (params.get('compra') === '1') {
+    window.location.href = params.get('premium') === '1' ? '/membros?compra=1' : '/membros?compra=1';
+    return;
+  }
   const next = params.get('next');
-  window.location.href = next || target || '/membros';
+  window.location.href = next && next.startsWith('/') ? next : target || '/membros';
 }
 
 export function redirectIfGuest(user, target = '/login') {
@@ -146,33 +177,7 @@ export function redirectIfGuest(user, target = '/login') {
 
 export function getUserLabel(user) {
   if (!user) return '';
-  return user.displayName || user.email?.split('@')[0] || 'Usuário';
-}
-
-export const DEMO_GUEST = {
-  name: 'Visitante Demo',
-  email: 'demo@marmitalucrativa.app',
-  password: 'demo1234',
-};
-
-export async function enterDemo() {
-  if (!isDemoMode()) {
-    throw new Error('Demo disponível apenas enquanto Firebase não está configurado.');
-  }
-
-  const users = readDemoUsers();
-  let user = users.find((u) => u.email === DEMO_GUEST.email);
-
-  if (!user) {
-    user = createDemoUser(DEMO_GUEST.name, DEMO_GUEST.email, DEMO_GUEST.password);
-    user.isGuestDemo = true;
-    users.push(user);
-    writeDemoUsers(users);
-  }
-
-  setDemoSession(user);
-  sessionStorage.setItem('paletas_demo_welcome', '1');
-  return toPublicUser(user);
+  return user.displayName || user.email?.split('@')[0] || 'Usuario';
 }
 
 function toPublicUser(user) {

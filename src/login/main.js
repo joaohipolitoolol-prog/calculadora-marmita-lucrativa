@@ -1,7 +1,5 @@
 import { isFirebaseConfigured } from '../lib/firebase.js';
 import {
-  enterDemo,
-  isDemoMode,
   login,
   register,
   resetPassword,
@@ -11,11 +9,14 @@ import {
 
 const configAlert = document.getElementById('config-alert');
 const formAlert = document.getElementById('form-alert');
+const purchaseBanner = document.getElementById('purchase-banner');
 const tabs = document.querySelectorAll('.auth-tab');
 const panels = document.querySelectorAll('.panel');
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const forgotBtn = document.getElementById('forgot-btn');
+
+const purchaseParams = new URLSearchParams(window.location.search);
 
 function showAlert(el, message, type = 'error') {
   el.textContent = message;
@@ -37,63 +38,33 @@ tabs.forEach((tab) => {
   tab.addEventListener('click', () => setTab(tab.dataset.tab));
 });
 
-const purchaseParams = new URLSearchParams(window.location.search);
-
 function getAfterLoginUrl() {
   const params = new URLSearchParams(window.location.search);
+  if (params.get('compra') === '1') {
+    return params.get('premium') === '1' ? '/membros?premium=1' : '/membros?compra=1';
+  }
   const next = params.get('next');
   if (next && next.startsWith('/')) return next;
-  if (params.get('premium') === '1') {
-    localStorage.setItem('paletas_premium', '1');
-    return '/membros?premium=1';
-  }
-  if (params.get('compra') === '1') return '/membros?compra=1';
   return '/membros';
 }
 
 watchAuth((user) => redirectIfAuthenticated(user));
 
 if (purchaseParams.get('compra') === '1') {
-  const banner = document.createElement('div');
-  banner.className = 'auth-alert show success';
-  banner.style.marginBottom = '16px';
-  banner.textContent = '✓ Compra confirmada. Crea tu cuenta o entra para acceder al kit.';
-  document.querySelector('.auth-card')?.prepend(banner);
+  purchaseBanner.hidden = false;
+  setTab('register');
 }
+
 if (purchaseParams.get('premium') === '1') {
   localStorage.setItem('paletas_premium', '1');
 }
 
-if (isDemoMode()) {
+if (!isFirebaseConfigured) {
   showAlert(
     configAlert,
-    '¿Compraste? Usa la pestaña Crear cuenta con el código del correo. ¿Solo quieres probar? Usa el botón verde de arriba.',
-    'success'
+    'Firebase no está configurado en este entorno. Agrega las variables VITE_FIREBASE_* en Vercel.',
+    'info'
   );
-} else if (!isFirebaseConfigured) {
-  showAlert(configAlert, 'Firebase parcialmente configurado. Revisa el .env.local.', 'info');
-}
-
-document.getElementById('demo-enter-btn')?.addEventListener('click', async () => {
-  const btn = document.getElementById('demo-enter-btn');
-  btn.disabled = true;
-  btn.textContent = 'Abriendo demo...';
-  try {
-    await enterDemo();
-    window.location.href = getAfterLoginUrl();
-  } catch (error) {
-    showAlert(formAlert, error.message, 'error');
-    btn.disabled = false;
-    btn.textContent = 'Probar gratis ahora';
-  }
-});
-
-if (new URLSearchParams(window.location.search).get('demo') === '1') {
-  document.getElementById('demo-enter-btn')?.click();
-}
-
-if (new URLSearchParams(window.location.search).get('compra') === '1') {
-  setTab('register');
 }
 
 loginForm.addEventListener('submit', async (event) => {
@@ -112,7 +83,7 @@ loginForm.addEventListener('submit', async (event) => {
     showAlert(formAlert, translateAuthError(error), 'error');
   } finally {
     button.disabled = false;
-    button.textContent = 'Entrar al kit';
+    button.textContent = 'Entrar al área de miembros';
   }
 });
 
@@ -133,9 +104,6 @@ registerForm.addEventListener('submit', async (event) => {
       data.get('accessCode')
     );
     showAlert(formAlert, '¡Cuenta creada! Redirigiendo...', 'success');
-    if (purchaseParams.get('premium') === '1') {
-      localStorage.setItem('paletas_premium', '1');
-    }
     setTimeout(() => {
       window.location.href = getAfterLoginUrl();
     }, 700);
