@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-  <meta name="theme-color" content="#120d0f">
+  <meta name="theme-color" content="#E8437A">
   <title>Entrar | Paletas de WhatsApp</title>
   <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,24 +17,23 @@
 
   <header class="auth-header">
     <a href="/" class="auth-logo">
-      <span class="auth-logo-icon">🍭</span>
+      <img src="/favicon.svg?v=2" width="32" height="32" alt="" class="auth-logo-icon">
       <span>Paletas de WhatsApp</span>
     </a>
   </header>
 
   <main class="auth-main">
     <div class="auth-card">
-      <div class="auth-card-top"></div>
       <p class="auth-eyebrow" id="purchase-banner" hidden>✓ Compra confirmada</p>
       <h1>Accede a tu kit</h1>
-      <p class="auth-sub">Crea tu cuenta con el código del correo de compra, o entra si ya tienes una.</p>
+      <p class="auth-sub">Usa el código del correo de compra para crear tu cuenta, o entra si ya tienes una.</p>
 
       <div id="config-alert" class="auth-alert info"></div>
       <div id="form-alert" class="auth-alert"></div>
 
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab active" data-tab="login">Entrar</button>
-        <button type="button" class="auth-tab" data-tab="register">Crear cuenta</button>
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab active" data-tab="login" role="tab">Entrar</button>
+        <button type="button" class="auth-tab" data-tab="register" role="tab">Crear cuenta</button>
       </div>
 
       <section id="panel-login" class="panel active">
