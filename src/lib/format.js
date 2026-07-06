@@ -1,13 +1,13 @@
 export function money(value) {
   const n = Number(value);
-  if (!Number.isFinite(n)) return 'R$ 0,00';
-  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  if (!Number.isFinite(n)) return 'US$ 0.00';
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
 
 export function percent(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return '0%';
-  return `${n.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+  return `${n.toLocaleString('es', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
 }
 
 export function parseNumber(value) {
@@ -16,7 +16,7 @@ export function parseNumber(value) {
   let s = String(value ?? '').trim();
   if (!s) return 0;
 
-  s = s.replace(/R\$\s?/gi, '').replace(/\s/g, '');
+  s = s.replace(/US\$\s?/gi, '').replace(/R\$\s?/gi, '').replace(/\$\s?/g, '').replace(/\s/g, '');
   if (!s) return 0;
 
   const hasComma = s.includes(',');

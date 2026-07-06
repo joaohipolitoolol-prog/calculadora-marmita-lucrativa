@@ -2,14 +2,14 @@ import { ingredientCostPerUnit } from './calculator.js';
 import { parseNumber } from './format.js';
 
 export const SIMPLE_DEFAULTS = {
-  sellingPrice: 18,
-  foodCostPerUnit: 10.2,
-  packaging: 1.2,
-  gasPerUnit: 0.9,
-  delivery: 2,
-  wastePerUnit: 0.8,
-  marmitasPerDay: 20,
-  targetMarginPercent: 30,
+  sellingPrice: 2.5,
+  foodCostPerUnit: 0.85,
+  packaging: 0.15,
+  gasPerUnit: 0.2,
+  delivery: 0.3,
+  wastePerUnit: 0.1,
+  marmitasPerDay: 25,
+  targetMarginPercent: 40,
 };
 
 export function fullToSimple(inputs) {
@@ -63,7 +63,7 @@ export function simpleToFull(simple) {
         portions: 1,
       },
       {
-        name: 'Desperdício',
+        name: 'Desperdicio',
         batchCost: parseNumber(simple.wastePerUnit),
         portions: 1,
       },

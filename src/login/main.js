@@ -42,24 +42,24 @@ watchAuth((user) => redirectIfAuthenticated(user));
 if (isDemoMode()) {
   showAlert(
     configAlert,
-    'Comprou? Use a aba Criar conta com o código do e-mail. Quer só testar? Use o botão verde acima.',
+    '¿Compraste? Usa la pestaña Crear cuenta con el código del correo. ¿Solo quieres probar? Usa el botón verde de arriba.',
     'success'
   );
 } else if (!isFirebaseConfigured) {
-  showAlert(configAlert, 'Firebase parcialmente configurado. Revise o .env.local.', 'info');
+  showAlert(configAlert, 'Firebase parcialmente configurado. Revisa el .env.local.', 'info');
 }
 
 document.getElementById('demo-enter-btn')?.addEventListener('click', async () => {
   const btn = document.getElementById('demo-enter-btn');
   btn.disabled = true;
-  btn.textContent = 'Abrindo sua demo...';
+  btn.textContent = 'Abriendo demo...';
   try {
     await enterDemo();
     window.location.href = '/app.html';
   } catch (error) {
     showAlert(formAlert, error.message, 'error');
     btn.disabled = false;
-    btn.textContent = 'Testar grátis agora';
+    btn.textContent = 'Probar gratis ahora';
   }
 });
 
@@ -87,7 +87,7 @@ loginForm.addEventListener('submit', async (event) => {
     showAlert(formAlert, translateAuthError(error), 'error');
   } finally {
     button.disabled = false;
-    button.textContent = 'Entrar na calculadora';
+    button.textContent = 'Entrar al kit';
   }
 });
 
@@ -98,7 +98,7 @@ registerForm.addEventListener('submit', async (event) => {
   const data = new FormData(registerForm);
   const button = registerForm.querySelector('button[type="submit"]');
   button.disabled = true;
-  button.textContent = 'Criando conta...';
+  button.textContent = 'Creando cuenta...';
 
   try {
     await register(
@@ -107,14 +107,14 @@ registerForm.addEventListener('submit', async (event) => {
       data.get('password'),
       data.get('accessCode')
     );
-    showAlert(formAlert, 'Conta criada! Redirecionando...', 'success');
+    showAlert(formAlert, '¡Cuenta creada! Redirigiendo...', 'success');
     setTimeout(() => {
       window.location.href = '/app.html?compra=1';
     }, 700);
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');
     button.disabled = false;
-    button.textContent = 'Criar minha conta';
+    button.textContent = 'Crear mi cuenta';
   }
 });
 
@@ -122,13 +122,13 @@ forgotBtn.addEventListener('click', async () => {
   hideAlert(formAlert);
   const email = document.getElementById('login-email').value.trim();
   if (!email) {
-    showAlert(formAlert, 'Digite seu e-mail no campo acima primeiro.', 'error');
+    showAlert(formAlert, 'Escribe tu correo en el campo de arriba primero.', 'error');
     return;
   }
 
   try {
     await resetPassword(email);
-    showAlert(formAlert, 'Enviamos um link de recuperação para seu e-mail.', 'success');
+    showAlert(formAlert, 'Enviamos un enlace de recuperación a tu correo.', 'success');
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');
   }
@@ -137,16 +137,16 @@ forgotBtn.addEventListener('click', async () => {
 function translateAuthError(error) {
   const code = error?.code || '';
   const map = {
-    'auth/invalid-email': 'E-mail inválido.',
-    'auth/user-disabled': 'Conta desativada. Fale com o suporte.',
-    'auth/user-not-found': 'E-mail ou senha incorretos.',
-    'auth/wrong-password': 'E-mail ou senha incorretos.',
-    'auth/invalid-credential': 'E-mail ou senha incorretos.',
-    'auth/email-already-in-use': 'Este e-mail já está cadastrado.',
-    'auth/weak-password': 'Senha fraca. Use pelo menos 6 caracteres.',
-    'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos.',
+    'auth/invalid-email': 'Correo electrónico inválido.',
+    'auth/user-disabled': 'Cuenta desactivada. Contacta soporte.',
+    'auth/user-not-found': 'Correo o contraseña incorrectos.',
+    'auth/wrong-password': 'Correo o contraseña incorrectos.',
+    'auth/invalid-credential': 'Correo o contraseña incorrectos.',
+    'auth/email-already-in-use': 'Este correo ya está registrado.',
+    'auth/weak-password': 'Contraseña débil. Usa al menos 6 caracteres.',
+    'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos.',
   };
 
   if (map[code]) return map[code];
-  return error?.message || 'Não foi possível concluir. Tente de novo.';
+  return error?.message || 'No se pudo completar. Intenta de nuevo.';
 }

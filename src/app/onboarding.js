@@ -1,43 +1,43 @@
 import { ICONS } from './icons.js';
 
-export const ONBOARDING_KEY = 'marmita_onboarding_v1';
+export const ONBOARDING_KEY = 'paletas_onboarding_v1';
 
 const SLIDES = [
   {
     icon: 'logo',
-    title: 'Sua calculadora de lucro',
-    body: 'Descubra quanto sobra de verdade em cada marmita — com custos que quase ninguém coloca na conta.',
+    title: 'Tu Kit Paletas de WhatsApp',
+    body: 'Recetas, calculadora de precios, menú y mensajes listos para empezar a vender desde casa.',
     highlight: null,
   },
   {
     icon: 'zap',
-    title: 'Comece no modo rápido',
-    body: 'Coloque o preço de venda e os custos <strong>de cada marmita</strong>: ingredientes, embalagem, gás, entrega e desperdício.',
-    highlight: 'Preencha os campos na tela Calcular. Leva cerca de 2 minutos.',
+    title: 'Empieza en modo rápido',
+    body: 'Coloca el precio de venta y los costos <strong>de cada paleta</strong>: ingredientes, empaque, extras, entrega y desperdicio.',
+    highlight: 'Completa los campos en Precios. Toma unos 2 minutos.',
   },
   {
     icon: 'chart',
-    title: 'Lucro atualiza ao vivo',
-    body: 'Enquanto você digita, o card de resumo mostra custo, lucro e margem. O valor no topo também muda na hora.',
-    highlight: 'Fique de olho no card branco abaixo do modo Rápido/Completo.',
+    title: 'Ganancia en vivo',
+    body: 'Mientras escribes, el resumen muestra costo, ganancia y margen. El valor arriba también cambia al instante.',
+    highlight: 'Mira el card de resumen debajo del modo Rápido/Completo.',
   },
   {
     icon: 'dollar',
-    title: 'Veja o preço ideal',
-    body: 'Toque em <strong>Ver meu lucro</strong> e confira o preço recomendado para bater sua margem meta.',
-    highlight: 'Use "Usar este preço" para aplicar o valor sugerido automaticamente.',
-  },
-  {
-    icon: 'save',
-    title: 'Salve e compare cenários',
-    body: 'Testou com entrega? Sem entrega? Salve cada combinação com um nome e carregue depois para comparar.',
-    highlight: null,
+    title: 'Mira el precio sugerido',
+    body: 'Toca <strong>Ver mi ganancia</strong> y revisa el precio recomendado para alcanzar tu margen meta.',
+    highlight: 'Usa "Aplicar este precio" para usar el valor sugerido.',
   },
   {
     icon: 'book',
-    title: 'Cardápio de 30 dias',
-    body: 'Precisa variar o menu? Abra <strong>Cardápio</strong> no menu de baixo — ideias prontas com dicas de custo.',
-    highlight: 'Use a barra inferior ou o menu ☰ para navegar.',
+    title: '30 recetas de paletas',
+    body: 'Abre <strong>Recetas</strong> en el menú de abajo — cremosas, frutales, rellenas y estilo postre.',
+    highlight: 'Busca por nombre o tipo de paleta.',
+  },
+  {
+    icon: 'message',
+    title: 'Mensajes y plan de 7 días',
+    body: 'En <strong>Kit</strong> encuentras mensajes para WhatsApp, plan semanal, lista de compras y checklist de producción.',
+    highlight: 'Copia los mensajes y publícalos en tu estado.',
   },
 ];
 
@@ -62,7 +62,7 @@ export function showOnboarding({ onFinish } = {}) {
   root.className = 'onboarding-overlay';
   root.setAttribute('role', 'dialog');
   root.setAttribute('aria-modal', 'true');
-  root.setAttribute('aria-label', 'Tutorial da calculadora');
+  root.setAttribute('aria-label', 'Tutorial del kit');
 
   document.body.appendChild(root);
   document.body.classList.add('onboarding-open');
@@ -83,7 +83,7 @@ export function showOnboarding({ onFinish } = {}) {
     root.innerHTML = `
       <div class="onboarding-shell">
         <div class="onboarding-card">
-          <button type="button" class="onboarding-skip" id="onboarding-skip">Pular</button>
+          <button type="button" class="onboarding-skip" id="onboarding-skip">Saltar</button>
 
           <div class="onboarding-visual ${slide.icon === 'logo' ? 'is-logo' : ''}">
             ${iconHtml}
@@ -93,15 +93,15 @@ export function showOnboarding({ onFinish } = {}) {
             ${SLIDES.map((_, i) => `<span class="onboarding-dot ${i === index ? 'active' : i < index ? 'done' : ''}"></span>`).join('')}
           </div>
 
-          <p class="onboarding-step-label">Passo ${index + 1} de ${SLIDES.length}</p>
+          <p class="onboarding-step-label">Paso ${index + 1} de ${SLIDES.length}</p>
           <h2 class="onboarding-title">${slide.title}</h2>
           <p class="onboarding-body">${slide.body}</p>
           ${slide.highlight ? `<div class="onboarding-tip">${ICONS.info}<span>${slide.highlight}</span></div>` : ''}
 
           <div class="onboarding-actions">
-            ${!isFirst ? `<button type="button" class="btn btn-ghost onboarding-back" id="onboarding-back">${ICONS.chevronLeft}<span>Voltar</span></button>` : '<span></span>'}
+            ${!isFirst ? `<button type="button" class="btn btn-ghost onboarding-back" id="onboarding-back">${ICONS.chevronLeft}<span>Atrás</span></button>` : '<span></span>'}
             <button type="button" class="btn btn-primary onboarding-next" id="onboarding-next">
-              ${isLast ? '<span>Começar a calcular</span>' : `<span>Próximo</span>${ICONS.chevronRight}`}
+              ${isLast ? '<span>Empezar ahora</span>' : `<span>Siguiente</span>${ICONS.chevronRight}`}
             </button>
           </div>
         </div>

@@ -1,14 +1,19 @@
-/* Design tokens compartilhados */
+/* Design tokens — Paletas de WhatsApp */
 :root {
-  --orange: #E8651A;
-  --orange-dark: #C4520F;
+  --pink: #E8437A;
+  --pink-light: #FFF0F5;
+  --pink-dark: #C72E62;
+  --orange: #F4842A;
+  --orange-dark: #D96A15;
   --orange-light: #FFF3EB;
-  --yellow: #F5A623;
+  --yellow: #F5B623;
   --yellow-soft: #FFF8E7;
+  --berry: #D94F4F;
+  --chocolate: #5C3D2E;
   --brown: #3D2A20;
   --brown-mid: #5C3D2E;
   --brown-light: #8B6B5A;
-  --green: #1F7A42;
+  --green: #25A55A;
   --green-bright: #2D9B58;
   --green-light: #E8F5EC;
   --red: #C0392B;
@@ -31,7 +36,7 @@
   --space-xl: 40px;
   --font: 'Nunito', system-ui, sans-serif;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --focus-ring: 0 0 0 3px rgba(232, 101, 26, 0.25);
+  --focus-ring: 0 0 0 3px rgba(232, 67, 122, 0.25);
 }
 
 @media (prefers-reduced-motion: reduce) {

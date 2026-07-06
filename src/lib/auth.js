@@ -165,7 +165,7 @@ export async function enterDemo() {
   }
 
   setDemoSession(user);
-  sessionStorage.setItem('marmita_demo_welcome', '1');
+  sessionStorage.setItem('paletas_demo_welcome', '1');
   return toPublicUser(user);
 }
 

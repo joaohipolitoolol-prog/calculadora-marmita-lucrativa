@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Descubra em poucos minutos o custo real da sua marmita, o lucro por unidade e o preço certo para vender sem trabalhar no prejuízo.">
-  <meta name="theme-color" content="#E8651A">
+  <meta name="description" content="Aprende a preparar y vender paletas caseras en vaso — cremosas, frutales y bañadas — por WhatsApp con recetas simples, calculadora de precios y mensajes listos.">
+  <meta name="theme-color" content="#E8437A">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Calculadora Marmita Lucrativa">
-  <meta property="og:description" content="Descubra em poucos minutos o custo real da sua marmita, o lucro por unidade e o preço certo para vender sem trabalhar no prejuízo.">
-  <meta property="og:image" content="https://i.imgur.com/kFUFi8u.png">
-  <meta property="og:locale" content="pt_BR">
-  <title>Calculadora Marmita Lucrativa</title>
+  <meta property="og:title" content="Paletas de WhatsApp | Recetas, Precios y Mensajes para Vender desde Casa">
+  <meta property="og:description" content="Paletas caseras en vaso: fresas con crema, frutales y bañadas. Kit con recetas, calculadora de precios y mensajes para vender por WhatsApp desde tu cocina.">
+  <meta property="og:image" content="https://calculadora-marmita-lucrativa.vercel.app/paletas/hero-fresas-crema.png">
+  <meta property="og:image:alt" content="Paletas caseras de fresas con crema preparadas en vaso">
+  <meta property="og:locale" content="es_LA">
+  <title>Paletas de WhatsApp | Recetas, Precios y Mensajes para Vender desde Casa</title>
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -21,8 +22,8 @@
     fbq('init', '1369803401885896');
     fbq('track', 'PageView');
   </script>
-  <link rel="icon" href="/product-icon.png" type="image/png">
-  <link rel="apple-touch-icon" href="/product-icon.png">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -34,377 +35,460 @@
 
   <header class="site-header">
     <div class="container site-header-inner">
-      <a href="#" class="site-logo" aria-label="Voltar ao topo">
-        <img src="/product-icon.png" width="28" height="28" alt="" loading="eager">
-        Marmita Lucrativa
+      <a href="#" class="site-logo" aria-label="Volver arriba">
+        <span class="logo-emoji" aria-hidden="true">🍭</span>
+        Paletas de WhatsApp
       </a>
       <a href="/app.html" class="header-enter">Entrar</a>
     </div>
   </header>
 
-  <!-- 1. Hero + calculadora -->
+  <!-- 1. Hero -->
   <section class="hero">
     <div class="container">
-      <p class="hero-eyebrow">Calculadora online para quem vende marmita</p>
-      <h1>Você vende marmita todo dia, mas sabe quanto <em>realmente sobra</em> no seu bolso?</h1>
+      <p class="hero-eyebrow">Paletas caseras en vaso · cremosas y frutales</p>
+      <figure class="hero-visual">
+        <img
+          src="/paletas/hero-fresas-crema.png"
+          alt="Paletas caseras de fresas con crema en vaso, listas para vender"
+          class="hero-visual-img crop-cups"
+          width="480"
+          height="400"
+          loading="eager"
+          fetchpriority="high"
+        >
+      </figure>
+      <h1>Aprende a preparar y vender paletas caseras por WhatsApp, incluso si hoy empiezas desde cero.</h1>
       <p class="subheadline">
-        Descubra em poucos minutos o custo real, o lucro por unidade e o preço certo para vender sem trabalhar no prejuízo.
+        Recetas en vaso como fresas con crema, paletas bañadas y sabores frutales — más calculadora de precios y mensajes listos para tu primer menú sin cobrar “a ojo”.
       </p>
-      <p class="hero-urgency">Antes de vender mais marmitas amanhã, descubra se o preço de hoje está certo.</p>
+      <ul class="hero-bullets">
+        <li>Recetas en vaso, fáciles desde tu cocina</li>
+        <li>Cremosas, frutales y bañadas</li>
+        <li>Calculadora para saber cuánto cobrar</li>
+        <li>Guía para armar tu menú en WhatsApp</li>
+        <li>Mensajes listos para publicar</li>
+      </ul>
       <div class="hero-cta-stack">
-        <a href="#" class="btn btn-primary btn-large" data-checkout data-checkout-hero>Quero descobrir meu lucro por R$ 27</a>
+        <a href="#" class="btn btn-primary btn-large" data-checkout data-checkout-hero>Quiero mi Kit de Paletas</a>
+        <p class="cta-note hero-cta-note">Acceso digital inmediato. Empieza hoy desde tu casa.</p>
       </div>
       <div class="trust-row">
         <div class="trust-item">
           <span class="trust-icon" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
           </span>
-          No celular
+          Desde el celular
         </div>
         <div class="trust-item">
-          <span class="trust-icon" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="trust-icon trust-icon-pink" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           </span>
-          Poucos minutos
+          Kit completo
         </div>
         <div class="trust-item trust-item-green">
           <span class="trust-icon trust-icon-green" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
           </span>
-          7 dias garantia
+          7 días garantía
         </div>
       </div>
     </div>
   </section>
 
-  <div class="hero-price-bar" aria-label="Preço do produto">
+  <div class="hero-price-bar" aria-label="Precio del producto">
     <div class="container hero-price-bar-inner">
       <div class="hero-price-bar-main">
-        <span class="hero-price-bar-label">Preço de lançamento</span>
-        <strong class="hero-price-bar-value">R$ 27</strong>
+        <span class="hero-price-bar-label">Precio del kit</span>
+        <strong class="hero-price-bar-value" data-price>US$ 5</strong>
       </div>
-      <p class="hero-price-bar-note">Pagamento único · sem mensalidade · cardápio de 30 dias incluso hoje</p>
+      <p class="hero-price-bar-note">Pago único · acceso digital · recetas + calculadora + menú + mensajes</p>
     </div>
   </div>
 
-  <section class="demo-section" id="demo">
+  <!-- Estilo de producto -->
+  <section class="visual-showcase lazy-section" aria-label="Ejemplos de paletas caseras">
     <div class="container">
-      <p class="section-label">Experimente agora</p>
-      <h2>Mexe nos números e vê seu lucro na hora</h2>
-      <p class="section-text demo-intro">Sem cadastro. Ajuste os valores abaixo como se fossem os seus.</p>
-
-      <div class="demo-widget" id="lp-demo">
-        <div class="demo-inputs is-collapsed" id="demo-inputs">
-          <label class="demo-field">
-            <span>Preço de venda (R$)</span>
-            <input type="text" inputmode="decimal" data-demo="sellingPrice" value="18" autocomplete="off">
-          </label>
-          <label class="demo-field">
-            <span>Ingredientes por marmita (R$)</span>
-            <input type="text" inputmode="decimal" data-demo="foodCost" value="10,20" autocomplete="off">
-          </label>
-          <label class="demo-field demo-extra">
-            <span>Embalagem por marmita (R$)</span>
-            <input type="text" inputmode="decimal" data-demo="packaging" value="1,20" autocomplete="off">
-          </label>
-          <label class="demo-field demo-extra">
-            <span>Gás, tempero e energia (R$)</span>
-            <input type="text" inputmode="decimal" data-demo="gasSpices" value="0,90" autocomplete="off">
-          </label>
-          <label class="demo-field demo-extra">
-            <span>Entrega ou taxa (R$)</span>
-            <input type="text" inputmode="decimal" data-demo="delivery" value="2,00" autocomplete="off">
-          </label>
-          <label class="demo-field demo-extra">
-            <span>Desperdício por marmita (R$)</span>
-            <input type="text" inputmode="decimal" data-demo="waste" value="0,80" autocomplete="off">
-          </label>
-          <label class="demo-field demo-extra">
-            <span>Marmitas por dia</span>
-            <input type="text" inputmode="numeric" data-demo="marmitasPerDay" value="20" autocomplete="off">
-          </label>
-          <input type="hidden" data-demo="targetMargin" value="30">
-        </div>
-        <button type="button" class="demo-expand-btn" id="demo-expand-btn">Ver mais custos</button>
-
-        <div class="demo-results">
-          <div class="demo-result-main" data-out-card="profit">
-            <span class="calc-label">Seu lucro real</span>
-            <span class="calc-value green" data-out="profit">R$ 2,90</span>
-          </div>
-          <div class="demo-result-grid">
-            <div class="demo-result-item">
-              <span class="calc-label">Custo real</span>
-              <span class="calc-value" data-out="cost">R$ 15,10</span>
-            </div>
-            <div class="demo-result-item">
-              <span class="calc-label">Margem atual</span>
-              <span class="calc-value warn" data-out="margin">16,1%</span>
-            </div>
-            <div class="demo-result-item wide">
-              <span class="calc-label" data-out="daily-label">Lucro do dia</span>
-              <span class="calc-value green" data-out="daily">R$ 58,00</span>
-            </div>
-            <p class="demo-impact" data-out="impact">20 marmitas/dia × R$ 2,90 = R$ 58,00 no bolso por dia</p>
-            <div class="demo-result-item wide alert-card" data-out="alert-box">
-              <span class="calc-label">⚠️ Alerta</span>
-              <span class="calc-value alert" data-out="alert-text">Sua margem está baixa</span>
-            </div>
-            <div class="demo-result-item wide price-rec">
-              <span class="calc-label">Preço recomendado</span>
-              <span class="calc-value orange" data-out="ideal">R$ 21,57</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. Primeiro CTA + objeção cedo -->
-      <div class="post-demo-offer">
-        <p class="post-demo-lead">Gostou do que viu? A versão completa salva seus números, simula cenários e mostra o preço ideal pra você.</p>
-        <a href="#" class="btn btn-primary btn-large" data-checkout>Quero parar de vender no achismo — R$ 27</a>
-        <p class="cta-note">Pagamento único · acesso imediato no celular</p>
-
-        <div class="guarantee-seal">
-          <span class="guarantee-seal-icon" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          </span>
-          <span>7 dias de garantia · reembolso total, sem burocracia</span>
-        </div>
-
-        <ul class="audience-short">
-          <li>Quem vende marmita em casa</li>
-          <li>Quem vende pelo WhatsApp ou Instagram</li>
-          <li>Quem sente que vende muito e sobra pouco</li>
-          <li>Quem coloca preço no achismo</li>
-        </ul>
+      <p class="section-label">Así se ven</p>
+      <h2>Paletas caseras que puedes preparar con el kit</h2>
+      <p class="section-text">En vaso, con fruta visible y acabado cremoso — el estilo que más se vende por WhatsApp.</p>
+      <div class="visual-grid">
+        <figure class="visual-card">
+          <img src="/paletas/hero-fresas-crema.png" alt="Paletas de fresas con crema en vaso" class="visual-card-img crop-cups" width="320" height="280" loading="lazy">
+          <figcaption>Fresas con crema</figcaption>
+        </figure>
+        <figure class="visual-card">
+          <img src="/paletas/paleta-banhada.png" alt="Paleta casera bañada en salsa de fresa" class="visual-card-img crop-dip" width="320" height="280" loading="lazy">
+          <figcaption>Bañadas en salsa</figcaption>
+        </figure>
+        <figure class="visual-card">
+          <img src="/paletas/preparacion-vaso.png" alt="Preparación de paletas en vaso con fruta" class="visual-card-img crop-cups" width="320" height="280" loading="lazy">
+          <figcaption>Preparación en vaso</figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
-  <!-- Agitação da dor -->
-  <section class="section example lazy-section">
+  <!-- 2. Problema -->
+  <section class="section problem lazy-section">
     <div class="container">
-      <h2>Uma marmita de R$18 pode não dar o lucro que você imagina</h2>
+      <p class="section-label">● El problema real</p>
+      <h2>Vender paletas parece simple… hasta que llega la pregunta más difícil: ¿cuánto cobro?</h2>
       <p class="section-text">
-        Muita gente olha só para arroz, feijão e carne. Mas quando coloca embalagem, gás, tempero, entrega, taxa e desperdício na conta, o lucro pode ser muito menor do que parecia.
+        Muchas personas intentan vender postres o paletas desde casa, pero terminan improvisando. No saben qué sabores ofrecer, cuánto gastar, cuánto cobrar, cómo armar un menú o qué publicar en WhatsApp. Y cuando cobran “a ojo”, pueden trabajar mucho y ganar poco.
       </p>
-
-      <div class="breakdown insert-reveal">
-        <div class="breakdown-row">
-          <span>Preço de venda</span>
-          <strong>R$ 18,00</strong>
-        </div>
-        <div class="breakdown-row">
-          <span>Ingredientes por unidade</span>
-          <strong>R$ 10,20</strong>
-        </div>
-        <div class="breakdown-row">
-          <span>Embalagem</span>
-          <strong>R$ 1,20</strong>
-        </div>
-        <div class="breakdown-row">
-          <span>Gás, tempero e energia</span>
-          <strong>R$ 0,90</strong>
-        </div>
-        <div class="breakdown-row">
-          <span>Entrega ou taxa</span>
-          <strong>R$ 2,00</strong>
-        </div>
-        <div class="breakdown-row">
-          <span>Desperdício e sobra</span>
-          <strong>R$ 0,80</strong>
-        </div>
-        <div class="breakdown-row breakdown-total">
-          <span>Custo real</span>
-          <strong class="cost">R$ 15,10</strong>
-        </div>
-        <div class="breakdown-row breakdown-profit">
-          <span>Lucro real</span>
-          <strong class="profit">R$ 2,90</strong>
-        </div>
-      </div>
-
-      <p class="example-closing">
-        Agora imagina vender 20 marmitas no dia e descobrir que trabalhou horas para sobrar muito menos do que parecia.
-      </p>
-    </div>
-  </section>
-
-  <!-- 6. Reframe -->
-  <section class="section pain lazy-section">
-    <div class="container">
-      <div class="section-head">
-        <p class="section-label">● A dor real</p>
-        <h2>Às vezes você não precisa vender mais. Precisa parar de vender errado.</h2>
-        <p class="section-text">
-          Muita gente vende 20, 30 ou 40 marmitas por dia e mesmo assim termina o mês apertada. O problema é que o preço foi colocado no achismo. E quando você esquece embalagem, gás, entrega, taxa e desperdício, o lucro some sem você perceber.
-        </p>
-      </div>
-      <ul class="pain-list">
+      <ul class="pain-list pain-list-compact">
         <li>
           <span class="pain-icon pain-icon-pack" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </span>
           <div>
-            <strong>Embalagem e descartáveis</strong>
-            <p>Cada unidade tem um custo que muita gente esquece.</p>
+            <strong>No sabes qué recetas elegir</strong>
+            <p>Te pierdes entre muchas ideas y no sabes por dónde empezar.</p>
           </div>
         </li>
         <li>
           <span class="pain-icon pain-icon-fire" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20c0-3 1.5-4.5 2-6 .5-1.5 0-3-1-4"/><path d="M12 20c0-4 2-6 2.5-8 .5-2 0-4-1.5-5.5"/><path d="M16 20c0-2.5 1-4 1.5-5.5.5-1.5 0-3-1-4"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           </span>
           <div>
-            <strong>Gás, tempero e energia</strong>
-            <p>Eles entram no preparo, mas quase nunca entram na conta.</p>
+            <strong>No sabes si estás cobrando barato</strong>
+            <p>Vendes, pero no sabes si realmente te queda ganancia.</p>
           </div>
         </li>
         <li>
           <span class="pain-icon pain-icon-delivery" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
           </span>
           <div>
-            <strong>Entrega, taxa e aplicativo</strong>
-            <p>Comissão e frete comem sua margem sem você perceber.</p>
+            <strong>No tienes un menú listo para ofrecer</strong>
+            <p>Te cuesta mostrar tus sabores y precios de forma clara.</p>
           </div>
         </li>
         <li>
           <span class="pain-icon pain-icon-waste" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </span>
           <div>
-            <strong>Desperdício e sobra</strong>
-            <p>O que vai para o lixo também sai do seu bolso.</p>
+            <strong>Te da miedo publicar y que nadie compre</strong>
+            <p>No sabes qué decir ni cómo ofrecer tus paletas.</p>
           </div>
         </li>
       </ul>
     </div>
   </section>
 
-  <!-- 7. O que você recebe (consolidado) -->
-  <section class="section you-receive lazy-section">
+  <!-- 3. Virada -->
+  <section class="section turnaround lazy-section">
     <div class="container">
-      <h2>O que você recebe</h2>
-      <p class="section-text">É uma <strong>ferramenta online</strong> que abre no celular. Não é PDF, não é planilha, não é curso com dezenas de aulas.</p>
+      <div class="turnaround-box insert-reveal">
+        <p class="section-label">● La solución simple</p>
+        <h2>No necesitas una tienda. Necesitas un menú claro, precios calculados y mensajes listos para vender.</h2>
+        <p class="section-text">
+          Paletas de WhatsApp fue creado para ayudarte a empezar de forma simple: preparas recetas fáciles, calculas tus precios, armas tu menú y publicas en WhatsApp con textos listos.
+        </p>
+      </div>
+    </div>
+  </section>
 
-      <ol class="receive-steps">
-        <li class="receive-step">
-          <span class="receive-num">1</span>
-          <div>
-            <strong>Compre e acesse na hora</strong>
-            <p>Após o pagamento na Kiwify, você cai direto na calculadora — no celular, sem instalar nada.</p>
-          </div>
-        </li>
-        <li class="receive-step">
-          <span class="receive-num">2</span>
-          <div>
-            <strong>Preencha seus custos</strong>
-            <p>Ingredientes, embalagem, gás, entrega e outros gastos.</p>
-          </div>
-        </li>
-        <li class="receive-step">
-          <span class="receive-num">3</span>
-          <div>
-            <strong>Informe quantas marmitas você fez</strong>
-            <p>A calculadora divide tudo automaticamente por unidade.</p>
-          </div>
-        </li>
-        <li class="receive-step">
-          <span class="receive-num">4</span>
-          <div>
-            <strong>Veja seu lucro real</strong>
-            <p>Custo, margem, lucro e preço recomendado na hora.</p>
-          </div>
-        </li>
-      </ol>
+  <!-- 4. Producto -->
+  <section class="section product-kit lazy-section">
+    <div class="container">
+      <h2>¿Qué recibes dentro del Kit Paletas de WhatsApp?</h2>
+      <p class="section-text">Un mini negocio listo para empezar desde tu cocina, sin abrir una tienda.</p>
 
-      <ul class="receive-features">
-        <li><span class="check">✓</span> Calculadora online de lucro da marmita</li>
-        <li><span class="check">✓</span> Simulador de preço ideal</li>
-        <li><span class="check">✓</span> Cálculo de margem de lucro</li>
-        <li><span class="check">✓</span> Lista de custos escondidos</li>
-        <li><span class="check">✓</span> Guia rápido de preço</li>
-        <li><span class="check">✓</span> Acesso imediato após a compra — abre direto no celular</li>
-        <li><span class="check">✓</span> Acesso online sem mensalidade — pague uma vez e use quando quiser</li>
+      <div class="product-grid">
+        <article class="product-card product-card-visual">
+          <img src="/paletas/hero-fresas-crema.png" alt="" class="product-card-photo crop-cups" loading="lazy">
+          <h3>30 Recetas de Paletas en Vaso</h3>
+          <p>Fresas con crema, frutales, bañadas y estilo postre — con moldes simples desde tu cocina.</p>
+        </article>
+        <article class="product-card product-card-featured">
+          <span class="product-card-badge">Diferencial</span>
+          <span class="product-card-icon" aria-hidden="true">🧮</span>
+          <h3>Calculadora de Precios Rentables</h3>
+          <p>Calcula costo, precio sugerido y margen para no cobrar “a ojo”.</p>
+        </article>
+        <article class="product-card product-card-visual">
+          <img src="/paletas/paleta-banhada.png" alt="" class="product-card-photo crop-dip" loading="lazy">
+          <h3>Guía de Menú para WhatsApp</h3>
+          <p>Aprende a mostrar tus sabores — cremosas, bañadas y frutales — con precios claros.</p>
+        </article>
+        <article class="product-card">
+          <span class="product-card-icon" aria-hidden="true">💬</span>
+          <h3>Mensajes Listos</h3>
+          <p>Textos para publicar en estados, enviar a clientes y promocionar tus paletas.</p>
+        </article>
+        <article class="product-card">
+          <span class="product-card-icon" aria-hidden="true">🛒</span>
+          <h3>Lista de Compras Inicial</h3>
+          <p>Ingredientes, materiales y utensilios básicos para empezar sin complicarte.</p>
+        </article>
+        <article class="product-card">
+          <span class="product-card-icon" aria-hidden="true">📅</span>
+          <h3>Plan de 7 Días</h3>
+          <p>Un paso a paso simple para organizar tu primera semana de ventas.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Método 3P -->
+  <section class="section mechanism lazy-section">
+    <div class="container">
+      <h2>El Método 3P para empezar simple</h2>
+      <div class="method-grid">
+        <article class="method-card">
+          <span class="method-num">1</span>
+          <h3>Preparar</h3>
+          <p>Elige recetas simples y visuales que puedas hacer desde casa.</p>
+        </article>
+        <article class="method-card method-card-highlight">
+          <span class="method-num">2</span>
+          <h3>Precio</h3>
+          <p>Usa la calculadora para saber cuánto cobrar por cada paleta.</p>
+        </article>
+        <article class="method-card">
+          <span class="method-num">3</span>
+          <h3>Publicar</h3>
+          <p>Arma tu menú y usa mensajes listos para ofrecer tus paletas por WhatsApp.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo calculadora (componente del kit) -->
+  <section class="demo-section lazy-section" id="demo">
+    <div class="container">
+      <p class="section-label">Herramienta incluida</p>
+      <h2>Prueba la Calculadora de Precios Rentables</h2>
+      <p class="section-text demo-intro">Sin registro. Ajusta los valores como si fueran los tuyos y ve cuánto deberías cobrar.</p>
+
+      <div class="demo-widget" id="lp-demo">
+        <div class="demo-inputs is-collapsed" id="demo-inputs">
+          <label class="demo-field">
+            <span>Precio de venta (US$)</span>
+            <input type="text" inputmode="decimal" data-demo="sellingPrice" value="2.50" autocomplete="off">
+          </label>
+          <label class="demo-field">
+            <span>Ingredientes por paleta (US$)</span>
+            <input type="text" inputmode="decimal" data-demo="foodCost" value="0.85" autocomplete="off">
+          </label>
+          <label class="demo-field demo-extra">
+            <span>Empaque por paleta (US$)</span>
+            <input type="text" inputmode="decimal" data-demo="packaging" value="0.15" autocomplete="off">
+          </label>
+          <label class="demo-field demo-extra">
+            <span>Extras (hielo, gas, energía) (US$)</span>
+            <input type="text" inputmode="decimal" data-demo="gasSpices" value="0.20" autocomplete="off">
+          </label>
+          <label class="demo-field demo-extra">
+            <span>Entrega o envío (US$)</span>
+            <input type="text" inputmode="decimal" data-demo="delivery" value="0.30" autocomplete="off">
+          </label>
+          <label class="demo-field demo-extra">
+            <span>Desperdicio por paleta (US$)</span>
+            <input type="text" inputmode="decimal" data-demo="waste" value="0.10" autocomplete="off">
+          </label>
+          <label class="demo-field demo-extra">
+            <span>Paletas por día</span>
+            <input type="text" inputmode="numeric" data-demo="marmitasPerDay" value="25" autocomplete="off">
+          </label>
+          <input type="hidden" data-demo="targetMargin" value="40">
+        </div>
+        <button type="button" class="demo-expand-btn" id="demo-expand-btn">Ver más costos</button>
+
+        <div class="demo-results">
+          <div class="demo-result-main" data-out-card="profit">
+            <span class="calc-label">Tu ganancia por paleta</span>
+            <span class="calc-value green" data-out="profit">US$ 0.90</span>
+          </div>
+          <div class="demo-result-grid">
+            <div class="demo-result-item">
+              <span class="calc-label">Costo real</span>
+              <span class="calc-value" data-out="cost">US$ 1.60</span>
+            </div>
+            <div class="demo-result-item">
+              <span class="calc-label">Margen actual</span>
+              <span class="calc-value warn" data-out="margin">36,0%</span>
+            </div>
+            <div class="demo-result-item wide">
+              <span class="calc-label" data-out="daily-label">Ganancia del día</span>
+              <span class="calc-value green" data-out="daily">US$ 22.50</span>
+            </div>
+            <p class="demo-impact" data-out="impact">25 paletas/día × US$ 0.90 = US$ 22.50 de ganancia aproximada por día</p>
+            <div class="demo-result-item wide alert-card" data-out="alert-box" hidden>
+              <span class="calc-label">⚠️ Alerta</span>
+              <span class="calc-value alert" data-out="alert-text"></span>
+            </div>
+            <div class="demo-result-item wide price-rec">
+              <span class="calc-label">Precio sugerido</span>
+              <span class="calc-value orange" data-out="ideal">US$ 2.67</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-demo-offer">
+        <p class="post-demo-lead">Esta calculadora viene incluida en el kit, junto con recetas, menú y mensajes listos para empezar a vender.</p>
+        <a href="#" class="btn btn-primary btn-large" data-checkout>Quiero mi Kit de Paletas</a>
+        <p class="cta-note">Acceso digital inmediato · empieza hoy desde tu casa</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Para quien es -->
+  <section class="section audience-yes lazy-section">
+    <div class="container">
+      <h2>Este kit es para ti si…</h2>
+      <ul class="checklist">
+        <li><span class="check">✓</span> Quieres empezar algo pequeño desde casa</li>
+        <li><span class="check">✓</span> Te gusta preparar postres simples</li>
+        <li><span class="check">✓</span> No sabes qué vender</li>
+        <li><span class="check">✓</span> Tienes WhatsApp y quieres usarlo para ofrecer tus productos</li>
+        <li><span class="check">✓</span> Quieres aprender a calcular precios sin complicarte</li>
+        <li><span class="check">✓</span> Quieres un material práctico, directo y fácil de seguir</li>
       </ul>
     </div>
   </section>
 
-  <!-- 8. Bônus -->
+  <!-- 7. Para quien NO es -->
+  <section class="section audience-no lazy-section">
+    <div class="container">
+      <h2>Este kit no es para ti si…</h2>
+      <ul class="not-list">
+        <li>✗ Buscas una promesa de dinero garantizado</li>
+        <li>✗ No quieres preparar nada</li>
+        <li>✗ Esperas resultados sin publicar ni ofrecer</li>
+        <li>✗ Quieres un curso largo y avanzado de pastelería profesional</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 8. Incluido -->
   <section class="section bonus-stack lazy-section">
     <div class="container">
-      <p class="section-label">Bônus incluso no preço de lançamento</p>
-      <h2>Cardápio Lucrativo de 30 Dias: incluso hoje</h2>
-      <p class="section-text">Ideias simples de pratos para variar o cardápio sem perder margem — vem junto na compra de hoje.</p>
-
-      <div class="value-stack insert-reveal">
-        <div class="value-row">
-          <span>Calculadora Marmita Lucrativa (acesso completo)</span>
-          <strong>R$ 27</strong>
-        </div>
-        <div class="value-row value-bonus">
-          <span>Cardápio Lucrativo de 30 Dias</span>
-          <strong class="value-included">Incluso hoje</strong>
-        </div>
-        <div class="value-row value-total">
-          <span>Total hoje</span>
-          <strong>R$ 27</strong>
-        </div>
-      </div>
+      <p class="section-label">Todo en uno</p>
+      <h2>Todo lo que necesitas para empezar, en un solo kit</h2>
+      <ul class="bonus-list">
+        <li><span class="check bonus">✓</span> Guía para armar tu menú en WhatsApp</li>
+        <li><span class="check bonus">✓</span> Checklist de producción</li>
+        <li><span class="check bonus">✓</span> Mensajes listos para publicar</li>
+        <li><span class="check bonus">✓</span> Lista de compras inicial</li>
+      </ul>
     </div>
   </section>
 
-  <!-- Autoridade + para quem é (completo) -->
-  <section class="section trust-origin lazy-section">
+  <!-- 9. Oferta -->
+  <section class="section offer lazy-section" id="oferta">
     <div class="container">
-      <h2>Feita por quem conhece a rotina da marmita</h2>
-      <p class="section-text">
-        Não nasceu de planilha genérica nem de curso teórico. Surgiu da necessidade real de quem vende marmita em casa — pelo WhatsApp, pro bairro, pra vizinho — e precisava saber, de forma simples, se valia a pena continuar no preço que estava cobrando.
-      </p>
-      <p class="section-text trust-note">
-        A ideia é direta: você preenche seus custos e enxerga na hora se está lucrando de verdade ou trabalhando quase de graça.
-      </p>
-
-      <div class="audience-full">
-        <h3>Para quem é</h3>
-        <ul class="audience-list">
-          <li>✅ Quem vende marmita em casa</li>
-          <li>✅ Quem vende pelo WhatsApp ou Instagram</li>
-          <li>✅ Quem está começando agora</li>
-          <li>✅ Quem sente que vende muito e sobra pouco</li>
-          <li>✅ Quem coloca preço no achismo</li>
+      <div class="offer-card insert-reveal">
+        <span class="offer-tag">Kit completo</span>
+        <h2>Empieza hoy con el Kit Paletas de WhatsApp</h2>
+        <ul class="offer-summary">
+          <li>30 recetas de paletas en vaso</li>
+          <li>Calculadora de precios rentables</li>
+          <li>Guía de menú para WhatsApp</li>
+          <li>Mensajes listos para publicar</li>
+          <li>Lista de compras y checklist</li>
+          <li>Plan de 7 días paso a paso</li>
         </ul>
+        <div class="price-box">
+          <span class="price-label">Precio único</span>
+          <span class="price" data-price>US$ 5</span>
+          <span class="price-note">Pago único · acceso digital inmediato</span>
+        </div>
+        <a href="#" class="btn btn-primary btn-large" data-checkout>Quiero mi Kit de Paletas</a>
+        <p class="cta-note offer-note">Acceso digital. Sin envío físico.</p>
       </div>
     </div>
   </section>
 
-  <!-- 9. Garantia completa -->
+  <!-- 10. Garantia -->
   <section class="section guarantee-block lazy-section">
     <div class="container">
       <div class="guarantee-card">
-        <div class="guarantee-badge">Garantia incondicional</div>
-        <h2>7 dias para testar sem risco</h2>
-        <p>Você tem 7 dias para pedir reembolso dentro do prazo de garantia.</p>
-        <ul class="guarantee-list">
-          <li>Reembolso total, não parcial</li>
-          <li>Sem precisar justificar</li>
-          <li>O risco é nosso, não seu</li>
-        </ul>
+        <div class="guarantee-badge">Garantía simple</div>
+        <h2>Garantía de 7 días</h2>
+        <p>Si el material no es lo que esperabas, puedes solicitar tu reembolso dentro de los primeros 7 días según las condiciones del checkout.</p>
       </div>
     </div>
   </section>
 
-  <!-- CTA final -->
+  <!-- 11. FAQ -->
+  <section class="section faq lazy-section">
+    <div class="container">
+      <h2>Preguntas frecuentes</h2>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button type="button" class="faq-question" aria-expanded="false">
+            ¿Necesito experiencia en pastelería?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>No. El kit está pensado para principiantes que quieren empezar con recetas simples y un método claro.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" aria-expanded="false">
+            ¿Necesito abrir una tienda?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>No. La idea es empezar desde casa y ofrecer por WhatsApp, sin local ni inversión grande.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" aria-expanded="false">
+            ¿La calculadora garantiza ganancias?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>No. La calculadora te ayuda a organizar costos y precios, pero los resultados dependen de tus ingredientes, precios, ejecución y ventas.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" aria-expanded="false">
+            ¿Recibo algo físico?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>No. Es un producto digital. Recibes acceso inmediato después de la confirmación del pago.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" aria-expanded="false">
+            ¿Puedo usar desde el celular?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Sí. El material puede abrirse desde celular, tablet o computadora.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button type="button" class="faq-question" aria-expanded="false">
+            ¿En cuánto tiempo recibo el acceso?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Después de la confirmación del pago, recibes el acceso digital de forma inmediata.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. CTA final -->
   <section class="section final-cta">
     <div class="container">
-      <h2>Chega de trabalhar e não saber se está lucrando.</h2>
-      <p>Descubra seus números hoje e cobre o preço certo amanhã.</p>
+      <h2>Deja de cobrar “a ojo” y empieza con un menú claro.</h2>
+      <p>Recibe recetas, precios y mensajes listos para organizar tus primeras ventas de paletas desde casa.</p>
       <div class="final-cta-row">
-        <a href="#" class="btn btn-primary btn-large" data-checkout>Quero parar de vender no achismo — R$ 27</a>
+        <a href="#" class="btn btn-primary btn-large" data-checkout data-checkout-custom>Quiero mi Kit de Paletas</a>
         <ul class="final-cta-perks">
-          <li>Calculadora completa + cardápio</li>
-          <li>7 dias de garantia</li>
-          <li>R$ 27 hoje</li>
+          <li>30 recetas + calculadora + menú</li>
+          <li>Mensajes listos para WhatsApp</li>
+          <li>7 días de garantía · <span data-price>US$ 5</span></li>
         </ul>
       </div>
     </div>
@@ -413,17 +497,17 @@
   <div id="purchase-sticky" class="purchase-sticky">
     <div class="container purchase-sticky-inner">
       <div class="purchase-sticky-text">
-        <strong>R$ 27</strong>
-        <span>Preço de lançamento · pode subir</span>
+        <strong data-price>US$ 5</strong>
+        <span>Kit completo · acceso inmediato</span>
       </div>
-      <a href="#" class="btn btn-primary btn-large" data-checkout>Quero parar de vender no achismo — R$ 27</a>
+      <a href="#" class="btn btn-primary btn-large" data-checkout data-checkout-custom>Quiero mi Kit de Paletas</a>
     </div>
   </div>
 
   <footer class="footer">
     <div class="container">
-      <p>© 2026 Calculadora Marmita Lucrativa. Todos os direitos reservados.</p>
-      <p class="footer-login"><a href="/app.html" class="stealth-link">Entrar na calculadora</a></p>
+      <p>© 2026 Paletas de WhatsApp. Todos los derechos reservados.</p>
+      <p class="footer-login"><a href="/app.html" class="stealth-link">Acceder al kit</a></p>
     </div>
   </footer>
 

@@ -745,12 +745,12 @@ body.drawer-open { overflow: hidden; }
 .btn:active { transform: scale(0.98); }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 55%, var(--orange-dark) 100%);
   color: var(--white);
   padding: 15px 20px;
   min-height: 52px;
   font-size: 0.95rem;
-  box-shadow: 0 4px 16px rgba(232, 101, 26, 0.28);
+  box-shadow: 0 4px 16px rgba(232, 67, 122, 0.28);
 }
 
 .btn-primary svg { width: 18px; height: 18px; }
@@ -1709,4 +1709,197 @@ body.onboarding-open {
 
   .calc-footer-inner { flex-direction: column; }
   .calc-footer-inner .btn-ghost { width: 100%; }
+}
+
+/* ── Kit hub ── */
+.app-logo-emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.kit-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  margin-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.kit-nav::-webkit-scrollbar { display: none; }
+
+.kit-nav-btn {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  min-width: 64px;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--gray);
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.kit-nav-btn.active {
+  color: var(--pink);
+  background: var(--pink-light);
+  border-color: rgba(232, 67, 122, 0.3);
+}
+
+.kit-nav-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.kit-content .section-card + .section-card {
+  margin-top: 12px;
+}
+
+.message-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message-item {
+  background: var(--gray-light);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.message-item p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--brown-mid);
+  margin: 0 0 10px;
+}
+
+.plan-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plan-day {
+  background: var(--gray-light);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+
+.plan-day-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.plan-day-num {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--pink);
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.plan-day ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.plan-day li {
+  font-size: 0.86rem;
+  color: var(--brown-mid);
+  line-height: 1.45;
+  margin-bottom: 4px;
+}
+
+.kit-checklist {
+  list-style: none;
+  margin: 8px 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kit-checklist li {
+  font-size: 0.88rem;
+  color: var(--brown-mid);
+  padding: 10px 12px;
+  background: var(--gray-light);
+  border-radius: var(--radius-xs);
+  line-height: 1.4;
+}
+
+.kit-checklist.interactive li {
+  padding: 0;
+  background: none;
+}
+
+.checklist-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--gray-light);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.checklist-label input {
+  margin-top: 3px;
+  flex-shrink: 0;
+  accent-color: var(--pink);
+}
+
+.kit-content h3 {
+  font-size: 0.92rem;
+  margin: 12px 0 8px;
+  color: var(--brown);
+}
+
+.menu-item-type {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pink);
+  background: var(--pink-light);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.menu-item-name {
+  display: block;
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--brown);
+  margin: 6px 0 4px;
+}
+
+.menu-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }

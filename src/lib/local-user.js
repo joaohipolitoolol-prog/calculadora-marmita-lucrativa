@@ -1,11 +1,11 @@
-/** Usuário local enquanto login/cadastro não está ativo */
+/** Usuario local mientras login/cadastro no está activo */
 export const LOCAL_USER = {
-  uid: 'marmita_local',
-  displayName: 'Minha Marmita',
+  uid: 'paletas_local',
+  displayName: 'Mi Kit',
   email: '',
 };
 
 export function getUserLabel(user) {
-  if (!user) return 'Minha Marmita';
-  return user.displayName || user.email?.split('@')[0] || 'Minha Marmita';
+  if (!user) return 'Mi Kit';
+  return user.displayName || user.email?.split('@')[0] || 'Mi Kit';
 }

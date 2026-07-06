@@ -1,30 +1,34 @@
-/** Link de checkout Kiwify */
+/** Link de checkout — atualizar quando tiver o link LATAM */
 export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
 
-/** Página de obrigado na Kiwify — redirecionar comprador para cá */
+/** Página pós-compra */
 export const POST_PURCHASE_URL = 'https://calculadora-marmita-lucrativa.vercel.app/app.html?compra=1';
 
-/** WhatsApp suporte / upsell pós-compra (+44 UK) */
+/** WhatsApp suporte pós-compra */
 export const WHATSAPP_NUMBER = '447402867442';
 
 export const WHATSAPP_PURCHASE_MESSAGE =
-  'Olá! Acabei de adquirir a Calculadora Marmita Lucrativa. Pode me ajudar a começar?';
+  '¡Hola! Acabo de comprar el Kit Paletas de WhatsApp. ¿Me ayudas a empezar?';
 
 export function getWhatsAppLink(message = WHATSAPP_PURCHASE_MESSAGE) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-/** Cole este link no upsell da Kiwify */
 export const WHATSAPP_PURCHASE_LINK = getWhatsAppLink();
 
-/** Ícone do produto (calculadora) */
-export const PRODUCT_ICON = '/product-icon.png';
+export const PRODUCT_ICON = '/favicon.svg';
 
-/** Meta Pixel — painel de anúncios Meta */
 export const META_PIXEL_ID = '1369803401885896';
 
-/** Texto do CTA no hero — produto explícito na primeira dobra */
-export const HERO_CTA_LABEL = 'Quero descobrir meu lucro por R$ 27';
+/** Preço principal em USD — fonte única para LP e pixel */
+export const MAIN_PRICE = 5;
+export const MAIN_PRICE_LABEL = 'US$ 5';
 
-/** Texto único de CTA — demais botões da página */
-export const CTA_LABEL = 'Quero parar de vender no achismo — R$ 27';
+/** URL do site — usada no og:image (atualizar com seu domínio) */
+export const SITE_URL = 'https://calculadora-marmita-lucrativa.vercel.app';
+
+export const OG_IMAGE = `${SITE_URL}/paletas/hero-fresas-crema.png`;
+
+export const HERO_CTA_LABEL = 'Quiero mi Kit de Paletas';
+
+export const CTA_LABEL = HERO_CTA_LABEL;

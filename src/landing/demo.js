@@ -1,9 +1,15 @@
-import { money, percent } from '../lib/format.js';
+import { percent } from '../lib/format.js';
 
-const DEFAULT_TARGET_MARGIN = 30;
+const DEFAULT_TARGET_MARGIN = 40;
 const MAX_TARGET_MARGIN = 80;
 
-/** Converte "10,20", "10.20" ou "R$ 10,20" em número. Vazio → 0. */
+function moneyDemo(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 'US$ 0.00';
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+
+/** Converte "1,20", "1.20" ou "US$ 1.20" em número. Vazio → 0. */
 export function parseDemoValue(value) {
   if (value === null || value === undefined) return 0;
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
@@ -11,14 +17,13 @@ export function parseDemoValue(value) {
   let s = String(value).trim();
   if (!s) return 0;
 
-  s = s.replace(/R\$\s?/gi, '').replace(/\s/g, '');
+  s = s.replace(/US\$\s?/gi, '').replace(/\$\s?/g, '').replace(/\s/g, '');
   if (!s) return 0;
 
   const hasComma = s.includes(',');
   const hasDot = s.includes('.');
 
   if (hasComma && hasDot) {
-    // Formato brasileiro: 1.234,56
     s = s.replace(/\./g, '').replace(',', '.');
   } else if (hasComma) {
     s = s.replace(',', '.');
@@ -40,55 +45,54 @@ function resolveTargetMargin(raw) {
 }
 
 function calcDemo(values) {
-  const precoVenda = parseDemoValue(values.sellingPrice);
+  const precioVenta = parseDemoValue(values.sellingPrice);
   const ingredientes = parseDemoValue(values.foodCost);
-  const embalagem = parseDemoValue(values.packaging);
-  const gasEnergia = parseDemoValue(values.gasSpices);
-  const entregaTaxa = parseDemoValue(values.delivery);
+  const empaque = parseDemoValue(values.packaging);
+  const extras = parseDemoValue(values.gasSpices);
+  const entrega = parseDemoValue(values.delivery);
   const desperdicio = parseDemoValue(values.waste);
-  const marmitasPorDia = parseDemoValue(values.marmitasPerDay);
+  const paletasPorDia = parseDemoValue(values.marmitasPerDay);
 
-  const { margin: margemDesejada, capped: margemCapped } = resolveTargetMargin(values.targetMargin);
+  const { margin: margenDeseada, capped: margenCapped } = resolveTargetMargin(values.targetMargin);
 
-  const custoReal =
-    ingredientes + embalagem + gasEnergia + entregaTaxa + desperdicio;
-  const lucroUnidade = precoVenda - custoReal;
-  const margemAtual = precoVenda > 0 ? (lucroUnidade / precoVenda) * 100 : 0;
-  const lucroDia = lucroUnidade * marmitasPorDia;
-  const precoRecomendado = custoReal / (1 - margemDesejada / 100);
+  const costoReal = ingredientes + empaque + extras + entrega + desperdicio;
+  const gananciaUnidad = precioVenta - costoReal;
+  const margenActual = precioVenta > 0 ? (gananciaUnidad / precioVenta) * 100 : 0;
+  const gananciaDia = gananciaUnidad * paletasPorDia;
+  const precioRecomendado = costoReal / (1 - margenDeseada / 100);
 
   let status = 'lucro';
   const alerts = [];
 
-  if (margemCapped) {
-    alerts.push('Margem desejada limitada a 80% para calcular o preço recomendado.');
+  if (margenCapped) {
+    alerts.push('Margen deseado limitado al 80% para calcular el precio sugerido.');
   }
 
-  if (lucroUnidade < 0) {
+  if (gananciaUnidad < 0) {
     status = 'prejuizo';
     alerts.push(
-      `Cada marmita sai ${money(Math.abs(lucroUnidade))} abaixo do custo`
+      `Cada paleta sale ${moneyDemo(Math.abs(gananciaUnidad))} por debajo del costo`
     );
-  } else if (margemAtual < margemDesejada) {
+  } else if (margenActual < margenDeseada) {
     status = 'alerta';
-    alerts.push(`Sua margem está abaixo do ideal (${percent(margemDesejada)})`);
+    alerts.push(`Tu margen está por debajo del ideal (${percent(margenDeseada)})`);
   }
 
   let impactText = '';
-  if (marmitasPorDia > 0) {
-    if (lucroUnidade >= 0) {
-      impactText = `${marmitasPorDia} marmitas/dia × ${money(lucroUnidade)} = ${money(lucroDia)} no bolso por dia`;
+  if (paletasPorDia > 0) {
+    if (gananciaUnidad >= 0) {
+      impactText = `${paletasPorDia} paletas/día × ${moneyDemo(gananciaUnidad)} = ${moneyDemo(gananciaDia)} de ganancia aproximada por día`;
     } else {
-      impactText = `${marmitasPorDia} marmitas/dia × ${money(Math.abs(lucroUnidade))} de prejuízo = ${money(Math.abs(lucroDia))} saindo do bolso por dia`;
+      impactText = `${paletasPorDia} paletas/día × ${moneyDemo(Math.abs(gananciaUnidad))} de pérdida = ${moneyDemo(Math.abs(gananciaDia))} saliendo de tu bolsillo por día`;
     }
   }
 
   return {
-    custoReal,
-    lucroUnidade,
-    margemAtual,
-    lucroDia,
-    precoRecomendado,
+    costoReal,
+    gananciaUnidad,
+    margenActual,
+    gananciaDia,
+    precioRecomendado,
     status,
     alertText: alerts.join(' '),
     impactText,
@@ -110,15 +114,15 @@ function readValues(root) {
 }
 
 function renderResults(root, r) {
-  root.querySelector('[data-out="profit"]').textContent = money(r.lucroUnidade);
-  root.querySelector('[data-out="cost"]').textContent = money(r.custoReal);
-  root.querySelector('[data-out="margin"]').textContent = percent(r.margemAtual);
-  root.querySelector('[data-out="ideal"]').textContent = money(r.precoRecomendado);
-  root.querySelector('[data-out="daily"]').textContent = money(Math.abs(r.lucroDia));
+  root.querySelector('[data-out="profit"]').textContent = moneyDemo(r.gananciaUnidad);
+  root.querySelector('[data-out="cost"]').textContent = moneyDemo(r.costoReal);
+  root.querySelector('[data-out="margin"]').textContent = percent(r.margenActual);
+  root.querySelector('[data-out="ideal"]').textContent = moneyDemo(r.precioRecomendado);
+  root.querySelector('[data-out="daily"]').textContent = moneyDemo(Math.abs(r.gananciaDia));
 
   const dailyLabel = root.querySelector('[data-out="daily-label"]');
   if (dailyLabel) {
-    dailyLabel.textContent = r.lucroUnidade >= 0 ? 'Lucro do dia' : 'Prejuízo do dia';
+    dailyLabel.textContent = r.gananciaUnidad >= 0 ? 'Ganancia del día' : 'Pérdida del día';
   }
 
   const impactEl = root.querySelector('[data-out="impact"]');
@@ -138,10 +142,10 @@ function renderResults(root, r) {
   profitCard.classList.add(`status-${r.status}`);
 
   profitEl.classList.remove('green', 'red');
-  profitEl.classList.add(r.lucroUnidade >= 0 ? 'green' : 'red');
+  profitEl.classList.add(r.gananciaUnidad >= 0 ? 'green' : 'red');
 
   dailyEl.classList.remove('green', 'red');
-  dailyEl.classList.add(r.lucroUnidade >= 0 ? 'green' : 'red');
+  dailyEl.classList.add(r.gananciaUnidad >= 0 ? 'green' : 'red');
 
   marginEl.classList.remove('warn', 'green', 'red');
   marginEl.classList.add(
