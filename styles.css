@@ -690,10 +690,6 @@ h3 {
   background: var(--pink-light);
 }
 
-.hero-flavor-grid__item[loading="lazy"] {
-  content-visibility: auto;
-}
-
 .hero-visual {
   margin: 0 auto 12px;
   max-width: 100%;
@@ -2862,8 +2858,8 @@ h3 {
   font-weight: 800;
 }
 
-/* ===== Secondary button ===== */
-.btn-secondary {
+/* ===== Secondary button (LP only — evita conflito com app/login) ===== */
+.trust-kit-card .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2878,14 +2874,11 @@ h3 {
   transition: background var(--transition), color var(--transition);
   text-align: center;
   width: 100%;
-}
-
-.btn-secondary:hover {
-  background: var(--pink-light);
-}
-
-.trust-kit-card .btn-secondary {
   max-width: 100%;
+}
+
+.trust-kit-card .btn-secondary:hover {
+  background: var(--pink-light);
 }
 
 @media (min-width: 640px) {

@@ -52,8 +52,6 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
     link.textContent = CALC_CTA_LABEL;
   } else if (link.dataset.checkoutTrust !== undefined) {
     link.textContent = TRUST_CTA_LABEL;
-  } else if (link.dataset.checkoutSection !== undefined) {
-    link.textContent = HERO_CTA_LABEL;
   } else if (!link.dataset.checkoutCustom) {
     link.textContent = CTA_LABEL;
   }

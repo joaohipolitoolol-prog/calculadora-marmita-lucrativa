@@ -509,33 +509,8 @@ def build_checklist_html():
 
 
 def build_menu_html():
-    return f"""<!DOCTYPE html><html lang="es" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Menú Editable Paletas</title><style>
+    return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Menú Editable Paletas</title><style>
 {STYLES}
-[data-theme="dark"] {{
-  --crema: #1a1218; --chocolate: #fdf4ef; --gris: #b8a8a0; --gris-claro: #2a2228;
-  --rosa: #ff6b9d; --blanco: #2a2228;
-}}
-[data-theme="dark"] body {{ background: #120d0f; color: #fdf4ef; }}
-[data-theme="dark"] .page {{ background: #1a1218; }}
-[data-theme="dark"] .cover {{ background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }}
-[data-theme="dark"] .menu-modelo {{ background: #2a2228 !important; border-color: rgba(255,107,157,0.3); }}
-[data-theme="dark"] .mensaje {{ background: #1e2a22; }}
-[data-theme="dark"] input, [data-theme="dark"] textarea {{ color: #fdf4ef; }}
-.theme-float {{
-  position: fixed; top: 16px; right: 16px; z-index: 9999;
-  width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(255,79,139,0.3);
-  background: var(--blanco, #fff); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}}
-.theme-float svg {{ width: 22px; height: 22px; position: absolute; transition: 0.3s; }}
-.theme-float .icon-sun {{ color: #f5a623; }}
-.theme-float .icon-moon {{ color: #a78bfa; }}
-[data-theme="light"] .theme-float .icon-sun {{ opacity:1; transform:scale(1); }}
-[data-theme="light"] .theme-float .icon-moon {{ opacity:0; transform:scale(0.4); }}
-[data-theme="dark"] .theme-float .icon-sun {{ opacity:0; transform:scale(0.4); }}
-[data-theme="dark"] .theme-float .icon-moon {{ opacity:1; transform:scale(1); }}
-[data-theme="dark"] .theme-float {{ background: #2a2228; border-color: rgba(255,107,157,0.4); }}
 .menu-edit {{ max-width: 500px; margin: 0 auto; }}
 input, textarea {{ border: none; border-bottom: 2px dashed var(--rosa); background: transparent; font-family: inherit; font-size: inherit; color: var(--chocolate); width: 100%; padding: 4px; }}
 input:focus, textarea:focus {{ outline: 2px solid var(--rosa); border-radius: 4px; }}
@@ -551,13 +526,8 @@ input:focus, textarea:focus {{ outline: 2px solid var(--rosa); border-radius: 4p
   font-size: 13px; white-space: pre-wrap; display: none;
 }}
 .preview-box.visible {{ display: block; }}
-@media print {{ input, textarea {{ border-bottom: 1px solid #ccc; }} .btn-copy, .theme-float {{ display: none; }} }}
+@media print {{ input, textarea {{ border-bottom: 1px solid #ccc; }} .btn-copy {{ display: none; }} }}
 </style></head><body>
-
-<button type="button" class="theme-float" id="themeToggle" aria-label="Cambiar tema">
-  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-  <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
-</button>
 
 <div class="page cover"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
 
@@ -650,24 +620,143 @@ function generarPremium() {{
   ];
   copiar(t.join('\\n'), 'preview3');
 }}
-(function() {{
-  const KEY = 'paletas-kit-theme';
-  const root = document.documentElement;
-  const saved = localStorage.getItem(KEY);
-  if (saved) root.setAttribute('data-theme', saved);
-  else if (matchMedia('(prefers-color-scheme:dark)').matches) root.setAttribute('data-theme','dark');
-  document.getElementById('themeToggle').onclick = () => {{
-    const n = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', n);
-    localStorage.setItem(KEY, n);
-  }};
-}})();
 </script>
 </body></html>"""
 
 
 def build_entrega_html():
-    return (BUILD / "entrega.html").read_text(encoding="utf-8")
+    return """<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu Kit Paletas de WhatsApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rosa: #FF4F8B; --naranja: #FF7A1A; --crema: #FFF4E6;
+  --chocolate: #5C2E1F; --menta: #CFF7E2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: linear-gradient(160deg, var(--crema), #FFE8F0 50%, var(--menta));
+  min-height: 100vh; color: var(--chocolate);
+}
+.container { max-width: 720px; margin: 0 auto; padding: 32px 20px; }
+header { text-align: center; margin-bottom: 32px; }
+header .icon { font-size: 56px; }
+header h1 { font-size: 28px; font-weight: 800; margin: 12px 0 8px; }
+header p { color: #6B5E57; font-size: 15px; }
+.badge {
+  display: inline-block; background: var(--rosa); color: white;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 5px 14px; border-radius: 50px; margin-bottom: 16px;
+}
+.card {
+  background: white; border-radius: 18px; padding: 20px 24px;
+  margin-bottom: 14px; box-shadow: 0 4px 20px rgba(92,46,31,0.08);
+  display: flex; align-items: center; gap: 16px; text-decoration: none; color: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(92,46,31,0.12); }
+.card-icon { font-size: 32px; flex-shrink: 0; }
+.card-info h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.card-info p { font-size: 12px; color: #6B5E57; }
+.card-arrow { margin-left: auto; color: var(--rosa); font-weight: 800; font-size: 18px; }
+.section-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: #6B5E57; margin: 24px 0 12px;
+}
+.steps {
+  background: white; border-radius: 18px; padding: 20px 24px;
+  box-shadow: 0 4px 20px rgba(92,46,31,0.08);
+}
+.steps ol { margin-left: 20px; }
+.steps li { margin-bottom: 8px; font-size: 14px; }
+footer { text-align: center; margin-top: 32px; font-size: 12px; color: #6B5E57; }
+footer a { color: var(--rosa); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">Acceso confirmado</div>
+    <div class="icon">🍭</div>
+    <h1>¡Tu kit está listo!</h1>
+    <p>Paletas de WhatsApp — Recetas, precios y mensajes listos para empezar desde casa.</p>
+  </header>
+
+  <div class="section-title">Empieza por aquí (en orden)</div>
+  <div class="steps" style="margin-bottom:20px">
+    <ol>
+      <li><strong>Kit Principal</strong> — lee "Cómo usar este kit" (10 min)</li>
+      <li><strong>Calculadora</strong> — pon precios de tu ciudad</li>
+      <li><strong>Menú Editable</strong> — elige 3 a 5 sabores y copia el texto</li>
+      <li><strong>Plan de 7 Días</strong> — un paso por día</li>
+    </ol>
+  </div>
+
+  <div class="section-title">Descarga tus archivos</div>
+
+  <a class="card" href="produto/Kit_Paletas_de_WhatsApp.pdf" download>
+    <div class="card-icon">📘</div>
+    <div class="card-info"><h3>Kit Principal (PDF)</h3><p>30 recetas + guía completa</p></div>
+    <span class="card-arrow">↓</span>
+  </a>
+  <a class="card" href="produto/Calculadora_Precios_Paletas.xlsx" download>
+    <div class="card-icon">📊</div>
+    <div class="card-info"><h3>Calculadora de Precios</h3><p>Excel — también funciona en Google Sheets</p></div>
+    <span class="card-arrow">↓</span>
+  </a>
+  <a class="card" href="produto/Menu_Editable_Paletas.html" target="_blank">
+    <div class="card-icon">📋</div>
+    <div class="card-info"><h3>Menú Editable</h3><p>Completa y publica en WhatsApp</p></div>
+    <span class="card-arrow">→</span>
+  </a>
+  <a class="card" href="produto/Mensajes_para_Vender_Paletas.pdf" download>
+    <div class="card-icon">💬</div>
+    <div class="card-info"><h3>Mensajes para WhatsApp</h3><p>60 textos listos para copiar</p></div>
+    <span class="card-arrow">↓</span>
+  </a>
+  <a class="card" href="produto/Plan_7_Dias_Paletas.pdf" download>
+    <div class="card-icon">📅</div>
+    <div class="card-info"><h3>Plan de 7 Días</h3><p>Tu guía paso a paso</p></div>
+    <span class="card-arrow">↓</span>
+  </a>
+  <a class="card" href="produto/Checklist_Paletas.pdf" download>
+    <div class="card-icon">✅</div>
+    <div class="card-info"><h3>Checklist</h3><p>Compras, producción y venta</p></div>
+    <span class="card-arrow">↓</span>
+  </a>
+
+  <div class="section-title">Tips rápidos</div>
+  <div class="steps">
+    <ul style="margin-left:20px">
+      <li><strong>Calculadora en Google Sheets:</strong> sube el archivo .xlsx a Google Drive → Abrir con Hojas de cálculo</li>
+      <li><strong>Menú:</strong> usa el botón "Copiar menú" y pega directo en WhatsApp</li>
+      <li><strong>Empieza con 3 sabores</strong>, no con 30</li>
+    </ul>
+  </div>
+
+  <div class="section-title">Ruta de la primera semana</div>
+  <div class="steps">
+    <ol>
+      <li>Descarga el <strong>Kit Principal</strong> y léelo hasta la sección "Cómo usar este kit"</li>
+      <li>Abre la <strong>Calculadora</strong> y pon los precios de tu ciudad</li>
+      <li>Elige <strong>3 a 5 recetas</strong> y completa el <strong>Menú Editable</strong></li>
+      <li>Sigue el <strong>Plan de 7 Días</strong> — un paso por día</li>
+      <li>Usa los <strong>Mensajes</strong> para publicar en WhatsApp</li>
+    </ol>
+  </div>
+
+  <footer>
+    <p>Prepara. Calcula. Publica. 🍭</p>
+    <p style="margin-top:8px">¿Dudas? Escríbenos por WhatsApp desde tu correo de compra.</p>
+  </footer>
+</div>
+</body>
+</html>"""
 
 
 def style_header(ws, title, fill_color=ROSA):
