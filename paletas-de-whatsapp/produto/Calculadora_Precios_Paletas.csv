@@ -1,0 +1,8 @@
+Calculadora de Precios — Paletas de WhatsApp
+Ingrediente,Costo del paquete,Cantidad total,Cantidad usada,Costo usado
+,,,,=(B/C)*D
+
+Cantidad paletas,8
+Margen %,40
+Fórmula costo/paleta,=SUMA(costos_usados)/cantidad_paletas
+Fórmula precio,=costo_paleta/(1-margen/100)

@@ -1,8 +1,8 @@
 /** Link de checkout — atualizar quando tiver o link LATAM */
 export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
 
-/** Página pós-compra */
-export const POST_PURCHASE_URL = 'https://calculadora-marmita-lucrativa.vercel.app/app.html?compra=1';
+/** Página pós-compra — área de descarga del kit */
+export const POST_PURCHASE_URL = 'https://calculadora-marmita-lucrativa.vercel.app/paletas-de-whatsapp/entrega.html';
 
 /** WhatsApp suporte pós-compra */
 export const WHATSAPP_NUMBER = '447402867442';

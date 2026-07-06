@@ -1,0 +1,491 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Mensajes para Vender Paletas</title><style>@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --rosa: #FF4F8B;
+  --naranja: #FF7A1A;
+  --crema: #FFF4E6;
+  --chocolate: #5C2E1F;
+  --menta: #CFF7E2;
+  --fresa: #E63946;
+  --blanco: #FFFFFF;
+  --gris: #6B5E57;
+  --gris-claro: #F3EDE8;
+  --sombra: 0 4px 20px rgba(92, 46, 31, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: var(--chocolate);
+  background: var(--blanco);
+  font-size: 11pt;
+  line-height: 1.55;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 18mm 20mm;
+  page-break-after: always;
+  position: relative;
+  background: var(--blanco);
+}
+
+.page:last-child { page-break-after: auto; }
+
+/* CAPA */
+.cover {
+  background: linear-gradient(160deg, var(--crema) 0%, #FFE8F0 40%, var(--menta) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30mm 25mm;
+}
+
+.cover-badge {
+  background: var(--rosa);
+  color: white;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 50px;
+  margin-bottom: 20px;
+}
+
+.cover-icon {
+  font-size: 64pt;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.cover h1 {
+  font-size: 36pt;
+  font-weight: 800;
+  color: var(--chocolate);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.cover .subtitle {
+  font-size: 14pt;
+  color: var(--gris);
+  font-weight: 600;
+  max-width: 140mm;
+  margin-bottom: 28px;
+}
+
+.cover .tagline {
+  background: white;
+  border-radius: 16px;
+  padding: 14px 28px;
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--rosa);
+  box-shadow: var(--sombra);
+}
+
+.cover .method {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+}
+
+.cover .method span {
+  background: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--chocolate);
+  box-shadow: var(--sombra);
+}
+
+.cover-footer {
+  position: absolute;
+  bottom: 20mm;
+  font-size: 9pt;
+  color: var(--gris);
+}
+
+/* TIPOGRAFÍA */
+h2 {
+  font-size: 18pt;
+  font-weight: 800;
+  color: var(--chocolate);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--rosa);
+}
+
+h3 {
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--rosa);
+  margin: 16px 0 8px;
+}
+
+h4 {
+  font-size: 11pt;
+  font-weight: 700;
+  margin: 10px 0 6px;
+}
+
+p { margin-bottom: 10px; }
+
+ul, ol {
+  margin: 8px 0 12px 20px;
+}
+
+li { margin-bottom: 4px; }
+
+/* COMPONENTES */
+.section-tag {
+  display: inline-block;
+  background: var(--menta);
+  color: var(--chocolate);
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 50px;
+  margin-bottom: 10px;
+}
+
+.box {
+  background: var(--crema);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  border-left: 4px solid var(--naranja);
+}
+
+.box-rosa {
+  background: #FFF0F5;
+  border-left-color: var(--rosa);
+}
+
+.box-menta {
+  background: var(--menta);
+  border-left-color: #25A55A;
+}
+
+.box-aviso {
+  background: #FFF8E7;
+  border-left: 4px solid var(--naranja);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 10pt;
+  margin: 12px 0;
+}
+
+.steps {
+  counter-reset: step;
+  list-style: none;
+  margin-left: 0;
+}
+
+.steps li {
+  counter-increment: step;
+  padding: 10px 14px 10px 48px;
+  position: relative;
+  background: var(--gris-claro);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  background: var(--rosa);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 10pt;
+}
+
+/* RECETA CARD */
+.receta-card {
+  border: 2px solid var(--gris-claro);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  page-break-inside: avoid;
+}
+
+.receta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.receta-num {
+  background: var(--rosa);
+  color: white;
+  font-weight: 800;
+  font-size: 10pt;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.receta-title {
+  flex: 1;
+}
+
+.receta-title h3 {
+  margin: 0;
+  color: var(--chocolate);
+  font-size: 13pt;
+}
+
+.receta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.badge {
+  font-size: 8pt;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 50px;
+  text-transform: uppercase;
+}
+
+.badge-frutal { background: var(--menta); color: #1a6b3a; }
+.badge-cremosa { background: #FFF0F5; color: var(--rosa); }
+.badge-rellena { background: #FFF3EB; color: var(--naranja); }
+.badge-postre { background: #F3E8FF; color: #6B21A8; }
+.badge-facil { background: #E8F5EC; color: #1a6b3a; }
+.badge-media { background: #FFF8E7; color: #B45309; }
+
+.receta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.receta-grid .col-full { grid-column: 1 / -1; }
+
+.ingredientes {
+  background: var(--gris-claro);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.ingredientes ul { margin: 4px 0 0 16px; }
+
+.dica-vender {
+  background: linear-gradient(135deg, #FFF0F5, var(--crema));
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 10pt;
+  border: 1px dashed var(--rosa);
+}
+
+.precio-nota {
+  font-size: 9pt;
+  color: var(--gris);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* TABLAS */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 10pt;
+}
+
+th {
+  background: var(--rosa);
+  color: white;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 700;
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gris-claro);
+}
+
+tr:nth-child(even) td { background: var(--gris-claro); }
+
+/* ÍNDICE */
+.toc-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--gris-claro);
+  font-size: 11pt;
+}
+
+.toc-item span:last-child { color: var(--gris); }
+
+/* MENSAJES */
+.mensaje {
+  background: #E8F5E9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  font-size: 10pt;
+  border-left: 4px solid #25A55A;
+  page-break-inside: avoid;
+}
+
+.mensaje-cat {
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1a6b3a;
+  margin-bottom: 4px;
+}
+
+/* PLAN DÍAS */
+.dia-card {
+  background: var(--gris-claro);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  page-break-inside: avoid;
+}
+
+.dia-card h3 {
+  color: var(--chocolate);
+  margin: 0 0 8px;
+}
+
+.dia-num {
+  background: var(--naranja);
+  color: white;
+  font-size: 9pt;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+/* CHECKLIST */
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gris-claro);
+}
+
+.check-box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--rosa);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* MENÚ EDITABLE */
+.menu-modelo {
+  border: 2px dashed var(--rosa);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  background: var(--crema);
+  page-break-inside: avoid;
+}
+
+.menu-modelo h3 {
+  text-align: center;
+  color: var(--chocolate);
+  font-size: 16pt;
+  margin-bottom: 16px;
+}
+
+.menu-linea {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--chocolate);
+}
+
+.menu-linea .precio {
+  font-weight: 700;
+  color: var(--rosa);
+}
+
+.campo-editable {
+  border-bottom: 1px dashed var(--gris);
+  min-width: 80px;
+  display: inline-block;
+}
+
+/* HEADER PÁGINA */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--gris-claro);
+  font-size: 9pt;
+  color: var(--gris);
+}
+
+.page-header strong { color: var(--rosa); }
+
+/* COMBOS */
+.combo-list {
+  columns: 2;
+  column-gap: 20px;
+  list-style: none;
+  margin-left: 0;
+}
+
+.combo-list li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  break-inside: avoid;
+}
+
+.combo-list li::before {
+  content: '🍭';
+  position: absolute;
+  left: 0;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { page-break-after: always; }
+}
+</style></head><body>
+<div class="page cover"><div class="cover-icon">💬</div><h1>Mensajes para Vender Paletas</h1><p class="subtitle">50+ textos listos para copiar en WhatsApp</p></div>
+<div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><h2>A) Mensajes para anunciar menú</h2><div class="mensaje"><strong>1.</strong> 🍭 ¡Hola! Esta semana tengo paletas caseras listas. Sabores disponibles: [sabores]. Si quieres reservar, escríbeme por aquí.</div><div class="mensaje"><strong>2.</strong> Menú de paletas de la semana 👇 Cremosas, frutales y rellenas. Pregunta por precios y disponibilidad.</div><div class="mensaje"><strong>3.</strong> Preparé paletas frescas hoy. Te comparto el menú con sabores y precios. ¿Cuál te llama la atención?</div><div class="mensaje"><strong>4.</strong> Paletas hechas en casa, con ingredientes que puedes conocer. Menú actualizado: [sabores]. Pedidos por WhatsApp.</div><div class="mensaje"><strong>5.</strong> ¿Antojo de algo fresco? Tengo paletas disponibles para entrega hoy. Escríbeme y te mando el menú completo.</div><div class="mensaje"><strong>6.</strong> Nueva tanda de paletas lista 🍦 Sabores: [sabores]. Cantidad limitada según lo que preparé hoy.</div><div class="mensaje"><strong>7.</strong> Paletas caseras para este fin de semana. Menú: [sabores]. Puedes apartar las tuyas con anticipación.</div><div class="mensaje"><strong>8.</strong> Si buscas un dulce fresco, tengo paletas artesanales. Te paso el menú con precios por unidad y combos.</div><div class="mensaje"><strong>9.</strong> Hoy hornée... digo, congelé paletas 😊 Disponibles: [sabores]. ¿Te aparto alguna?</div><div class="mensaje"><strong>10.</strong> Menú dulce de la semana: paletas caseras en sabores [sabores]. Entrega en [zona] o recogida.</div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><h2>B) Mensajes de estado / story</h2><div class="mensaje"><strong>1.</strong> 🍭 Paletas listas. Escríbeme si quieres el menú.</div><div class="mensaje"><strong>2.</strong> Algo fresco para hoy 🍦</div><div class="mensaje"><strong>3.</strong> Nuevos sabores esta semana</div><div class="mensaje"><strong>4.</strong> Paletas caseras — pregunta por disponibilidad</div><div class="mensaje"><strong>5.</strong> ¿Paleta de qué sabor te provoca?</div><div class="mensaje"><strong>6.</strong> Hechas hoy, disponibles hasta agotar stock</div><div class="mensaje"><strong>7.</strong> Dulce, fresco y hecho en casa</div><div class="mensaje"><strong>8.</strong> Menú de paletas en mi estado anterior 👆</div><div class="mensaje"><strong>9.</strong> Pregunta por combos familiares</div><div class="mensaje"><strong>10.</strong> Ideal para el calor ☀️🍭</div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><h2>C) Mensajes de promoción de fin de semana</h2><div class="mensaje"><strong>1.</strong> Promo fin de semana: 3 paletas surtidas por [precio]. Válido sábado y domingo.</div><div class="mensaje"><strong>2.</strong> Combo familiar: 6 paletas a elegir por [precio]. Perfecto para compartir.</div><div class="mensaje"><strong>3.</strong> Este sábado: lleva 2 paletas y la tercera con descuento. Pregunta por sabores.</div><div class="mensaje"><strong>4.</strong> Pack refrescante: 4 paletas frutales por [precio]. Solo este fin de semana.</div><div class="mensaje"><strong>5.</strong> Promo para vecinos: 10% de descuento en tu primer pedido. Escríbeme.</div><div class="mensaje"><strong>6.</strong> Últimas paletas del día con precio especial. Disponibles hasta agotar.</div><div class="mensaje"><strong>7.</strong> Combo dulce: 1 cremosa + 1 frutal + 1 rellena por [precio].</div><div class="mensaje"><strong>8.</strong> Si apartas hoy, te guardo las paletas para mañana sin costo extra.</div><div class="mensaje"><strong>9.</strong> Fin de semana dulce 🍭 Pedidos con anticipación tienen prioridad.</div><div class="mensaje"><strong>10.</strong> Promo relámpago: las primeras 5 personas que escriban tienen combo especial.</div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><h2>D) Mensajes para clientes antiguos</h2><div class="mensaje"><strong>1.</strong> ¡Hola de nuevo! 😊 Esta semana tengo sabores nuevos. ¿Te mando el menú actualizado?</div><div class="mensaje"><strong>2.</strong> Hace tiempo que no pides. Tengo tus sabores favoritos disponibles hoy.</div><div class="mensaje"><strong>3.</strong> Gracias por tu pedido anterior. Esta semana preparé [sabor nuevo] — ¿quieres probarlo?</div><div class="mensaje"><strong>4.</strong> Para clientes frecuentes: aviso anticipado de la tanda del fin de semana.</div><div class="mensaje"><strong>5.</strong> ¿Te gustó la última paleta? Esta semana repetí ese sabor y agregué uno nuevo.</div><div class="mensaje"><strong>6.</strong> Hola, ¿cómo estás? Tengo paletas listas y pensé en ti. ¿Te interesa el menú?</div><div class="mensaje"><strong>7.</strong> Pedido especial para ti: puedo preparar tu sabor favorito si me avisas con 24h.</div><div class="mensaje"><strong>8.</strong> Gracias por recomendarme. Si traes un amigo, ambos tienen descuento en combo.</div><div class="mensaje"><strong>9.</strong> Tu sabor [favorito] está en el menú de esta semana. ¿Te aparto?</div><div class="mensaje"><strong>10.</strong> Clientes de siempre: escríbeme 'cliente' y te mando precios especiales.</div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><h2>E) Mensajes de últimas unidades</h2><div class="mensaje"><strong>1.</strong> Quedan pocas paletas de [sabor]. Si quieres, aparto las tuyas ahora.</div><div class="mensaje"><strong>2.</strong> Últimas 5 unidades del día. Escríbeme antes de que se acaben.</div><div class="mensaje"><strong>3.</strong> Casi agotado el stock de hoy. ¿Te guardo alguna?</div><div class="mensaje"><strong>4.</strong> Solo me quedan paletas de [sabores]. Mañana preparo nueva tanda.</div><div class="mensaje"><strong>5.</strong> Stock limitado — lo que ves es lo que hay. Pregunta por disponibilidad.</div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><h2>F) Mensajes para pedidos</h2><div class="mensaje"><strong>1.</strong> Perfecto, tu pedido: [sabores] x [cantidad] — Total: [precio]. ¿Confirmo?</div><div class="mensaje"><strong>2.</strong> Listo, aparté tus paletas. Te aviso cuando estén listas para entrega.</div><div class="mensaje"><strong>3.</strong> Tu pedido está confirmado ✅ Te escribo cuando salga para [dirección/zona].</div><div class="mensaje"><strong>4.</strong> Recibido. Prepararé [cantidad] paletas de [sabores]. ¿Pagas al recoger o transferencia?</div><div class="mensaje"><strong>5.</strong> Pedido anotado. Hora estimada de entrega: [hora]. Cualquier cambio, avísame.</div></div>
+</body></html>

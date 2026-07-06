@@ -33,7 +33,7 @@
   --space-sm: 10px;
   --space-md: 16px;
   --space-lg: 24px;
-  --space-xl: 40px;
+  --space-xl: 32px;
   --font: 'Nunito', system-ui, sans-serif;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --focus-ring: 0 0 0 3px rgba(232, 67, 122, 0.25);

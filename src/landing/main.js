@@ -77,23 +77,6 @@ if (sticky) {
   onScroll();
 }
 
-const inserts = document.querySelectorAll('.insert-reveal');
-if (inserts.length) {
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-    );
-    inserts.forEach((el) => observer.observe(el));
-  } else {
-    inserts.forEach((el) => el.classList.add('visible'));
-  }
-}
-
 document.querySelectorAll('.faq-item').forEach((item) => {
   const trigger = item.querySelector('.faq-question');
   if (!trigger) return;

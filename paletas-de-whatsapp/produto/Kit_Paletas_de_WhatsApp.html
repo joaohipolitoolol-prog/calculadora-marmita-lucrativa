@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Kit Paletas de WhatsApp</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --rosa: #FF4F8B;
+  --naranja: #FF7A1A;
+  --crema: #FFF4E6;
+  --chocolate: #5C2E1F;
+  --menta: #CFF7E2;
+  --fresa: #E63946;
+  --blanco: #FFFFFF;
+  --gris: #6B5E57;
+  --gris-claro: #F3EDE8;
+  --sombra: 0 4px 20px rgba(92, 46, 31, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: var(--chocolate);
+  background: var(--blanco);
+  font-size: 11pt;
+  line-height: 1.55;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 18mm 20mm;
+  page-break-after: always;
+  position: relative;
+  background: var(--blanco);
+}
+
+.page:last-child { page-break-after: auto; }
+
+/* CAPA */
+.cover {
+  background: linear-gradient(160deg, var(--crema) 0%, #FFE8F0 40%, var(--menta) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30mm 25mm;
+}
+
+.cover-badge {
+  background: var(--rosa);
+  color: white;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 50px;
+  margin-bottom: 20px;
+}
+
+.cover-icon {
+  font-size: 64pt;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.cover h1 {
+  font-size: 36pt;
+  font-weight: 800;
+  color: var(--chocolate);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.cover .subtitle {
+  font-size: 14pt;
+  color: var(--gris);
+  font-weight: 600;
+  max-width: 140mm;
+  margin-bottom: 28px;
+}
+
+.cover .tagline {
+  background: white;
+  border-radius: 16px;
+  padding: 14px 28px;
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--rosa);
+  box-shadow: var(--sombra);
+}
+
+.cover .method {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+}
+
+.cover .method span {
+  background: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--chocolate);
+  box-shadow: var(--sombra);
+}
+
+.cover-footer {
+  position: absolute;
+  bottom: 20mm;
+  font-size: 9pt;
+  color: var(--gris);
+}
+
+/* TIPOGRAFÍA */
+h2 {
+  font-size: 18pt;
+  font-weight: 800;
+  color: var(--chocolate);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--rosa);
+}
+
+h3 {
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--rosa);
+  margin: 16px 0 8px;
+}
+
+h4 {
+  font-size: 11pt;
+  font-weight: 700;
+  margin: 10px 0 6px;
+}
+
+p { margin-bottom: 10px; }
+
+ul, ol {
+  margin: 8px 0 12px 20px;
+}
+
+li { margin-bottom: 4px; }
+
+/* COMPONENTES */
+.section-tag {
+  display: inline-block;
+  background: var(--menta);
+  color: var(--chocolate);
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 50px;
+  margin-bottom: 10px;
+}
+
+.box {
+  background: var(--crema);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  border-left: 4px solid var(--naranja);
+}
+
+.box-rosa {
+  background: #FFF0F5;
+  border-left-color: var(--rosa);
+}
+
+.box-menta {
+  background: var(--menta);
+  border-left-color: #25A55A;
+}
+
+.box-aviso {
+  background: #FFF8E7;
+  border-left: 4px solid var(--naranja);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 10pt;
+  margin: 12px 0;
+}
+
+.steps {
+  counter-reset: step;
+  list-style: none;
+  margin-left: 0;
+}
+
+.steps li {
+  counter-increment: step;
+  padding: 10px 14px 10px 48px;
+  position: relative;
+  background: var(--gris-claro);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  background: var(--rosa);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 10pt;
+}
+
+/* RECETA CARD */
+.receta-card {
+  border: 2px solid var(--gris-claro);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  page-break-inside: avoid;
+}
+
+.receta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.receta-num {
+  background: var(--rosa);
+  color: white;
+  font-weight: 800;
+  font-size: 10pt;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.receta-title {
+  flex: 1;
+}
+
+.receta-title h3 {
+  margin: 0;
+  color: var(--chocolate);
+  font-size: 13pt;
+}
+
+.receta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.badge {
+  font-size: 8pt;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 50px;
+  text-transform: uppercase;
+}
+
+.badge-frutal { background: var(--menta); color: #1a6b3a; }
+.badge-cremosa { background: #FFF0F5; color: var(--rosa); }
+.badge-rellena { background: #FFF3EB; color: var(--naranja); }
+.badge-postre { background: #F3E8FF; color: #6B21A8; }
+.badge-facil { background: #E8F5EC; color: #1a6b3a; }
+.badge-media { background: #FFF8E7; color: #B45309; }
+
+.receta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.receta-grid .col-full { grid-column: 1 / -1; }
+
+.ingredientes {
+  background: var(--gris-claro);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.ingredientes ul { margin: 4px 0 0 16px; }
+
+.dica-vender {
+  background: linear-gradient(135deg, #FFF0F5, var(--crema));
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 10pt;
+  border: 1px dashed var(--rosa);
+}
+
+.precio-nota {
+  font-size: 9pt;
+  color: var(--gris);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* TABLAS */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 10pt;
+}
+
+th {
+  background: var(--rosa);
+  color: white;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 700;
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gris-claro);
+}
+
+tr:nth-child(even) td { background: var(--gris-claro); }
+
+/* ÍNDICE */
+.toc-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--gris-claro);
+  font-size: 11pt;
+}
+
+.toc-item span:last-child { color: var(--gris); }
+
+/* MENSAJES */
+.mensaje {
+  background: #E8F5E9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  font-size: 10pt;
+  border-left: 4px solid #25A55A;
+  page-break-inside: avoid;
+}
+
+.mensaje-cat {
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1a6b3a;
+  margin-bottom: 4px;
+}
+
+/* PLAN DÍAS */
+.dia-card {
+  background: var(--gris-claro);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  page-break-inside: avoid;
+}
+
+.dia-card h3 {
+  color: var(--chocolate);
+  margin: 0 0 8px;
+}
+
+.dia-num {
+  background: var(--naranja);
+  color: white;
+  font-size: 9pt;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+/* CHECKLIST */
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gris-claro);
+}
+
+.check-box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--rosa);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* MENÚ EDITABLE */
+.menu-modelo {
+  border: 2px dashed var(--rosa);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  background: var(--crema);
+  page-break-inside: avoid;
+}
+
+.menu-modelo h3 {
+  text-align: center;
+  color: var(--chocolate);
+  font-size: 16pt;
+  margin-bottom: 16px;
+}
+
+.menu-linea {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--chocolate);
+}
+
+.menu-linea .precio {
+  font-weight: 700;
+  color: var(--rosa);
+}
+
+.campo-editable {
+  border-bottom: 1px dashed var(--gris);
+  min-width: 80px;
+  display: inline-block;
+}
+
+/* HEADER PÁGINA */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--gris-claro);
+  font-size: 9pt;
+  color: var(--gris);
+}
+
+.page-header strong { color: var(--rosa); }
+
+/* COMBOS */
+.combo-list {
+  columns: 2;
+  column-gap: 20px;
+  list-style: none;
+  margin-left: 0;
+}
+
+.combo-list li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  break-inside: avoid;
+}
+
+.combo-list li::before {
+  content: '🍭';
+  position: absolute;
+  left: 0;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { page-break-after: always; }
+}
+</style>
+</head>
+<body>
+
+<div class="page cover">
+  <div class="cover-badge">Kit Digital</div>
+  <div class="cover-icon">🍭</div>
+  <h1>Paletas de WhatsApp</h1>
+  <p class="subtitle">Recetas, precios y mensajes listos para empezar desde casa.</p>
+  <div class="tagline">Prepara. Calcula. Publica.</div>
+  <div class="method">
+    <span>🥄 Preparar</span>
+    <span>💰 Precio</span>
+    <span>📱 Publicar</span>
+  </div>
+  <div class="cover-footer">Método 3P — Recetas + Precios + Mensajes</div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <h2>Índice</h2>
+  <div class="toc-item"><span>Bienvenida</span><span>3</span></div>
+  <div class="toc-item"><span>Cómo usar este kit</span><span>4</span></div>
+  <div class="toc-item"><span>El Método 3P</span><span>5</span></div>
+  <div class="toc-item"><span>Antes de empezar</span><span>6</span></div>
+  <div class="toc-item"><span>Higiene y seguridad</span><span>7</span></div>
+  <div class="toc-item"><span>30 Recetas de paletas</span><span>8-25</span></div>
+  <div class="toc-item"><span>Combinaciones que llaman la atención</span><span>26</span></div>
+  <div class="toc-item"><span>Cómo elegir tus primeras recetas</span><span>27</span></div>
+  <div class="toc-item"><span>Cómo calcular precios</span><span>28</span></div>
+  <div class="toc-item"><span>Cómo usar la calculadora</span><span>29</span></div>
+  <div class="toc-item"><span>Menú editable para WhatsApp</span><span>30</span></div>
+  <div class="toc-item"><span>Mensajes listos</span><span>31</span></div>
+  <div class="toc-item"><span>Plan de 7 días</span><span>32</span></div>
+  <div class="toc-item"><span>Fotos que venden mejor</span><span>33</span></div>
+  <div class="toc-item"><span>Errores comunes</span><span>34</span></div>
+  <div class="toc-item"><span>Checklist final</span><span>35</span></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Inicio</span>
+  <h2>Bienvenida al Kit Paletas de WhatsApp</h2>
+  <p>Felicidades por acceder al kit. Este material fue creado para ayudarte a organizar una pequeña oferta de paletas caseras desde casa, sin complicarte y sin cobrar "a ojo".</p>
+  <div class="box box-rosa">
+    <p><strong>Importante:</strong> Este kit no promete ingresos garantizados ni resultados automáticos. Te entrega materiales prácticos — recetas, herramientas de precio, menú y mensajes — para que organices tu oferta con más claridad.</p>
+  </div>
+  <p>La idea es simple: muchas personas quieren vender algo desde casa pero no saben por dónde empezar. Este kit te guía con el <strong>Método 3P</strong>: Preparar, Precio y Publicar.</p>
+  <h3>Lo que incluye tu kit</h3>
+  <ul>
+    <li>30 recetas de paletas caseras, simples y realistas</li>
+    <li>Calculadora de precios en Excel (también compatible con Google Sheets)</li>
+    <li>Menú editable para publicar en WhatsApp</li>
+    <li>50+ mensajes listos para copiar y adaptar</li>
+    <li>Plan de 7 días paso a paso</li>
+    <li>Checklist de compras y producción</li>
+  </ul>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Guía</span>
+  <h2>Cómo usar este kit</h2>
+  <ol class="steps">
+    <li><strong>Elige 3 a 5 recetas</strong> para empezar. No intentes hacer las 30 de una vez.</li>
+    <li><strong>Calcula tus costos</strong> con la calculadora incluida. Ajusta a los precios de tu ciudad.</li>
+    <li><strong>Arma tu menú</strong> con los sabores y precios que definiste.</li>
+    <li><strong>Publica tus mensajes</strong> en WhatsApp y empieza a tomar pedidos con más claridad.</li>
+  </ol>
+  <div class="box">
+    <p>💡 <strong>Consejo:</strong> Imprime o guarda el checklist al final. Repásalo antes de cada tanda de producción.</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Método</span>
+  <h2>El Método 3P</h2>
+  <div class="box box-menta">
+    <h3>🥄 Preparar</h3>
+    <p>Elige recetas simples y visuales. Empieza con sabores que conozcas y que sean fáciles de conseguir en tu zona.</p>
+  </div>
+  <div class="box">
+    <h3>💰 Precio</h3>
+    <p>Calcula ingredientes, porciones, empaque y margen estimado. No cobres "a ojo" — usa la calculadora para tener una referencia real.</p>
+  </div>
+  <div class="box box-rosa">
+    <h3>📱 Publicar</h3>
+    <p>Usa un menú claro y mensajes listos para ofrecer tus paletas. WhatsApp es tu vitrina: sé directa, amable y clara con sabores y precios.</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Preparación</span>
+  <h2>Antes de empezar</h2>
+  <h3>Materiales básicos</h3>
+  <ul>
+    <li>Moldes para paletas</li>
+    <li>Palitos</li>
+    <li>Bolsitas o empaques</li>
+    <li>Etiquetas simples</li>
+    <li>Licuadora</li>
+    <li>Vasos medidores</li>
+    <li>Recipientes</li>
+    <li>Congelador</li>
+    <li>Frutas</li>
+    <li>Leche o base cremosa</li>
+    <li>Chocolate o coberturas, si aplica</li>
+  </ul>
+  <div class="box-aviso">
+    ⚠️ Los ingredientes y costos pueden variar según tu país, ciudad y proveedores. Ajusta siempre los precios a tu realidad.
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Seguridad</span>
+  <h2>Reglas básicas de higiene y seguridad</h2>
+  <p>No necesitas un laboratorio. Solo buenos hábitos:</p>
+  <ul>
+    <li>Lava tus manos y utensilios antes de preparar</li>
+    <li>Usa ingredientes frescos y revisa fechas de vencimiento</li>
+    <li>Mantén la cadena de frío: congela a tiempo y transporta con hieleras si es necesario</li>
+    <li>Etiqueta los sabores, especialmente si tienes varios</li>
+    <li>Informa al cliente si contiene leche, maní, nueces, gluten u otros alérgenos</li>
+    <li>Revisa las normas locales si vas a vender alimentos en tu ciudad</li>
+  </ul>
+  <div class="box-aviso">
+    Esta es orientación general, no asesoría legal. Cada municipio puede tener reglas distintas para venta de alimentos caseros.
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Recetas</span>
+  <h2>30 Recetas de Paletas Caseras</h2>
+  <p>Recetas organizadas por tipo. Empieza con 3 a 5 y ve agregando según la demanda.</p>
+</div>
+
+<div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 1</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">1</div>
+        <div class="receta-title"><h3>Paleta de fresa natural</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-frutal">Frutal</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4-6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 a 10 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 tazas de fresas frescas</li><li>3 cucharadas de azúcar</li><li>1 cucharada de jugo de limón</li><li>1/2 taza de agua</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Lava y quita el tallo de las fresas.</li><li>Licúa con azúcar, limón y agua hasta obtener una mezcla suave.</li><li>Cuela si quieres textura más fina.</li><li>Vierte en moldes y congela 2 horas.</li><li>Inserta palitos y congela hasta que estén firmes.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sirve en empaque transparente para que se vea el color rojo. Ideal para foto de portada del menú.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 2</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">2</div>
+        <div class="receta-title"><h3>Paleta de mango con limón</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-frutal">Frutal</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 12 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4-6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 a 10 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 mangos maduros</li><li>2 cucharadas de azúcar</li><li>2 cucharadas de jugo de limón</li><li>1/3 taza de agua</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Pela el mango y corta la pulpa.</li><li>Licúa con azúcar, limón y agua.</li><li>Prueba el dulzor y ajusta.</li><li>Vierte en moldes, inserta palitos y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> El contraste mango-limón vende bien como 'sabor tropical'. Ofrece combo de 3 paletas frutales.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 3</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">3</div>
+        <div class="receta-title"><h3>Paleta de piña con hierbabuena</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-frutal">Frutal</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4-6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 a 10 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 tazas de piña picada</li><li>1/4 taza de azúcar</li><li>8-10 hojas de hierbabuena fresca</li><li>1/2 taza de agua</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa la piña con azúcar, agua y hierbabuena.</li><li>Cuela para quitar fibras gruesas.</li><li>Vierte en moldes y congela.</li><li>Inserta palitos cuando esté semi-congelada.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Menciona 'refrescante' en tu mensaje. Muy vendible en días calurosos.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 4</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">4</div>
+        <div class="receta-title"><h3>Paleta de sandía refrescante</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-frutal">Frutal</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 10 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4-6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 10 a 12 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>3 tazas de sandía sin semillas</li><li>2 cucharadas de azúcar (opcional)</li><li>1 cucharada de limón</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa la sandía con limón.</li><li>Agrega azúcar solo si la fruta no está muy dulce.</li><li>Vierte directo en moldes.</li><li>Congela y coloca palitos.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Muy económica en temporada. Puedes ofrecer precio especial en verano.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 5</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">5</div>
+        <div class="receta-title"><h3>Paleta de maracuyá</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-frutal">Frutal</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4-6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de pulpa de maracuyá</li><li>1 taza de agua</li><li>1/3 taza de azúcar</li><li>1 cucharada de miel</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla pulpa, agua, azúcar y miel.</li><li>Cuela para quitar semillas si prefieres textura suave.</li><li>Vierte en moldes.</li><li>Congela completamente.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor intenso = puedes posicionarla como opción premium en tu menú.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 6</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">6</div>
+        <div class="receta-title"><h3>Paleta de frutos rojos</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-frutal">Frutal</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 12 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4-6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 a 10 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de fresas</li><li>1/2 taza de moras o arándanos</li><li>1/3 taza de azúcar</li><li>1/2 taza de agua</li><li>1 cucharada de limón</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa todos los frutos con azúcar, agua y limón.</li><li>Cuela ligeramente.</li><li>Llena moldes y congela.</li><li>Inserta palitos.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> El color morado/rojo llama mucho la atención en fotos de WhatsApp.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 7</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">7</div>
+        <div class="receta-title"><h3>Paleta de kiwi con limón</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-frutal">Frutal</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 12 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4-6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>4 kiwis maduros</li><li>3 cucharadas de azúcar</li><li>2 cucharadas de jugo de limón</li><li>1/4 taza de agua</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Pela los kiwis y licúa con azúcar, limón y agua.</li><li>Vierte en moldes.</li><li>Congela 2 horas, inserta palitos y termina de congelar.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Color verde vibrante. Perfecta para menú 'infantil/colorido'.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 8</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">8</div>
+        <div class="receta-title"><h3>Paleta cremosa de vainilla</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 a 10 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema o media crema</li><li>1/3 taza de azúcar</li><li>1 cucharadita de esencia de vainilla</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla leche, crema, azúcar y vainilla.</li><li>Revuelve hasta disolver el azúcar.</li><li>Vierte en moldes.</li><li>Congela y coloca palitos.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Clásica que todos entienden. Buena para combos familiares.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div>
+
+<div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 9</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">9</div>
+        <div class="receta-title"><h3>Paleta de chocolate cremoso</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 a 10 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>3 cucharadas de cacao en polvo</li><li>1/3 taza de azúcar</li><li>1 cucharadita de vainilla</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa leche, crema, cacao, azúcar y vainilla.</li><li>Cuela si queda grumos de cacao.</li><li>Vierte en moldes y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Agrega chispas de chocolate encima antes de congelar para más valor visual.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 10</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">10</div>
+        <div class="receta-title"><h3>Paleta de coco</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 12 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche de coco</li><li>1/2 taza de leche</li><li>1/3 taza de azúcar</li><li>2 cucharadas de coco rallado</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla leche de coco, leche y azúcar.</li><li>Agrega coco rallado.</li><li>Vierte en moldes y congela.</li><li>Espolvorea coco extra encima si quieres.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Combina con piña en tu menú como 'pack tropical'.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 11</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">11</div>
+        <div class="receta-title"><h3>Paleta de café suave</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>1/2 taza de café preparado y frío</li><li>1/4 taza de azúcar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla leche, crema, café frío y azúcar.</li><li>Revuelve bien.</li><li>Vierte en moldes.</li><li>Congela completamente.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Apunta a adultos. Buena opción para pedidos de tarde.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 12</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">12</div>
+        <div class="receta-title"><h3>Paleta de banana con leche</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 10 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 a 10 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 plátanos maduros</li><li>1 taza de leche</li><li>2 cucharadas de azúcar</li><li>1/2 cucharadita de canela (opcional)</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa plátanos con leche, azúcar y canela.</li><li>Vierte en moldes.</li><li>Congela y coloca palitos.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Económica y cremosa. Ideal para empezar con bajo costo.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 13</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">13</div>
+        <div class="receta-title"><h3>Paleta de fresa con crema</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de fresas</li><li>1/2 taza de leche</li><li>1/2 taza de crema</li><li>1/3 taza de azúcar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa fresas con leche, crema y azúcar.</li><li>Vierte en moldes.</li><li>Congela. Opcional: agrega trozos de fresa antes de congelar.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Una de las más pedidas. Ponla destacada en tu menú semanal.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 14</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">14</div>
+        <div class="receta-title"><h3>Paleta de dulce de leche</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de dulce de leche</li><li>1 taza de leche</li><li>1/2 taza de crema</li><li>1 cucharadita de vainilla</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla dulce de leche con leche tibia para integrar.</li><li>Agrega crema y vainilla.</li><li>Licúa hasta quedar homogéneo.</li><li>Vierte y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor nostálgico muy popular en LATAM. Posiciónala como especial.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 15</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">15</div>
+        <div class="receta-title"><h3>Paleta rellena de chocolate</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>1/4 taza de azúcar</li><li>1/2 taza de chocolate derretido</li><li>Base de paleta: 1 taza de leche + 2 cdas azúcar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Prepara base de leche con azúcar y congela 1 hora.</li><li>Prepara relleno mezclando crema, chocolate y azúcar.</li><li>Haz un hueco en el centro semi-congelado, agrega relleno.</li><li>Cubre con más base y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Corta una paleta para la foto y muestra el relleno. Aumenta valor percibido.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 16</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">16</div>
+        <div class="receta-title"><h3>Paleta rellena de leche condensada</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/4 taza de azúcar</li><li>1/3 taza de leche condensada para relleno</li><li>1/2 taza de crema</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Congela base de leche con azúcar parcialmente.</li><li>Coloca 1 cucharadita de leche condensada en el centro.</li><li>Cubre con mezcla de leche y crema.</li><li>Inserta palito y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Muy popular con niños. Ofrece en combo 'pack dulce'.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div>
+
+<div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 17</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">17</div>
+        <div class="receta-title"><h3>Paleta rellena de mermelada de fresa</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de yogur natural</li><li>1/4 taza de azúcar</li><li>1/3 taza de mermelada de fresa</li><li>1/2 taza de leche</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla yogur, leche y azúcar para la base.</li><li>Congela 1 hora en moldes.</li><li>Agrega mermelada en el centro.</li><li>Cubre con más base y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Fácil de armar con mermelada comprada. Buen margen si compras al por mayor.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 18</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">18</div>
+        <div class="receta-title"><h3>Paleta rellena de crema de avellana</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>1/4 taza de azúcar</li><li>3 cucharadas de crema de avellanas o maní</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Prepara base cremosa y congela parcialmente.</li><li>Coloca 1 cdta de crema de avellanas en el centro.</li><li>Cubre y congela.</li><li>Opcional: baño de chocolate al final.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor premium. Puedes cobrar un poco más que las frutales básicas.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 19</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">19</div>
+        <div class="receta-title"><h3>Paleta rellena de caramelo</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>1/4 taza de azúcar</li><li>3 cucharadas de caramelo o dulce de leche líquido</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Congela base de leche y crema 1 hora.</li><li>Agrega caramelo en el centro con cuidado.</li><li>Cubre con más base.</li><li>Congela hasta firme.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Advierte que contiene lácteos. Ideal para clientes que buscan algo indulgente.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 20</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">20</div>
+        <div class="receta-title"><h3>Paleta rellena de mango cremoso</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 mango maduro</li><li>1/2 taza de crema</li><li>1 taza de leche</li><li>1/4 taza de azúcar</li><li>Base: 1/2 taza de yogur + 1/2 taza de leche</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa mango con crema y mitad del azúcar para el relleno.</li><li>Prepara base de yogur y leche.</li><li>Congela base 1 hora, agrega relleno de mango.</li><li>Cubre y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Combina lo tropical con lo cremoso. Muy fotogénica.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 21</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">21</div>
+        <div class="receta-title"><h3>Paleta rellena estilo cheesecake</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>150 g de queso crema</li><li>1/3 taza de azúcar</li><li>1/2 taza de crema</li><li>1 taza de leche</li><li>2 cucharadas de galleta molida</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla queso crema, azúcar y crema para el relleno.</li><li>Prepara base de leche con galleta molida.</li><li>Congela parcialmente, agrega relleno de cheesecake.</li><li>Cubre y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Espolvorea galleta molida encima antes de servir. Se ve muy profesional.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 22</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">22</div>
+        <div class="receta-title"><h3>Paleta de cheesecake de fresa</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>150 g de queso crema</li><li>1/2 taza de crema</li><li>1/3 taza de azúcar</li><li>1/2 taza de fresas licuadas</li><li>3 cucharadas de galleta molida</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa queso crema, crema, azúcar y fresas.</li><li>Agrega galleta molida a la mezcla.</li><li>Vierte en moldes.</li><li>Congela. Decora con fresa fresca al servir.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Una de las más llamativas del menú. Ponla como 'especial de la semana'.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 23</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">23</div>
+        <div class="receta-title"><h3>Paleta de brownie</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>1/4 taza de azúcar</li><li>1/2 taza de brownie en trozos pequeños</li><li>2 cucharadas de cacao</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla leche, crema, azúcar y cacao.</li><li>Agrega trozos de brownie.</li><li>Vierte en moldes.</li><li>Congela. Los trozos dan textura al morder.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Producto estrella para fines de semana. Anuncia con foto de paleta cortada.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 24</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">24</div>
+        <div class="receta-title"><h3>Paleta de galleta y crema</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>1/3 taza de azúcar</li><li>6 galletas tipo vainilla trituradas</li><li>1 cdta de vainilla</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa leche, crema, azúcar, vainilla y la mitad de las galletas.</li><li>Vierte en moldes.</li><li>Agrega trozos de galleta restantes.</li><li>Congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Muy popular con niños. Usa galletas con diseño para más color.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div>
+
+<div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 25</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">25</div>
+        <div class="receta-title"><h3>Paleta de tiramisú simple</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de café frío</li><li>1 taza de crema</li><li>150 g de queso crema</li><li>1/4 taza de azúcar</li><li>2 cucharadas de cacao en polvo</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla queso crema, crema, azúcar y un poco de café.</li><li>Vierte en moldes.</li><li>Espolvorea cacao encima antes de congelar.</li><li>Congela completamente.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Posiciónala como opción 'para adultos'. Diferenciador en tu menú.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 26</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">26</div>
+        <div class="receta-title"><h3>Paleta de arroz con leche</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 35 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de arroz cocido</li><li>1 taza de leche</li><li>1/3 taza de azúcar</li><li>1/2 cucharadita de canela</li><li>1 cucharada de pasas (opcional)</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa arroz con leche, azúcar y canela.</li><li>Agrega pasas si usas.</li><li>Vierte en moldes.</li><li>Espolvorea canela encima y congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor nostálgico. Menciona 'receta de la abuela' en tu mensaje.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 27</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">27</div>
+        <div class="receta-title"><h3>Paleta de chocolate con maní</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de crema</li><li>3 cucharadas de cacao</li><li>1/4 taza de azúcar</li><li>3 cucharadas de maní triturado</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa leche, crema, cacao y azúcar.</li><li>Agrega maní triturado.</li><li>Vierte en moldes.</li><li>Congela. Advierte sobre alérgenos.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> IMPORTANTE: informa que contiene maní. Textura crujiente vende bien.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 28</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">28</div>
+        <div class="receta-title"><h3>Paleta de limón pie</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de jugo de limón</li><li>1 taza de leche condensada</li><li>1 taza de crema</li><li>3 cucharadas de galleta molida</li><li>Ralladura de limón</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla jugo de limón, leche condensada y crema.</li><li>Agrega ralladura de limón.</li><li>Vierte en moldes con galleta en el fondo.</li><li>Congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor ácido-dulce equilibrado. Muy refrescante y diferente.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 29</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">29</div>
+        <div class="receta-title"><h3>Paleta de yogur con granola</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 12 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5-7 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 1/2 tazas de yogur natural</li><li>1/4 taza de miel</li><li>1/2 taza de granola</li><li>1/2 taza de frutos rojos picados</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla yogur con miel.</li><li>Agrega granola y frutos.</li><li>Vierte en moldes.</li><li>Congela. Agrega granola extra al servir.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Opción 'más ligera' para clientes que lo piden. Buena para historias de WhatsApp.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div><div class="page"><div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div><span class="section-tag">Receta 30</span>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">30</div>
+        <div class="receta-title"><h3>Paleta tropical premium</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 6 a 8 paletas</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de mango</li><li>1/2 taza de piña</li><li>1/2 taza de maracuyá</li><li>1/2 taza de crema</li><li>1/4 taza de azúcar</li><li>1 cucharada de coco rallado</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa cada fruta por separado.</li><li>Vierte capas de mango, piña y maracuyá en el molde.</li><li>Agrega crema con coco entre capas.</li><li>Congela. El efecto de capas es muy visual.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Tu producto estrella visual. Cobra más y úsala como imagen principal del menú.</div>
+      </div>
+      <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
+    </div></div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Ideas</span>
+  <h2>Combinaciones que suelen llamar la atención</h2>
+  <ul class="combo-list"><li>Fresa con leche condensada</li><li>Mango con chile suave</li><li>Chocolate con galleta</li><li>Coco con piña</li><li>Maracuyá cremoso</li><li>Cheesecake de fresa</li><li>Limón pie</li><li>Brownie chocolate</li><li>Dulce de leche</li><li>Yogur con frutos rojos</li><li>Café con leche</li><li>Banana con canela</li><li>Sandía con menta</li><li>Vainilla con chispas</li><li>Tres capas tropicales</li></ul>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Estrategia</span>
+  <h2>Cómo elegir tus primeras recetas</h2>
+  <p>No empieces con 30 sabores. Empieza con <strong>3 a 5</strong>:</p>
+  <ul>
+    <li>1 frutal (fácil, económica, colorida)</li>
+    <li>1 cremosa (clásica, todos la entienden)</li>
+    <li>1 rellena (diferenciadora, más valor percibido)</li>
+    <li>1 infantil/colorida (para familias)</li>
+    <li>1 premium (para cobrar un poco más)</li>
+  </ul>
+  <div class="box box-menta">
+    <h3>Ejemplo — Menú Semana 1</h3>
+    <ul>
+      <li>Fresa con crema</li>
+      <li>Mango con limón</li>
+      <li>Chocolate con galleta</li>
+      <li>Coco tropical</li>
+      <li>Cheesecake de fresa</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Precios</span>
+  <h2>Cómo calcular precios</h2>
+  <p>Para saber si una paleta vale la pena, considera:</p>
+  <ul>
+    <li>Ingredientes</li>
+    <li>Empaque (bolsa, etiqueta)</li>
+    <li>Palito</li>
+    <li>Energía o gas, si quieres estimar</li>
+    <li>Pérdidas (lo que se derrama o no sale bien)</li>
+    <li>Margen que deseas</li>
+  </ul>
+  <div class="box">
+    <h3>Fórmula simple</h3>
+    <p><strong>Costo total de producción ÷ cantidad de paletas = costo por paleta</strong></p>
+    <p><strong>Costo por paleta + margen = precio sugerido</strong></p>
+  </div>
+  <div class="box-aviso">
+    La margen es una estimación, no una garantía de ganancia. Los costos cambian y la demanda varía. Revisa tus precios cada semana si es necesario.
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Herramienta</span>
+  <h2>Cómo usar la calculadora</h2>
+  <p>Abre el archivo <strong>Calculadora_Precios_Paletas.xlsx</strong> (o súbelo a Google Sheets):</p>
+  <ol class="steps">
+    <li>Escribe el nombre de la receta</li>
+    <li>Agrega cada ingrediente con su costo de paquete y cantidad usada</li>
+    <li>Coloca el costo de empaque y otros gastos</li>
+    <li>Escribe cuántas paletas produjiste</li>
+    <li>Mira el costo aproximado por paleta</li>
+    <li>Define tu margen deseado (%)</li>
+    <li>Revisa el precio sugerido y la ganancia estimada</li>
+  </ol>
+  <p>También tiene pestañas para lista de compras, menú y pedidos.</p>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Menú</span>
+  <h2>Menú editable para WhatsApp</h2>
+  <p>Usa el archivo <strong>Menu_Editable_Paletas</strong> o copia estos modelos:</p>
+  <div class="menu-modelo">
+    <h3>🍭 Paletas Caseras de la Semana</h3>
+    <div class="menu-linea"><span>Fresa con crema</span><span class="precio">$<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></span></div>
+    <div class="menu-linea"><span>Mango con limón</span><span class="precio">$<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></span></div>
+    <div class="menu-linea"><span>Chocolate cremoso</span><span class="precio">$<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></span></div>
+    <p style="text-align:center;margin-top:14px;font-size:10pt;">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</p>
+  </div>
+  <div class="menu-modelo">
+    <h3>🌈 Menú Dulce de Hoy</h3>
+    <p><strong>Frutales:</strong> <span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+    <p><strong>Cremosas:</strong> <span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+    <p><strong>Rellenas:</strong> <span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+    <p><strong>Combo promo:</strong> 3 paletas por $<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+  </div>
+  <div class="menu-modelo">
+    <h3>✨ Paletas Artesanales</h3>
+    <p><strong>Sabores especiales:</strong> <span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+    <p><strong>Combo familiar (6 u.):</strong> $<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></p>
+    <p><strong>Pedidos con anticipación:</strong> 24h mínimo</p>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Mensajes</span>
+  <h2>Mensajes listos para WhatsApp</h2>
+  <p>Selección de mensajes del pack completo. Copia, adapta y personaliza:</p>
+  <div class="mensaje"><div class="mensaje-cat">Anunciar menú</div>🍭 ¡Hola! Esta semana tengo paletas caseras listas. Sabores disponibles: [sabores]. Si quieres reservar, escríbeme por aquí.</div><div class="mensaje"><div class="mensaje-cat">Anunciar menú</div>Menú de paletas de la semana 👇 Cremosas, frutales y rellenas. Pregunta por precios y disponibilidad.</div><div class="mensaje"><div class="mensaje-cat">Anunciar menú</div>Preparé paletas frescas hoy. Te comparto el menú con sabores y precios. ¿Cuál te llama la atención?</div><div class="mensaje"><div class="mensaje-cat">Anunciar menú</div>Paletas hechas en casa, con ingredientes que puedes conocer. Menú actualizado: [sabores]. Pedidos por WhatsApp.</div><div class="mensaje"><div class="mensaje-cat">Anunciar menú</div>¿Antojo de algo fresco? Tengo paletas disponibles para entrega hoy. Escríbeme y te mando el menú completo.</div><div class="mensaje"><div class="mensaje-cat">Estado / Story</div>🍭 Paletas listas. Escríbeme si quieres el menú.</div><div class="mensaje"><div class="mensaje-cat">Estado / Story</div>Algo fresco para hoy 🍦</div><div class="mensaje"><div class="mensaje-cat">Estado / Story</div>Nuevos sabores esta semana</div><div class="mensaje"><div class="mensaje-cat">Estado / Story</div>Paletas caseras — pregunta por disponibilidad</div><div class="mensaje"><div class="mensaje-cat">Estado / Story</div>¿Paleta de qué sabor te provoca?</div><div class="mensaje"><div class="mensaje-cat">Promoción</div>Promo fin de semana: 3 paletas surtidas por [precio]. Válido sábado y domingo.</div><div class="mensaje"><div class="mensaje-cat">Promoción</div>Combo familiar: 6 paletas a elegir por [precio]. Perfecto para compartir.</div><div class="mensaje"><div class="mensaje-cat">Promoción</div>Este sábado: lleva 2 paletas y la tercera con descuento. Pregunta por sabores.</div><div class="mensaje"><div class="mensaje-cat">Promoción</div>Pack refrescante: 4 paletas frutales por [precio]. Solo este fin de semana.</div><div class="mensaje"><div class="mensaje-cat">Promoción</div>Promo para vecinos: 10% de descuento en tu primer pedido. Escríbeme.</div>
+  <p style="margin-top:12px;font-size:10pt;">📄 El pack completo con 50+ mensajes está en <strong>Mensajes_para_Vender_Paletas.pdf</strong></p>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Plan</span>
+  <h2>Plan de 7 días</h2>
+  <div class="dia-card"><span class="dia-num">Día 1</span><h3>Elige tus primeras recetas</h3><ul><li>Revisa las 30 recetas del kit</li><li>Elige 3 a 5 sabores para empezar (1 frutal, 1 cremosa, 1 rellena)</li><li>Anota los ingredientes en la lista de compras de la calculadora</li></ul></div><div class="dia-card"><span class="dia-num">Día 2</span><h3>Calcula tus costos</h3><ul><li>Abre la Calculadora de Precios</li><li>Ingresa el costo real de cada ingrediente en tu ciudad</li><li>Define tu margen y anota el precio sugerido por paleta</li></ul></div><div class="dia-card"><span class="dia-num">Día 3</span><h3>Prepara una pequeña tanda</h3><ul><li>Produce solo 6-10 paletas como prueba</li><li>Prueba textura y dulzor</li><li>Ajusta la receta si es necesario antes de producir más</li></ul></div><div class="dia-card"><span class="dia-num">Día 4</span><h3>Toma fotos y arma tu menú</h3><ul><li>Fotografía con luz natural y fondo limpio</li><li>Completa el menú editable con sabores y precios</li><li>Prepara imagen o texto para publicar en WhatsApp</li></ul></div><div class="dia-card"><span class="dia-num">Día 5</span><h3>Publica en WhatsApp</h3><ul><li>Publica tu menú en estado o historia</li><li>Usa uno de los mensajes listos del kit</li><li>Comparte con amigos, familia y vecinos con educación</li></ul></div><div class="dia-card"><span class="dia-num">Día 6</span><h3>Organiza pedidos</h3><ul><li>Anota cada pedido en la pestaña Pedidos de la calculadora</li><li>Confirma sabores, cantidad y forma de pago</li><li>Organiza entrega o punto de recogida</li></ul></div><div class="dia-card"><span class="dia-num">Día 7</span><h3>Ajusta sabores y precios</h3><ul><li>Revisa qué sabores preguntaron más</li><li>Ajusta precios si algún ingrediente subió</li><li>Planifica la tanda de la próxima semana</li></ul></div>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Fotos</span>
+  <h2>Fotos simples que venden mejor</h2>
+  <ul><li>Usa luz natural cerca de una ventana</li><li>Fondo limpio: mesa clara o tabla de madera</li><li>Muestra la textura: paleta mordida o cortada</li><li>Incluye el empaque si lo usas</li><li>Toma la foto en vertical (formato celular)</li><li>Evita fotos oscuras o con flash fuerte</li><li>No escondas el producto con demasiados elementos</li><li>Una paleta bien iluminada vende más que diez fotos malas</li></ul>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Evita</span>
+  <h2>Errores comunes</h2>
+  <ol><li>Cobrar sin calcular los costos reales</li><li>Empezar con demasiados sabores a la vez</li><li>No anotar pedidos y olvidar detalles</li><li>Usar fotos oscuras o desordenadas</li><li>No informar sabores claramente en el menú</li><li>Olvidar incluir empaque y palito en el costo</li><li>Producir mucho antes de probar la receta</li><li>No avisar sobre leche, maní, nueces u otros alérgenos</li><li>Mezclar el dinero de ventas con el de ingredientes</li><li>No pedir opinión a los primeros clientes</li></ol>
+</div>
+
+<div class="page">
+  <div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>
+  <span class="section-tag">Checklist</span>
+  <h2>Checklist final — Antes de vender</h2>
+  <div class="checklist-item"><div class="check-box"></div><span>Elegir 3 a 5 sabores para empezar</span></div><div class="checklist-item"><div class="check-box"></div><span>Comprar ingredientes y materiales</span></div><div class="checklist-item"><div class="check-box"></div><span>Calcular costos con la calculadora</span></div><div class="checklist-item"><div class="check-box"></div><span>Definir precios con margen estimado</span></div><div class="checklist-item"><div class="check-box"></div><span>Armar mi menú para WhatsApp</span></div><div class="checklist-item"><div class="check-box"></div><span>Tomar fotos con buena luz</span></div><div class="checklist-item"><div class="check-box"></div><span>Publicar en estado o historia</span></div><div class="checklist-item"><div class="check-box"></div><span>Tener mensajes listos para responder</span></div><div class="checklist-item"><div class="check-box"></div><span>Anotar pedidos de forma organizada</span></div><div class="checklist-item"><div class="check-box"></div><span>Organizar entrega o recogida</span></div><div class="checklist-item"><div class="check-box"></div><span>Informar alérgenos cuando corresponde</span></div><div class="checklist-item"><div class="check-box"></div><span>Pedir feedback a quien prueba</span></div>
+</div>
+
+</body>
+</html>
