@@ -7,6 +7,7 @@ import {
   MAIN_PRICE_LABEL,
   OFFER_CTA_LABEL,
   PRICE_ACCESS_LABEL,
+  STICKY_CTA_LABEL,
   TRUST_CTA_LABEL,
 } from './config.js';
 import { initDemo } from './demo.js';
@@ -52,6 +53,8 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
     link.textContent = CALC_CTA_LABEL;
   } else if (link.dataset.checkoutTrust !== undefined) {
     link.textContent = TRUST_CTA_LABEL;
+  } else if (link.dataset.checkoutSticky !== undefined) {
+    link.textContent = STICKY_CTA_LABEL;
   } else if (!link.dataset.checkoutCustom) {
     link.textContent = CTA_LABEL;
   }
@@ -74,7 +77,9 @@ const sticky = document.getElementById('purchase-sticky');
 if (sticky) {
   const showAfter = 420;
   const onScroll = () => {
-    sticky.classList.toggle('visible', window.scrollY > showAfter);
+    const visible = window.scrollY > showAfter;
+    sticky.classList.toggle('visible', visible);
+    sticky.setAttribute('aria-hidden', visible ? 'false' : 'true');
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

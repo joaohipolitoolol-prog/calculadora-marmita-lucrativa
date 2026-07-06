@@ -38,4 +38,6 @@ export const OFFER_CTA_LABEL = 'Quiero acceder al kit';
 
 export const TRUST_CTA_LABEL = 'Quiero empezar con claridad';
 
+export const STICKY_CTA_LABEL = 'Acceder por US$ 5';
+
 export const CTA_LABEL = HERO_CTA_LABEL;

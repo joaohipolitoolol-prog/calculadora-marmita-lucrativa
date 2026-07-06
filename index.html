@@ -45,7 +45,10 @@
   <!-- Hero -->
   <section class="hero">
     <div class="container">
-      <p class="hero-eyebrow">Recetas · Precios · Mensajes</p>
+      <div class="hero-kit-badge" aria-label="Kit digital descargable">
+        <span class="hero-kit-badge-type">Kit digital descargable</span>
+        <span class="hero-kit-badge-parts">Recetas + Precios + Mensajes</span>
+      </div>
       <figure class="hero-flavor-grid" aria-label="Variedad de sabores: mango, fresa, chocolate y limón">
         <img src="/paletas/sabor-mango.webp?v=5" alt="Paleta de mango" class="hero-flavor-grid__item" width="200" height="200" loading="eager">
         <img src="/paletas/hero-paletas-fresas.webp?v=5" alt="Paleta de fresas con crema" class="hero-flavor-grid__item" width="200" height="200" loading="eager" fetchpriority="high">
@@ -65,7 +68,8 @@
       </ul>
       <div class="hero-cta-stack">
         <a href="#" class="btn btn-primary btn-large" data-checkout data-checkout-hero>Quiero mi Kit de Paletas</a>
-        <p class="cta-note hero-cta-note">Acceso digital inmediato. Recibes PDF, calculadora editable y materiales listos para usar.</p>
+        <p class="cta-note hero-cta-note"><strong>Acceso completo por US$ 5.</strong> Recibes PDF, calculadora editable, menú y mensajes.</p>
+        <p class="cta-note hero-cta-note hero-cta-note-secondary">No es una app. Es una calculadora editable.</p>
       </div>
       <div class="trust-row">
         <div class="trust-item">
@@ -136,7 +140,7 @@
         </article>
       </div>
       <p class="delivery-footnote">El acceso se entrega de forma digital después de la confirmación del pago.</p>
-      <a href="#oferta" class="btn btn-primary btn-large section-cta">Quiero mi Kit de Paletas</a>
+      <a href="#" class="btn btn-primary btn-large section-cta" data-checkout>Quiero mi Kit de Paletas</a>
     </div>
   </section>
 
@@ -205,6 +209,8 @@
         <li>Te ayuda a ver si una receta vale la pena</li>
       </ul>
 
+      <p class="calc-ease-note">No necesitas saber de Excel. Solo cambias tus costos y la plantilla te ayuda a estimar el precio.</p>
+
       <div class="demo-widget" id="lp-demo">
         <div class="demo-inputs is-collapsed" id="demo-inputs">
           <label class="demo-field">
@@ -268,7 +274,7 @@
   <div class="mid-cta-strip">
     <div class="container mid-cta-inner">
       <p><strong>Recetas + Precios + Mensajes</strong> en un solo kit digital.</p>
-      <a href="#oferta" class="btn btn-primary">Ver la oferta</a>
+      <a href="#" class="btn btn-primary" data-checkout data-checkout-offer>Quiero acceder al kit</a>
     </div>
   </div>
 
@@ -446,7 +452,7 @@
           <p>Usa textos listos para anunciar sabores, promociones y pedidos.</p>
         </article>
       </div>
-      <a href="#oferta" class="btn btn-primary btn-large section-cta">Quiero acceder al kit</a>
+      <a href="#" class="btn btn-primary btn-large section-cta" data-checkout data-checkout-offer>Quiero acceder al kit</a>
     </div>
   </section>
 
@@ -647,13 +653,9 @@
     </div>
   </section>
 
-  <div id="purchase-sticky" class="purchase-sticky">
+  <div id="purchase-sticky" class="purchase-sticky" aria-hidden="true">
     <div class="container purchase-sticky-inner">
-      <div class="purchase-sticky-text">
-        <strong data-price>US$ 5</strong>
-        <span>Acceso completo al kit</span>
-      </div>
-      <a href="#" class="btn btn-primary btn-large" data-checkout data-checkout-custom>Quiero mi Kit de Paletas</a>
+      <a href="#" class="btn btn-primary btn-large purchase-sticky-btn" data-checkout data-checkout-sticky>Acceder por US$ 5</a>
     </div>
   </div>
 
