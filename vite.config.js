@@ -8,6 +8,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         login: resolve(__dirname, 'login.html'),
         app: resolve(__dirname, 'app.html'),
+        upsell: resolve(__dirname, 'upsell-paletas-premium.html'),
       },
     },
   },

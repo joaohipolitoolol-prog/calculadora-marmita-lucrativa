@@ -1,8 +1,8 @@
 /** Link de checkout — atualizar quando tiver o link LATAM */
 export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
 
-/** Página pós-compra — área de descarga del kit */
-export const POST_PURCHASE_URL = 'https://calculadora-marmita-lucrativa.vercel.app/paletas-de-whatsapp/entrega.html';
+/** Página pós-compra — upsell (antes da entrega do kit) */
+export const POST_PURCHASE_URL = 'https://calculadora-marmita-lucrativa.vercel.app/upsell-paletas-premium';
 
 /** WhatsApp suporte pós-compra — +44 7402 867442 */
 export const WHATSAPP_NUMBER = '447402867442';

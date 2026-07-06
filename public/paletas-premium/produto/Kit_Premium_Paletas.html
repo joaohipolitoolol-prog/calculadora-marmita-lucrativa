@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit Premium Paletas</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --rosa: #FF4F8B;
+  --naranja: #FF7A1A;
+  --crema: #FFF4E6;
+  --chocolate: #5C2E1F;
+  --menta: #CFF7E2;
+  --fresa: #E63946;
+  --blanco: #FFFFFF;
+  --gris: #6B5E57;
+  --gris-claro: #F3EDE8;
+  --sombra: 0 4px 20px rgba(92, 46, 31, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: var(--chocolate);
+  background: var(--blanco);
+  font-size: 11pt;
+  line-height: 1.55;
+}
+
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 18mm 20mm;
+  page-break-after: always;
+  position: relative;
+  background: var(--blanco);
+}
+
+.page:last-child { page-break-after: auto; }
+
+/* CAPA */
+.cover {
+  background: linear-gradient(160deg, var(--crema) 0%, #FFE8F0 40%, var(--menta) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30mm 25mm;
+}
+
+.cover-badge {
+  background: var(--rosa);
+  color: white;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 50px;
+  margin-bottom: 20px;
+}
+
+.cover-icon {
+  font-size: 64pt;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.cover h1 {
+  font-size: 36pt;
+  font-weight: 800;
+  color: var(--chocolate);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.cover .subtitle {
+  font-size: 14pt;
+  color: var(--gris);
+  font-weight: 600;
+  max-width: 140mm;
+  margin-bottom: 28px;
+}
+
+.cover .tagline {
+  background: white;
+  border-radius: 16px;
+  padding: 14px 28px;
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--rosa);
+  box-shadow: var(--sombra);
+}
+
+.cover .method {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+}
+
+.cover .method span {
+  background: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--chocolate);
+  box-shadow: var(--sombra);
+}
+
+.cover-footer {
+  position: absolute;
+  bottom: 20mm;
+  font-size: 9pt;
+  color: var(--gris);
+}
+
+/* TIPOGRAFÍA */
+h2 {
+  font-size: 18pt;
+  font-weight: 800;
+  color: var(--chocolate);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--rosa);
+}
+
+h3 {
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--rosa);
+  margin: 16px 0 8px;
+}
+
+h4 {
+  font-size: 11pt;
+  font-weight: 700;
+  margin: 10px 0 6px;
+}
+
+p { margin-bottom: 10px; }
+
+ul, ol {
+  margin: 8px 0 12px 20px;
+}
+
+li { margin-bottom: 4px; }
+
+/* COMPONENTES */
+.section-tag {
+  display: inline-block;
+  background: var(--menta);
+  color: var(--chocolate);
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 50px;
+  margin-bottom: 10px;
+}
+
+.box {
+  background: var(--crema);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  border-left: 4px solid var(--naranja);
+}
+
+.box-rosa {
+  background: #FFF0F5;
+  border-left-color: var(--rosa);
+}
+
+.box-menta {
+  background: var(--menta);
+  border-left-color: #25A55A;
+}
+
+.box-aviso {
+  background: #FFF8E7;
+  border-left: 4px solid var(--naranja);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 10pt;
+  margin: 12px 0;
+}
+
+.steps {
+  counter-reset: step;
+  list-style: none;
+  margin-left: 0;
+}
+
+.steps li {
+  counter-increment: step;
+  padding: 10px 14px 10px 48px;
+  position: relative;
+  background: var(--gris-claro);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  background: var(--rosa);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 10pt;
+}
+
+/* RECETA CARD */
+.receta-card {
+  border: 2px solid var(--gris-claro);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  page-break-inside: avoid;
+}
+
+.receta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.receta-num {
+  background: var(--rosa);
+  color: white;
+  font-weight: 800;
+  font-size: 10pt;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.receta-title {
+  flex: 1;
+}
+
+.receta-title h3 {
+  margin: 0;
+  color: var(--chocolate);
+  font-size: 13pt;
+}
+
+.receta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.badge {
+  font-size: 8pt;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 50px;
+  text-transform: uppercase;
+}
+
+.badge-frutal { background: var(--menta); color: #1a6b3a; }
+.badge-cremosa { background: #FFF0F5; color: var(--rosa); }
+.badge-rellena { background: #FFF3EB; color: var(--naranja); }
+.badge-postre { background: #F3E8FF; color: #6B21A8; }
+.badge-facil { background: #E8F5EC; color: #1a6b3a; }
+.badge-media { background: #FFF8E7; color: #B45309; }
+
+.alergeno-tag {
+  font-size: 9pt;
+  color: #B45309;
+  background: #FFF8E7;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin: 6px 0;
+}
+
+.category-page h2 { border-bottom-color: var(--naranja); }
+
+.dia-meta {
+  font-size: 10pt;
+  color: var(--gris);
+  margin-bottom: 8px;
+}
+
+.receta-card.compact { margin-bottom: 10px; padding: 12px 14px; }
+
+.receta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.receta-grid .col-full { grid-column: 1 / -1; }
+
+.ingredientes {
+  background: var(--gris-claro);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.ingredientes ul { margin: 4px 0 0 16px; }
+
+.dica-vender {
+  background: linear-gradient(135deg, #FFF0F5, var(--crema));
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 10pt;
+  border: 1px dashed var(--rosa);
+}
+
+.precio-nota {
+  font-size: 9pt;
+  color: var(--gris);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* TABLAS */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 10pt;
+}
+
+th {
+  background: var(--rosa);
+  color: white;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 700;
+}
+
+td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--gris-claro);
+}
+
+tr:nth-child(even) td { background: var(--gris-claro); }
+
+/* ÍNDICE */
+.toc-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--gris-claro);
+  font-size: 11pt;
+}
+
+.toc-item span:last-child { color: var(--gris); }
+
+/* MENSAJES */
+.mensaje {
+  background: #E8F5E9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  font-size: 10pt;
+  border-left: 4px solid #25A55A;
+  page-break-inside: avoid;
+}
+
+.mensaje-cat {
+  font-size: 8pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1a6b3a;
+  margin-bottom: 4px;
+}
+
+/* PLAN DÍAS */
+.dia-card {
+  background: var(--gris-claro);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  page-break-inside: avoid;
+}
+
+.dia-card h3 {
+  color: var(--chocolate);
+  margin: 0 0 8px;
+}
+
+.dia-num {
+  background: var(--naranja);
+  color: white;
+  font-size: 9pt;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+/* CHECKLIST */
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gris-claro);
+}
+
+.check-box {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--rosa);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* MENÚ EDITABLE */
+.menu-modelo {
+  border: 2px dashed var(--rosa);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  background: var(--crema);
+  page-break-inside: avoid;
+}
+
+.menu-modelo h3 {
+  text-align: center;
+  color: var(--chocolate);
+  font-size: 16pt;
+  margin-bottom: 16px;
+}
+
+.menu-linea {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--chocolate);
+}
+
+.menu-linea .precio {
+  font-weight: 700;
+  color: var(--rosa);
+}
+
+.campo-editable {
+  border-bottom: 1px dashed var(--gris);
+  min-width: 80px;
+  display: inline-block;
+}
+
+/* HEADER PÁGINA */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--gris-claro);
+  font-size: 9pt;
+  color: var(--gris);
+}
+
+.page-header strong { color: var(--rosa); }
+
+/* COMBOS */
+.combo-list {
+  columns: 2;
+  column-gap: 20px;
+  list-style: none;
+  margin-left: 0;
+}
+
+.combo-list li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  break-inside: avoid;
+}
+
+.combo-list li::before {
+  content: '🍭';
+  position: absolute;
+  left: 0;
+}
+
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { page-break-after: always; }
+}
+</style>
+</head>
+<body>
+<div class="document">
+<div class="page cover-page">
+  <h1>Paletas Premium y Combos Rentables</h1>
+  <p class="subtitle">20 recetas premium · Complemento del Kit Paletas de WhatsApp</p>
+</div>
+<div class="page">
+  <div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div>
+  <span class="section-tag">Introducción</span>
+  <h2>Cómo usar este complemento</h2>
+  <p>Este material amplía tu menú con recetas de mayor valor percibido, ideas de combos y recursos de presentación. Úsalo junto con la calculadora del kit principal para fijar precios.</p>
+  <ol>
+    <li>Elige 3 a 5 recetas premium para tu próxima tanda</li>
+    <li>Agrega 1 o 2 combos al menú editable</li>
+    <li>Usa los mensajes listos para anunciar en WhatsApp</li>
+    <li>Adapta fechas especiales a tu calendario local</li>
+  </ol>
+</div>
+<div class="page"><div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div><span class="section-tag">Recetas</span><h2>20 recetas premium</h2>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">1</div>
+        <div class="receta-title"><h3>Cheesecake de fresa bañada</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6-8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de fresas</li><li>200 g de queso crema</li><li>1/2 taza de leche condensada</li><li>1 cucharada de jugo de limón</li><li>150 g de chocolate blanco para bañar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa fresas con queso crema, leche condensada y limón.</li><li>Vierte en moldes y congela 2 h. Inserta palitos.</li><li>Congela hasta firmar. Derrite chocolate blanco a baño maría.</li><li>Sumerge la mitad de cada paleta y deja escurrir sobre papel encerado.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Nombre 'cheesecake' en el menú eleva el precio. Foto con corte mostrando el interior rosado.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">2</div>
+        <div class="receta-title"><h3>Chocolate belga con galleta crocante</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, gluten</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 tazas de leche</li><li>1/2 taza de cacao</li><li>1/2 taza de azúcar</li><li>2 cucharadas de maicena</li><li>80 g de galletas trituradas</li><li>100 g de chocolate oscuro</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Cocina leche, cacao, azúcar y maicena hasta espesar. Enfría.</li><li>Vierte mitad en moldes, congela 1 h.</li><li>Agrega capa de galleta triturada, cubre con más mezcla.</li><li>Congela, inserta palitos. Baña con chocolate derretido al servir o antes de congelar.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Combo infantil: incluye esta paleta + 2 frutales coloridas.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">3</div>
+        <div class="receta-title"><h3>Mango cremoso con chamoy suave</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 10 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 mangos maduros</li><li>1 taza de crema o leche evaporada</li><li>1/3 taza de azúcar</li><li>2 cucharadas de chamoy (opcional)</li><li>Tajín o chile en polvo para decorar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa mango con crema y azúcar.</li><li>Vierte en moldes y congela 2 h.</li><li>Inserta palitos. Antes de servir, pincela chamoy y espolvorea Tajín.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Muy vendible en México y LATAM. Anuncia como 'edición especial'.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">4</div>
+        <div class="receta-title"><h3>Coco piña colada premium</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 10 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche de coco</li><li>1 taza de piña picada</li><li>1/4 taza de crema de coco</li><li>2 cucharadas de azúcar</li><li>Trocitos de coco rallado</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa todos los ingredientes excepto el coco rallado.</li><li>Vierte en moldes, espolvorea coco encima.</li><li>Congela y decora con más coco al desmoldar.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Nombre tropical en el menú. Ideal para combo fin de semana.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">5</div>
+        <div class="receta-title"><h3>Brownie de chocolate relleno</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 35 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, gluten, huevo</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 brownie pequeño desmenuzado</li><li>2 tazas de leche</li><li>1/3 taza de cacao</li><li>1/2 taza de azúcar</li><li>2 cucharadas de mantequilla</li><li>Chispas de chocolate</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Prepara base cremosa de chocolate con leche, cacao y azúcar.</li><li>Alterna capas de mezcla y trozos de brownie en el molde.</li><li>Congela, inserta palitos. Decora con chispas.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Anuncia los viernes y sábados. Percepción de postre de pastelería.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">6</div>
+        <div class="receta-title"><h3>Dulce de leche con alfajor</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, gluten</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de dulce de leche</li><li>1 1/2 tazas de leche</li><li>1/2 taza de crema</li><li>4 alfajores desmenuzados</li><li>Chocolate para bañar (opcional)</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla dulce de leche con leche y crema.</li><li>Agrega trozos de alfajor. Vierte en moldes.</li><li>Congela. Baña la punta en chocolate si quieres más presentación.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor nostálgico en Argentina, Uruguay, Colombia. Cobrar 20-30% más que frutales.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">7</div>
+        <div class="receta-title"><h3>Limón pie con merengue</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, gluten, huevo</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de jugo de limón</li><li>Ralladura de 2 limones</li><li>1 lata de leche condensada</li><li>3 yemas</li><li>2 claras batidas con 2 cdas azúcar</li><li>Galletas molida para base</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla jugo, ralladura, leche condensada y yemas.</li><li>Vierte sobre capa fina de galleta en el fondo del molde.</li><li>Congela 2 h, agrega capa de merengue, vuelve a congelar.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Diferente a lo común. Foto con corte mostrando capas.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">8</div>
+        <div class="receta-title"><h3>Fresa con leche condensada y nuez</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 10 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, frutos secos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 tazas de fresas</li><li>1/2 taza de leche condensada</li><li>1/2 taza de crema</li><li>1/4 taza de nueces picadas</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa fresas con leche condensada y crema.</li><li>Vierte en moldes, espolvorea nueces.</li><li>Congela e inserta palitos cuando esté semi-firme.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Clásico premium LATAM. Muy fotogénica con empaque transparente.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">9</div>
+        <div class="receta-title"><h3>Café latte con canela</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de café fuerte frío</li><li>1 taza de leche</li><li>1/3 taza de azúcar</li><li>1/2 taza de crema</li><li>Canela en polvo</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla café, leche, azúcar y crema.</li><li>Vierte en moldes y espolvorea canela.</li><li>Congela. Público adulto — buena para tarde.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Ofrece en combo con paleta de chocolate para 'combo adulto'.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">10</div>
+        <div class="receta-title"><h3>Maracuyá con crema de coco</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de pulpa de maracuyá</li><li>1 taza de crema de coco</li><li>1/3 taza de azúcar</li><li>1/2 taza de agua</li><li>Semillas de maracuyá para decorar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla pulpa, crema de coco, azúcar y agua.</li><li>Cuela si prefieres menos semillas.</li><li>Decora con semillas visibles en la superficie.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor intenso = precio premium. Ideal como estrella del menú.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">11</div>
+        <div class="receta-title"><h3>Oreo cookies and cream</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 10 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, gluten</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 tazas de leche</li><li>1/2 taza de azúcar</li><li>1 taza de crema</li><li>8 galletas tipo Oreo trituradas</li><li>2 galletas enteras para decorar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla leche, azúcar y crema.</li><li>Incorpora galleta triturada.</li><li>Vierte en moldes, inserta trozo de galleta visible.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Nombre en inglés opcional en el menú suena más premium a jóvenes.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">12</div>
+        <div class="receta-title"><h3>Red velvet con frosting</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>2 cucharadas de cacao</li><li>1 cucharada de colorante rojo</li><li>1/2 taza de azúcar</li><li>1/2 taza de queso crema</li><li>2 cucharadas de azúcar glass</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Prepara base roja con leche, cacao, colorante y azúcar.</li><li>Congela 2 h. Mezcla queso crema con azúcar glass.</li><li>Agrega capa de frosting, congela de nuevo.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Muy visual en fotos. Perfecta para San Valentín y cumpleaños.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">13</div>
+        <div class="receta-title"><h3>Pistacho con chocolate blanco</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, frutos secos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de pasta de pistacho</li><li>1 1/2 tazas de leche</li><li>1/3 taza de azúcar</li><li>1/2 taza de crema</li><li>100 g de chocolate blanco</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla pasta de pistacho con leche, azúcar y crema.</li><li>Vierte en moldes y congela.</li><li>Baña con chocolate blanco derretido.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Sabor diferenciado. Cobrar más — ingrediente más caro se justifica en el precio.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">14</div>
+        <div class="receta-title"><h3>Churro con cajeta</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, gluten</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/4 taza de azúcar</li><li>1/2 taza de crema</li><li>2 churros pequeños en trozos</li><li>1/4 taza de cajeta o dulce de leche</li><li>Canela y azúcar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Base de leche, azúcar y crema.</li><li>Agrega trozos de churro y hilos de cajeta.</li><li>Congela. Pasa la punta por mezcla de canela y azúcar.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Edición especial fin de semana. Muy compartible en redes.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">15</div>
+        <div class="receta-title"><h3>Tres leches con frutos rojos</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 25 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de leche condensada</li><li>1/2 taza de leche evaporada</li><li>1/2 taza de crema</li><li>1 taza de frutos rojos</li><li>1 cucharada de azúcar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Licúa frutos rojos con azúcar.</li><li>Mezcla las tres leches.</li><li>Alterna capas en el molde. Congela entre capas si es posible.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Nombre reconocido en toda LATAM. Combo con 2 frutales clásicas.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">16</div>
+        <div class="receta-title"><h3>Nutella con avellanas</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 10 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, frutos secos (avellanas)</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1/2 taza de Nutella o crema de avellanas</li><li>1 1/2 tazas de leche</li><li>1/3 taza de azúcar</li><li>1/2 taza de crema</li><li>Avellanas picadas</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla Nutella con leche tibia hasta integrar.</li><li>Agrega azúcar y crema.</li><li>Vierte en moldes con avellanas. Congela.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Contiene frutos secos — siempre pregunta por alergias.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">17</div>
+        <div class="receta-title"><h3>Tropical de tres capas</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-postre">Estilo postre</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 35 min &nbsp;|&nbsp; <strong>Congelación:</strong> 8 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>Pulpa de mango</li><li>Pulpa de piña</li><li>Pulpa de maracuyá</li><li>Azúcar al gusto</li><li>Crema de coco entre capas</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Prepara cada fruta por separado.</li><li>Vierte capa de mango, congela 1 h.</li><li>Agrega piña, congela 1 h. Termina con maracuyá y crema de coco.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Tu producto estrella visual. Usa como foto principal del menú premium.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">18</div>
+        <div class="receta-title"><h3>Yogur griego con miel y granola</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-facil">Fácil</span>
+      </div>
+      <p><strong>Preparación:</strong> 15 min &nbsp;|&nbsp; <strong>Congelación:</strong> 4 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 10 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, gluten</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>2 tazas de yogur griego</li><li>1/4 taza de miel</li><li>1/2 taza de granola</li><li>Frutas frescas picadas (opcional)</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Mezcla yogur con miel.</li><li>Vierte en moldes, agrega granola y frutas.</li><li>Congela. Opción 'más ligera' en el menú.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Atrae clientes que buscan algo menos dulce. Buen contraste con postres.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">19</div>
+        <div class="receta-title"><h3>Caramelo salado con almendras</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-rellena">Rellena</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 30 min &nbsp;|&nbsp; <strong>Congelación:</strong> 6 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos, frutos secos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 taza de leche</li><li>1/2 taza de azúcar caramelizada</li><li>1/2 taza de crema</li><li>1 pizca de sal</li><li>Almendras picadas</li><li>Chocolate para bañar</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Prepara caramelo suave con azúcar y crema.</li><li>Mezcla con leche y sal.</li><li>Vierte en moldes con almendras. Baña parcialmente en chocolate.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Tendencia 'gourmet'. Precio más alto que paletas básicas.</div>
+      </div>
+    </div>
+    <div class="receta-card">
+      <div class="receta-header">
+        <div class="receta-num">20</div>
+        <div class="receta-title"><h3>Vainilla bourbon con especias</h3></div>
+      </div>
+      <div class="receta-meta">
+        <span class="badge badge-cremosa">Cremosa</span>
+        <span class="badge badge-media">Media</span>
+      </div>
+      <p><strong>Preparación:</strong> 20 min &nbsp;|&nbsp; <strong>Congelación:</strong> 5 horas &nbsp;|&nbsp; <strong>Rinde:</strong> 8 paletas</p>
+      <p class="alergeno-tag"><strong>Contiene:</strong> Lácteos</p>
+      <div class="receta-grid">
+        <div class="ingredientes"><h4>Ingredientes</h4><ul><li>1 1/2 tazas de leche</li><li>1/2 taza de crema</li><li>1/3 taza de azúcar</li><li>1 cucharadita de esencia de vainilla</li><li>1/4 cucharadita de canela</li><li>Pizca de nuez moscada</li></ul></div>
+        <div><h4>Preparación</h4><ol><li>Calienta leche con especias (no hervir). Enfría.</li><li>Mezcla con crema, azúcar y vainilla.</li><li>Cuela especias. Congela en moldes.</li></ol></div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> Nombre sofisticado en el menú. Ideal para pedidos por encargo.</div>
+      </div>
+    </div></div>
+</div>
+</body>
+</html>

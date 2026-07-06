@@ -5,6 +5,8 @@
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
     { "source": "/app", "destination": "/app.html" },
-    { "source": "/paletas-de-whatsapp", "destination": "/paletas-de-whatsapp/entrega.html" }
+    { "source": "/paletas-de-whatsapp", "destination": "/paletas-de-whatsapp/entrega.html" },
+    { "source": "/paletas-premium", "destination": "/paletas-premium/entrega.html" },
+    { "source": "/upsell-paletas-premium", "destination": "/upsell-paletas-premium.html" }
   ]
 }
