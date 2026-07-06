@@ -130,12 +130,18 @@ export function watchAuth(callback) {
   });
 }
 
-export function redirectIfAuthenticated(user, target = '/app.html') {
-  if (user) window.location.href = target;
+export function redirectIfAuthenticated(user, target) {
+  if (!user) return;
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next');
+  window.location.href = next || target || '/membros';
 }
 
-export function redirectIfGuest(user, target = '/login.html') {
-  if (!user) window.location.href = target;
+export function redirectIfGuest(user, target = '/login') {
+  if (!user) {
+    const next = encodeURIComponent(window.location.pathname + window.location.search);
+    window.location.href = `${target}?next=${next}`;
+  }
 }
 
 export function getUserLabel(user) {

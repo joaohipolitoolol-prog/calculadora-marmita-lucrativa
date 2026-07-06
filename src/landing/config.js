@@ -1,8 +1,15 @@
+import {
+  LOGIN_URL,
+  MEMBERS_URL,
+  POST_PURCHASE_UPSELL_URL,
+  SITE_URL,
+} from '../site/config.js';
+
 /** Link de checkout — atualizar quando tiver o link LATAM */
 export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
 
-/** Página pós-compra — upsell (antes da entrega do kit) */
-export const POST_PURCHASE_URL = 'https://calculadora-marmita-lucrativa.vercel.app/upsell-paletas-premium';
+/** Página pós-compra — upsell (antes da área de membros) */
+export const POST_PURCHASE_URL = POST_PURCHASE_UPSELL_URL;
 
 /** WhatsApp suporte pós-compra — +44 7402 867442 */
 export const WHATSAPP_NUMBER = '447402867442';
@@ -34,8 +41,7 @@ export const MAIN_PRICE = 5;
 export const MAIN_PRICE_LABEL = 'US$ 5';
 export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 5';
 
-/** URL do site — usada no og:image (atualizar com seu domínio) */
-export const SITE_URL = 'https://calculadora-marmita-lucrativa.vercel.app';
+export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp`;
 

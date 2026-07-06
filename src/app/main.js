@@ -11,6 +11,7 @@ import {
   readInputsFromForm,
 } from '../lib/calculator.js';
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
+import { redirectIfGuest, watchAuth } from '../lib/auth.js';
 import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
 import {
@@ -120,7 +121,18 @@ function dismissPostPurchaseBanner() {
   document.getElementById('welcome-banner')?.remove();
 }
 
-bootstrap();
+watchAuth(async (user) => {
+  if (!user) {
+    redirectIfGuest(null);
+    return;
+  }
+  currentUser = {
+    uid: user.uid,
+    displayName: user.displayName || getUserLabel(user),
+    email: user.email || '',
+  };
+  await bootstrap();
+});
 
 function maybeShowOnboarding() {
   if (hasSeenOnboarding()) return;

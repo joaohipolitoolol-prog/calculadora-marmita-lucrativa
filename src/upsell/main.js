@@ -23,6 +23,12 @@ function trackInitiateCheckout() {
   }
 }
 
+document.querySelectorAll('[data-scroll-top]').forEach((el) => {
+  el.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
 document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
   if (isPlaceholder(UPSELL_CHECKOUT_URL)) {
     link.href = '#';

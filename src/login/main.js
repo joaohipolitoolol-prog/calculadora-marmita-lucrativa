@@ -37,7 +37,32 @@ tabs.forEach((tab) => {
   tab.addEventListener('click', () => setTab(tab.dataset.tab));
 });
 
+const purchaseParams = new URLSearchParams(window.location.search);
+
+function getAfterLoginUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get('next');
+  if (next && next.startsWith('/')) return next;
+  if (params.get('premium') === '1') {
+    localStorage.setItem('paletas_premium', '1');
+    return '/membros?premium=1';
+  }
+  if (params.get('compra') === '1') return '/membros?compra=1';
+  return '/membros';
+}
+
 watchAuth((user) => redirectIfAuthenticated(user));
+
+if (purchaseParams.get('compra') === '1') {
+  const banner = document.createElement('div');
+  banner.className = 'auth-alert show success';
+  banner.style.marginBottom = '16px';
+  banner.textContent = '✓ Compra confirmada. Crea tu cuenta o entra para acceder al kit.';
+  document.querySelector('.auth-card')?.prepend(banner);
+}
+if (purchaseParams.get('premium') === '1') {
+  localStorage.setItem('paletas_premium', '1');
+}
 
 if (isDemoMode()) {
   showAlert(
@@ -55,7 +80,7 @@ document.getElementById('demo-enter-btn')?.addEventListener('click', async () =>
   btn.textContent = 'Abriendo demo...';
   try {
     await enterDemo();
-    window.location.href = '/app.html';
+    window.location.href = getAfterLoginUrl();
   } catch (error) {
     showAlert(formAlert, error.message, 'error');
     btn.disabled = false;
@@ -82,7 +107,7 @@ loginForm.addEventListener('submit', async (event) => {
 
   try {
     await login(data.get('email'), data.get('password'));
-    window.location.href = '/app.html';
+    window.location.href = getAfterLoginUrl();
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');
   } finally {
@@ -108,8 +133,11 @@ registerForm.addEventListener('submit', async (event) => {
       data.get('accessCode')
     );
     showAlert(formAlert, '¡Cuenta creada! Redirigiendo...', 'success');
+    if (purchaseParams.get('premium') === '1') {
+      localStorage.setItem('paletas_premium', '1');
+    }
     setTimeout(() => {
-      window.location.href = '/app.html?compra=1';
+      window.location.href = getAfterLoginUrl();
     }, 700);
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');
