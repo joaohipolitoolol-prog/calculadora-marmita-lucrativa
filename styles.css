@@ -933,10 +933,6 @@ h3 {
 }
 
 @media (max-width: 768px) {
-  body {
-    padding-bottom: calc(76px + env(safe-area-inset-bottom));
-  }
-
   .purchase-sticky {
     display: block;
     position: fixed;
