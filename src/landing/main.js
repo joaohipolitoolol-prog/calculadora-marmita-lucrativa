@@ -7,6 +7,7 @@ import {
   MAIN_PRICE_LABEL,
   OFFER_CTA_LABEL,
   PRICE_ACCESS_LABEL,
+  TRUST_CTA_LABEL,
 } from './config.js';
 import { initDemo } from './demo.js';
 
@@ -49,6 +50,8 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
     link.textContent = OFFER_CTA_LABEL;
   } else if (link.dataset.checkoutCalc !== undefined) {
     link.textContent = CALC_CTA_LABEL;
+  } else if (link.dataset.checkoutTrust !== undefined) {
+    link.textContent = TRUST_CTA_LABEL;
   } else if (!link.dataset.checkoutCustom) {
     link.textContent = CTA_LABEL;
   }

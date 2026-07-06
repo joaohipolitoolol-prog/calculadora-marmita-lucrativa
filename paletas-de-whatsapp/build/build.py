@@ -11,7 +11,8 @@ from openpyxl.utils import get_column_letter
 
 from content import (
     RECETAS, COMBINACIONES, MENSAJES, PLAN_7_DIAS,
-    CHECKLIST_VENTA, ERRORES_COMUNES, FOTOS_TIPS,
+    CHECKLIST_VENTA, CHECKLIST_PRODUCCION, ERRORES_COMUNES, FOTOS_TIPS,
+    TECNICAS_BASICAS, COMBOS_SUGERIDOS, EJEMPLO_PRECIO, ALERGENOS_RECETA,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -33,6 +34,9 @@ def receta_html(r):
     ing = "".join(f"<li>{i}</li>" for i in r["ingredientes"])
     pasos = "".join(f"<li>{p}</li>" for p in r["pasos"])
     dif = "badge-facil" if r["dificultad"] == "Fácil" else "badge-media"
+    alergia = ALERGENOS_RECETA.get(r["num"])
+    alergia_html = f'<p class="alergeno-tag"><strong>Contiene:</strong> {alergia}</p>' if alergia else ""
+    consejo = r.get("consejo", r.get("dica", ""))
     return f"""
     <div class="receta-card">
       <div class="receta-header">
@@ -44,13 +48,42 @@ def receta_html(r):
         <span class="badge {dif}">{r['dificultad']}</span>
       </div>
       <p><strong>Preparación:</strong> {r['prep']} &nbsp;|&nbsp; <strong>Congelación:</strong> {r['congelacion']} &nbsp;|&nbsp; <strong>Rinde:</strong> {r['rendimiento']}</p>
+      {alergia_html}
       <div class="receta-grid">
         <div class="ingredientes"><h4>Ingredientes</h4><ul>{ing}</ul></div>
         <div><h4>Preparación</h4><ol>{pasos}</ol></div>
-        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> {r['dica']}</div>
+        <div class="col-full dica-vender"><strong>💡 Consejo para vender:</strong> {consejo}</div>
       </div>
       <p class="precio-nota">💰 Calcula el precio con la calculadora según tus costos locales. Ajusta dulzor, tamaño y empaque según tu público.</p>
     </div>"""
+
+
+CATEGORIAS_RECETAS = [
+    (1, "Paletas frutales", "Frescas, coloridas y económicas. Ideales para empezar.", 1, 7),
+    (8, "Paletas cremosas", "Clásicas y cremosas. Fáciles de vender a todo público.", 8, 14),
+    (15, "Paletas rellenas", "Más valor percibido. Requieren un paso extra.", 15, 21),
+    (22, "Paletas estilo postre", "Sabores diferenciados para destacar en tu menú.", 22, 30),
+]
+
+
+def recetas_por_categoria():
+    pages = []
+    for _, titulo, desc, start, end in CATEGORIAS_RECETAS:
+        subset = [r for r in RECETAS if start <= r["num"] <= end]
+        cards = "".join(receta_html(r) for r in subset[:2])
+        pages.append(f"""<div class="page category-page">
+          {page_header()}
+          <span class="section-tag">Recetas</span>
+          <h2>{titulo}</h2>
+          <p>{desc}</p>
+          {cards}
+        </div>""")
+        remaining = subset[2:]
+        for i in range(0, len(remaining), 2):
+            batch = remaining[i:i + 2]
+            cards = "".join(receta_html(r) for r in batch)
+            pages.append(f'<div class="page">{page_header()}{cards}</div>')
+    return "".join(pages)
 
 
 def page_header():
@@ -58,8 +91,9 @@ def page_header():
 
 
 def build_kit_html():
-    recetas_html = "".join(receta_html(r) for r in RECETAS)
-    combos = "".join(f"<li>{c}</li>" for c in COMBINACIONES)
+    combos = "".join(
+        f'<li><strong>{c["nombre"]}</strong> — {c["porque"]}</li>' for c in COMBINACIONES
+    )
 
     mensajes_kit = ""
     for cat, items in [
@@ -70,14 +104,30 @@ def build_kit_html():
         for m in items:
             mensajes_kit += f'<div class="mensaje"><div class="mensaje-cat">{cat}</div>{m}</div>'
 
+    faq_kit = "".join(f'<div class="mensaje"><div class="mensaje-cat">Pregunta frecuente</div>{m}</div>' for m in MENSAJES["faq"][:5])
+
     plan_html = ""
     for d in PLAN_7_DIAS:
         tareas = "".join(f"<li>{t}</li>" for t in d["tareas"])
-        plan_html += f'<div class="dia-card"><span class="dia-num">Día {d["dia"]}</span><h3>{d["titulo"]}</h3><ul>{tareas}</ul></div>'
+        plan_html += f'''<div class="dia-card"><span class="dia-num">Día {d["dia"]}</span>
+          <h3>{d["titulo"]}</h3>
+          <p class="dia-meta"><strong>Tiempo:</strong> {d["duracion"]} &nbsp;|&nbsp; <strong>Meta:</strong> {d["meta"]}</p>
+          <ul>{tareas}</ul></div>'''
 
+    tecnicas = ""
+    for t in TECNICAS_BASICAS:
+        pasos = "".join(f"<li>{p}</li>" for p in t["pasos"])
+        tecnicas += f"<h3>{t['titulo']}</h3><ol>{pasos}</ol>"
+
+    combos_html = ""
+    for c in COMBOS_SUGERIDOS:
+        combos_html += f'<div class="box"><h4>{c["nombre"]}</h4><p>{c["contenido"]}</p><p class="precio-nota">{c["nota"]}</p></div>'
+
+    ep = EJEMPLO_PRECIO
     errores = "".join(f"<li>{e}</li>" for e in ERRORES_COMUNES)
     fotos = "".join(f"<li>{f}</li>" for f in FOTOS_TIPS)
     checklist = "".join(f'<div class="checklist-item"><div class="check-box"></div><span>{c}</span></div>' for c in CHECKLIST_VENTA)
+    recetas_pages = recetas_por_categoria()
 
     html = f"""<!DOCTYPE html>
 <html lang="es">
@@ -110,17 +160,17 @@ def build_kit_html():
   <div class="toc-item"><span>El Método 3P</span><span>5</span></div>
   <div class="toc-item"><span>Antes de empezar</span><span>6</span></div>
   <div class="toc-item"><span>Higiene y seguridad</span><span>7</span></div>
-  <div class="toc-item"><span>30 Recetas de paletas</span><span>8-25</span></div>
-  <div class="toc-item"><span>Combinaciones que llaman la atención</span><span>26</span></div>
-  <div class="toc-item"><span>Cómo elegir tus primeras recetas</span><span>27</span></div>
-  <div class="toc-item"><span>Cómo calcular precios</span><span>28</span></div>
-  <div class="toc-item"><span>Cómo usar la calculadora</span><span>29</span></div>
-  <div class="toc-item"><span>Menú editable para WhatsApp</span><span>30</span></div>
-  <div class="toc-item"><span>Mensajes listos</span><span>31</span></div>
-  <div class="toc-item"><span>Plan de 7 días</span><span>32</span></div>
-  <div class="toc-item"><span>Fotos que venden mejor</span><span>33</span></div>
-  <div class="toc-item"><span>Errores comunes</span><span>34</span></div>
-  <div class="toc-item"><span>Checklist final</span><span>35</span></div>
+  <div class="toc-item"><span>Técnicas básicas</span><span>8</span></div>
+  <div class="toc-item"><span>30 Recetas de paletas</span><span>9+</span></div>
+  <div class="toc-item"><span>Combinaciones que llaman la atención</span><span>—</span></div>
+  <div class="toc-item"><span>Cómo elegir tus primeras recetas</span><span>—</span></div>
+  <div class="toc-item"><span>Cómo calcular precios + ejemplo</span><span>—</span></div>
+  <div class="toc-item"><span>Combos y precios</span><span>—</span></div>
+  <div class="toc-item"><span>Cómo usar la calculadora</span><span>—</span></div>
+  <div class="toc-item"><span>Menú editable para WhatsApp</span><span>—</span></div>
+  <div class="toc-item"><span>Mensajes y preguntas frecuentes</span><span>—</span></div>
+  <div class="toc-item"><span>Plan de 7 días</span><span>—</span></div>
+  <div class="toc-item"><span>Fotos, errores y checklist</span><span>—</span></div>
 </div>
 
 <div class="page">
@@ -137,7 +187,7 @@ def build_kit_html():
     <li>30 recetas de paletas caseras, simples y realistas</li>
     <li>Calculadora de precios en Excel (también compatible con Google Sheets)</li>
     <li>Menú editable para publicar en WhatsApp</li>
-    <li>50+ mensajes listos para copiar y adaptar</li>
+    <li>60+ mensajes listos para copiar y adaptar</li>
     <li>Plan de 7 días paso a paso</li>
     <li>Checklist de compras y producción</li>
   </ul>
@@ -219,18 +269,20 @@ def build_kit_html():
 
 <div class="page">
   {page_header()}
-  <span class="section-tag">Recetas</span>
-  <h2>30 Recetas de Paletas Caseras</h2>
-  <p>Recetas organizadas por tipo. Empieza con 3 a 5 y ve agregando según la demanda.</p>
+  <span class="section-tag">Técnica</span>
+  <h2>Técnicas básicas antes de preparar</h2>
+  <p>Estos tres puntos resuelven la mayoría de problemas cuando empiezas:</p>
+  {tecnicas}
 </div>
 
-{"".join(f'<div class="page">{page_header()}<span class="section-tag">Receta {r["num"]}</span>{receta_html(r)}</div>' for r in RECETAS[:8])}
+<div class="page">
+  {page_header()}
+  <span class="section-tag">Recetas</span>
+  <h2>30 Recetas de Paletas Caseras</h2>
+  <p>Organizadas por tipo. Empieza con 3 a 5 sabores y ve agregando según la demanda.</p>
+</div>
 
-{"".join(f'<div class="page">{page_header()}<span class="section-tag">Receta {r["num"]}</span>{receta_html(r)}</div>' for r in RECETAS[8:16])}
-
-{"".join(f'<div class="page">{page_header()}<span class="section-tag">Receta {r["num"]}</span>{receta_html(r)}</div>' for r in RECETAS[16:24])}
-
-{"".join(f'<div class="page">{page_header()}<span class="section-tag">Receta {r["num"]}</span>{receta_html(r)}</div>' for r in RECETAS[24:30])}
+{recetas_pages}
 
 <div class="page">
   {page_header()}
@@ -279,8 +331,18 @@ def build_kit_html():
   <div class="box">
     <h3>Fórmula simple</h3>
     <p><strong>Costo total de producción ÷ cantidad de paletas = costo por paleta</strong></p>
-    <p><strong>Costo por paleta + margen = precio sugerido</strong></p>
+    <p><strong>Precio sugerido = costo por paleta ÷ (1 − margen%)</strong></p>
   </div>
+  <h3>Ejemplo con números ficticios</h3>
+  <table>
+    <tr><th>Concepto</th><th>Valor</th></tr>
+    <tr><td>Costo ingredientes (8 paletas)</td><td>${ep['ingredientes']:.2f}</td></tr>
+    <tr><td>Empaque + palitos</td><td>${ep['empaque']:.2f}</td></tr>
+    <tr><td>Costo por paleta</td><td>${ep['costo_unitario']:.2f}</td></tr>
+    <tr><td>Margen deseado</td><td>{ep['margen']}%</td></tr>
+    <tr><td><strong>Precio sugerido</strong></td><td><strong>${ep['precio_sugerido']:.2f}</strong></td></tr>
+  </table>
+  <p class="precio-nota">{ep['nota']}</p>
   <div class="box-aviso">
     La margen es una estimación, no una garantía de ganancia. Los costos cambian y la demanda varía. Revisa tus precios cada semana si es necesario.
   </div>
@@ -301,6 +363,15 @@ def build_kit_html():
     <li>Revisa el precio sugerido y la ganancia estimada</li>
   </ol>
   <p>También tiene pestañas para lista de compras, menú y pedidos.</p>
+</div>
+
+<div class="page">
+  {page_header()}
+  <span class="section-tag">Combos</span>
+  <h2>Cómo armar combos sin perder margen</h2>
+  <p>Los combos ayudan a vender más unidades por pedido. La regla: nunca armes un combo sin calcular antes.</p>
+  {combos_html}
+  <div class="box-aviso">Tip: un combo con 10–15% de descuento sobre el precio individual suele ser atractivo sin regalar tu trabajo.</div>
 </div>
 
 <div class="page">
@@ -336,7 +407,16 @@ def build_kit_html():
   <h2>Mensajes listos para WhatsApp</h2>
   <p>Selección de mensajes del pack completo. Copia, adapta y personaliza:</p>
   {mensajes_kit}
-  <p style="margin-top:12px;font-size:10pt;">📄 El pack completo con 50+ mensajes está en <strong>Mensajes_para_Vender_Paletas.pdf</strong></p>
+  <p style="margin-top:12px;font-size:10pt;">📄 El pack completo con 60+ mensajes está en <strong>Mensajes_para_Vender_Paletas.pdf</strong></p>
+</div>
+
+<div class="page">
+  {page_header()}
+  <span class="section-tag">FAQ</span>
+  <h2>Preguntas frecuentes de clientes</h2>
+  <p>Cuando te escriban por primera vez, estas respuestas te ahorran tiempo. Personaliza los campos entre [corchetes]:</p>
+  {faq_kit}
+  <p style="margin-top:12px;font-size:10pt;">Más respuestas en el archivo de mensajes.</p>
 </div>
 
 <div class="page">
@@ -380,6 +460,7 @@ def build_mensajes_html():
         ("D) Mensajes para clientes antiguos", MENSAJES["clientes"]),
         ("E) Mensajes de últimas unidades", MENSAJES["ultimas"]),
         ("F) Mensajes para pedidos", MENSAJES["pedidos"]),
+        ("G) Respuestas a preguntas frecuentes", MENSAJES["faq"]),
     ]
     body = ""
     for title, items in sections:
@@ -388,7 +469,12 @@ def build_mensajes_html():
             body += f'<div class="mensaje"><strong>{i}.</strong> {m}</div>'
         body += "</div>"
     return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Mensajes para Vender Paletas</title><style>{STYLES}</style></head><body>
-<div class="page cover"><div class="cover-icon">💬</div><h1>Mensajes para Vender Paletas</h1><p class="subtitle">50+ textos listos para copiar en WhatsApp</p></div>
+<div class="page cover"><div class="cover-icon">💬</div><h1>Mensajes para Vender Paletas</h1><p class="subtitle">60 textos listos para copiar en WhatsApp</p></div>
+<div class="page">{page_header()}
+  <h2>Cómo usar estos mensajes</h2>
+  <p>Copia el texto que necesites y reemplaza lo que está entre <strong>[corchetes]</strong> con tu información real (sabores, precios, zona).</p>
+  <div class="box-aviso">No prometas lo que no puedes cumplir. Ajusta cantidades y plazos a lo que realmente puedes producir.</div>
+</div>
 {body}
 </body></html>"""
 
@@ -397,7 +483,10 @@ def build_plan_html():
     plan = ""
     for d in PLAN_7_DIAS:
         tareas = "".join(f"<li>{t}</li>" for t in d["tareas"])
-        plan += f'<div class="dia-card"><span class="dia-num">Día {d["dia"]}</span><h3>{d["titulo"]}</h3><ul>{tareas}</ul></div>'
+        plan += f'''<div class="dia-card"><span class="dia-num">Día {d["dia"]}</span>
+          <h3>{d["titulo"]}</h3>
+          <p class="dia-meta"><strong>Tiempo:</strong> {d["duracion"]} &nbsp;|&nbsp; <strong>Meta del día:</strong> {d["meta"]}</p>
+          <ul>{tareas}</ul></div>'''
     return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Plan 7 Días Paletas</title><style>{STYLES}</style></head><body>
 <div class="page cover"><div class="cover-icon">📅</div><h1>Plan de 7 Días</h1><p class="subtitle">Tu guía paso a paso para empezar a vender paletas</p></div>
 <div class="page">{page_header()}<h2>Tu semana de inicio</h2><p>Sigue un día a la vez. No te saltes pasos.</p>{plan}</div>
@@ -406,12 +495,7 @@ def build_plan_html():
 
 def build_checklist_html():
     items = "".join(f'<div class="checklist-item"><div class="check-box"></div><span>{c}</span></div>' for c in CHECKLIST_VENTA)
-    prod = [
-        "Revisar pedidos del día", "Sacar ingredientes con tiempo", "Preparar bases por separado",
-        "Llenar moldes sin rebosar", "Insertar palitos a tiempo", "Etiquetar por cliente",
-        "Verificar empaques limpios", "Calcular hora de entrega", "Avisar al cliente", "Anotar sabores agotados",
-    ]
-    prod_html = "".join(f'<div class="checklist-item"><div class="check-box"></div><span>{p}</span></div>' for p in prod)
+    prod_html = "".join(f'<div class="checklist-item"><div class="check-box"></div><span>{p}</span></div>' for p in CHECKLIST_PRODUCCION)
     return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Checklist Paletas</title><style>{STYLES}</style></head><body>
 <div class="page cover"><div class="cover-icon">✅</div><h1>Checklist Paletas</h1><p class="subtitle">Compras, producción y venta</p></div>
 <div class="page">{page_header()}<h2>Antes de vender</h2>{items}</div>
@@ -430,30 +514,46 @@ def build_menu_html():
 .menu-edit {{ max-width: 500px; margin: 0 auto; }}
 input, textarea {{ border: none; border-bottom: 2px dashed var(--rosa); background: transparent; font-family: inherit; font-size: inherit; color: var(--chocolate); width: 100%; padding: 4px; }}
 input:focus, textarea:focus {{ outline: 2px solid var(--rosa); border-radius: 4px; }}
-@media print {{ input, textarea {{ border-bottom: 1px solid #ccc; }} }}
+.menu-linea {{ display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }}
+.btn-copy {{
+  background: var(--rosa); color: white; border: none; border-radius: 12px;
+  padding: 12px 20px; font-family: inherit; font-weight: 700; font-size: 13px;
+  cursor: pointer; width: 100%; margin-top: 12px;
+}}
+.btn-copy:hover {{ opacity: 0.9; }}
+.preview-box {{
+  background: #E8F5E9; border-radius: 12px; padding: 14px; margin-top: 16px;
+  font-size: 13px; white-space: pre-wrap; display: none;
+}}
+.preview-box.visible {{ display: block; }}
+@media print {{ input, textarea {{ border-bottom: 1px solid #ccc; }} .btn-copy {{ display: none; }} }}
 </style></head><body>
 
-<div class="page cover"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos y publica en WhatsApp</p></div>
+<div class="page cover"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
 
 <div class="page menu-edit">
-  <div class="menu-modelo">
+  <div class="menu-modelo" id="menu-simple">
     <h3>🍭 Paletas Caseras de la Semana</h3>
-    <div class="menu-linea"><input placeholder="Sabor 1" value="Fresa con crema"><input placeholder="$" style="width:60px;text-align:right" value=""></div>
-    <div class="menu-linea"><input placeholder="Sabor 2" value="Mango con limón"><input placeholder="$" style="width:60px;text-align:right" value=""></div>
-    <div class="menu-linea"><input placeholder="Sabor 3" value="Chocolate cremoso"><input placeholder="$" style="width:60px;text-align:right" value=""></div>
-    <div class="menu-linea"><input placeholder="Sabor 4" value=""><input placeholder="$" style="width:60px;text-align:right" value=""></div>
-    <div class="menu-linea"><input placeholder="Sabor 5" value=""><input placeholder="$" style="width:60px;text-align:right" value=""></div>
-    <textarea rows="2" placeholder="Nota: Pedidos por WhatsApp..." style="margin-top:12px">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</textarea>
+    <div class="menu-linea"><input class="sabor" placeholder="Sabor 1" value="Fresa con crema"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
+    <div class="menu-linea"><input class="sabor" placeholder="Sabor 2" value="Mango con limón"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
+    <div class="menu-linea"><input class="sabor" placeholder="Sabor 3" value="Chocolate cremoso"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
+    <div class="menu-linea"><input class="sabor" placeholder="Sabor 4" value=""><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
+    <div class="menu-linea"><input class="sabor" placeholder="Sabor 5" value=""><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
+    <textarea id="nota-menu" rows="2" style="margin-top:12px">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</textarea>
+    <button type="button" class="btn-copy" onclick="generarMenu()">Copiar menú para WhatsApp</button>
+    <div class="preview-box" id="preview"></div>
   </div>
 </div>
 
 <div class="page menu-edit">
   <div class="menu-modelo" style="background:#FFF0F5">
     <h3>🌈 Menú Dulce de Hoy</h3>
-    <p><strong>Frutales:</strong> <input placeholder="ej: mango, sandía"></p>
-    <p><strong>Cremosas:</strong> <input placeholder="ej: vainilla, chocolate"></p>
-    <p><strong>Rellenas:</strong> <input placeholder="ej: dulce de leche"></p>
-    <p><strong>Combo promo:</strong> 3 paletas por $<input style="width:80px;display:inline" placeholder="0.00"></p>
+    <p><strong>Frutales:</strong> <input id="frutales" placeholder="ej: mango, sandía"></p>
+    <p><strong>Cremosas:</strong> <input id="cremosas" placeholder="ej: vainilla, chocolate"></p>
+    <p><strong>Rellenas:</strong> <input id="rellenas" placeholder="ej: dulce de leche"></p>
+    <p><strong>Combo promo:</strong> 3 paletas por $<input id="combo-precio" style="width:80px;display:inline" placeholder="0.00"></p>
+    <button type="button" class="btn-copy" onclick="generarColorido()">Copiar menú colorido</button>
+    <div class="preview-box" id="preview2"></div>
   </div>
 </div>
 
@@ -461,9 +561,11 @@ input:focus, textarea:focus {{ outline: 2px solid var(--rosa); border-radius: 4p
   <div class="menu-modelo" style="background:var(--menta)">
     <h3>✨ Paletas Artesanales</h3>
     <p><strong>Especiales de la semana:</strong></p>
-    <textarea rows="3" placeholder="Tus sabores premium..."></textarea>
-    <p><strong>Combo familiar (6 u.):</strong> $<input style="width:80px;display:inline"></p>
-    <p><strong>Anticipación:</strong> <input value="24 horas mínimo"></p>
+    <textarea id="especiales" rows="3" placeholder="Tus sabores premium..."></textarea>
+    <p><strong>Combo familiar (6 u.):</strong> $<input id="familiar" style="width:80px;display:inline"></p>
+    <p><strong>Anticipación:</strong> <input id="anticipacion" value="24 horas mínimo"></p>
+    <button type="button" class="btn-copy" onclick="generarPremium()">Copiar menú premium</button>
+    <div class="preview-box" id="preview3"></div>
   </div>
 </div>
 
@@ -474,6 +576,51 @@ input:focus, textarea:focus {{ outline: 2px solid var(--rosa); border-radius: 4p
   <div class="mensaje">¿Cuál te provoca? Pregunta por disponibilidad</div>
 </div>
 
+<script>
+function copiar(texto, previewId) {{
+  navigator.clipboard.writeText(texto).then(() => {{
+    const el = document.getElementById(previewId);
+    el.textContent = '✅ Copiado! Pega en WhatsApp:\\n\\n' + texto;
+    el.classList.add('visible');
+  }}).catch(() => {{
+    const el = document.getElementById(previewId);
+    el.textContent = texto;
+    el.classList.add('visible');
+  }});
+}}
+function generarMenu() {{
+  const sabores = document.querySelectorAll('#menu-simple .menu-linea');
+  let lineas = ['🍭 *Paletas Caseras de la Semana*', ''];
+  sabores.forEach(row => {{
+    const s = row.querySelector('.sabor').value.trim();
+    const p = row.querySelector('.precio').value.trim();
+    if (s) lineas.push(p ? `• ${{s}} — $${{p}}` : `• ${{s}}`);
+  }});
+  lineas.push('', document.getElementById('nota-menu').value.trim());
+  copiar(lineas.join('\\n'), 'preview');
+}}
+function generarColorido() {{
+  const t = [
+    '🌈 *Menú Dulce de Hoy*', '',
+    `🍓 Frutales: ${{document.getElementById('frutales').value || '...'}}`,
+    `🍦 Cremosas: ${{document.getElementById('cremosas').value || '...'}}`,
+    `🍫 Rellenas: ${{document.getElementById('rellenas').value || '...'}}`,
+    `🎁 Combo: 3 paletas por $${{document.getElementById('combo-precio').value || '...'}}`, '',
+    '📱 Escríbeme para apartar las tuyas'
+  ];
+  copiar(t.join('\\n'), 'preview2');
+}}
+function generarPremium() {{
+  const t = [
+    '✨ *Paletas Artesanales*', '',
+    `Sabores especiales:\\n${{document.getElementById('especiales').value || '...'}}`, '',
+    `👨‍👩‍👧 Combo familiar (6 u.): $${{document.getElementById('familiar').value || '...'}}`,
+    `⏰ Pedidos con ${{document.getElementById('anticipacion').value}} de anticipación`, '',
+    '📱 Reserva por WhatsApp'
+  ];
+  copiar(t.join('\\n'), 'preview3');
+}}
+</script>
 </body></html>"""
 
 
@@ -536,9 +683,19 @@ footer a { color: var(--rosa); }
   <header>
     <div class="badge">Acceso confirmado</div>
     <div class="icon">🍭</div>
-    <h1>¡Bienvenida a tu Kit!</h1>
+    <h1>¡Tu kit está listo!</h1>
     <p>Paletas de WhatsApp — Recetas, precios y mensajes listos para empezar desde casa.</p>
   </header>
+
+  <div class="section-title">Empieza por aquí (en orden)</div>
+  <div class="steps" style="margin-bottom:20px">
+    <ol>
+      <li><strong>Kit Principal</strong> — lee "Cómo usar este kit" (10 min)</li>
+      <li><strong>Calculadora</strong> — pon precios de tu ciudad</li>
+      <li><strong>Menú Editable</strong> — elige 3 a 5 sabores y copia el texto</li>
+      <li><strong>Plan de 7 Días</strong> — un paso por día</li>
+    </ol>
+  </div>
 
   <div class="section-title">Descarga tus archivos</div>
 
@@ -559,7 +716,7 @@ footer a { color: var(--rosa); }
   </a>
   <a class="card" href="produto/Mensajes_para_Vender_Paletas.pdf" download>
     <div class="card-icon">💬</div>
-    <div class="card-info"><h3>Mensajes para WhatsApp</h3><p>50+ textos listos para copiar</p></div>
+    <div class="card-info"><h3>Mensajes para WhatsApp</h3><p>60 textos listos para copiar</p></div>
     <span class="card-arrow">↓</span>
   </a>
   <a class="card" href="produto/Plan_7_Dias_Paletas.pdf" download>
@@ -573,7 +730,16 @@ footer a { color: var(--rosa); }
     <span class="card-arrow">↓</span>
   </a>
 
-  <div class="section-title">Empieza aquí</div>
+  <div class="section-title">Tips rápidos</div>
+  <div class="steps">
+    <ul style="margin-left:20px">
+      <li><strong>Calculadora en Google Sheets:</strong> sube el archivo .xlsx a Google Drive → Abrir con Hojas de cálculo</li>
+      <li><strong>Menú:</strong> usa el botón "Copiar menú" y pega directo en WhatsApp</li>
+      <li><strong>Empieza con 3 sabores</strong>, no con 30</li>
+    </ul>
+  </div>
+
+  <div class="section-title">Ruta de la primera semana</div>
   <div class="steps">
     <ol>
       <li>Descarga el <strong>Kit Principal</strong> y léelo hasta la sección "Cómo usar este kit"</li>
@@ -608,49 +774,101 @@ def build_calculator():
     thin = Side(style="thin", color="E8DFD6")
     border = Border(left=thin, right=thin, top=thin, bottom=thin)
 
+    # --- Aba 0: Inicio (instrucciones) ---
+    ws0 = wb.create_sheet("Inicio", 0)
+    ws0.merge_cells("A1:D1")
+    ws0["A1"] = "Cómo usar esta calculadora"
+    ws0["A1"].font = Font(bold=True, size=14, color="FFFFFF")
+    ws0["A1"].fill = PatternFill("solid", fgColor=ROSA)
+    ws0.row_dimensions[1].height = 28
+    instrucciones = [
+        "1. Ve a la pestaña 'Calculadora' y escribe el nombre de tu receta.",
+        "2. Agrega cada ingrediente con el costo del paquete y cuánto usaste.",
+        "3. Abajo, pon el costo de empaque, palito y otros gastos.",
+        "4. Escribe cuántas paletas produjiste.",
+        "5. Mira el precio sugerido según tu margen.",
+        "6. Usa 'Lista de compras', 'Menú' y 'Pedidos' para organizarte.",
+        "",
+        "Tip: Sube este archivo a Google Drive → clic derecho → Abrir con Hojas de cálculo.",
+        "Los números del ejemplo en 'Ejemplo' son ficticios.",
+    ]
+    for i, line in enumerate(instrucciones, 3):
+        ws0.cell(row=i, column=1, value=line)
+    ws0.column_dimensions["A"].width = 70
+
     # --- Aba 1: Calculadora ---
     ws = wb.active
     ws.title = "Calculadora"
     style_header(ws, "Calculadora de Precios — Paletas de WhatsApp")
 
-    headers = ["Ingrediente", "Costo del paquete", "Cantidad total del paquete", "Cantidad usada", "Costo usado", "Empaque/unidad", "Otros costos"]
+    headers = ["Ingrediente", "Costo del paquete", "Cantidad total del paquete", "Cantidad usada", "Costo usado"]
     for col, h in enumerate(headers, 1):
         cell = ws.cell(row=3, column=col, value=h)
         cell.font = Font(bold=True, color="FFFFFF")
         cell.fill = PatternFill("solid", fgColor=CHOCOLATE)
         cell.alignment = Alignment(horizontal="center", wrap_text=True)
-        ws.column_dimensions[get_column_letter(col)].width = 18
+        ws.column_dimensions[get_column_letter(col)].width = 20
+
+    ws.column_dimensions["F"].width = 14
+    ws.column_dimensions["G"].width = 14
 
     ws["A2"] = "Nombre de la receta:"
     ws["B2"] = "Paleta de fresa cremosa"
     ws["B2"].font = Font(bold=True)
 
+    sample_ings = [
+        ("Fresas", 3.50, 500, 200),
+        ("Leche", 1.20, 1000, 250),
+        ("Crema", 2.00, 200, 100),
+        ("Azúcar", 1.50, 1000, 30),
+    ]
+    for i, (ing, costo, total, usado) in enumerate(sample_ings, 4):
+        ws.cell(row=i, column=1, value=ing)
+        ws.cell(row=i, column=2, value=costo)
+        ws.cell(row=i, column=3, value=total)
+        ws.cell(row=i, column=4, value=usado)
+        ws.cell(row=i, column=5, value=f"=IF(OR(C{i}=0,D{i}=0),0,B{i}/C{i}*D{i})")
+
     for row in range(4, 14):
-        ws.cell(row=row, column=5).value = f"=IF(D{row}*C{row}=0,0,B{row}/C{row}*D{row})"
-        ws.cell(row=row, column=6).value = 0.15 if row == 4 else ""
+        if not ws.cell(row=row, column=1).value:
+            ws.cell(row=row, column=5, value=f"=IF(OR(C{row}=0,D{row}=0),0,B{row}/C{row}*D{row})")
 
-    ws["A15"] = "Cantidad de paletas producidas:"
-    ws["B15"] = 8
-    ws["A16"] = "Costo total:"
-    ws["B16"] = "=SUM(E4:E13)+SUM(F4:F13)+SUM(G4:G13)"
-    ws["A17"] = "Costo por paleta:"
-    ws["B17"] = "=IF(B15=0,0,B16/B15)"
-    ws["A18"] = "Margen deseado %:"
-    ws["B18"] = 40
-    ws["A19"] = "Precio sugerido:"
-    ws["B19"] = "=IF(B18>=100,0,B17/(1-B18/100))"
-    ws["A20"] = "Ganancia estimada por unidad:"
-    ws["B20"] = "=B19-B17"
+    ws["A15"] = "— Costos fijos por tanda —"
+    ws["A15"].font = Font(bold=True, italic=True)
+    ws["A16"] = "Empaque (costo por unidad):"
+    ws["B16"] = 0.15
+    ws["A17"] = "Palito (costo por unidad):"
+    ws["B17"] = 0.05
+    ws["A18"] = "Otros costos (gas, etiquetas, etc.):"
+    ws["B18"] = 0.50
+    ws["A19"] = "Cantidad de paletas producidas:"
+    ws["B19"] = 8
+    ws["A20"] = "Costo total ingredientes:"
+    ws["B20"] = "=SUM(E4:E13)"
+    ws["A21"] = "Costo empaques (unidad × cantidad):"
+    ws["B21"] = "=(B16+B17)*B19+B18"
+    ws["A22"] = "Costo total de producción:"
+    ws["B22"] = "=B20+B21"
+    ws["A23"] = "Costo por paleta:"
+    ws["B23"] = "=IF(B19=0,0,B22/B19)"
+    ws["A24"] = "Margen deseado %:"
+    ws["B24"] = 40
+    ws["A25"] = "Precio sugerido:"
+    ws["B25"] = "=IF(B24>=100,0,B23/(1-B24/100))"
+    ws["A26"] = "Ganancia estimada por unidad:"
+    ws["B26"] = "=B25-B23"
 
-    for r in range(15, 21):
+    for r in range(16, 27):
         ws.cell(row=r, column=1).font = Font(bold=True)
-    ws["B16"].number_format = '"$"#,##0.00'
-    ws["B17"].number_format = '"$"#,##0.00'
-    ws["B19"].number_format = '"$"#,##0.00'
-    ws["B20"].number_format = '"$"#,##0.00'
+    for r in range(20, 27):
+        ws.cell(row=r, column=2).number_format = '"$"#,##0.00'
     for row in range(4, 14):
-        for col in range(1, 8):
+        for col in range(1, 6):
             ws.cell(row=row, column=col).border = border
+
+    ws["A28"] = "Las celdas en verde se calculan solas. Solo edita ingredientes y costos."
+    ws.merge_cells("A28:E28")
+    ws["A28"].font = Font(italic=True, color="6B5E57", size=9)
 
     # --- Aba 2: Ejemplo ---
     ws2 = wb.create_sheet("Ejemplo")
@@ -850,6 +1068,20 @@ Las recetas están en `build/content.py`. Después de editar, ejecuta `python bu
     (ROOT / "README.md").write_text(readme, encoding="utf-8")
     print(f"  OK README.md")
     print("\nKit generado en paletas-de-whatsapp/")
+    sync_public()
+
+
+def sync_public():
+    """Copia archivos a public/ para deploy en Vercel."""
+    import shutil
+    public = ROOT.parent / "public" / "paletas-de-whatsapp"
+    public_prod = public / "produto"
+    public_prod.mkdir(parents=True, exist_ok=True)
+    for f in PRODUTO.iterdir():
+        if f.is_file():
+            shutil.copy2(f, public_prod / f.name)
+    shutil.copy2(ROOT / "entrega.html", public / "entrega.html")
+    print("  OK public/paletas-de-whatsapp/ sincronizado")
 
 
 if __name__ == "__main__":

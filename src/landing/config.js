@@ -36,4 +36,6 @@ export const CALC_CTA_LABEL = 'Quiero preparar, calcular y publicar';
 
 export const OFFER_CTA_LABEL = 'Quiero acceder al kit';
 
+export const TRUST_CTA_LABEL = 'Quiero empezar con claridad';
+
 export const CTA_LABEL = HERO_CTA_LABEL;

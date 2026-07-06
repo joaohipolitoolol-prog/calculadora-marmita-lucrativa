@@ -285,6 +285,25 @@ li { margin-bottom: 4px; }
 .badge-facil { background: #E8F5EC; color: #1a6b3a; }
 .badge-media { background: #FFF8E7; color: #B45309; }
 
+.alergeno-tag {
+  font-size: 9pt;
+  color: #B45309;
+  background: #FFF8E7;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin: 6px 0;
+}
+
+.category-page h2 { border-bottom-color: var(--naranja); }
+
+.dia-meta {
+  font-size: 10pt;
+  color: var(--gris);
+  margin-bottom: 8px;
+}
+
+.receta-card.compact { margin-bottom: 10px; padding: 12px 14px; }
+
 .receta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
