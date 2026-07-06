@@ -1366,45 +1366,50 @@ h3 {
 
 .pain-icon {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--orange-light);
-  border: 1.5px solid rgba(232, 101, 26, 0.2);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--orange);
+  border: 1.5px solid transparent;
 }
 
 .pain-icon svg {
   width: 22px;
   height: 22px;
   display: block;
+  flex-shrink: 0;
 }
 
-.pain-icon-pack {
-  background: #FFF0E8;
-  color: #D45612;
-  border-color: rgba(232, 101, 26, 0.22);
+.pain-icon--flavors {
+  background: var(--pink-light);
+  border-color: rgba(232, 67, 122, 0.2);
+  color: var(--pink);
 }
 
-.pain-icon-fire {
-  background: #FFF5E6;
-  color: #E8651A;
-  border-color: rgba(232, 101, 26, 0.22);
+.pain-icon--price {
+  background: var(--orange-light);
+  border-color: rgba(244, 132, 42, 0.22);
+  color: var(--orange-dark);
 }
 
-.pain-icon-delivery {
-  background: #E8F5EC;
+.pain-icon--menu {
+  background: var(--yellow-soft);
+  border-color: rgba(245, 182, 35, 0.28);
+  color: #B8860B;
+}
+
+.pain-icon--messages {
+  background: var(--green-light);
+  border-color: rgba(37, 165, 90, 0.2);
   color: var(--green);
-  border-color: rgba(31, 122, 66, 0.2);
 }
 
-.pain-icon-waste {
-  background: var(--gray-light);
-  color: var(--brown-mid);
-  border-color: var(--gray-border);
+.pain-icon--fear {
+  background: var(--red-light);
+  border-color: rgba(192, 57, 43, 0.15);
+  color: var(--red);
 }
 
 .pain-list strong {
@@ -2396,9 +2401,9 @@ h3 {
   margin-top: var(--space-lg);
 }
 
-.pain-list-compact .pain-icon svg {
-  width: 20px;
-  height: 20px;
+.pain-list-compact li {
+  align-items: center;
+  padding: 14px 16px;
 }
 
 /* ===== Bonus list ===== */
