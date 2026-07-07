@@ -76,19 +76,3 @@ if (sticky) {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 }
-
-document.querySelectorAll('.faq-item').forEach((item) => {
-  const trigger = item.querySelector('.faq-question');
-  if (!trigger) return;
-  trigger.addEventListener('click', () => {
-    const isOpen = item.classList.contains('is-open');
-    document.querySelectorAll('.faq-item.is-open').forEach((open) => {
-      open.classList.remove('is-open');
-      open.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
-    });
-    if (!isOpen) {
-      item.classList.add('is-open');
-      trigger.setAttribute('aria-expanded', 'true');
-    }
-  });
-});

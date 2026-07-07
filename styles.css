@@ -2509,6 +2509,15 @@ h3 {
   border: none;
   cursor: pointer;
   min-height: 48px;
+  list-style: none;
+}
+
+.faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.faq-question::marker {
+  content: '';
 }
 
 .faq-icon {
@@ -2519,17 +2528,12 @@ h3 {
   transition: transform var(--transition);
 }
 
-.faq-item.is-open .faq-icon {
+.faq-item[open] .faq-icon {
   transform: rotate(45deg);
 }
 
 .faq-answer {
-  display: none;
   padding: 0 18px 16px;
-}
-
-.faq-item.is-open .faq-answer {
-  display: block;
 }
 
 .faq-answer p {
