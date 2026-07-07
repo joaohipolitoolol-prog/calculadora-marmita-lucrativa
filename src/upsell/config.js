@@ -12,6 +12,10 @@ import { SITE_URL } from '../site/config.js';
 
 export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E';
 
+/** Downsell (US$ 9,97) — se muestra al rechazar el upsell.
+ * ⚠️ Reemplaza por el link real de Hotmart del downsell a US$ 9,97. */
+export const DOWNSELL_CHECKOUT_URL = 'COLOCAR_LINK_DOWNSELL';
+
 /** Rutas relativas — siempre en el dominio actual */
 export const ACCESS_URL = '/cadastrar?compra=1';
 export const UPSELL_POST_PURCHASE_URL = '/cadastrar?compra=1&premium=1';
@@ -22,6 +26,9 @@ export const UPSELL_PRICE_BRL = 47;
 
 export const UPSELL_PRICE_LABEL =
   UPSELL_CURRENCY === 'BRL' ? `R$ ${UPSELL_PRICE_BRL}` : `US$ ${UPSELL_PRICE_USD}`;
+
+export const DOWNSELL_PRICE_USD = 9.97;
+export const DOWNSELL_PRICE_LABEL = 'US$ 9,97';
 
 export const UPSELL_NAME = 'Paletas Premium y Combos Rentables';
 export const UPSELL_CTA_LABEL = 'Sí, agregar Paletas Premium';

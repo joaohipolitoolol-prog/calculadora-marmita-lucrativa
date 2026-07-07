@@ -37,16 +37,6 @@
     </div>
   </div>
 
-  <header class="upsell-header">
-    <div class="container">
-      <button type="button" class="upsell-header-inner" data-scroll-top aria-label="Volver al inicio">
-        <span aria-hidden="true">🍓</span>
-        <span>Paletas para WhatsApp</span>
-      </button>
-      <p class="upsell-confirmed">✓ Tu compra fue confirmada</p>
-    </div>
-  </header>
-
   <section class="upsell-hero">
     <div class="container">
       <p class="upsell-eyebrow">✓ Tu compra fue confirmada</p>
@@ -205,6 +195,18 @@
       <span class="upsell-sticky-price" data-upsell-price>US$ 12</span>
       <a href="#" class="btn btn-primary btn-sm" data-upsell-checkout>Agregar ahora</a>
       <a href="#" class="btn-decline btn-decline-sm" data-upsell-decline>Omitir</a>
+    </div>
+  </div>
+
+  <div class="downsell-overlay" id="downsell-modal" hidden>
+    <div class="downsell-card" role="dialog" aria-modal="true" aria-labelledby="downsell-title">
+      <button type="button" class="downsell-close" data-downsell-close aria-label="Cerrar">×</button>
+      <p class="downsell-label">Espera — última oferta</p>
+      <h2 id="downsell-title">¿Y si lo llevas por <span data-downsell-price>US$ 9,97</span>?</h2>
+      <p class="downsell-text">Entiendo que hoy no era el momento para US$ 12. Puedes agregar el mismo complemento premium —recetas, combos, menú editable y fichas de presentación— a un precio más bajo, solo ahora.</p>
+      <p class="downsell-price" data-downsell-price>US$ 9,97</p>
+      <a href="#" class="btn btn-primary" data-downsell-checkout>Sí, agregar por <span data-downsell-price>US$ 9,97</span></a>
+      <a href="#" class="btn-decline" data-downsell-final-decline>No gracias, continuar al acceso del kit</a>
     </div>
   </div>
 
