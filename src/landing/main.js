@@ -56,7 +56,7 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
     link.textContent = TRUST_CTA_LABEL;
   } else if (link.dataset.checkoutSticky !== undefined) {
     link.textContent = STICKY_CTA_LABEL;
-  } else if (!link.dataset.checkoutCustom) {
+  } else if (link.dataset.checkoutCustom === undefined) {
     link.textContent = CTA_LABEL;
   }
   link.setAttribute('rel', 'noopener');
