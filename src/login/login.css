@@ -167,6 +167,43 @@
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 46px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gray);
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition);
+}
+
+.password-toggle:hover {
+  color: var(--pink);
+  background: rgba(232, 67, 122, 0.08);
+}
+
+.password-toggle.visible .icon-eye { display: none; }
+.password-toggle.visible .icon-eye-off { display: block; }
+.password-toggle .icon-eye-off[hidden] { display: none; }
+.password-toggle.visible .icon-eye-off[hidden] { display: block; }
+
 .form-group input::placeholder { color: var(--brown-light); opacity: 0.7; }
 
 .form-group input:focus {

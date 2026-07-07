@@ -22,6 +22,19 @@ if (registerWaSupport) {
   registerWaSupport.href = WHATSAPP_SUPPORT_LINK;
 }
 
+document.querySelectorAll('.password-toggle').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const input = btn.closest('.password-field')?.querySelector('input');
+    if (!input) return;
+
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.classList.toggle('visible', show);
+    btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    btn.setAttribute('aria-pressed', String(show));
+  });
+});
+
 const purchaseParams = new URLSearchParams(window.location.search);
 
 function showAlert(el, message, type = 'error') {
