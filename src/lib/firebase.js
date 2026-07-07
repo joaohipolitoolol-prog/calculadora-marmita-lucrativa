@@ -30,6 +30,20 @@ if (isFirebaseConfigured) {
 
 export { app, auth, db };
 
+export function requireFirebase() {
+  if (!isFirebaseConfigured || !auth) {
+    throw new Error(getConfigErrorMessage());
+  }
+  return auth;
+}
+
+export function requireFirestore() {
+  if (!isFirebaseConfigured || !db) {
+    throw new Error(getConfigErrorMessage());
+  }
+  return db;
+}
+
 export function getConfigErrorMessage() {
   return 'Firebase não configurado. Copie .env.example para .env.local e preencha as chaves do Firebase.';
 }
