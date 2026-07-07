@@ -90,6 +90,44 @@ def page_header():
     return '<div class="page-header"><strong>Paletas para WhatsApp</strong><span>Kit completo</span></div>'
 
 
+THEME_TOGGLE_HTML = """<button type="button" class="theme-float" id="themeToggle" aria-label="Cambiar tema">
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
+</button>"""
+
+THEME_SCRIPT = """(function() {
+  const KEY = 'paletas-kit-theme';
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const saved = localStorage.getItem(KEY);
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  if (btn) btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem(KEY, next);
+  });
+})();"""
+
+
+def menu_row(sabor="", precio="", sabor_ph="Otro sabor"):
+    return (
+        f'<div class="menu-linea menu-linea-input">'
+        f'<input class="sabor" type="text" placeholder="{sabor_ph}" value="{sabor}">'
+        f'<span class="menu-dots" aria-hidden="true"></span>'
+        f'<input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="{precio}">'
+        f'</div>'
+    )
+
+
+def paginate_blocks(blocks, per_page, first_header=""):
+    pages = []
+    for i in range(0, len(blocks), per_page):
+        batch = "".join(blocks[i:i + per_page])
+        header = first_header if i == 0 else page_header()
+        pages.append(f'<div class="page screen-compact">{header}{batch}</div>')
+    return "".join(pages)
+
+
 def build_kit_html():
     combos = "".join(
         f'<li><strong>{c["nombre"]}</strong> — {c["porque"]}</li>' for c in COMBINACIONES
@@ -140,7 +178,7 @@ def build_kit_html():
 
 <div class="page cover">
   <div class="cover-badge">Kit Digital</div>
-  <div class="cover-icon">🍭</div>
+  <div class="cover-icon">🍓</div>
   <h1>Paletas para WhatsApp</h1>
   <p class="subtitle">Recetas, precios y mensajes listos para empezar desde casa.</p>
   <div class="tagline">Prepara. Calcula. Publica.</div>
@@ -380,7 +418,7 @@ def build_kit_html():
   <h2>Menú editable para WhatsApp</h2>
   <p>Usa el archivo <strong>Menu_Editable_Paletas</strong> o copia estos modelos:</p>
   <div class="menu-modelo">
-    <h3>🍭 Paletas Caseras de la Semana</h3>
+    <h3>🍓 Paletas Caseras de la Semana</h3>
     <div class="menu-linea"><span>Fresa con crema</span><span class="precio">$<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></span></div>
     <div class="menu-linea"><span>Mango con limón</span><span class="precio">$<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></span></div>
     <div class="menu-linea"><span>Chocolate cremoso</span><span class="precio">$<span class="campo-editable">&nbsp;&nbsp;&nbsp;&nbsp;</span></span></div>
@@ -480,16 +518,23 @@ def build_mensajes_html():
 
 
 def build_plan_html():
-    plan = ""
+    days = []
     for d in PLAN_7_DIAS:
         tareas = "".join(f"<li>{t}</li>" for t in d["tareas"])
-        plan += f'''<div class="dia-card"><span class="dia-num">Día {d["dia"]}</span>
+        days.append(f'''<div class="dia-card"><span class="dia-num">Día {d["dia"]}</span>
           <h3>{d["titulo"]}</h3>
           <p class="dia-meta"><strong>Tiempo:</strong> {d["duracion"]} &nbsp;|&nbsp; <strong>Meta del día:</strong> {d["meta"]}</p>
-          <ul>{tareas}</ul></div>'''
-    return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Plan 7 Días Paletas</title><style>{STYLES}</style></head><body>
-<div class="page cover"><div class="cover-icon">📅</div><h1>Plan de 7 Días</h1><p class="subtitle">Tu guía paso a paso para empezar a vender paletas</p></div>
-<div class="page">{page_header()}<h2>Tu semana de inicio</h2><p>Sigue un día a la vez. No te saltes pasos.</p>{plan}</div>
+          <ul>{tareas}</ul></div>''')
+    mid = paginate_blocks(
+        days[:4],
+        4,
+        f'{page_header()}<h2>Tu semana de inicio</h2><p>Sigue un día a la vez. No te saltes pasos.</p>',
+    )
+    end = paginate_blocks(days[4:], 3, page_header())
+    return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Plan 7 Días Paletas</title><style>{STYLES}</style></head><body>
+<div class="page cover screen-compact"><div class="cover-icon">📅</div><h1>Plan de 7 Días</h1><p class="subtitle">Tu guía paso a paso para empezar a vender paletas</p></div>
+{mid}
+{end}
 </body></html>"""
 
 
@@ -509,69 +554,55 @@ def build_checklist_html():
 
 
 def build_menu_html():
-    return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Menú Editable Paletas</title><style>
-{STYLES}
-.menu-edit {{ max-width: 500px; margin: 0 auto; }}
-input, textarea {{ border: none; border-bottom: 2px dashed var(--rosa); background: transparent; font-family: inherit; font-size: inherit; color: var(--chocolate); width: 100%; padding: 4px; }}
-input:focus, textarea:focus {{ outline: 2px solid var(--rosa); border-radius: 4px; }}
-.menu-linea {{ display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }}
-.btn-copy {{
-  background: var(--rosa); color: white; border: none; border-radius: 12px;
-  padding: 12px 20px; font-family: inherit; font-weight: 700; font-size: 13px;
-  cursor: pointer; width: 100%; margin-top: 12px;
-}}
-.btn-copy:hover {{ opacity: 0.9; }}
-.preview-box {{
-  background: #E8F5E9; border-radius: 12px; padding: 14px; margin-top: 16px;
-  font-size: 13px; white-space: pre-wrap; display: none;
-}}
-.preview-box.visible {{ display: block; }}
-@media print {{ input, textarea {{ border-bottom: 1px solid #ccc; }} .btn-copy {{ display: none; }} }}
-</style></head><body>
+  rows = "".join([
+    menu_row("Fresa con crema", "1.50", "Nombre del sabor"),
+    menu_row("Mango con limón", "1.50", "Nombre del sabor"),
+    menu_row("Chocolate cremoso", "2.00", "Nombre del sabor"),
+    menu_row("", "", "Otro sabor"),
+    menu_row("", "", "Otro sabor"),
+  ])
+  return f"""<!DOCTYPE html><html lang="es" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Menú Editable Paletas</title><style>{STYLES}</style></head><body>
 
-<div class="page cover"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
+{THEME_TOGGLE_HTML}
 
-<div class="page menu-edit">
+<div class="page cover screen-compact"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
+
+<div class="page menu-edit screen-compact">
   <div class="menu-modelo" id="menu-simple">
-    <h3>🍭 Paletas Caseras de la Semana</h3>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 1" value="Fresa con crema"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 2" value="Mango con limón"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 3" value="Chocolate cremoso"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 4" value=""><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 5" value=""><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <textarea id="nota-menu" rows="2" style="margin-top:12px">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</textarea>
+    <h3>🍓 Paletas Caseras de la Semana</h3>
+    {rows}
+    <textarea class="menu-nota" id="nota-menu" rows="2">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</textarea>
     <button type="button" class="btn-copy" onclick="generarMenu()">Copiar menú para WhatsApp</button>
     <div class="preview-box" id="preview"></div>
   </div>
 </div>
 
-<div class="page menu-edit">
+<div class="page menu-edit screen-compact">
   <div class="menu-modelo" style="background:#FFF0F5">
     <h3>🌈 Menú Dulce de Hoy</h3>
-    <p><strong>Frutales:</strong> <input id="frutales" placeholder="ej: mango, sandía"></p>
-    <p><strong>Cremosas:</strong> <input id="cremosas" placeholder="ej: vainilla, chocolate"></p>
-    <p><strong>Rellenas:</strong> <input id="rellenas" placeholder="ej: dulce de leche"></p>
-    <p><strong>Combo promo:</strong> 3 paletas por $<input id="combo-precio" style="width:80px;display:inline" placeholder="0.00"></p>
+    <div class="menu-field"><label for="frutales">Frutales</label><input type="text" id="frutales" placeholder="ej: mango, sandía"></div>
+    <div class="menu-field"><label for="cremosas">Cremosas</label><input type="text" id="cremosas" placeholder="ej: vainilla, chocolate"></div>
+    <div class="menu-field"><label for="rellenas">Rellenas</label><input type="text" id="rellenas" placeholder="ej: dulce de leche"></div>
+    <div class="menu-field menu-field-row"><strong>Combo promo:</strong> 3 paletas por $<input type="text" id="combo-precio" placeholder="0.00" inputmode="decimal"></div>
     <button type="button" class="btn-copy" onclick="generarColorido()">Copiar menú colorido</button>
     <div class="preview-box" id="preview2"></div>
   </div>
 </div>
 
-<div class="page menu-edit">
+<div class="page menu-edit screen-compact">
   <div class="menu-modelo" style="background:var(--menta)">
     <h3>✨ Paletas Artesanales</h3>
-    <p><strong>Especiales de la semana:</strong></p>
-    <textarea id="especiales" rows="3" placeholder="Tus sabores premium..."></textarea>
-    <p><strong>Combo familiar (6 u.):</strong> $<input id="familiar" style="width:80px;display:inline"></p>
-    <p><strong>Anticipación:</strong> <input id="anticipacion" value="24 horas mínimo"></p>
+    <div class="menu-field"><label for="especiales">Especiales de la semana</label><textarea id="especiales" rows="3" placeholder="Tus sabores premium..."></textarea></div>
+    <div class="menu-field menu-field-row"><strong>Combo familiar (6 u.):</strong> $<input type="text" id="familiar" placeholder="0.00" inputmode="decimal"></div>
+    <div class="menu-field menu-field-row"><strong>Anticipación:</strong> <input type="text" id="anticipacion" value="24 horas mínimo" style="flex:1;min-width:8rem"></div>
     <button type="button" class="btn-copy" onclick="generarPremium()">Copiar menú premium</button>
     <div class="preview-box" id="preview3"></div>
   </div>
 </div>
 
-<div class="page">
+<div class="page screen-compact">
   <h2>Textos para estado / story</h2>
-  <div class="mensaje">🍭 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.</div>
+  <div class="mensaje">🍓 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.</div>
   <div class="mensaje">Menú de la semana en mi estado anterior 👆</div>
   <div class="mensaje">¿Cuál te provoca? Pregunta por disponibilidad</div>
 </div>
@@ -589,8 +620,8 @@ function copiar(texto, previewId) {{
   }});
 }}
 function generarMenu() {{
-  const sabores = document.querySelectorAll('#menu-simple .menu-linea');
-  let lineas = ['🍭 *Paletas Caseras de la Semana*', ''];
+  const sabores = document.querySelectorAll('#menu-simple .menu-linea-input');
+  let lineas = ['🍓 *Paletas Caseras de la Semana*', ''];
   sabores.forEach(row => {{
     const s = row.querySelector('.sabor').value.trim();
     const p = row.querySelector('.precio').value.trim();
@@ -620,6 +651,7 @@ function generarPremium() {{
   ];
   copiar(t.join('\\n'), 'preview3');
 }}
+{THEME_SCRIPT}
 </script>
 </body></html>"""
 
@@ -682,7 +714,7 @@ footer a { color: var(--rosa); }
 <div class="container">
   <header>
     <div class="badge">Acceso confirmado</div>
-    <div class="icon">🍭</div>
+    <div class="icon">🍓</div>
     <h1>¡Tu kit está listo!</h1>
     <p>Paletas para WhatsApp — Recetas, precios y mensajes listos para empezar desde casa.</p>
   </header>
@@ -751,7 +783,7 @@ footer a { color: var(--rosa); }
   </div>
 
   <footer>
-    <p>Prepara. Calcula. Publica. 🍭</p>
+    <p>Prepara. Calcula. Publica. 🍓</p>
     <p style="margin-top:8px">¿Dudas? Escríbenos por WhatsApp desde tu correo de compra.</p>
   </footer>
 </div>

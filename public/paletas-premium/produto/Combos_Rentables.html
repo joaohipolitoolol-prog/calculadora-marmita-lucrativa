@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -502,7 +502,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
 }
 
 .combo-list li::before {
-  content: '🍭';
+  content: '🍓';
   position: absolute;
   left: 0;
 }
@@ -511,15 +511,315 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .page { page-break-after: always; }
 }
+
+/* ===== Pantalla / entregables interactivos ===== */
+@media screen {
+  body {
+    background: linear-gradient(180deg, var(--crema) 0%, #fff 40%, var(--menta) 100%);
+    padding-bottom: 24px;
+  }
+
+  .document {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 12px 24px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 640px;
+    min-height: auto;
+    margin: 0 auto 14px;
+    padding: 22px 18px;
+    border-radius: 18px;
+    box-shadow: var(--sombra);
+  }
+
+  .page.cover,
+  .page.cover-page {
+    min-height: auto;
+    padding: 40px 22px;
+    border-radius: 0 0 22px 22px;
+    margin-bottom: 18px;
+    box-shadow: none;
+  }
+
+  .page.menu-edit,
+  .page.menu-page,
+  .page.screen-compact {
+    min-height: auto;
+  }
+}
+
+.cover-page {
+  background: linear-gradient(160deg, var(--crema) 0%, #FFE8F0 40%, var(--menta) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30mm 25mm;
+}
+
+.cover-page h1 {
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  font-weight: 800;
+  color: var(--chocolate);
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+
+.cover-page .subtitle {
+  font-size: 1rem;
+  color: var(--gris);
+  font-weight: 600;
+  max-width: 28rem;
+}
+
+/* Menú editable — filas con puntos */
+.menu-edit {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.menu-edit .menu-modelo {
+  margin: 0;
+}
+
+.menu-edit .menu-linea.menu-linea-input {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(92, 46, 31, 0.08);
+}
+
+.menu-edit .menu-linea-input .sabor {
+  flex: 1 1 50%;
+  min-width: 0;
+  width: auto;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--chocolate);
+  padding: 6px 0;
+}
+
+.menu-edit .menu-linea-input .menu-dots {
+  flex: 1 1 24px;
+  min-width: 12px;
+  border-bottom: 2px dotted rgba(92, 46, 31, 0.28);
+  height: 0;
+  margin: 0 2px 5px;
+  align-self: flex-end;
+}
+
+.menu-edit .menu-linea-input .precio {
+  flex: 0 0 4.5rem;
+  width: 4.5rem;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--rosa);
+  text-align: right;
+  padding: 6px 0;
+}
+
+.menu-edit .menu-linea-input .sabor::placeholder,
+.menu-edit .menu-linea-input .precio::placeholder {
+  color: rgba(107, 94, 87, 0.55);
+  font-weight: 600;
+}
+
+.menu-edit .menu-field {
+  margin-bottom: 14px;
+}
+
+.menu-edit .menu-field label,
+.menu-edit .menu-field > strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--chocolate);
+  margin-bottom: 6px;
+}
+
+.menu-edit .menu-field input,
+.menu-edit .menu-field textarea,
+.menu-edit .menu-nota {
+  width: 100%;
+  border: none;
+  border-bottom: 2px dashed rgba(255, 79, 139, 0.45);
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--chocolate);
+  padding: 8px 4px;
+  resize: vertical;
+}
+
+.menu-edit .menu-field input:focus,
+.menu-edit .menu-field textarea:focus,
+.menu-edit .menu-nota:focus,
+.menu-edit .menu-linea-input input:focus {
+  outline: 2px solid rgba(255, 79, 139, 0.35);
+  border-radius: 8px;
+}
+
+.menu-edit .menu-field-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.92rem;
+}
+
+.menu-edit .menu-field-row input {
+  width: auto;
+  flex: 0 0 5rem;
+  border-bottom: 2px dashed rgba(255, 79, 139, 0.45);
+  background: transparent;
+  font-family: inherit;
+  font-weight: 700;
+  padding: 4px;
+}
+
+.menu-form {
+  max-width: 520px;
+  margin: 16px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.menu-form label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--chocolate);
+}
+
+.menu-form input,
+.menu-form textarea {
+  width: 100%;
+  border: 1px solid var(--gris-claro);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--chocolate);
+  background: var(--blanco);
+  resize: vertical;
+}
+
+.menu-form input:focus,
+.menu-form textarea:focus {
+  outline: 2px solid rgba(255, 79, 139, 0.35);
+  border-color: var(--rosa);
+}
+
+.btn-copy {
+  background: var(--rosa);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 8px;
+  box-shadow: 0 6px 18px rgba(255, 79, 139, 0.28);
+}
+
+.btn-copy:hover { opacity: 0.92; }
+
+.preview-box,
+.menu-output {
+  background: #E8F5E9;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  display: none;
+  border: 1px solid rgba(94, 207, 154, 0.35);
+}
+
+.preview-box.visible,
+.menu-output.visible {
+  display: block;
+}
+
+.theme-float {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 79, 139, 0.3);
+  background: var(--blanco);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.theme-float svg {
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  transition: 0.3s;
+}
+
+.theme-float .icon-sun { color: #f5a623; }
+.theme-float .icon-moon { color: #a78bfa; }
+
+[data-theme="light"] .theme-float .icon-sun { opacity: 1; transform: scale(1); }
+[data-theme="light"] .theme-float .icon-moon { opacity: 0; transform: scale(0.4); }
+[data-theme="dark"] .theme-float .icon-sun { opacity: 0; transform: scale(0.4); }
+[data-theme="dark"] .theme-float .icon-moon { opacity: 1; transform: scale(1); }
+
+[data-theme="dark"] {
+  --crema: #1a1218;
+  --chocolate: #fdf4ef;
+  --gris: #b8a8a0;
+  --gris-claro: #2a2228;
+  --rosa: #ff6b9d;
+  --blanco: #2a2228;
+}
+
+[data-theme="dark"] body { background: #120d0f; color: #fdf4ef; }
+[data-theme="dark"] .page { background: #1a1218; }
+[data-theme="dark"] .cover,
+[data-theme="dark"] .cover-page { background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }
+[data-theme="dark"] .menu-modelo { background: #2a2228 !important; border-color: rgba(255, 107, 157, 0.3); }
+[data-theme="dark"] .mensaje { background: #1e2a22; }
+[data-theme="dark"] .menu-form input,
+[data-theme="dark"] .menu-form textarea { background: #2a2228; border-color: #3a3238; color: #fdf4ef; }
+[data-theme="dark"] .theme-float { background: #2a2228; border-color: rgba(255, 107, 157, 0.4); }
+
+@media print {
+  .btn-copy,
+  .theme-float,
+  .preview-box,
+  .menu-output { display: none !important; }
+  .menu-edit .menu-linea-input input { border-bottom: 1px solid #ccc; }
+}
 </style>
 </head>
 <body>
+
 <div class="document">
-<div class="page"><div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div>
-          <span class="section-tag">Combos</span>
-          <h2>10 ideas de combos rentables</h2>
-          <p>Los precios son guías. Ajusta con tu calculadora según costos locales.</p>
-          <div class="dia-card">
+<div class="page screen-compact"><span class="section-tag">Combos</span><h2>10 ideas de combos rentables</h2><p>Los precios son guías. Ajusta con tu calculadora según costos locales.</p><div class="dia-card">
           <h3>Combo Antojo</h3>
           <p><strong>Contenido:</strong> 3 paletas surtidas (1 frutal + 1 cremosa + 1 premium)</p>
           <p><strong>Precio sugerido:</strong> 15-20% menos que comprar 3 sueltas</p>
@@ -537,7 +837,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
           <p><strong>Precio sugerido:</strong> Precio fijo redondo (ej. US$ 12 o R$ 45)</p>
           <p><strong>Público:</strong> Pedidos anticipados viernes-sábado</p>
           <p class="dica-vender"><strong>Mensaje:</strong> Caja fin de semana lista — aparta la tuya hoy.</p>
-        </div><div class="dia-card">
+        </div></div><div class="page screen-compact"><div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div><div class="dia-card">
           <h3>Combo Infantil</h3>
           <p><strong>Contenido:</strong> 4 paletas coloridas (frutales + Oreo o vainilla chispas)</p>
           <p><strong>Precio sugerido:</strong> Precio accesible, volumen en barrios</p>
@@ -555,7 +855,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
           <p><strong>Precio sugerido:</strong> San Valentín y aniversarios</p>
           <p><strong>Público:</strong> Parejas</p>
           <p class="dica-vender"><strong>Mensaje:</strong> Combo dulce para dos — 3 paletas por [precio].</p>
-        </div><div class="dia-card">
+        </div></div><div class="page screen-compact"><div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div><div class="dia-card">
           <h3>Combo Oficina</h3>
           <p><strong>Contenido:</strong> 10 paletas surtidas en caja</p>
           <p><strong>Precio sugerido:</strong> Descuento por volumen del 10-15%</p>
@@ -573,14 +873,14 @@ tr:nth-child(even) td { background: var(--gris-claro); }
           <p><strong>Precio sugerido:</strong> Estacional — enfatiza frescura</p>
           <p><strong>Público:</strong> Días calurosos</p>
           <p class="dica-vender"><strong>Mensaje:</strong> Pack verano: lo más refrescante del menú.</p>
-        </div><div class="dia-card">
+        </div></div><div class="page screen-compact"><div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div><div class="dia-card">
           <h3>Combo Encargo</h3>
           <p><strong>Contenido:</strong> Sabores a elegir del menú premium, cantidad personalizada</p>
           <p><strong>Precio sugerido:</strong> Cotiza según calculadora + recargo por encargo</p>
           <p><strong>Público:</strong> Eventos y cumpleaños</p>
           <p class="dica-vender"><strong>Mensaje:</strong> ¿Evento especial? Armo tu caja con los sabores que quieras.</p>
-        </div>
-        </div>
+        </div></div>
 </div>
+
 </body>
 </html>

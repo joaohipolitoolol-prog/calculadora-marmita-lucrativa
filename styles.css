@@ -44,19 +44,22 @@ a {
 }
 
 .site-header-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
 }
 
 .site-logo {
+  grid-column: 2;
+  justify-self: center;
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 800;
   font-size: 0.95rem;
   color: var(--brown);
+  text-align: center;
 }
 
 .site-logo img {
@@ -66,6 +69,8 @@ a {
 }
 
 .header-enter {
+  grid-column: 3;
+  justify-self: end;
   font-size: 0.9rem;
   font-weight: 700;
   color: transparent;
@@ -872,7 +877,7 @@ h3 {
 }
 
 .hero h1 {
-  margin-bottom: 10px;
+  margin: 0 auto 12px;
 }
 
 .hero-urgency {

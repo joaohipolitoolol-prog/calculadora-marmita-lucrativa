@@ -52,9 +52,49 @@ def page_header():
     return '<div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div>'
 
 
-def html_shell(title, body):
+def paginate_blocks(blocks, per_page, first_header="", page_header_fn=page_header):
+    pages = []
+    for i in range(0, len(blocks), per_page):
+        batch = "".join(blocks[i:i + per_page])
+        header = first_header if i == 0 else page_header_fn()
+        pages.append(f'<div class="page screen-compact">{header}{batch}</div>')
+    return "".join(pages)
+
+
+THEME_TOGGLE_HTML = """<button type="button" class="theme-float" id="themeToggle" aria-label="Cambiar tema">
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
+</button>"""
+
+THEME_SCRIPT = """(function() {
+  const KEY = 'paletas-kit-theme';
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const saved = localStorage.getItem(KEY);
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  if (btn) btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem(KEY, next);
+  });
+})();"""
+
+
+def menu_row(sabor="", precio="", sabor_ph="Otro sabor"):
+    return (
+        f'<div class="menu-linea menu-linea-input">'
+        f'<input class="sabor" type="text" placeholder="{sabor_ph}" value="{sabor}">'
+        f'<span class="menu-dots" aria-hidden="true"></span>'
+        f'<input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="{precio}">'
+        f'</div>'
+    )
+
+
+def html_shell(title, body, interactive=False):
+    theme = THEME_TOGGLE_HTML if interactive else ""
+    script = f"<script>{THEME_SCRIPT}</script>" if interactive else ""
     return f"""<!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,22 +103,30 @@ def html_shell(title, body):
 <style>{STYLES}</style>
 </head>
 <body>
+{theme}
 <div class="document">
 {body}
 </div>
+{script}
 </body>
 </html>"""
 
 
 def build_kit_html():
-    cards = "".join(receta_html(r) for r in RECETAS_PREMIUM)
+    cards = [receta_html(r) for r in RECETAS_PREMIUM]
+    recipe_pages = paginate_blocks(
+        cards,
+        2,
+        '<span class="section-tag">Recetas</span><h2>20 recetas premium</h2>',
+    )
     return html_shell(
         "Kit Premium Paletas",
-        f"""<div class="page cover-page">
+        f"""<div class="page cover cover-page screen-compact">
+  <div class="cover-icon">✨</div>
   <h1>Paletas Premium y Combos Rentables</h1>
   <p class="subtitle">20 recetas premium · Complemento del Kit Paletas para WhatsApp</p>
 </div>
-<div class="page">
+<div class="page screen-compact">
   {page_header()}
   <span class="section-tag">Introducción</span>
   <h2>Cómo usar este complemento</h2>
@@ -90,52 +138,47 @@ def build_kit_html():
     <li>Adapta fechas especiales a tu calendario local</li>
   </ol>
 </div>
-<div class="page">{page_header()}<span class="section-tag">Recetas</span><h2>20 recetas premium</h2>{cards}</div>""",
+{recipe_pages}""",
     )
 
 
 def build_combos_html():
-    items = ""
+    items = []
     for c in COMBOS_RENTABLES:
-        items += f"""<div class="dia-card">
+        items.append(f"""<div class="dia-card">
           <h3>{c['nombre']}</h3>
           <p><strong>Contenido:</strong> {c['contenido']}</p>
           <p><strong>Precio sugerido:</strong> {c['precio_guia']}</p>
           <p><strong>Público:</strong> {c['publico']}</p>
           <p class="dica-vender"><strong>Mensaje:</strong> {c['mensaje']}</p>
-        </div>"""
-    return html_shell(
-        "Combos Rentables",
-        f"""<div class="page">{page_header()}
-          <span class="section-tag">Combos</span>
-          <h2>10 ideas de combos rentables</h2>
-          <p>Los precios son guías. Ajusta con tu calculadora según costos locales.</p>
-          {items}
-        </div>""",
+        </div>""")
+    pages = paginate_blocks(
+        items,
+        3,
+        '<span class="section-tag">Combos</span><h2>10 ideas de combos rentables</h2><p>Los precios son guías. Ajusta con tu calculadora según costos locales.</p>',
     )
+    return html_shell("Combos Rentables", pages)
 
 
 def build_fechas_html():
-    items = ""
+    items = []
     for f in FECHAS_ESPECIALES:
         ideas = "".join(f"<li>{i}</li>" for i in f["ideas"])
-        items += f"""<div class="dia-card">
+        items.append(f"""<div class="dia-card">
           <h3>{f['fecha']}</h3>
           <ul>{ideas}</ul>
           <p class="dica-vender"><strong>Promo:</strong> {f['promo']}</p>
-        </div>"""
-    return html_shell(
-        "Fechas Especiales",
-        f"""<div class="page">{page_header()}
-          <span class="section-tag">Calendario</span>
-          <h2>Ideas para fechas especiales</h2>
-          {items}
-        </div>""",
+        </div>""")
+    pages = paginate_blocks(
+        items,
+        3,
+        '<span class="section-tag">Calendario</span><h2>Ideas para fechas especiales</h2>',
     )
+    return html_shell("Fechas Especiales", pages)
 
 
 def build_guia_html():
-    sections = ""
+    sections = []
     for titulo, tips in [
         ("Fotos que venden", GUIA_PRESENTACION["fotos"]),
         ("Nombres en el menú", GUIA_PRESENTACION["nombres"]),
@@ -143,15 +186,13 @@ def build_guia_html():
         ("Precios premium", GUIA_PRESENTACION["precios"]),
     ]:
         lis = "".join(f"<li>{t}</li>" for t in tips)
-        sections += f"<h3>{titulo}</h3><ul>{lis}</ul>"
-    return html_shell(
-        "Guía de Presentación",
-        f"""<div class="page">{page_header()}
-          <span class="section-tag">Presentación</span>
-          <h2>Guía de presentación premium</h2>
-          {sections}
-        </div>""",
+        sections.append(f"<h3>{titulo}</h3><ul>{lis}</ul>")
+    pages = paginate_blocks(
+        sections,
+        2,
+        '<span class="section-tag">Presentación</span><h2>Guía de presentación premium</h2>',
     )
+    return html_shell("Guía de Presentación", pages)
 
 
 def build_mensajes_html():
@@ -171,39 +212,66 @@ def build_mensajes_html():
 
 
 def build_menu_html():
+    rows = "".join([
+        menu_row("Cheesecake de fresa", "2.50"),
+        menu_row("Brownie relleno", "2.80"),
+        menu_row("Chocolate bañado", "3.00"),
+        menu_row("", "", "Otro sabor premium"),
+        menu_row("", "", "Otro sabor premium"),
+    ])
+    combo_rows = "".join([
+        menu_row("Combo familiar x6", "12.00", "Nombre del combo"),
+        menu_row("Caja fin de semana", "15.00", "Nombre del combo"),
+    ])
     return html_shell(
         "Menú Premium Editable",
-        """<div class="page menu-page">
-  <span class="section-tag">Menú</span>
-  <h2>Menú Premium Editable</h2>
-  <p>Completa y copia el texto para WhatsApp.</p>
-  <div class="menu-form">
-    <label>Nombre de tu negocio</label>
-    <input type="text" id="negocio" placeholder="Ej: Paletas de María">
-    <label>Sabores premium (uno por línea)</label>
-    <textarea id="sabores" rows="8" placeholder="Cheesecake de fresa — US$ 2,50&#10;Brownie relleno — US$ 2,80&#10;..."></textarea>
-    <label>Combos</label>
-    <textarea id="combos" rows="5" placeholder="Combo familiar x6 — US$ 12&#10;Combo fin de semana — US$ 15"></textarea>
-    <label>Nota al pie (opcional)</label>
-    <input type="text" id="nota" placeholder="Pedidos con 24h. Entrega en [zona].">
-    <button type="button" class="btn-copy" onclick="copiarMenu()">Copiar menú premium</button>
-    <pre id="resultado" class="menu-output"></pre>
+        f"""<div class="page cover cover-page screen-compact">
+  <div class="cover-icon">📋</div>
+  <h1>Menú Premium Editable</h1>
+  <p class="subtitle">Completa y copia el texto para WhatsApp</p>
+</div>
+<div class="page menu-edit menu-page screen-compact">
+  {page_header()}
+  <div class="menu-field"><label for="negocio">Nombre de tu negocio</label><input type="text" id="negocio" placeholder="Ej: Paletas de María"></div>
+  <div class="menu-modelo" id="menu-premium">
+    <h3>🍓 Menú Premium</h3>
+    {rows}
   </div>
+  <div class="menu-modelo" id="menu-combos" style="background:#FFF8E7;margin-top:16px">
+    <h3>📦 Combos</h3>
+    {combo_rows}
+  </div>
+  <div class="menu-field" style="margin-top:14px"><label for="nota">Nota al pie (opcional)</label><input type="text" id="nota" placeholder="Pedidos con 24h. Entrega en tu zona."></div>
+  <button type="button" class="btn-copy" onclick="copiarMenu()">Copiar menú premium</button>
+  <pre id="resultado" class="menu-output"></pre>
 </div>
 <script>
-function copiarMenu() {
-  const n = document.getElementById('negocio').value || 'Mis paletas';
-  const s = document.getElementById('sabores').value.trim();
-  const c = document.getElementById('combos').value.trim();
+function copiarMenu() {{
+  const n = document.getElementById('negocio').value.trim() || 'Mis paletas';
+  const sabores = document.querySelectorAll('#menu-premium .menu-linea-input');
+  const combos = document.querySelectorAll('#menu-combos .menu-linea-input');
+  let lineas = ['🍓 *' + n + '* — Menú Premium', '', '*Sabores especiales*'];
+  sabores.forEach(row => {{
+    const s = row.querySelector('.sabor').value.trim();
+    const p = row.querySelector('.precio').value.trim();
+    if (s) lineas.push(p ? `• ${{s}} — $${{p}}` : `• ${{s}}`);
+  }});
+  lineas.push('', '*Combos*');
+  combos.forEach(row => {{
+    const s = row.querySelector('.sabor').value.trim();
+    const p = row.querySelector('.precio').value.trim();
+    if (s) lineas.push(p ? `• ${{s}} — $${{p}}` : `• ${{s}}`);
+  }});
   const nota = document.getElementById('nota').value.trim();
-  let txt = '🍓 *' + n + '* — Menú Premium\\n\\n*Sabores especiales*\\n' + s;
-  if (c) txt += '\\n\\n*Combos*\\n' + c;
-  if (nota) txt += '\\n\\n_' + nota + '_';
-  document.getElementById('resultado').textContent = txt;
-  navigator.clipboard.writeText(txt).catch(() => {});
-  alert('Menú copiado. Pégalo en WhatsApp.');
-}
+  if (nota) lineas.push('', '_' + nota + '_');
+  const txt = lineas.join('\\n');
+  const out = document.getElementById('resultado');
+  out.textContent = '✅ Copiado! Pega en WhatsApp:\\n\\n' + txt;
+  out.classList.add('visible');
+  navigator.clipboard.writeText(txt).catch(() => {{}});
+}}
 </script>""",
+        interactive=True,
     )
 
 

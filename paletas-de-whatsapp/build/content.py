@@ -297,7 +297,7 @@ COMBINACIONES = [
 
 MENSAJES = {
     "menu": [
-        "🍭 ¡Hola! Esta semana tengo paletas caseras listas. Sabores disponibles: [sabores]. Si quieres reservar, escríbeme por aquí.",
+        "🍓 ¡Hola! Esta semana tengo paletas caseras listas. Sabores disponibles: [sabores]. Si quieres reservar, escríbeme por aquí.",
         "Menú de paletas de la semana 👇 Cremosas, frutales y rellenas. Pregunta por precios y disponibilidad.",
         "Preparé paletas frescas hoy. Te comparto el menú con sabores y precios. ¿Cuál te llama la atención?",
         "Paletas hechas en casa, con ingredientes que puedes conocer. Menú actualizado: [sabores]. Pedidos por WhatsApp.",
@@ -309,7 +309,7 @@ MENSAJES = {
         "Menú dulce de la semana: paletas caseras en sabores [sabores]. Entrega en [zona] o recogida.",
     ],
     "status": [
-        "🍭 Paletas listas. Escríbeme si quieres el menú.",
+        "🍓 Paletas listas. Escríbeme si quieres el menú.",
         "Algo fresco para hoy 🍦",
         "Nuevos sabores esta semana",
         "Paletas caseras — pregunta por disponibilidad",
@@ -318,7 +318,7 @@ MENSAJES = {
         "Dulce, fresco y hecho en casa",
         "Menú de paletas en mi estado anterior 👆",
         "Pregunta por combos familiares",
-        "Ideal para el calor ☀️🍭",
+        "Ideal para el calor ☀️🍓",
     ],
     "promo": [
         "Promo fin de semana: 3 paletas surtidas por [precio]. Válido sábado y domingo.",
@@ -329,7 +329,7 @@ MENSAJES = {
         "Últimas paletas del día con precio especial. Disponibles hasta agotar.",
         "Combo dulce: 1 cremosa + 1 frutal + 1 rellena por [precio].",
         "Promo de fin de semana: si apartas hoy, te guardo las paletas para mañana sin costo extra.",
-        "Fin de semana dulce 🍭 Pedidos con anticipación tienen prioridad.",
+        "Fin de semana dulce 🍓 Pedidos con anticipación tienen prioridad.",
         "Si te animas este fin de semana, tengo combo surtido. Escríbeme y te paso opciones.",
     ],
     "clientes": [

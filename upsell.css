@@ -38,10 +38,6 @@ a { text-decoration: none; color: inherit; }
   padding: 14px 0 10px;
   border-bottom: 1px solid var(--gray-border);
   background: rgba(255, 251, 247, 0.96);
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  backdrop-filter: blur(10px);
 }
 
 .upsell-header-inner {
@@ -78,6 +74,209 @@ a { text-decoration: none; color: inherit; }
   background: var(--green-light);
   padding: 5px 12px;
   border-radius: 999px;
+}
+
+/* Urgency bar */
+.upsell-urgency-bar {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  background: linear-gradient(90deg, #d91e5a 0%, #ff4f8b 50%, #ff7a1a 100%);
+  color: #fff;
+  padding: 10px 0;
+  box-shadow: 0 4px 16px rgba(217, 30, 90, 0.28);
+}
+
+.upsell-urgency-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.upsell-urgency-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  white-space: nowrap;
+}
+
+.upsell-urgency-pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  animation: upsell-pulse 1.2s ease-in-out infinite;
+}
+
+.upsell-urgency-timer-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.upsell-urgency-timer-label {
+  font-size: 0.58rem;
+  opacity: 0.9;
+  letter-spacing: 0.08em;
+}
+
+.upsell-urgency-timer {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.upsell-urgency-once {
+  text-align: right;
+  line-height: 1.25;
+  max-width: 7.5rem;
+}
+
+.upsell-urgency-card {
+  margin: 14px 0 12px;
+  padding: 16px 14px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255, 79, 139, 0.12) 0%, rgba(255, 201, 74, 0.14) 100%);
+  border: 2px solid rgba(217, 30, 90, 0.28);
+  box-shadow: 0 8px 24px rgba(217, 30, 90, 0.1);
+}
+
+.upsell-urgency-card-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pink-dark);
+  margin-bottom: 6px;
+}
+
+.upsell-urgency-card-timer {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--brown);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+
+.upsell-urgency-card-note {
+  font-size: 0.82rem;
+  color: var(--brown-mid);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.cta-note-urgent {
+  color: var(--pink-dark);
+  font-weight: 800;
+}
+
+.offer-urgency {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--pink-dark);
+  margin-bottom: 4px;
+}
+
+.offer-urgency strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.05rem;
+}
+
+.upsell-sticky-timer {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--pink-dark);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  min-width: 3.2rem;
+}
+
+.upsell-expired-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(61, 34, 24, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.upsell-expired-overlay[hidden] {
+  display: none;
+}
+
+.upsell-expired-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.upsell-expired-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pink-dark);
+  background: rgba(255, 79, 139, 0.12);
+}
+
+.upsell-expired-card h2 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.upsell-expired-card p {
+  font-size: 0.9rem;
+  color: var(--gray);
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+body.upsell-urgency-high .upsell-urgency-bar {
+  animation: upsell-shake 0.45s ease-in-out infinite alternate;
+}
+
+body.upsell-urgency-high .upsell-urgency-timer,
+body.upsell-urgency-high .upsell-urgency-card-timer,
+body.upsell-urgency-high [data-upsell-timer] {
+  color: #d91e5a;
+}
+
+body.upsell-expired [data-upsell-checkout] {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+@keyframes upsell-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+@keyframes upsell-shake {
+  from { transform: translateX(-1px); }
+  to { transform: translateX(1px); }
 }
 
 /* Typography */
@@ -191,10 +390,11 @@ h2 {
   border-radius: 12px;
   font-size: 0.72rem;
   font-weight: 800;
-  color: var(--chocolate);
-  background: var(--gold-soft);
-  border: 1px solid rgba(255, 201, 74, 0.45);
+  color: #fff;
+  background: linear-gradient(135deg, #d91e5a, #ff4f8b);
+  border: 1px solid rgba(217, 30, 90, 0.35);
   line-height: 1.35;
+  box-shadow: 0 4px 14px rgba(217, 30, 90, 0.2);
 }
 
 .upsell-hero-visual {

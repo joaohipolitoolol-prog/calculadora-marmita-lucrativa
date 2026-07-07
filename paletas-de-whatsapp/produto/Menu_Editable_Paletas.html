@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="es" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Menú Editable Paletas</title><style>
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+<!DOCTYPE html><html lang="es" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Menú Editable Paletas</title><style>@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
   --rosa: #FF4F8B;
@@ -496,7 +495,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
 }
 
 .combo-list li::before {
-  content: '🍭';
+  content: '🍓';
   position: absolute;
   left: 0;
 }
@@ -506,47 +505,308 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   .page { page-break-after: always; }
 }
 
-[data-theme="dark"] {
-  --crema: #1a1218; --chocolate: #fdf4ef; --gris: #b8a8a0; --gris-claro: #2a2228;
-  --rosa: #ff6b9d; --blanco: #2a2228;
+/* ===== Pantalla / entregables interactivos ===== */
+@media screen {
+  body {
+    background: linear-gradient(180deg, var(--crema) 0%, #fff 40%, var(--menta) 100%);
+    padding-bottom: 24px;
+  }
+
+  .document {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 12px 24px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 640px;
+    min-height: auto;
+    margin: 0 auto 14px;
+    padding: 22px 18px;
+    border-radius: 18px;
+    box-shadow: var(--sombra);
+  }
+
+  .page.cover,
+  .page.cover-page {
+    min-height: auto;
+    padding: 40px 22px;
+    border-radius: 0 0 22px 22px;
+    margin-bottom: 18px;
+    box-shadow: none;
+  }
+
+  .page.menu-edit,
+  .page.menu-page,
+  .page.screen-compact {
+    min-height: auto;
+  }
 }
-[data-theme="dark"] body { background: #120d0f; color: #fdf4ef; }
-[data-theme="dark"] .page { background: #1a1218; }
-[data-theme="dark"] .cover { background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }
-[data-theme="dark"] .menu-modelo { background: #2a2228 !important; border-color: rgba(255,107,157,0.3); }
-[data-theme="dark"] .mensaje { background: #1e2a22; }
-[data-theme="dark"] input, [data-theme="dark"] textarea { color: #fdf4ef; }
+
+.cover-page {
+  background: linear-gradient(160deg, var(--crema) 0%, #FFE8F0 40%, var(--menta) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30mm 25mm;
+}
+
+.cover-page h1 {
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  font-weight: 800;
+  color: var(--chocolate);
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+
+.cover-page .subtitle {
+  font-size: 1rem;
+  color: var(--gris);
+  font-weight: 600;
+  max-width: 28rem;
+}
+
+/* Menú editable — filas con puntos */
+.menu-edit {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.menu-edit .menu-modelo {
+  margin: 0;
+}
+
+.menu-edit .menu-linea.menu-linea-input {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(92, 46, 31, 0.08);
+}
+
+.menu-edit .menu-linea-input .sabor {
+  flex: 1 1 50%;
+  min-width: 0;
+  width: auto;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--chocolate);
+  padding: 6px 0;
+}
+
+.menu-edit .menu-linea-input .menu-dots {
+  flex: 1 1 24px;
+  min-width: 12px;
+  border-bottom: 2px dotted rgba(92, 46, 31, 0.28);
+  height: 0;
+  margin: 0 2px 5px;
+  align-self: flex-end;
+}
+
+.menu-edit .menu-linea-input .precio {
+  flex: 0 0 4.5rem;
+  width: 4.5rem;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--rosa);
+  text-align: right;
+  padding: 6px 0;
+}
+
+.menu-edit .menu-linea-input .sabor::placeholder,
+.menu-edit .menu-linea-input .precio::placeholder {
+  color: rgba(107, 94, 87, 0.55);
+  font-weight: 600;
+}
+
+.menu-edit .menu-field {
+  margin-bottom: 14px;
+}
+
+.menu-edit .menu-field label,
+.menu-edit .menu-field > strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--chocolate);
+  margin-bottom: 6px;
+}
+
+.menu-edit .menu-field input,
+.menu-edit .menu-field textarea,
+.menu-edit .menu-nota {
+  width: 100%;
+  border: none;
+  border-bottom: 2px dashed rgba(255, 79, 139, 0.45);
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--chocolate);
+  padding: 8px 4px;
+  resize: vertical;
+}
+
+.menu-edit .menu-field input:focus,
+.menu-edit .menu-field textarea:focus,
+.menu-edit .menu-nota:focus,
+.menu-edit .menu-linea-input input:focus {
+  outline: 2px solid rgba(255, 79, 139, 0.35);
+  border-radius: 8px;
+}
+
+.menu-edit .menu-field-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.92rem;
+}
+
+.menu-edit .menu-field-row input {
+  width: auto;
+  flex: 0 0 5rem;
+  border-bottom: 2px dashed rgba(255, 79, 139, 0.45);
+  background: transparent;
+  font-family: inherit;
+  font-weight: 700;
+  padding: 4px;
+}
+
+.menu-form {
+  max-width: 520px;
+  margin: 16px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.menu-form label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--chocolate);
+}
+
+.menu-form input,
+.menu-form textarea {
+  width: 100%;
+  border: 1px solid var(--gris-claro);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--chocolate);
+  background: var(--blanco);
+  resize: vertical;
+}
+
+.menu-form input:focus,
+.menu-form textarea:focus {
+  outline: 2px solid rgba(255, 79, 139, 0.35);
+  border-color: var(--rosa);
+}
+
+.btn-copy {
+  background: var(--rosa);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 8px;
+  box-shadow: 0 6px 18px rgba(255, 79, 139, 0.28);
+}
+
+.btn-copy:hover { opacity: 0.92; }
+
+.preview-box,
+.menu-output {
+  background: #E8F5E9;
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  display: none;
+  border: 1px solid rgba(94, 207, 154, 0.35);
+}
+
+.preview-box.visible,
+.menu-output.visible {
+  display: block;
+}
+
 .theme-float {
-  position: fixed; top: 16px; right: 16px; z-index: 9999;
-  width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(255,79,139,0.3);
-  background: var(--blanco, #fff); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 79, 139, 0.3);
+  background: var(--blanco);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
-.theme-float svg { width: 22px; height: 22px; position: absolute; transition: 0.3s; }
+
+.theme-float svg {
+  width: 22px;
+  height: 22px;
+  position: absolute;
+  transition: 0.3s;
+}
+
 .theme-float .icon-sun { color: #f5a623; }
 .theme-float .icon-moon { color: #a78bfa; }
-[data-theme="light"] .theme-float .icon-sun { opacity:1; transform:scale(1); }
-[data-theme="light"] .theme-float .icon-moon { opacity:0; transform:scale(0.4); }
-[data-theme="dark"] .theme-float .icon-sun { opacity:0; transform:scale(0.4); }
-[data-theme="dark"] .theme-float .icon-moon { opacity:1; transform:scale(1); }
-[data-theme="dark"] .theme-float { background: #2a2228; border-color: rgba(255,107,157,0.4); }
-.menu-edit { max-width: 500px; margin: 0 auto; }
-input, textarea { border: none; border-bottom: 2px dashed var(--rosa); background: transparent; font-family: inherit; font-size: inherit; color: var(--chocolate); width: 100%; padding: 4px; }
-input:focus, textarea:focus { outline: 2px solid var(--rosa); border-radius: 4px; }
-.menu-linea { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-.btn-copy {
-  background: var(--rosa); color: white; border: none; border-radius: 12px;
-  padding: 12px 20px; font-family: inherit; font-weight: 700; font-size: 13px;
-  cursor: pointer; width: 100%; margin-top: 12px;
+
+[data-theme="light"] .theme-float .icon-sun { opacity: 1; transform: scale(1); }
+[data-theme="light"] .theme-float .icon-moon { opacity: 0; transform: scale(0.4); }
+[data-theme="dark"] .theme-float .icon-sun { opacity: 0; transform: scale(0.4); }
+[data-theme="dark"] .theme-float .icon-moon { opacity: 1; transform: scale(1); }
+
+[data-theme="dark"] {
+  --crema: #1a1218;
+  --chocolate: #fdf4ef;
+  --gris: #b8a8a0;
+  --gris-claro: #2a2228;
+  --rosa: #ff6b9d;
+  --blanco: #2a2228;
 }
-.btn-copy:hover { opacity: 0.9; }
-.preview-box {
-  background: #E8F5E9; border-radius: 12px; padding: 14px; margin-top: 16px;
-  font-size: 13px; white-space: pre-wrap; display: none;
+
+[data-theme="dark"] body { background: #120d0f; color: #fdf4ef; }
+[data-theme="dark"] .page { background: #1a1218; }
+[data-theme="dark"] .cover,
+[data-theme="dark"] .cover-page { background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }
+[data-theme="dark"] .menu-modelo { background: #2a2228 !important; border-color: rgba(255, 107, 157, 0.3); }
+[data-theme="dark"] .mensaje { background: #1e2a22; }
+[data-theme="dark"] .menu-form input,
+[data-theme="dark"] .menu-form textarea { background: #2a2228; border-color: #3a3238; color: #fdf4ef; }
+[data-theme="dark"] .theme-float { background: #2a2228; border-color: rgba(255, 107, 157, 0.4); }
+
+@media print {
+  .btn-copy,
+  .theme-float,
+  .preview-box,
+  .menu-output { display: none !important; }
+  .menu-edit .menu-linea-input input { border-bottom: 1px solid #ccc; }
 }
-.preview-box.visible { display: block; }
-@media print { input, textarea { border-bottom: 1px solid #ccc; } .btn-copy, .theme-float { display: none; } }
 </style></head><body>
 
 <button type="button" class="theme-float" id="themeToggle" aria-label="Cambiar tema">
@@ -554,49 +814,44 @@ input:focus, textarea:focus { outline: 2px solid var(--rosa); border-radius: 4px
   <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
 </button>
 
-<div class="page cover"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
+<div class="page cover screen-compact"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
 
-<div class="page menu-edit">
+<div class="page menu-edit screen-compact">
   <div class="menu-modelo" id="menu-simple">
-    <h3>🍭 Paletas Caseras de la Semana</h3>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 1" value="Fresa con crema"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 2" value="Mango con limón"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 3" value="Chocolate cremoso"><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 4" value=""><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <div class="menu-linea"><input class="sabor" placeholder="Sabor 5" value=""><input class="precio" placeholder="$" style="width:70px;text-align:right" value=""></div>
-    <textarea id="nota-menu" rows="2" style="margin-top:12px">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</textarea>
+    <h3>🍓 Paletas Caseras de la Semana</h3>
+    <div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Nombre del sabor" value="Fresa con crema"><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="1.50"></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Nombre del sabor" value="Mango con limón"><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="1.50"></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Nombre del sabor" value="Chocolate cremoso"><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="2.00"></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Otro sabor" value=""><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value=""></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Otro sabor" value=""><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value=""></div>
+    <textarea class="menu-nota" id="nota-menu" rows="2">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</textarea>
     <button type="button" class="btn-copy" onclick="generarMenu()">Copiar menú para WhatsApp</button>
     <div class="preview-box" id="preview"></div>
   </div>
 </div>
 
-<div class="page menu-edit">
+<div class="page menu-edit screen-compact">
   <div class="menu-modelo" style="background:#FFF0F5">
     <h3>🌈 Menú Dulce de Hoy</h3>
-    <p><strong>Frutales:</strong> <input id="frutales" placeholder="ej: mango, sandía"></p>
-    <p><strong>Cremosas:</strong> <input id="cremosas" placeholder="ej: vainilla, chocolate"></p>
-    <p><strong>Rellenas:</strong> <input id="rellenas" placeholder="ej: dulce de leche"></p>
-    <p><strong>Combo promo:</strong> 3 paletas por $<input id="combo-precio" style="width:80px;display:inline" placeholder="0.00"></p>
+    <div class="menu-field"><label for="frutales">Frutales</label><input type="text" id="frutales" placeholder="ej: mango, sandía"></div>
+    <div class="menu-field"><label for="cremosas">Cremosas</label><input type="text" id="cremosas" placeholder="ej: vainilla, chocolate"></div>
+    <div class="menu-field"><label for="rellenas">Rellenas</label><input type="text" id="rellenas" placeholder="ej: dulce de leche"></div>
+    <div class="menu-field menu-field-row"><strong>Combo promo:</strong> 3 paletas por $<input type="text" id="combo-precio" placeholder="0.00" inputmode="decimal"></div>
     <button type="button" class="btn-copy" onclick="generarColorido()">Copiar menú colorido</button>
     <div class="preview-box" id="preview2"></div>
   </div>
 </div>
 
-<div class="page menu-edit">
+<div class="page menu-edit screen-compact">
   <div class="menu-modelo" style="background:var(--menta)">
     <h3>✨ Paletas Artesanales</h3>
-    <p><strong>Especiales de la semana:</strong></p>
-    <textarea id="especiales" rows="3" placeholder="Tus sabores premium..."></textarea>
-    <p><strong>Combo familiar (6 u.):</strong> $<input id="familiar" style="width:80px;display:inline"></p>
-    <p><strong>Anticipación:</strong> <input id="anticipacion" value="24 horas mínimo"></p>
+    <div class="menu-field"><label for="especiales">Especiales de la semana</label><textarea id="especiales" rows="3" placeholder="Tus sabores premium..."></textarea></div>
+    <div class="menu-field menu-field-row"><strong>Combo familiar (6 u.):</strong> $<input type="text" id="familiar" placeholder="0.00" inputmode="decimal"></div>
+    <div class="menu-field menu-field-row"><strong>Anticipación:</strong> <input type="text" id="anticipacion" value="24 horas mínimo" style="flex:1;min-width:8rem"></div>
     <button type="button" class="btn-copy" onclick="generarPremium()">Copiar menú premium</button>
     <div class="preview-box" id="preview3"></div>
   </div>
 </div>
 
-<div class="page">
+<div class="page screen-compact">
   <h2>Textos para estado / story</h2>
-  <div class="mensaje">🍭 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.</div>
+  <div class="mensaje">🍓 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.</div>
   <div class="mensaje">Menú de la semana en mi estado anterior 👆</div>
   <div class="mensaje">¿Cuál te provoca? Pregunta por disponibilidad</div>
 </div>
@@ -614,8 +869,8 @@ function copiar(texto, previewId) {
   });
 }
 function generarMenu() {
-  const sabores = document.querySelectorAll('#menu-simple .menu-linea');
-  let lineas = ['🍭 *Paletas Caseras de la Semana*', ''];
+  const sabores = document.querySelectorAll('#menu-simple .menu-linea-input');
+  let lineas = ['🍓 *Paletas Caseras de la Semana*', ''];
   sabores.forEach(row => {
     const s = row.querySelector('.sabor').value.trim();
     const p = row.querySelector('.precio').value.trim();
@@ -648,14 +903,14 @@ function generarPremium() {
 (function() {
   const KEY = 'paletas-kit-theme';
   const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
   const saved = localStorage.getItem(KEY);
-  if (saved) root.setAttribute('data-theme', saved);
-  else if (matchMedia('(prefers-color-scheme:dark)').matches) root.setAttribute('data-theme','dark');
-  document.getElementById('themeToggle').onclick = () => {
-    const n = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', n);
-    localStorage.setItem(KEY, n);
-  };
+  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
+  if (btn) btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem(KEY, next);
+  });
 })();
 </script>
 </body></html>

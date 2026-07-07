@@ -26,6 +26,17 @@
   <noscript><img height="1" width="1" style="display:none" alt=""
     src="https://www.facebook.com/tr?id=1369803401885896&ev=PageView&noscript=1"></noscript>
 
+  <div class="upsell-urgency-bar" role="status" aria-live="polite">
+    <div class="container upsell-urgency-bar-inner">
+      <span class="upsell-urgency-pill">Oferta única</span>
+      <span class="upsell-urgency-timer-wrap">
+        <span class="upsell-urgency-timer-label">Termina en</span>
+        <strong class="upsell-urgency-timer" data-upsell-timer>10:00</strong>
+      </span>
+      <span class="upsell-urgency-once">No se repetirá</span>
+    </div>
+  </div>
+
   <header class="upsell-header">
     <div class="container">
       <button type="button" class="upsell-header-inner" data-scroll-top aria-label="Volver al inicio">
@@ -38,13 +49,20 @@
 
   <section class="upsell-hero">
     <div class="container">
-      <p class="upsell-eyebrow">Tu kit ya está listo.</p>
-      <h1>¿Quieres agregar el complemento premium?</h1>
+      <p class="upsell-eyebrow">⚡ Oferta exclusiva post-compra — una sola vez</p>
+      <h1>Última oportunidad: agrega el complemento premium antes de que expire el tiempo</h1>
       <p class="hero-price" data-upsell-price>US$ 12</p>
       <p class="section-text">
-        <strong>Paletas Premium y Combos Rentables</strong> — recetas especiales, combos y menús para presentar tus paletas con más valor.
+        <strong>Paletas Premium y Combos Rentables</strong> — solo en esta página, al precio especial de hoy. Si sales ahora, <strong>esta oferta no volverá a aparecer</strong>.
       </p>
-      <span class="upsell-badge">Complemento opcional · no es obligatorio para empezar</span>
+
+      <div class="upsell-urgency-card">
+        <p class="upsell-urgency-card-title">⏳ Ventana de oferta única</p>
+        <p class="upsell-urgency-card-timer"><span data-upsell-timer>10:00</span></p>
+        <p class="upsell-urgency-card-note">Reservada solo para quien acaba de comprar el kit. Cuando el contador llegue a cero, desaparece para siempre.</p>
+      </div>
+
+      <span class="upsell-badge">Solo aquí · Solo ahora · Precio que no se repite</span>
 
       <figure class="upsell-hero-visual">
         <div class="upsell-hero-grid">
@@ -64,7 +82,7 @@
       </figure>
 
       <a href="#" class="btn btn-primary" data-upsell-checkout data-upsell-cta>Sí, quiero agregar Paletas Premium</a>
-      <p class="cta-note">Acceso digital inmediato después de la compra.</p>
+      <p class="cta-note cta-note-urgent">🔥 Acceso inmediato — solo mientras el contador esté activo.</p>
       <a href="#" class="btn-decline" data-upsell-decline data-upsell-decline-label>No gracias, continuar al acceso del kit</a>
     </div>
   </section>
@@ -226,8 +244,11 @@
 
   <section class="upsell-section alt" id="oferta">
     <div class="container">
-      <h2>Agrega el complemento a tu pedido</h2>
+      <p class="section-label">Oferta única</p>
+      <h2>Agrega el complemento antes de que se cierre esta página</h2>
+      <p class="section-text">Esta es tu única oportunidad de sumar el premium al precio de hoy. <strong>No volverá a mostrarse</strong> si sales sin agregarlo.</p>
       <div class="offer-box">
+        <p class="offer-urgency">⏳ Tiempo restante: <strong data-upsell-timer>10:00</strong></p>
         <p class="offer-price" data-upsell-price>US$ 12</p>
         <ul class="offer-list">
           <li>20 recetas premium</li>
@@ -236,7 +257,7 @@
           <li>Guía de presentación</li>
         </ul>
         <a href="#" class="btn btn-primary" data-upsell-checkout data-upsell-cta>Sí, quiero agregar Paletas Premium</a>
-        <p class="cta-note">Complemento digital. Acceso inmediato.</p>
+        <p class="cta-note cta-note-urgent">Oferta única — no se repetirá después de salir.</p>
         <a href="#" class="btn-decline" data-upsell-decline data-upsell-decline-label>No gracias, continuar al acceso del kit</a>
       </div>
       <div class="honesty-box" style="margin-top:20px">
@@ -278,9 +299,11 @@
           <div class="faq-answer"><p>No. Depende de tus precios, fotos, publicaciones y constancia. El complemento te da variedad y herramientas — la ejecución es tuya.</p></div>
         </div>
         <div class="faq-item">
+          <button type="button" class="faq-question" aria-expanded="false">
+            ¿Puedo conseguir esta oferta después?
             <span class="faq-icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-answer"><p>Sí. Esta oferta aparece justo después de tu compra por comodidad, pero puedes agregarlo más tarde desde tu área de miembros si sigue disponible.</p></div>
+          <div class="faq-answer"><p>No. Es una oferta única de un solo uso, justo después de tu compra. Si sales de esta página sin agregarla, <strong>no volverá a mostrarse</strong> al mismo precio.</p></div>
         </div>
         <div class="faq-item">
           <button type="button" class="faq-question" aria-expanded="false">
@@ -308,9 +331,19 @@
 
   <div class="upsell-sticky" id="upsell-sticky" hidden>
     <div class="upsell-sticky-inner">
+      <span class="upsell-sticky-timer" data-upsell-timer>10:00</span>
       <span class="upsell-sticky-price" data-upsell-price>US$ 12</span>
-      <a href="#" class="btn btn-primary btn-sm" data-upsell-checkout>Agregar</a>
+      <a href="#" class="btn btn-primary btn-sm" data-upsell-checkout>Agregar ahora</a>
       <a href="#" class="btn-decline btn-decline-sm" data-upsell-decline>Omitir</a>
+    </div>
+  </div>
+
+  <div class="upsell-expired-overlay" id="upsell-expired" hidden>
+    <div class="upsell-expired-card">
+      <p class="upsell-expired-label">Oferta cerrada</p>
+      <h2>Esta oferta única ya no está disponible</h2>
+      <p>La ventana de 10 minutos terminó y <strong>no se repetirá</strong>. Puedes continuar y crear tu acceso al kit principal.</p>
+      <a href="#" class="btn btn-primary" data-upsell-decline>Continuar al acceso del kit →</a>
     </div>
   </div>
 

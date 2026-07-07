@@ -8,6 +8,8 @@ import {
   UPSELL_PRICE_BRL,
   UPSELL_PRICE_LABEL,
   UPSELL_PRICE_USD,
+  UPSELL_TIMER_MS,
+  UPSELL_TIMER_STORAGE_KEY,
 } from './config.js';
 
 const isPlaceholder = (url) =>
@@ -41,7 +43,13 @@ document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
   }
   link.href = UPSELL_CHECKOUT_URL;
   link.setAttribute('rel', 'noopener');
-  link.addEventListener('click', trackInitiateCheckout);
+  link.addEventListener('click', (e) => {
+    if (document.body.classList.contains('upsell-expired')) {
+      e.preventDefault();
+      return;
+    }
+    trackInitiateCheckout();
+  });
 });
 
 document.querySelectorAll('[data-upsell-decline]').forEach((link) => {
@@ -95,3 +103,66 @@ if (stickyBar && heroCta && 'IntersectionObserver' in window) {
 } else if (stickyBar) {
   stickyBar.hidden = false;
 }
+
+function formatTimer(ms) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const minutes = Math.floor(total / 60);
+  const seconds = total % 60;
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+function getOfferDeadline() {
+  const now = Date.now();
+  const stored = sessionStorage.getItem(UPSELL_TIMER_STORAGE_KEY);
+  if (stored) {
+    const end = Number(stored);
+    if (!Number.isNaN(end) && end > now) return end;
+  }
+  const end = now + UPSELL_TIMER_MS;
+  sessionStorage.setItem(UPSELL_TIMER_STORAGE_KEY, String(end));
+  return end;
+}
+
+function initUpsellTimer() {
+  const deadline = getOfferDeadline();
+  const timerEls = document.querySelectorAll('[data-upsell-timer]');
+  const expiredOverlay = document.getElementById('upsell-expired');
+  let expired = false;
+
+  const setExpired = () => {
+    if (expired) return;
+    expired = true;
+    document.body.classList.add('upsell-expired');
+    timerEls.forEach((el) => {
+      el.textContent = '00:00';
+    });
+    if (expiredOverlay) expiredOverlay.hidden = false;
+    document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
+      link.setAttribute('aria-disabled', 'true');
+      link.tabIndex = -1;
+    });
+  };
+
+  const tick = () => {
+    const left = deadline - Date.now();
+    const text = left <= 0 ? '00:00' : formatTimer(left);
+    timerEls.forEach((el) => {
+      el.textContent = text;
+    });
+
+    if (left <= 0) {
+      setExpired();
+      return;
+    }
+
+    if (left <= 2 * 60 * 1000) {
+      document.body.classList.add('upsell-urgency-high');
+    }
+
+    window.setTimeout(tick, 250);
+  };
+
+  tick();
+}
+
+initUpsellTimer();

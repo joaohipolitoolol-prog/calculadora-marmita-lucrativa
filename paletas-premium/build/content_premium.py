@@ -201,7 +201,7 @@ GUIA_PRESENTACION = {
 
 MENSAJES_PREMIUM = {
     "combos": [
-        "🍭 Nuevo en el menú: combos premium listos para apartar. Combo familiar x6 por [precio]. Escríbeme los sabores.",
+        "🍓 Nuevo en el menú: combos premium listos para apartar. Combo familiar x6 por [precio]. Escríbeme los sabores.",
         "¿Primera vez? Prueba el Combo Antojo: 3 paletas surtidas por [precio]. Incluye un sabor premium.",
         "Caja fin de semana disponible — 6 paletas cremosas y rellenas. Aparta la tuya hoy.",
         "Combo Premium: cheesecake, brownie y chocolate belga. Para quien busca algo especial.",
