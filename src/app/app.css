@@ -588,6 +588,18 @@ body.drawer-open { overflow: hidden; }
   color: var(--gray);
 }
 
+.welcome-banner-steps {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--gray);
+}
+
+.welcome-banner-steps li + li {
+  margin-top: 4px;
+}
+
 .welcome-banner-body em {
   font-style: normal;
   font-weight: 800;
@@ -2407,6 +2419,7 @@ body.onboarding-open {
   border: 1px solid rgba(214, 137, 16, 0.25);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
+  text-align: center;
 }
 
 .home-notice p {

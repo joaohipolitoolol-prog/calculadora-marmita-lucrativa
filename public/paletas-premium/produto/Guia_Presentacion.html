@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -756,60 +756,8 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   display: block;
 }
 
-.theme-float {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 9999;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 79, 139, 0.3);
-  background: var(--blanco);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-}
-
-.theme-float svg {
-  width: 22px;
-  height: 22px;
-  position: absolute;
-  transition: 0.3s;
-}
-
-.theme-float .icon-sun { color: #f5a623; }
-.theme-float .icon-moon { color: #a78bfa; }
-
-[data-theme="light"] .theme-float .icon-sun { opacity: 1; transform: scale(1); }
-[data-theme="light"] .theme-float .icon-moon { opacity: 0; transform: scale(0.4); }
-[data-theme="dark"] .theme-float .icon-sun { opacity: 0; transform: scale(0.4); }
-[data-theme="dark"] .theme-float .icon-moon { opacity: 1; transform: scale(1); }
-
-[data-theme="dark"] {
-  --crema: #1a1218;
-  --chocolate: #fdf4ef;
-  --gris: #b8a8a0;
-  --gris-claro: #2a2228;
-  --rosa: #ff6b9d;
-  --blanco: #2a2228;
-}
-
-[data-theme="dark"] body { background: #120d0f; color: #fdf4ef; }
-[data-theme="dark"] .page { background: #1a1218; }
-[data-theme="dark"] .cover,
-[data-theme="dark"] .cover-page { background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }
-[data-theme="dark"] .menu-modelo { background: #2a2228 !important; border-color: rgba(255, 107, 157, 0.3); }
-[data-theme="dark"] .mensaje { background: #1e2a22; }
-[data-theme="dark"] .menu-form input,
-[data-theme="dark"] .menu-form textarea { background: #2a2228; border-color: #3a3238; color: #fdf4ef; }
-[data-theme="dark"] .theme-float { background: #2a2228; border-color: rgba(255, 107, 157, 0.4); }
-
 @media print {
   .btn-copy,
-  .theme-float,
   .preview-box,
   .menu-output { display: none !important; }
   .menu-edit .menu-linea-input input { border-bottom: 1px solid #ccc; }
@@ -817,10 +765,8 @@ tr:nth-child(even) td { background: var(--gris-claro); }
 </style>
 </head>
 <body>
-
 <div class="document">
 <div class="page screen-compact"><span class="section-tag">Presentación</span><h2>Guía de presentación premium</h2><h3>Fotos que venden</h3><ul><li>Luz natural cerca de una ventana — evita flash directo</li><li>Fondo limpio: madera clara, mármol o tela neutra</li><li>Muestra textura: paleta mordida, corte o baño de chocolate</li><li>Incluye empaque si lo usas — transmite profesionalismo</li><li>Formato vertical para historias de WhatsApp</li><li>Una foto buena del combo vale más que diez fotos oscuras</li><li>Paleta premium: primer plano del baño o relleno visible</li></ul><h3>Nombres en el menú</h3><ul><li>Usa nombres descriptivos: 'Cheesecake de fresa' mejor que solo 'Fresa'</li><li>Agrega adjetivos con moderación: cremoso, bañado, artesanal</li><li>Evita nombres genéricos que todos usan</li><li>Agrupa en el menú: Frutales | Cremosas | Premium | Combos</li></ul></div><div class="page screen-compact"><div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div><h3>Empaque</h3><ul><li>Bolsas transparentes dejan ver el producto</li><li>Etiqueta simple con tu nombre o marca</li><li>Servilleta o papel encerado evita manos pegajosas</li><li>Para combos: caja pequeña o bolsa con cierre</li><li>Pedidos premium: lazo o sticker eleva percepción sin mucho costo</li></ul><h3>Precios premium</h3><ul><li>Premium debe costar visiblemente más que básicas (20-40%)</li><li>Combos con precio redondo (US$ 10, US$ 15) facilitan la decisión</li><li>Muestra precio unitario y precio combo en el mismo menú</li><li>No regales el premium — el valor percibido baja</li></ul></div>
 </div>
-
 </body>
 </html>

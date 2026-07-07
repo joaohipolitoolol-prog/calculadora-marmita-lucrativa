@@ -142,65 +142,9 @@ a { text-decoration: none; color: inherit; }
   max-width: 7.5rem;
 }
 
-.upsell-urgency-card {
-  margin: 14px 0 12px;
-  padding: 16px 14px;
-  border-radius: var(--radius-sm);
-  text-align: center;
-  background: linear-gradient(180deg, rgba(255, 79, 139, 0.12) 0%, rgba(255, 201, 74, 0.14) 100%);
-  border: 2px solid rgba(217, 30, 90, 0.28);
-  box-shadow: 0 8px 24px rgba(217, 30, 90, 0.1);
-}
-
-.upsell-urgency-card-title {
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--pink-dark);
-  margin-bottom: 6px;
-}
-
-.upsell-urgency-card-timer {
-  font-size: 2.4rem;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--brown);
-  font-variant-numeric: tabular-nums;
-  margin-bottom: 8px;
-}
-
-.upsell-urgency-card-note {
-  font-size: 0.82rem;
-  color: var(--brown-mid);
-  line-height: 1.45;
-  margin: 0;
-}
-
 .cta-note-urgent {
   color: var(--pink-dark);
   font-weight: 800;
-}
-
-.offer-urgency {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--pink-dark);
-  margin-bottom: 4px;
-}
-
-.offer-urgency strong {
-  font-variant-numeric: tabular-nums;
-  font-size: 1.05rem;
-}
-
-.upsell-sticky-timer {
-  font-weight: 800;
-  font-size: 0.95rem;
-  color: var(--pink-dark);
-  font-variant-numeric: tabular-nums;
-  flex-shrink: 0;
-  min-width: 3.2rem;
 }
 
 .upsell-expired-overlay {
@@ -259,7 +203,6 @@ body.upsell-urgency-high .upsell-urgency-bar {
 }
 
 body.upsell-urgency-high .upsell-urgency-timer,
-body.upsell-urgency-high .upsell-urgency-card-timer,
 body.upsell-urgency-high [data-upsell-timer] {
   color: #d91e5a;
 }

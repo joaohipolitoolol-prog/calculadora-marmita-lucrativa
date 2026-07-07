@@ -754,60 +754,8 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   display: block;
 }
 
-.theme-float {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 9999;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 79, 139, 0.3);
-  background: var(--blanco);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-}
-
-.theme-float svg {
-  width: 22px;
-  height: 22px;
-  position: absolute;
-  transition: 0.3s;
-}
-
-.theme-float .icon-sun { color: #f5a623; }
-.theme-float .icon-moon { color: #a78bfa; }
-
-[data-theme="light"] .theme-float .icon-sun { opacity: 1; transform: scale(1); }
-[data-theme="light"] .theme-float .icon-moon { opacity: 0; transform: scale(0.4); }
-[data-theme="dark"] .theme-float .icon-sun { opacity: 0; transform: scale(0.4); }
-[data-theme="dark"] .theme-float .icon-moon { opacity: 1; transform: scale(1); }
-
-[data-theme="dark"] {
-  --crema: #1a1218;
-  --chocolate: #fdf4ef;
-  --gris: #b8a8a0;
-  --gris-claro: #2a2228;
-  --rosa: #ff6b9d;
-  --blanco: #2a2228;
-}
-
-[data-theme="dark"] body { background: #120d0f; color: #fdf4ef; }
-[data-theme="dark"] .page { background: #1a1218; }
-[data-theme="dark"] .cover,
-[data-theme="dark"] .cover-page { background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }
-[data-theme="dark"] .menu-modelo { background: #2a2228 !important; border-color: rgba(255, 107, 157, 0.3); }
-[data-theme="dark"] .mensaje { background: #1e2a22; }
-[data-theme="dark"] .menu-form input,
-[data-theme="dark"] .menu-form textarea { background: #2a2228; border-color: #3a3238; color: #fdf4ef; }
-[data-theme="dark"] .theme-float { background: #2a2228; border-color: rgba(255, 107, 157, 0.4); }
-
 @media print {
   .btn-copy,
-  .theme-float,
   .preview-box,
   .menu-output { display: none !important; }
   .menu-edit .menu-linea-input input { border-bottom: 1px solid #ccc; }

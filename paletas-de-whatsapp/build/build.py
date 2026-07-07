@@ -90,25 +90,6 @@ def page_header():
     return '<div class="page-header"><strong>Paletas para WhatsApp</strong><span>Kit completo</span></div>'
 
 
-THEME_TOGGLE_HTML = """<button type="button" class="theme-float" id="themeToggle" aria-label="Cambiar tema">
-  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-  <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>
-</button>"""
-
-THEME_SCRIPT = """(function() {
-  const KEY = 'paletas-kit-theme';
-  const root = document.documentElement;
-  const btn = document.getElementById('themeToggle');
-  const saved = localStorage.getItem(KEY);
-  if (saved === 'dark') root.setAttribute('data-theme', 'dark');
-  if (btn) btn.addEventListener('click', () => {
-    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    localStorage.setItem(KEY, next);
-  });
-})();"""
-
-
 def menu_row(sabor="", precio="", sabor_ph="Otro sabor"):
     return (
         f'<div class="menu-linea menu-linea-input">'
@@ -561,9 +542,7 @@ def build_menu_html():
     menu_row("", "", "Otro sabor"),
     menu_row("", "", "Otro sabor"),
   ])
-  return f"""<!DOCTYPE html><html lang="es" data-theme="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Menú Editable Paletas</title><style>{STYLES}</style></head><body>
-
-{THEME_TOGGLE_HTML}
+  return f"""<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Menú Editable Paletas</title><style>{STYLES}</style></head><body>
 
 <div class="page cover screen-compact"><div class="cover-icon">📋</div><h1>Menú Editable</h1><p class="subtitle">Completa los campos, genera el texto y publícalo en WhatsApp</p></div>
 
@@ -651,7 +630,6 @@ function generarPremium() {{
   ];
   copiar(t.join('\\n'), 'preview3');
 }}
-{THEME_SCRIPT}
 </script>
 </body></html>"""
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -756,60 +756,8 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   display: block;
 }
 
-.theme-float {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 9999;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 79, 139, 0.3);
-  background: var(--blanco);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-}
-
-.theme-float svg {
-  width: 22px;
-  height: 22px;
-  position: absolute;
-  transition: 0.3s;
-}
-
-.theme-float .icon-sun { color: #f5a623; }
-.theme-float .icon-moon { color: #a78bfa; }
-
-[data-theme="light"] .theme-float .icon-sun { opacity: 1; transform: scale(1); }
-[data-theme="light"] .theme-float .icon-moon { opacity: 0; transform: scale(0.4); }
-[data-theme="dark"] .theme-float .icon-sun { opacity: 0; transform: scale(0.4); }
-[data-theme="dark"] .theme-float .icon-moon { opacity: 1; transform: scale(1); }
-
-[data-theme="dark"] {
-  --crema: #1a1218;
-  --chocolate: #fdf4ef;
-  --gris: #b8a8a0;
-  --gris-claro: #2a2228;
-  --rosa: #ff6b9d;
-  --blanco: #2a2228;
-}
-
-[data-theme="dark"] body { background: #120d0f; color: #fdf4ef; }
-[data-theme="dark"] .page { background: #1a1218; }
-[data-theme="dark"] .cover,
-[data-theme="dark"] .cover-page { background: linear-gradient(160deg, #1a1218, #2a1830 50%, #121a16); }
-[data-theme="dark"] .menu-modelo { background: #2a2228 !important; border-color: rgba(255, 107, 157, 0.3); }
-[data-theme="dark"] .mensaje { background: #1e2a22; }
-[data-theme="dark"] .menu-form input,
-[data-theme="dark"] .menu-form textarea { background: #2a2228; border-color: #3a3238; color: #fdf4ef; }
-[data-theme="dark"] .theme-float { background: #2a2228; border-color: rgba(255, 107, 157, 0.4); }
-
 @media print {
   .btn-copy,
-  .theme-float,
   .preview-box,
   .menu-output { display: none !important; }
   .menu-edit .menu-linea-input input { border-bottom: 1px solid #ccc; }
@@ -817,7 +765,6 @@ tr:nth-child(even) td { background: var(--gris-claro); }
 </style>
 </head>
 <body>
-
 <div class="document">
 <div class="page"><div class="page-header"><strong>Paletas Premium</strong><span>Complemento digital</span></div>
           <span class="section-tag">WhatsApp</span>
@@ -826,6 +773,5 @@ tr:nth-child(even) td { background: var(--gris-claro); }
           <div class="mensaje"><div class="mensaje-cat">Combos</div>🍓 Nuevo en el menú: combos premium listos para apartar. Combo familiar x6 por [precio]. Escríbeme los sabores.</div><div class="mensaje"><div class="mensaje-cat">Combos</div>¿Primera vez? Prueba el Combo Antojo: 3 paletas surtidas por [precio]. Incluye un sabor premium.</div><div class="mensaje"><div class="mensaje-cat">Combos</div>Caja fin de semana disponible — 6 paletas cremosas y rellenas. Aparta la tuya hoy.</div><div class="mensaje"><div class="mensaje-cat">Combos</div>Combo Premium: cheesecake, brownie y chocolate belga. Para quien busca algo especial.</div><div class="mensaje"><div class="mensaje-cat">Combos</div>Pack infantil con sabores coloridos — ideal para cumpleaños pequeños.</div><div class="mensaje"><div class="mensaje-cat">Especiales</div>✨ Edición especial esta semana: [sabor premium]. Cantidad limitada.</div><div class="mensaje"><div class="mensaje-cat">Especiales</div>Nuevo sabor en el menú: [nombre]. Hecho con [ingrediente destacado]. ¿Te aparto?</div><div class="mensaje"><div class="mensaje-cat">Especiales</div>Paleta bañada en chocolate — disponible solo viernes y sábado.</div><div class="mensaje"><div class="mensaje-cat">Especiales</div>Pedidos por encargo: elige tus sabores premium y te armo la caja.</div><div class="mensaje"><div class="mensaje-cat">Especiales</div>¿Te gustó la última? Esta semana repetí [sabor] y agregué [nuevo].</div><div class="mensaje"><div class="mensaje-cat">Fechas</div>💝 San Valentín: Combo Pareja con paletas premium. Pedidos hasta [fecha].</div><div class="mensaje"><div class="mensaje-cat">Fechas</div>Regalo para mamá: caja premium x6 con sabores a elegir. Día de la Madre.</div><div class="mensaje"><div class="mensaje-cat">Fechas</div>Fin de semana dulce: caja surtida lista sábado. Aparta con anticipación.</div><div class="mensaje"><div class="mensaje-cat">Fechas</div>Edición [feriado local]: sabores especiales solo esta semana.</div><div class="mensaje"><div class="mensaje-cat">Fechas</div>¿Cumpleaños? Armo tu caja con los sabores favoritos del festejado.</div><div class="mensaje"><div class="mensaje-cat">Valor</div>Paletas artesanales con sabores premium — hechas en casa con ingredientes que puedes conocer.</div><div class="mensaje"><div class="mensaje-cat">Valor</div>No es paleta de tienda: es receta casera con presentación cuidada.</div><div class="mensaje"><div class="mensaje-cat">Valor</div>Menú actualizado con opciones cremosas, rellenas y bañadas.</div><div class="mensaje"><div class="mensaje-cat">Valor</div>Si buscas algo más que lo básico, pregunta por la línea premium.</div><div class="mensaje"><div class="mensaje-cat">Valor</div>Foto del menú premium en mi estado anterior 👆</div>
         </div>
 </div>
-
 </body>
 </html>

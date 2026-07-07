@@ -282,7 +282,11 @@ function renderPostPurchaseBanner() {
     <div class="welcome-banner" id="welcome-banner">
       <div class="welcome-banner-body">
         <strong>¡Bienvenida a tu ${escapeHtml(BRAND_KIT)}!</strong>
-        <p>1. Calcula tus precios en modo rápido · 2. Toca <em>Ver mi ganancia</em> · 3. Abre <em>Kit</em> en el menú de abajo.</p>
+        <ol class="welcome-banner-steps">
+          <li>Calcula tus precios en modo rápido</li>
+          <li>Toca <em>Ver mi ganancia</em></li>
+          <li>Abre <em>Kit</em> en el menú de abajo</li>
+        </ol>
         <a href="${WHATSAPP_PURCHASE_LINK}" class="welcome-banner-wa" target="_blank" rel="noopener noreferrer">¿Necesitas ayuda? Escríbenos por WhatsApp</a>
       </div>
       <button type="button" class="welcome-banner-close" id="welcome-banner-close" aria-label="Cerrar">×</button>
