@@ -81,10 +81,10 @@ a { text-decoration: none; color: inherit; }
   position: sticky;
   top: 0;
   z-index: 45;
-  background: linear-gradient(90deg, #d91e5a 0%, #ff4f8b 50%, #ff7a1a 100%);
+  background: linear-gradient(90deg, #c1121f 0%, #e5383b 50%, #ff4d4d 100%);
   color: #fff;
   padding: 10px 0;
-  box-shadow: 0 4px 16px rgba(217, 30, 90, 0.28);
+  box-shadow: 0 4px 16px rgba(193, 18, 31, 0.32);
 }
 
 .upsell-urgency-bar-inner {
@@ -204,7 +204,7 @@ body.upsell-urgency-high .upsell-urgency-bar {
 
 body.upsell-urgency-high .upsell-urgency-timer,
 body.upsell-urgency-high [data-upsell-timer] {
-  color: #d91e5a;
+  color: #c1121f;
 }
 
 body.upsell-expired [data-upsell-checkout] {
