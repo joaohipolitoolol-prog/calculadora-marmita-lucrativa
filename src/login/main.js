@@ -61,11 +61,11 @@ function getAfterLoginUrl() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
     const premium = params.get('premium') === '1' ? '&premium=1' : '';
-    return `/membros?compra=1${premium}`;
+    return `/app?compra=1${premium}`;
   }
   const next = params.get('next');
   if (next && next.startsWith('/')) return next;
-  return '/membros';
+  return '/app';
 }
 
 watchAuth((user) => redirectIfAuthenticated(user));
@@ -160,6 +160,10 @@ function translateAuthError(error) {
     'auth/email-already-in-use': 'Este correo ya está registrado.',
     'auth/weak-password': 'Contraseña débil. Usa al menos 6 caracteres.',
     'auth/too-many-requests': 'Demasiados intentos. Espera unos minutos.',
+    'auth/configuration-not-found':
+      'El registro aún no está activo. Escríbenos por WhatsApp abajo y te ayudamos a entrar.',
+    'auth/operation-not-allowed':
+      'El registro por email aún no está activado. Escríbenos por WhatsApp abajo.',
   };
 
   if (map[code]) return map[code];

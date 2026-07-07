@@ -57,6 +57,7 @@ let openStep = 1;
 let drawerOpen = false;
 let recipeCatalog = 'base';
 let recipeFilter = 'all';
+let kitUnlocked = true;
 
 const STEPS = [
   { id: 1, label: 'Producción', desc: '¿Cuántas paletas preparas por día?' },
@@ -85,6 +86,10 @@ function checklistKey(uid) {
 
 function hasPremiumAccess() {
   return localStorage.getItem(PREMIUM_STORAGE_KEY) === '1';
+}
+
+function hasKitContentAccess() {
+  return kitUnlocked;
 }
 
 function loadChecklistState() {
@@ -162,6 +167,26 @@ function maybeWelcome() {
   }
 }
 
+function renderKitPendingBanner() {
+  if (hasKitContentAccess()) return '';
+  return `
+    <div class="kit-pending-banner" role="status">
+      Verificando tu compra — recetas y archivos se desbloquean en minutos.
+    </div>
+  `;
+}
+
+function renderKitLockedCard(title = 'Contenido del kit') {
+  return `
+    <div class="section-card kit-locked-card">
+      <span class="kit-locked-badge" aria-hidden="true">🔒</span>
+      <h2>${escapeHtml(title)}</h2>
+      <p class="section-text">Estamos confirmando tu compra. Puedes usar la calculadora mientras tanto; te avisamos por email cuando el kit esté listo.</p>
+      <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Ayuda por WhatsApp</a>
+    </div>
+  `;
+}
+
 function renderPostPurchaseBanner() {
   if (sessionStorage.getItem('paletas_post_purchase') !== '1') return '';
 
@@ -189,10 +214,8 @@ watchAuth(async (user) => {
   }
 
   const profile = await resolveUserProfile(user);
-  if (!hasKitAccess(profile, user)) {
-    window.location.replace('/membros');
-    return;
-  }
+  kitUnlocked = hasKitAccess(profile, user);
+  if (profile?.hasPremium) localStorage.setItem(PREMIUM_STORAGE_KEY, '1');
 
   currentUser = {
     uid: user.uid,
@@ -254,10 +277,14 @@ function renderDrawer() {
         id === 'results' && currentResults.status
           ? `<span class="drawer-badge ${currentResults.status}"></span>`
           : '';
-      return `
+          const lock =
+            (id === 'bonus' || id === 'account') && !hasKitContentAccess()
+              ? ' 🔒'
+              : '';
+          return `
         <button type="button" class="drawer-link ${activeView === id ? 'active' : ''}" data-view="${id}">
           <span class="drawer-link-icon">${ICONS[meta.icon]}</span>
-          <span class="drawer-link-text">${meta.label}</span>
+          <span class="drawer-link-text">${meta.label}${lock}</span>
           ${badge}
         </button>
       `;
@@ -295,10 +322,15 @@ function renderTabBar() {
             id === 'results' && currentResults.status !== 'lucro'
               ? `<span class="tab-badge ${currentResults.status}"></span>`
               : '';
+          const lock =
+            (id === 'bonus' || id === 'account') && !hasKitContentAccess()
+              ? '<span class="tab-lock">🔒</span>'
+              : '';
           return `
             <button type="button" class="tab-btn ${activeView === id ? 'active' : ''}" data-view="${id}">
               <span class="tab-icon">${ICONS[meta.icon]}</span>
               <span class="tab-label">${meta.label}</span>
+              ${lock}
               ${badge}
             </button>
           `;
@@ -398,9 +430,9 @@ function renderCalcFooter() {
 function renderActiveView() {
   switch (activeView) {
     case 'calc':
-      return `${renderPostPurchaseBanner()}${renderCalculatorForm()}`;
+      return `${renderKitPendingBanner()}${renderPostPurchaseBanner()}${renderCalculatorForm()}`;
     case 'results':
-      return renderResults();
+      return `${renderKitPendingBanner()}${renderResults()}`;
     case 'bonus':
       return renderBonus();
     case 'account':
@@ -953,7 +985,9 @@ function renderBonus() {
     : 'Cremosas, frutales, rellenas y estilo postre — con ingredientes, pasos y tips de venta.';
 
   let listHtml = '';
-  if (isPremium && !hasPremiumAccess()) {
+  if (!hasKitContentAccess()) {
+    listHtml = `<div class="premium-locked-card">${renderKitLockedCard(title)}</div>`;
+  } else if (isPremium && !hasPremiumAccess()) {
     listHtml = `
       <div class="premium-locked-card">
         <h3>Complemento premium</h3>
@@ -1263,6 +1297,19 @@ function renderKitArchivos() {
 }
 
 function renderKitContent() {
+  const lockedTitles = {
+    mensajes: 'Mensajes para WhatsApp',
+    combos: 'Combos rentables',
+    plan: 'Plan de 7 días',
+    lista: 'Lista de compras',
+    checklist: 'Checklist de producción',
+    archivos: 'Archivos del kit',
+  };
+
+  if (!hasKitContentAccess() && kitSection !== 'ayuda') {
+    return renderKitLockedCard(lockedTitles[kitSection] || 'Contenido del kit');
+  }
+
   switch (kitSection) {
     case 'mensajes':
       return renderMensajesWhatsApp();

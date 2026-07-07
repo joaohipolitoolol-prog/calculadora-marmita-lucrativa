@@ -112,55 +112,31 @@ function renderPremiumUpsellTeaser(profile) {
   `;
 }
 
-function renderPendingAccess(user) {
+function applyKitLocks() {
   const wrap = document.querySelector('.wrap');
-  if (!wrap) return;
+  if (!wrap || wrap.querySelector('.kit-pending-strip')) return;
 
-  wrap.innerHTML = `
-    <section class="hero">
-      <div class="hero-badge">Cuenta creada</div>
-      <h1>Estamos preparando tu acceso</h1>
-      <p>Tu cuenta fue creada con éxito. Verificamos tu compra y en breve liberamos el kit completo — recibirás un email cuando esté listo.</p>
-      <div class="pills">
-        <span class="pill">⏳ Verificación</span>
-        <span class="pill">📧 Te avisamos</span>
-        <span class="pill">🍭 Kit digital</span>
-      </div>
-    </section>
+  const strip = document.createElement('div');
+  strip.className = 'kit-pending-strip';
+  strip.innerHTML =
+    '<p>⏳ Verificando tu compra — las descargas se desbloquean en minutos. <a href="/app">Abrir calculadora</a></p>';
+  wrap.prepend(strip);
 
-    <div class="section-label">Mientras tanto</div>
-    <div class="panel" style="margin-bottom:24px">
-      <ol>
-        <li>Revisa tu bandeja de entrada (y spam) con el correo <strong>${user.email || 'de la compra'}</strong></li>
-        <li>Si compraste hace poco, la liberación suele tardar unos minutos</li>
-        <li>¿Urgente? Escríbenos por WhatsApp con tu comprobante</li>
-      </ol>
-    </div>
+  const badge = document.querySelector('.hero-badge');
+  if (badge) badge.textContent = 'Cuenta creada';
 
-    <footer>
-      <p class="tagline">Prepara · Calcula · Publica</p>
-      <p style="margin-top:10px">¿Ya pagaste y sigues esperando?</p>
-      <p style="margin-top:8px"><a id="wa-support" href="${WHATSAPP_PURCHASE_LINK}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-weight:800;text-decoration:none;">Confirmar compra por WhatsApp</a></p>
-      <p style="margin-top:8px;font-size:12px;opacity:0.75">+44 7402 867442</p>
-    </footer>
-  `;
-}
-
-function hideKitContent() {
-  document.querySelectorAll('.wrap > .section-label, .wrap > .steps-row, .wrap > .downloads, .wrap > .tips-grid, .wrap > .panel, .wrap > footer').forEach((el) => {
-    if (!el.closest('#premium-downloads') && !el.closest('#premium-upsell-teaser')) {
-      el.style.display = 'none';
-    }
+  document.querySelectorAll('.downloads .dl-card').forEach((card) => {
+    card.classList.add('locked');
+    const action = card.querySelector('.dl-action');
+    if (action) action.textContent = '🔒';
+    card.addEventListener('click', (event) => {
+      event.preventDefault();
+    });
   });
-  const hero = document.querySelector('.hero');
-  if (hero) hero.style.display = 'none';
-  document.getElementById('premium-downloads')?.remove();
-  document.getElementById('premium-upsell-teaser')?.remove();
 }
 
 function showFirstVisitGuide() {
   if (sessionStorage.getItem('paletas_membros_intro') === '1') return;
-  if (document.querySelector('.hero')?.style.display === 'none') return;
   sessionStorage.setItem('paletas_membros_intro', '1');
 
   const guide = document.createElement('div');
@@ -206,9 +182,7 @@ watchAuth(async (user) => {
   bindUserUI(user);
 
   if (!hasKitAccess(profile, user)) {
-    hideKitContent();
-    renderPendingAccess(user);
-    return;
+    applyKitLocks();
   }
 
   renderPremiumSection(profile);
