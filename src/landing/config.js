@@ -7,7 +7,7 @@ import {
 } from '../site/config.js';
 
 /** Link de checkout — Hotmart */
-export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y';
+export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y?checkoutMode=10';
 
 /** Página pós-compra — upsell (antes da área de membros) */
 export const POST_PURCHASE_URL = POST_PURCHASE_UPSELL_URL;
