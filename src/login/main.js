@@ -41,11 +41,12 @@ tabs.forEach((tab) => {
 function getAfterLoginUrl() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
-    return params.get('premium') === '1' ? '/membros?premium=1' : '/membros?compra=1';
+    const premium = params.get('premium') === '1' ? '&premium=1' : '';
+    return `/app?compra=1${premium}`;
   }
   const next = params.get('next');
   if (next && next.startsWith('/')) return next;
-  return '/membros';
+  return '/app';
 }
 
 watchAuth((user) => redirectIfAuthenticated(user));

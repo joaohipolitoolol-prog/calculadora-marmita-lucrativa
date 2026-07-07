@@ -36,7 +36,7 @@ const SLIDES = [
   {
     icon: 'message',
     title: 'Mensajes y plan de 7 días',
-    body: 'En <strong>Kit</strong> encuentras mensajes para WhatsApp, plan semanal, lista de compras y checklist de producción.',
+    body: 'En <strong>Vender</strong> encuentras mensajes para WhatsApp, plan semanal, lista de compras, PDFs y checklist de producción.',
     highlight: 'Copia los mensajes y publícalos en tu estado.',
   },
 ];

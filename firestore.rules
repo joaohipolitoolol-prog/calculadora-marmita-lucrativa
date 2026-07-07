@@ -26,6 +26,10 @@ service cloud.firestore {
       match /scenarios/{scenarioId} {
         allow read, write: if isSelf(userId);
       }
+
+      match /private/{docId} {
+        allow read, write: if isSelf(userId);
+      }
     }
 
     match /accessCodes/{codeId} {

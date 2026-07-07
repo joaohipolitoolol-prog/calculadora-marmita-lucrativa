@@ -80,3 +80,18 @@ document.querySelectorAll('.faq-item').forEach((item) => {
 if (typeof window.fbq === 'function' && META_PIXEL_ID) {
   window.fbq('track', 'PageView');
 }
+
+const stickyBar = document.getElementById('upsell-sticky');
+const heroCta = document.querySelector('.upsell-hero [data-upsell-checkout]');
+
+if (stickyBar && heroCta && 'IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      stickyBar.hidden = entry.isIntersecting;
+    },
+    { threshold: 0.1 }
+  );
+  observer.observe(heroCta);
+} else if (stickyBar) {
+  stickyBar.hidden = false;
+}

@@ -4,6 +4,7 @@ import {
   MENSAJES_WHATSAPP,
   PLAN_7_DIAS,
   RECETAS_PALETAS,
+  RECETAS_PREMIUM,
 } from '../data/kit-paletas.js';
 import {
   calculate,
@@ -13,6 +14,7 @@ import {
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
 import { redirectIfGuest, watchAuth } from '../lib/auth.js';
 import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
+import { UPSELL_CHECKOUT_URL, UPSELL_PRICE_LABEL, UPSELL_NAME } from '../upsell/config.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
 import {
   fullToSimple,
@@ -22,12 +24,15 @@ import {
 } from '../lib/simple-mode.js';
 import {
   clearDraft,
+  clearScenarios,
   deleteScenario,
   listScenarios,
   loadDraft,
   saveDraft,
   saveScenario,
+  saveChecklistToCloud,
 } from '../lib/storage.js';
+import { canCloudSync } from '../lib/cloud-sync.js';
 import { ICONS, VIEW_META } from './icons.js';
 import {
   clearOnboardingSeen,
@@ -48,6 +53,8 @@ let activeView = 'calc';
 let kitSection = 'mensajes';
 let openStep = 1;
 let drawerOpen = false;
+let recipeCatalog = 'base';
+let recipeFilter = 'all';
 
 const STEPS = [
   { id: 1, label: 'Producción', desc: '¿Cuántas paletas preparas por día?' },
@@ -57,7 +64,43 @@ const STEPS = [
   { id: 5, label: 'Precio', desc: 'Cuánto cobras y qué margen quieres' },
 ];
 
+const CHECKLIST_STORAGE_KEY = 'paletas_checklist';
+const PREMIUM_STORAGE_KEY = 'paletas_premium';
 const SIMULATION_VOLUMES = [10, 20, 30];
+
+const RECIPE_FILTERS = [
+  { id: 'all', label: 'Todas' },
+  { id: 'frutal', label: 'Frutales' },
+  { id: 'cremosa', label: 'Cremosas' },
+  { id: 'rellena', label: 'Rellenas' },
+  { id: 'postre', label: 'Postre' },
+  { id: 'banada', label: 'Bañadas' },
+];
+
+function checklistKey(uid) {
+  return `${CHECKLIST_STORAGE_KEY}_${uid}`;
+}
+
+function hasPremiumAccess() {
+  return localStorage.getItem(PREMIUM_STORAGE_KEY) === '1';
+}
+
+function loadChecklistState() {
+  try {
+    return JSON.parse(localStorage.getItem(checklistKey(currentUser.uid)) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveChecklistState(checkedIndexes) {
+  localStorage.setItem(checklistKey(currentUser.uid), JSON.stringify(checkedIndexes));
+  saveChecklistToCloud(currentUser.uid);
+}
+
+function whatsAppShareUrl(text) {
+  return `https://wa.me/?text=${encodeURIComponent(text)}`;
+}
 
 const INSIGHTS = {
   prejuizo: {
@@ -75,6 +118,9 @@ const INSIGHTS = {
 };
 
 async function bootstrap() {
+  maybeWelcome();
+  unlockPremiumFromQuery();
+
   const draft = await loadDraft(currentUser.uid);
   if (draft?.inputs) {
     inputMode = draft.inputMode || 'simple';
@@ -89,12 +135,25 @@ async function bootstrap() {
   maybeShowOnboarding();
 }
 
+function unlockPremiumFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('premium') === '1') {
+    localStorage.setItem(PREMIUM_STORAGE_KEY, '1');
+  }
+  if (params.get('compra') === '1' || params.get('premium') === '1') {
+    params.delete('compra');
+    params.delete('premium');
+    const qs = params.toString();
+    window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+  }
+}
+
 function maybeWelcome() {
   const params = new URLSearchParams(window.location.search);
+  if (sessionStorage.getItem('paletas_post_purchase') === '1') return;
   if (params.get('compra') === '1') {
     sessionStorage.setItem('paletas_post_purchase', '1');
     showToast('¡Compra confirmada! Empieza por el modo rápido.');
-    window.history.replaceState({}, '', window.location.pathname);
   } else if (sessionStorage.getItem('paletas_demo_welcome') === '1') {
     showToast('Demo activa — tus datos quedan en este celular.');
     sessionStorage.removeItem('paletas_demo_welcome');
@@ -210,8 +269,9 @@ function renderDrawer() {
       </div>
       <nav class="drawer-nav">${navItems}</nav>
       <div class="drawer-foot">
-        <span class="drawer-mode">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}</span>
-        <a href="/" class="drawer-home">${ICONS.home}<span>Página de venta</span></a>
+        <span class="drawer-mode">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}${canCloudSync() ? ' · ☁️ sync' : ''}</span>
+        <a href="/membros" class="drawer-home">${ICONS.book}<span>Mis archivos</span></a>
+        <a href="/" class="drawer-home drawer-home-muted">${ICONS.home}<span>Página de venta</span></a>
       </div>
     </aside>
   `;
@@ -775,6 +835,7 @@ function recipeTipoSlug(tipo) {
 function recipeSearchBlob(item) {
   return [
     item.dia,
+    item.num,
     item.nombre,
     item.tipo,
     item.dificultad,
@@ -786,52 +847,61 @@ function recipeSearchBlob(item) {
     .toLowerCase();
 }
 
-function renderMenuByWeek() {
+function recipeMatchesFilter(item, filter) {
+  if (filter === 'all') return true;
+  return recipeTipoSlug(item.tipo) === filter;
+}
+
+function renderRecipeItem(item, label) {
+  return `
+    <details class="menu-item" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}">
+      <summary class="menu-item-summary">
+        <div class="menu-item-summary-main">
+          <div class="menu-item-head">
+            <span class="menu-item-day">${escapeHtml(label)}</span>
+            <span class="menu-item-type menu-item-type--${recipeTipoSlug(item.tipo)}">${escapeHtml(item.tipo)}</span>
+          </div>
+          <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
+          <span class="menu-item-preview">${escapeHtml(item.ingredientes?.[0] || '')}${item.ingredientes?.length > 1 ? ' · +' + (item.ingredientes.length - 1) + ' más' : ''}</span>
+        </div>
+        <span class="menu-item-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
+      </summary>
+      <div class="menu-item-body">
+        <div class="menu-item-meta">
+          <span>${escapeHtml(item.prep)} prep</span>
+          <span>${escapeHtml(item.congelacion)} frío</span>
+          <span>Rinde ${escapeHtml(item.rendimiento)}</span>
+          <span>${escapeHtml(item.dificultad)}</span>
+        </div>
+        <h4 class="menu-item-section-title">Ingredientes</h4>
+        <ul class="menu-item-ingredients">
+          ${(item.ingredientes || []).map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
+        </ul>
+        <h4 class="menu-item-section-title">Preparación</h4>
+        <ol class="menu-item-steps">
+          ${(item.pasos || []).map((step) => `<li>${escapeHtml(step)}</li>`).join('')}
+        </ol>
+        <p class="menu-item-tip"><strong>Tip de venta:</strong> ${escapeHtml(item.consejo || '')}</p>
+      </div>
+    </details>
+  `;
+}
+
+function renderMenuByWeek(recipes = RECETAS_PALETAS) {
   const weeks = [];
-  for (let i = 0; i < RECETAS_PALETAS.length; i += 7) {
-    weeks.push(RECETAS_PALETAS.slice(i, i + 7));
+  for (let i = 0; i < recipes.length; i += 7) {
+    weeks.push(recipes.slice(i, i + 7));
   }
 
   return weeks
     .map(
       (week, wi) => `
         <details class="menu-week" ${wi === 0 ? 'open' : ''}>
-          <summary>Semana ${wi + 1} · Días ${week[0].dia}–${week[week.length - 1].dia}</summary>
+          <summary>Semana ${wi + 1}${week[0].dia ? ` · Días ${week[0].dia}–${week[week.length - 1].dia}` : ''}</summary>
           <div class="menu-week-body">
             ${week
-              .map(
-                (item) => `
-                  <details class="menu-item" data-search="${escapeHtml(recipeSearchBlob(item))}">
-                    <summary class="menu-item-summary">
-                      <div class="menu-item-summary-main">
-                        <div class="menu-item-head">
-                          <span class="menu-item-day">Receta ${item.dia}</span>
-                          <span class="menu-item-type menu-item-type--${recipeTipoSlug(item.tipo)}">${escapeHtml(item.tipo)}</span>
-                        </div>
-                        <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
-                        <span class="menu-item-preview">${escapeHtml(item.ingredientes?.[0] || '')}${item.ingredientes?.length > 1 ? ' · +' + (item.ingredientes.length - 1) + ' más' : ''}</span>
-                      </div>
-                      <span class="menu-item-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
-                    </summary>
-                    <div class="menu-item-body">
-                      <div class="menu-item-meta">
-                        <span>${escapeHtml(item.prep)} prep</span>
-                        <span>${escapeHtml(item.congelacion)} frío</span>
-                        <span>Rinde ${escapeHtml(item.rendimiento)}</span>
-                        <span>${escapeHtml(item.dificultad)}</span>
-                      </div>
-                      <h4 class="menu-item-section-title">Ingredientes</h4>
-                      <ul class="menu-item-ingredients">
-                        ${(item.ingredientes || []).map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
-                      </ul>
-                      <h4 class="menu-item-section-title">Preparación</h4>
-                      <ol class="menu-item-steps">
-                        ${(item.pasos || []).map((step) => `<li>${escapeHtml(step)}</li>`).join('')}
-                      </ol>
-                      <p class="menu-item-tip"><strong>Tip de venta:</strong> ${escapeHtml(item.consejo || '')}</p>
-                    </div>
-                  </details>
-                `
+              .map((item) =>
+                renderRecipeItem(item, item.dia ? `Receta ${item.dia}` : `Premium #${item.num}`)
               )
               .join('')}
           </div>
@@ -841,20 +911,67 @@ function renderMenuByWeek() {
     .join('');
 }
 
+function renderRecipeCatalogToggle() {
+  return `
+    <div class="catalog-toggle" role="tablist">
+      <button type="button" class="catalog-btn ${recipeCatalog === 'base' ? 'active' : ''}" data-recipe-catalog="base">30 básicas</button>
+      <button type="button" class="catalog-btn ${recipeCatalog === 'premium' ? 'active' : ''}" data-recipe-catalog="premium">
+        20 premium ${hasPremiumAccess() ? '' : '🔒'}
+      </button>
+    </div>
+  `;
+}
+
+function renderRecipeFilterBar() {
+  return `
+    <div class="recipe-filters" id="recipe-filters">
+      ${RECIPE_FILTERS.map(
+        (f) => `
+          <button type="button" class="recipe-filter-btn ${recipeFilter === f.id ? 'active' : ''}" data-recipe-filter="${f.id}">
+            ${f.label}
+          </button>
+        `
+      ).join('')}
+    </div>
+  `;
+}
+
 function renderBonus() {
+  const isPremium = recipeCatalog === 'premium';
+  const title = isPremium ? '20 Recetas Premium' : '30 Recetas de Paletas';
+  const desc = isPremium
+    ? 'Bañadas, rellenas y estilo postre — para elevar tu menú y ticket medio.'
+    : 'Cremosas, frutales, rellenas y estilo postre — con ingredientes, pasos y tips de venta.';
+
+  let listHtml = '';
+  if (isPremium && !hasPremiumAccess()) {
+    listHtml = `
+      <div class="premium-locked-card">
+        <h3>Complemento premium</h3>
+        <p>Las 20 recetas premium están incluidas en <strong>${escapeHtml(UPSELL_NAME)}</strong>.</p>
+        ${renderPremiumUpsell()}
+      </div>
+    `;
+  } else {
+    const recipes = isPremium ? RECETAS_PREMIUM : RECETAS_PALETAS;
+    listHtml = `<div class="menu-list" id="menu-list">${renderMenuByWeek(recipes)}</div>
+      <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada.</p>`;
+  }
+
   return `
     <div class="bonus-page">
       <div class="section-card bonus-header-card">
-        <h2>30 Recetas de Paletas</h2>
-        <p>Cremosas, frutales, rellenas y estilo postre — con ingredientes, pasos y tips de venta.</p>
+        <h2>${title}</h2>
+        <p>${desc}</p>
+        ${renderRecipeCatalogToggle()}
+        ${!isPremium || hasPremiumAccess() ? renderRecipeFilterBar() : ''}
         <p class="bonus-hint">Toca una receta para ver la preparación completa.</p>
         <div class="search-wrap">
           ${ICONS.search}
           <input type="search" class="bonus-search" id="bonus-search" placeholder="Buscar receta o tipo..." autocomplete="off">
         </div>
       </div>
-      <div class="menu-list" id="menu-list">${renderMenuByWeek()}</div>
-      <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada.</p>
+      ${listHtml}
     </div>
   `;
 }
@@ -865,6 +982,7 @@ function renderKitSectionNav() {
     { id: 'plan', label: 'Plan 7d', icon: 'calendar' },
     { id: 'lista', label: 'Compras', icon: 'list' },
     { id: 'checklist', label: 'Producción', icon: 'check' },
+    { id: 'archivos', label: 'PDFs', icon: 'book' },
     { id: 'ayuda', label: 'Ayuda', icon: 'help' },
   ];
 
@@ -902,9 +1020,14 @@ function renderMensajesWhatsApp() {
                 (msg) => `
                   <li class="message-item">
                     <p>${escapeHtml(msg.texto)}</p>
-                    <button type="button" class="btn btn-sm btn-secondary copy-msg" data-copy-index="${msg.idx}">
-                      ${ICONS.copy}<span>Copiar</span>
-                    </button>
+                    <div class="message-actions">
+                      <button type="button" class="btn btn-sm btn-secondary copy-msg" data-copy-index="${msg.idx}">
+                        ${ICONS.copy}<span>Copiar</span>
+                      </button>
+                      <a href="${whatsAppShareUrl(msg.texto)}" class="btn btn-sm btn-wa share-msg" target="_blank" rel="noopener noreferrer" data-share-index="${msg.idx}">
+                        ${ICONS.message}<span>Publicar</span>
+                      </a>
+                    </div>
                   </li>
                 `
               )
@@ -960,23 +1083,46 @@ function renderListaCompras() {
   `;
 }
 
+function renderPremiumUpsell() {
+  if (hasPremiumAccess()) return '';
+
+  return `
+    <div class="premium-upsell-card">
+      <span class="premium-upsell-badge">Complemento opcional</span>
+      <h3>${escapeHtml(UPSELL_NAME)}</h3>
+      <p>20 recetas premium, 10 combos rentables, menú editable y mensajes para fechas especiales. Ideal cuando ya dominas lo básico.</p>
+      <ul class="premium-upsell-list">
+        <li>Cheesecake, brownie, bañadas y rellenas</li>
+        <li>Combos familiar, fin de semana y encargo</li>
+        <li>Guía de fotos y presentación</li>
+      </ul>
+      <div class="premium-upsell-actions">
+        <a href="${UPSELL_CHECKOUT_URL}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Agregar por ${UPSELL_PRICE_LABEL}</a>
+        <a href="/upsell-paletas-premium" class="btn btn-ghost btn-sm">Ver detalles</a>
+      </div>
+    </div>
+  `;
+}
+
 function renderChecklistProduccion() {
+  const checked = loadChecklistState();
   return `
     <div class="section-card">
       <h2>Checklist de Producción</h2>
-      <p class="section-text">Usa esta lista antes de cada día de ventas.</p>
+      <p class="section-text">Usa esta lista antes de cada día de ventas. Se guarda en este dispositivo.</p>
       <ul class="kit-checklist interactive">
         ${CHECKLIST_PRODUCCION.map(
           (item, i) => `
             <li>
               <label class="checklist-label">
-                <input type="checkbox" data-checklist="${i}">
+                <input type="checkbox" data-checklist="${i}" ${checked.includes(i) ? 'checked' : ''}>
                 <span>${escapeHtml(item)}</span>
               </label>
             </li>
           `
         ).join('')}
       </ul>
+      <button type="button" class="btn btn-ghost btn-sm" id="reset-checklist">Reiniciar checklist</button>
     </div>
   `;
 }
@@ -1025,6 +1171,37 @@ function renderKitAyuda() {
   `;
 }
 
+function renderKitArchivos() {
+  return `
+    <div class="section-card">
+      <h2>Archivos del kit</h2>
+      <p class="section-text">Descarga o abre los PDFs y plantillas. La calculadora interactiva está en la pestaña Precios.</p>
+      <ul class="kit-files-list">
+        <li><a href="/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.pdf" download>Kit Principal (PDF)</a></li>
+        <li><a href="/paletas-de-whatsapp/produto/Calculadora_Precios_Paletas.xlsx" download>Calculadora Excel</a></li>
+        <li><a href="/paletas-de-whatsapp/produto/Menu_Editable_Paletas.html" target="_blank" rel="noopener">Menú editable</a></li>
+        <li><a href="/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.pdf" download>Mensajes WhatsApp (PDF)</a></li>
+        <li><a href="/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf" download>Plan 7 días</a></li>
+        <li><a href="/paletas-de-whatsapp/produto/Checklist_Paletas.pdf" download>Checklist</a></li>
+      </ul>
+      <a href="/membros" class="btn btn-secondary btn-sm" style="margin-top:12px">Ver todos en mi área →</a>
+    </div>
+    ${hasPremiumAccess() ? `
+      <div class="section-card">
+        <h2>Archivos premium</h2>
+        <ul class="kit-files-list">
+          <li><a href="/paletas-premium/produto/Kit_Premium_Paletas.html" target="_blank" rel="noopener">20 recetas premium</a></li>
+          <li><a href="/paletas-premium/produto/Combos_Rentables.html" target="_blank" rel="noopener">Combos rentables</a></li>
+          <li><a href="/paletas-premium/produto/Menu_Premium_Editable.html" target="_blank" rel="noopener">Menú premium</a></li>
+          <li><a href="/paletas-premium/produto/Mensajes_Premium.html" target="_blank" rel="noopener">Mensajes premium</a></li>
+          <li><a href="/paletas-premium/produto/Fechas_Especiales.html" target="_blank" rel="noopener">Fechas especiales</a></li>
+          <li><a href="/paletas-premium/produto/Guia_Presentacion.html" target="_blank" rel="noopener">Guía de presentación</a></li>
+        </ul>
+      </div>
+    ` : ''}
+  `;
+}
+
 function renderKitContent() {
   switch (kitSection) {
     case 'mensajes':
@@ -1035,6 +1212,8 @@ function renderKitContent() {
       return renderListaCompras();
     case 'checklist':
       return renderChecklistProduccion();
+    case 'archivos':
+      return renderKitArchivos();
     default:
       return renderKitAyuda();
   }
@@ -1044,7 +1223,7 @@ function renderAccount() {
   return `
     <div class="kit-page">
       ${renderKitSectionNav()}
-      <div class="kit-content">${renderKitContent()}</div>
+      <div class="kit-content">${renderKitContent()}${renderPremiumUpsell()}</div>
     </div>
   `;
 }
@@ -1256,11 +1435,13 @@ function bindEvents() {
 
   const bonusSearch = document.getElementById('bonus-search');
   if (bonusSearch) {
-    bonusSearch.addEventListener('input', () => {
+    const applyRecipeFilters = () => {
       const q = bonusSearch.value.trim().toLowerCase();
       let visible = 0;
       document.querySelectorAll('#menu-list .menu-item').forEach((item) => {
-        const show = !q || item.dataset.search.includes(q);
+        const tipoOk = recipeFilter === 'all' || item.dataset.tipo === recipeFilter;
+        const searchOk = !q || item.dataset.search.includes(q);
+        const show = tipoOk && searchOk;
         item.style.display = show ? '' : 'none';
         if (show) visible += 1;
       });
@@ -1270,8 +1451,26 @@ function bindEvents() {
         if (hasVisible) week.open = true;
       });
       document.getElementById('menu-empty')?.classList.toggle('hidden', visible > 0);
-    });
+    };
+
+    bonusSearch.addEventListener('input', applyRecipeFilters);
+    applyRecipeFilters();
   }
+
+  root.querySelectorAll('[data-recipe-filter]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      recipeFilter = btn.dataset.recipeFilter;
+      render();
+    });
+  });
+
+  root.querySelectorAll('[data-recipe-catalog]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      recipeCatalog = btn.dataset.recipeCatalog;
+      recipeFilter = 'all';
+      render();
+    });
+  });
 
   root.querySelectorAll('[data-load]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -1322,10 +1521,25 @@ function bindEvents() {
     });
   });
 
+  root.querySelectorAll('[data-checklist]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const checked = [...root.querySelectorAll('[data-checklist]:checked')].map((el) =>
+        parseNumber(el.dataset.checklist)
+      );
+      saveChecklistState(checked);
+    });
+  });
+
+  document.getElementById('reset-checklist')?.addEventListener('click', () => {
+    saveChecklistState([]);
+    render();
+    showToast('Checklist reiniciado.');
+  });
+
   document.getElementById('reset-data')?.addEventListener('click', () => {
     if (!window.confirm('¿Borrar borrador y escenarios guardados en este dispositivo?')) return;
     clearDraft(currentUser.uid);
-    localStorage.removeItem(`marmita_scenarios_${currentUser.uid}`);
+    clearScenarios(currentUser.uid);
     clearOnboardingSeen();
     inputMode = 'simple';
     simpleValues = { ...SIMPLE_DEFAULTS };

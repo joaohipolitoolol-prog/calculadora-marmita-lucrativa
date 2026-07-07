@@ -78,8 +78,56 @@ function renderPremiumSection(profile) {
         <div class="dl-info"><h3>Mensajes Premium</h3><p>Combos y fechas especiales</p></div>
         <span class="dl-action">→</span>
       </a>
+      <a class="dl-card" href="/paletas-premium/produto/Fechas_Especiales.html" target="_blank" rel="noopener" style="--card-accent:#60a5fa">
+        <div class="dl-icon">🎉</div>
+        <div class="dl-info"><h3>Fechas Especiales</h3><p>Día de la Madre, San Valentín, Navidad…</p></div>
+        <span class="dl-action">→</span>
+      </a>
+      <a class="dl-card" href="/paletas-premium/produto/Guia_Presentacion.html" target="_blank" rel="noopener" style="--card-accent:#f472b6">
+        <div class="dl-icon">📸</div>
+        <div class="dl-info"><h3>Guía de Presentación</h3><p>Fotos, empaque y nombres que venden</p></div>
+        <span class="dl-action">→</span>
+      </a>
     </div>
   `;
+}
+
+function renderPremiumUpsellTeaser(profile) {
+  const host = document.getElementById('premium-upsell-teaser');
+  if (!host || hasPremium(profile)) return;
+
+  host.hidden = false;
+  host.innerHTML = `
+    <div class="section-label">¿Quieres diferenciarte más?</div>
+    <div class="panel premium-teaser">
+      <h3 style="margin-bottom:8px;font-size:16px">Paletas Premium y Combos Rentables</h3>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:12px">
+        Complemento opcional: 20 recetas premium, combos con precio guía, menú editable, mensajes para fechas especiales y guía de fotos.
+      </p>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
+        <strong>Cuándo tiene sentido:</strong> después de vender tus primeros 3–5 sabores básicos y querer subir ticket medio con combos y presentación.
+      </p>
+      <a href="/upsell-paletas-premium" style="display:inline-block;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg,#ffc94a,#ff7a1a);color:#3d2218;font-weight:800;text-decoration:none;font-size:13px">Ver complemento premium</a>
+    </div>
+  `;
+}
+
+function showFirstVisitGuide() {
+  if (sessionStorage.getItem('paletas_membros_intro') === '1') return;
+  sessionStorage.setItem('paletas_membros_intro', '1');
+
+  const guide = document.createElement('div');
+  guide.className = 'first-visit-guide';
+  guide.innerHTML = `
+    <div class="first-visit-guide-inner">
+      <strong>¿Por dónde empiezo?</strong>
+      <p>1. Abre la <a href="/app">app</a> y calcula tus precios · 2. Elige 3 recetas · 3. Copia mensajes en Vender</p>
+      <button type="button" id="guide-dismiss">Entendido</button>
+    </div>
+  `;
+  document.body.appendChild(guide);
+  guide.querySelector('#guide-dismiss')?.addEventListener('click', () => guide.remove());
+  guide.querySelector('a[href="/app"]')?.addEventListener('click', () => guide.remove());
 }
 
 function bindUserUI(user) {
@@ -110,11 +158,18 @@ watchAuth(async (user) => {
   initTheme();
   bindUserUI(user);
   renderPremiumSection(profile);
+  renderPremiumUpsellTeaser(profile);
+  showFirstVisitGuide();
 
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
     const badge = document.querySelector('.hero-badge');
-    if (badge) badge.textContent = 'Compra confirmada';
-    window.history.replaceState({}, '', '/membros');
+    if (badge) {
+      badge.textContent = params.get('premium') === '1' ? 'Premium activado' : 'Compra confirmada';
+    }
+    params.delete('compra');
+    params.delete('premium');
+    const qs = params.toString();
+    window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
   }
 });

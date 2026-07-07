@@ -161,11 +161,12 @@ export function redirectIfAuthenticated(user, target) {
   if (!user) return;
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
-    window.location.href = params.get('premium') === '1' ? '/membros?compra=1' : '/membros?compra=1';
+    const premium = params.get('premium') === '1';
+    window.location.href = premium ? '/app?compra=1&premium=1' : '/app?compra=1';
     return;
   }
   const next = params.get('next');
-  window.location.href = next && next.startsWith('/') ? next : target || '/membros';
+  window.location.href = next && next.startsWith('/') ? next : target || '/app';
 }
 
 export function redirectIfGuest(user, target = '/login') {

@@ -1,23 +1,22 @@
 import { parseNumber } from './format.js';
 
 export const DEFAULT_INPUTS = {
-  marmitasPerDay: 20,
+  marmitasPerDay: 25,
   workDaysPerMonth: 22,
-  targetMarginPercent: 30,
-  sellingPrice: 18,
-  packagingPerUnit: 1.2,
-  gasMonthly: 396,
+  targetMarginPercent: 40,
+  sellingPrice: 2.5,
+  packagingPerUnit: 0.15,
+  gasMonthly: 110,
   spicesMonthly: 0,
-  deliveryPerUnit: 2,
+  deliveryPerUnit: 0.3,
   platformFeePercent: 0,
   wastePercent: 8,
   hoursPerDay: 0,
   hourlyRate: 0,
   ingredients: [
-    { name: 'Arroz', batchCost: 8, portions: 20 },
-    { name: 'Feijão', batchCost: 12, portions: 20 },
-    { name: 'Carne/Frango', batchCost: 160, portions: 20 },
-    { name: 'Acompanhamentos', batchCost: 24, portions: 20 },
+    { name: 'Fruta y crema (preparo base)', batchCost: 12, portions: 30 },
+    { name: 'Chocolate / toppings', batchCost: 8, portions: 30 },
+    { name: 'Leche condensada / yogur', batchCost: 6, portions: 30 },
   ],
 };
 

@@ -26,6 +26,14 @@ export const UPSELL_PRICE_LABEL =
 export const UPSELL_NAME = 'Paletas Premium y Combos Rentables';
 export const UPSELL_CTA_LABEL = 'Sí, quiero agregar Paletas Premium';
 export const UPSELL_DECLINE_LABEL = 'No gracias, ir a crear mi acceso';
+export const UPSELL_VALUE_STACK = [
+  '20 recetas premium (bañadas, rellenas, postre)',
+  '10 combos con precio guía y mensaje de venta',
+  'Menú premium editable para WhatsApp',
+  'Mensajes para combos y fechas especiales',
+  'Guía de fotos, empaque y nombres',
+  'Ideas por temporada (Mamá, San Valentín, Navidad)',
+];
 export const META_PIXEL_ID = '1369803401885896';
 
 export { SITE_URL };

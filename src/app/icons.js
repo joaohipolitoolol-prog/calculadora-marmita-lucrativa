@@ -42,5 +42,5 @@ export const VIEW_META = {
   calc: { label: 'Precios', icon: 'calc' },
   results: { label: 'Resultados', icon: 'chart' },
   bonus: { label: 'Recetas', icon: 'book' },
-  account: { label: 'Kit', icon: 'help' },
+  account: { label: 'Vender', icon: 'message' },
 };

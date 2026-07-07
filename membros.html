@@ -298,6 +298,26 @@
       text-align: center; padding-top: 8px;
       font-size: 13px; color: var(--text-muted);
     }
+    .first-visit-guide {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(61, 34, 24, 0.45);
+      display: flex; align-items: flex-end; justify-content: center;
+      padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+    .first-visit-guide-inner {
+      width: 100%; max-width: 420px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 18px 20px;
+      box-shadow: var(--shadow-lg);
+    }
+    .first-visit-guide-inner strong { display: block; margin-bottom: 8px; font-size: 15px; }
+    .first-visit-guide-inner p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px; }
+    .first-visit-guide-inner a { color: var(--rosa); font-weight: 800; }
+    .first-visit-guide-inner button {
+      font-family: inherit; font-weight: 800; font-size: 13px;
+      padding: 12px 18px; border: none; border-radius: 999px;
+      background: var(--hero-grad); color: #fff; cursor: pointer; width: 100%;
+    }
     footer .tagline {
       font-size: 15px; font-weight: 800;
       background: var(--hero-grad);
@@ -342,6 +362,8 @@
         <span class="pill">💰 Precio</span>
         <span class="pill">📱 Publicar</span>
       </div>
+      <p style="margin-top:18px"><a href="/app" style="display:inline-block;padding:14px 22px;border-radius:999px;background:var(--hero-grad);color:#fff;font-weight:800;text-decoration:none;font-size:14px;box-shadow:0 8px 24px rgba(255,79,139,0.35)">Abrir calculadora y recetas →</a></p>
+      <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">La app guarda tus precios y escenarios en este celular.</p>
     </section>
 
     <div class="section-label">Empieza aquí</div>
@@ -390,6 +412,8 @@
     </div>
 
     <div id="premium-downloads" hidden></div>
+
+    <div id="premium-upsell-teaser" hidden></div>
 
     <div class="section-label">Tips rápidos</div>
     <div class="tips-grid">
