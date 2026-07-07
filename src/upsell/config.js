@@ -5,12 +5,12 @@ import { SITE_URL } from '../site/config.js';
 /**
  * FLUJO (URLs relativas — funcionan en paletasparawhatsapp.vercel.app):
  * 1. Compra kit → upsell
- * 2. Acepta → checkout Kiwify
+ * 2. Acepta → checkout Hotmart
  * 3. Rechaza → /cadastrar?compra=1
  * 4. Compra upsell → /cadastrar?compra=1&premium=1
  */
 
-export const UPSELL_CHECKOUT_URL = 'https://pay.kiwify.com/XblcKD0';
+export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E';
 
 /** Rutas relativas — siempre en el dominio actual */
 export const ACCESS_URL = '/cadastrar?compra=1';
