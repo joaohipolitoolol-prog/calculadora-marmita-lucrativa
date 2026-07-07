@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { verifyAdminRequest } from './lib/firebase-admin.js';
 import { buildWelcomeEmailHtml } from './lib/welcome-email.js';
+import { BRAND_KIT, BRAND_NAME } from '../src/site/brand.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -21,12 +22,12 @@ export default async function handler(req, res) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
     const siteUrl = process.env.SITE_URL || 'https://paletasparawhatsapp.vercel.app';
-    const from = process.env.RESEND_FROM_EMAIL || 'Paletas de WhatsApp <onboarding@resend.dev>';
+    const from = process.env.RESEND_FROM_EMAIL || `${BRAND_NAME} <onboarding@resend.dev>`;
 
     const { error } = await resend.emails.send({
       from,
       to: email,
-      subject: 'Tu Kit Paletas de WhatsApp está listo 🍓',
+      subject: `Tu ${BRAND_KIT} está listo 🍓`,
       html: buildWelcomeEmailHtml(name, siteUrl),
     });
 

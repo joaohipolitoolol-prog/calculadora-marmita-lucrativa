@@ -13,7 +13,7 @@ export const RECETAS_PREMIUM = recetasPremiumData;
 export const COMBOS_PREMIUM = combosPremiumData;
 
 export const MENSAJES_WHATSAPP = [
-  { categoria: 'Estado / Story', texto: '🍭 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.' },
+  { categoria: 'Estado / Story', texto: '🍓 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.' },
   { categoria: 'Estado / Story', texto: '¿Antojo de algo fresco? Tengo paletas cremosas y frutales listas para entregar.' },
   { categoria: 'Estado / Story', texto: 'Nuevos sabores esta semana 🍦 Pregunta por el menú completo.' },
   { categoria: 'Estado / Story', texto: 'Hoy preparé paletas frescas. Quedan pocas unidades — escríbeme antes de que se acaben.' },

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Genera todos los archivos del Kit Paletas de WhatsApp."""
+"""Genera todos los archivos del Kit Paletas para WhatsApp."""
 import csv
 import os
 import sys
@@ -87,7 +87,7 @@ def recetas_por_categoria():
 
 
 def page_header():
-    return '<div class="page-header"><strong>Paletas de WhatsApp</strong><span>Kit completo</span></div>'
+    return '<div class="page-header"><strong>Paletas para WhatsApp</strong><span>Kit completo</span></div>'
 
 
 def build_kit_html():
@@ -133,7 +133,7 @@ def build_kit_html():
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Kit Paletas de WhatsApp</title>
+<title>Kit Paletas para WhatsApp</title>
 <style>{STYLES}</style>
 </head>
 <body>
@@ -141,7 +141,7 @@ def build_kit_html():
 <div class="page cover">
   <div class="cover-badge">Kit Digital</div>
   <div class="cover-icon">🍭</div>
-  <h1>Paletas de WhatsApp</h1>
+  <h1>Paletas para WhatsApp</h1>
   <p class="subtitle">Recetas, precios y mensajes listos para empezar desde casa.</p>
   <div class="tagline">Prepara. Calcula. Publica.</div>
   <div class="method">
@@ -176,7 +176,7 @@ def build_kit_html():
 <div class="page">
   {page_header()}
   <span class="section-tag">Inicio</span>
-  <h2>Bienvenida al Kit Paletas de WhatsApp</h2>
+  <h2>Bienvenida al Kit Paletas para WhatsApp</h2>
   <p>Felicidades por acceder al kit. Este material fue creado para ayudarte a organizar una pequeña oferta de paletas caseras desde casa, sin complicarte y sin cobrar "a ojo".</p>
   <div class="box box-rosa">
     <p><strong>Importante:</strong> Este kit no promete ingresos garantizados ni resultados automáticos. Te entrega materiales prácticos — recetas, herramientas de precio, menú y mensajes — para que organices tu oferta con más claridad.</p>
@@ -630,7 +630,7 @@ def build_entrega_html():
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tu Kit Paletas de WhatsApp</title>
+<title>Tu Kit Paletas para WhatsApp</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -684,7 +684,7 @@ footer a { color: var(--rosa); }
     <div class="badge">Acceso confirmado</div>
     <div class="icon">🍭</div>
     <h1>¡Tu kit está listo!</h1>
-    <p>Paletas de WhatsApp — Recetas, precios y mensajes listos para empezar desde casa.</p>
+    <p>Paletas para WhatsApp — Recetas, precios y mensajes listos para empezar desde casa.</p>
   </header>
 
   <div class="section-title">Empieza por aquí (en orden)</div>
@@ -799,7 +799,7 @@ def build_calculator():
     # --- Aba 1: Calculadora ---
     ws = wb.active
     ws.title = "Calculadora"
-    style_header(ws, "Calculadora de Precios — Paletas de WhatsApp")
+    style_header(ws, "Calculadora de Precios — Paletas para WhatsApp")
 
     headers = ["Ingrediente", "Costo del paquete", "Cantidad total del paquete", "Cantidad usada", "Costo usado"]
     for col, h in enumerate(headers, 1):
@@ -946,7 +946,7 @@ def build_calculator():
     csv_dir = PRODUTO
     with open(csv_dir / "Calculadora_Precios_Paletas.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["Calculadora de Precios — Paletas de WhatsApp"])
+        w.writerow(["Calculadora de Precios — Paletas para WhatsApp"])
         w.writerow(["Ingrediente", "Costo del paquete", "Cantidad total", "Cantidad usada", "Costo usado"])
         w.writerow(["", "", "", "", "=(B/C)*D"])
         w.writerow([])
@@ -991,7 +991,7 @@ def generate_pdfs():
 
 def main():
     PRODUTO.mkdir(parents=True, exist_ok=True)
-    print("Generando Kit Paletas de WhatsApp...\n")
+    print("Generando Kit Paletas para WhatsApp...\n")
 
     files = {
         "Kit_Paletas_de_WhatsApp.html": build_kit_html(),
@@ -1018,7 +1018,7 @@ def main():
         print(f"  WARN Error generando PDFs: {e}")
         print("  Puedes exportar manualmente desde los HTML (Ctrl+P → Guardar como PDF)")
 
-    readme = """# Paletas de WhatsApp — Kit Digital
+    readme = """# Paletas para WhatsApp — Kit Digital
 
 Kit digital completo para vender paletas caseras por WhatsApp.
 

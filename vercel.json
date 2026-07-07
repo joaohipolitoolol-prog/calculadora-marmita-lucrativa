@@ -4,6 +4,7 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
+    { "source": "/cadastrar", "destination": "/cadastrar.html" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/app", "destination": "/app.html" },
     { "source": "/membros", "destination": "/membros.html" },

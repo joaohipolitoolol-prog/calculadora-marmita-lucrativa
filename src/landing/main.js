@@ -1,3 +1,4 @@
+import { BRAND_KIT } from '../site/brand.js';
 import {
   CALC_CTA_LABEL,
   CHECKOUT_URL,
@@ -17,7 +18,7 @@ function trackInitiateCheckout() {
     window.fbq('track', 'InitiateCheckout', {
       value: MAIN_PRICE,
       currency: 'USD',
-      content_name: 'Kit Paletas de WhatsApp',
+      content_name: BRAND_KIT,
     });
   }
 }

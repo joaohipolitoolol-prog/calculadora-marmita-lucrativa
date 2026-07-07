@@ -1,31 +1,33 @@
-/* Design tokens — Paletas de WhatsApp */
+/* Design tokens — Paletas para WhatsApp (rosa morango) */
 :root {
   --pink: #E8437A;
-  --pink-light: #FFF0F5;
+  --pink-light: #FFECF3;
   --pink-dark: #C72E62;
-  --orange: #F4842A;
-  --orange-dark: #D96A15;
-  --orange-light: #FFF3EB;
-  --yellow: #F5B623;
-  --yellow-soft: #FFF8E7;
-  --berry: #D94F4F;
+  --pink-soft: #FFF5F9;
+  /* Secundário: rosa vivo (substitui laranja/amarelo na UI) */
+  --orange: #F04D82;
+  --orange-dark: #D93A6F;
+  --orange-light: #FFE8F0;
+  --yellow: #F06896;
+  --yellow-soft: #FFF0F5;
+  --berry: #D94F6F;
   --chocolate: #5C3D2E;
-  --brown: #3D2A20;
-  --brown-mid: #5C3D2E;
-  --brown-light: #8B6B5A;
+  --brown: #3D2228;
+  --brown-mid: #5C3540;
+  --brown-light: #8B6570;
   --green: #25A55A;
   --green-bright: #2D9B58;
   --green-light: #E8F5EC;
   --red: #C0392B;
   --red-light: #FEF3F2;
-  --cream: #FFFBF7;
+  --cream: #FFF6F9;
   --white: #FFFFFF;
-  --gray: #6B5E57;
-  --gray-light: #F3EDE8;
-  --gray-border: #E8DFD6;
-  --shadow-sm: 0 2px 8px rgba(61, 42, 32, 0.06);
-  --shadow: 0 8px 28px rgba(61, 42, 32, 0.1);
-  --shadow-lg: 0 16px 48px rgba(61, 42, 32, 0.14);
+  --gray: #6B5560;
+  --gray-light: #FAF2F6;
+  --gray-border: #F0E4EA;
+  --shadow-sm: 0 2px 8px rgba(120, 40, 72, 0.06);
+  --shadow: 0 8px 28px rgba(120, 40, 72, 0.09);
+  --shadow-lg: 0 16px 48px rgba(120, 40, 72, 0.12);
   --radius: 18px;
   --radius-sm: 12px;
   --radius-xs: 8px;
@@ -36,7 +38,7 @@
   --space-xl: 32px;
   --font: 'Nunito', system-ui, sans-serif;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --focus-ring: 0 0 0 3px rgba(232, 67, 122, 0.25);
+  --focus-ring: 0 0 0 3px rgba(232, 67, 122, 0.28);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -40,15 +40,24 @@ export const ICONS = {
     '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>'
   ),
   logOut: svg('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>'),
+  user: svg('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+  settings: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
 };
 
 export const BRAND_LOGO =
-  '<img src="/favicon.svg?v=2" width="32" height="32" alt="" class="app-brand-img" decoding="async">';
+  '<img src="/favicon.svg?v=3" width="32" height="32" alt="" class="app-brand-img" decoding="async">';
 
 export const VIEW_META = {
-  calc: { label: 'Precios', icon: 'calc' },
-  results: { label: 'Resultados', icon: 'chart' },
-  bonus: { label: 'Recetas', icon: 'book' },
-  account: { label: 'Vender', icon: 'message' },
-  files: { label: 'Archivos', icon: 'folder' },
+  home: { label: 'Inicio', icon: 'home', tab: true },
+  calc: { label: 'Precios', icon: 'calc', tab: true },
+  kit: { label: 'Kit', icon: 'book', tab: true },
+  profile: { label: 'Perfil', icon: 'user', tab: true },
+  results: { label: 'Resultados', icon: 'chart', tab: false },
+  bonus: { label: 'Recetas', icon: 'book', tab: false },
+  files: { label: 'Archivos', icon: 'folder', tab: false },
+  account: { label: 'Vender', icon: 'message', tab: false },
 };
+
+export const TAB_VIEWS = Object.entries(VIEW_META)
+  .filter(([, meta]) => meta.tab)
+  .map(([id]) => id);

@@ -1,7 +1,16 @@
+import { getCurrency } from './currency.js';
+
 export function money(value) {
   const n = Number(value);
-  if (!Number.isFinite(n)) return 'US$ 0.00';
-  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  if (!Number.isFinite(n)) {
+    return formatMoney(0);
+  }
+  return formatMoney(n);
+}
+
+function formatMoney(n) {
+  const { code, locale } = getCurrency();
+  return n.toLocaleString(locale, { style: 'currency', currency: code });
 }
 
 export function percent(value) {
@@ -16,7 +25,15 @@ export function parseNumber(value) {
   let s = String(value ?? '').trim();
   if (!s) return 0;
 
-  s = s.replace(/US\$\s?/gi, '').replace(/R\$\s?/gi, '').replace(/\$\s?/g, '').replace(/\s/g, '');
+  s = s
+    .replace(/US\$\s?/gi, '')
+    .replace(/R\$\s?/gi, '')
+    .replace(/S\/\s?/gi, '')
+    .replace(/Bs\.?\s?/gi, '')
+    .replace(/€\s?/gi, '')
+    .replace(/Q\s?/gi, '')
+    .replace(/\$\s?/g, '')
+    .replace(/\s/g, '');
   if (!s) return 0;
 
   const hasComma = s.includes(',');

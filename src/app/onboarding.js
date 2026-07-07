@@ -1,3 +1,4 @@
+import { BRAND_KIT } from '../site/brand.js';
 import { ICONS } from './icons.js';
 
 export const ONBOARDING_KEY = 'paletas_onboarding_v1';
@@ -5,7 +6,7 @@ export const ONBOARDING_KEY = 'paletas_onboarding_v1';
 const SLIDES = [
   {
     icon: 'logo',
-    title: 'Tu Kit Paletas de WhatsApp',
+    title: `Tu ${BRAND_KIT}`,
     body: 'Recetas, calculadora de precios, menú y mensajes listos para empezar a vender desde casa.',
     highlight: null,
   },

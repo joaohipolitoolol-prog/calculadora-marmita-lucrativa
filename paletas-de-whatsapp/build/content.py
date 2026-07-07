@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Contenido completo del Kit Paletas de WhatsApp"""
+"""Contenido completo del Kit Paletas para WhatsApp"""
 
 TECNICAS_BASICAS = [
     {

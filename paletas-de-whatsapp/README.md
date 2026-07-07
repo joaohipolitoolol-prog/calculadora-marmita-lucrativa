@@ -1,4 +1,4 @@
-# Paletas de WhatsApp — Kit Digital
+# Paletas para WhatsApp — Kit Digital
 
 Kit digital completo para vender paletas caseras por WhatsApp.
 

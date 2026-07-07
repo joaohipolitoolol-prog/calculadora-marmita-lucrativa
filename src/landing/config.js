@@ -1,3 +1,4 @@
+import { BRAND_KIT } from '../site/brand.js';
 import {
   LOGIN_URL,
   MEMBERS_URL,
@@ -16,7 +17,7 @@ export const WHATSAPP_NUMBER = '447402867442';
 
 export const WHATSAPP_DISPLAY = '+44 7402 867442';
 
-export const WHATSAPP_PURCHASE_MESSAGE = `¡Hola! 👋 Acabo de comprar el Kit Paletas de WhatsApp.
+export const WHATSAPP_PURCHASE_MESSAGE = `¡Hola! 👋 Acabo de comprar el ${BRAND_KIT}.
 
 📧 Mi correo de compra: [escribe tu correo]
 
@@ -32,7 +33,7 @@ export function getWhatsAppLink(message = WHATSAPP_PURCHASE_MESSAGE) {
 
 export const WHATSAPP_PURCHASE_LINK = getWhatsAppLink();
 
-export const WHATSAPP_SUPPORT_MESSAGE = `¡Hola! 👋 Acabo de comprar el Kit Paletas de WhatsApp y necesito ayuda para crear mi cuenta o acceder al kit.
+export const WHATSAPP_SUPPORT_MESSAGE = `¡Hola! 👋 Acabo de comprar el ${BRAND_KIT} y necesito ayuda para crear mi cuenta o acceder al kit.
 
 📧 Mi correo de compra: [escribe tu correo]
 

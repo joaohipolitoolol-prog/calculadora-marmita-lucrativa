@@ -14,7 +14,9 @@ import {
 } from '../lib/calculator.js';
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
 import { logout, redirectIfGuest, watchAuth } from '../lib/auth.js';
-import { getUserProfile, hasKitAccess, resolveUserProfile } from '../lib/user-profile.js';
+import { CURRENCIES, getCurrencyCode, getCurrencySymbol, setCurrencyCode } from '../lib/currency.js';
+import { hasKitAccess, isUserAdmin, resolveUserProfile } from '../lib/user-profile.js';
+import { saveDisplayName, getLocalDisplayName } from '../lib/user-settings.js';
 import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
 import { UPSELL_CHECKOUT_URL, UPSELL_PRICE_LABEL, UPSELL_NAME } from '../upsell/config.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
@@ -34,8 +36,9 @@ import {
   saveScenario,
   saveChecklistToCloud,
 } from '../lib/storage.js';
-import { canCloudSync } from '../lib/cloud-sync.js';
-import { ICONS, VIEW_META, BRAND_LOGO } from './icons.js';
+import { BRAND_KIT, BRAND_NAME } from '../site/brand.js';
+import { ICONS, VIEW_META, BRAND_LOGO, TAB_VIEWS } from './icons.js';
+import { BRAND_EMOJI } from '../brand/logo-mark.js';
 import {
   clearOnboardingSeen,
   hasSeenOnboarding,
@@ -51,13 +54,29 @@ let simpleValues = { ...SIMPLE_DEFAULTS };
 let currentInputs = simpleToFull(SIMPLE_DEFAULTS);
 let currentResults = calculate(currentInputs);
 let scenarios = [];
-let activeView = 'calc';
+let activeView = 'home';
+let kitHubTab = 'recetas';
 let kitSection = 'mensajes';
 let openStep = 1;
 let drawerOpen = false;
 let recipeCatalog = 'base';
 let recipeFilter = 'all';
 let kitUnlocked = true;
+let userIsAdmin = false;
+let deferredInstallPrompt = null;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+  });
+}
+
+function registerPwa() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+}
 
 const STEPS = [
   { id: 1, label: 'Producción', desc: '¿Cuántas paletas preparas por día?' },
@@ -69,6 +88,10 @@ const STEPS = [
 
 const CHECKLIST_STORAGE_KEY = 'paletas_checklist';
 const PREMIUM_STORAGE_KEY = 'paletas_premium';
+
+/** Desbloqueia todo o kit durante o desenvolvimento — desativar antes do lançamento */
+const DEV_UNLOCK_ALL_CONTENT = true;
+
 const SIMULATION_VOLUMES = [10, 20, 30];
 
 const RECIPE_FILTERS = [
@@ -146,10 +169,12 @@ function checklistKey(uid) {
 }
 
 function hasPremiumAccess() {
+  if (DEV_UNLOCK_ALL_CONTENT) return true;
   return localStorage.getItem(PREMIUM_STORAGE_KEY) === '1';
 }
 
 function hasKitContentAccess() {
+  if (DEV_UNLOCK_ALL_CONTENT) return true;
   return kitUnlocked;
 }
 
@@ -186,6 +211,7 @@ const INSIGHTS = {
 };
 
 async function bootstrap() {
+  registerPwa();
   maybeWelcome();
   unlockPremiumFromQuery();
   readViewFromUrl();
@@ -255,8 +281,8 @@ function renderPostPurchaseBanner() {
   return `
     <div class="welcome-banner" id="welcome-banner">
       <div class="welcome-banner-body">
-        <strong>¡Bienvenida a tu Kit Paletas de WhatsApp!</strong>
-        <p>1. Calcula tus precios en modo rápido · 2. Toca <em>Ver mi ganancia</em> · 3. Abre Recetas y Kit en el menú de abajo.</p>
+        <strong>¡Bienvenida a tu ${escapeHtml(BRAND_KIT)}!</strong>
+        <p>1. Calcula tus precios en modo rápido · 2. Toca <em>Ver mi ganancia</em> · 3. Abre <em>Kit</em> en el menú de abajo.</p>
         <a href="${WHATSAPP_PURCHASE_LINK}" class="welcome-banner-wa" target="_blank" rel="noopener noreferrer">¿Necesitas ayuda? Escríbenos por WhatsApp</a>
       </div>
       <button type="button" class="welcome-banner-close" id="welcome-banner-close" aria-label="Cerrar">×</button>
@@ -277,6 +303,7 @@ watchAuth(async (user) => {
 
   const profile = await resolveUserProfile(user);
   kitUnlocked = hasKitAccess(profile, user);
+  userIsAdmin = await isUserAdmin(user, profile);
   if (profile?.hasPremium) localStorage.setItem(PREMIUM_STORAGE_KEY, '1');
 
   currentUser = {
@@ -318,7 +345,7 @@ function openDrawer() {
 
 function renderTopbarBadge() {
   const r = currentResults;
-  if (activeView === 'calc') {
+  if (activeView === 'calc' || activeView === 'home') {
     return `
       <button type="button" class="topbar-badge ${r.status}" id="topbar-badge" data-view="results" title="Ver resultados">
         <span class="topbar-badge-val">${money(r.profitPerUnit)}</span>
@@ -332,10 +359,41 @@ function renderTopbarBadge() {
   return '';
 }
 
+function renderTopbarActions() {
+  const badge = renderTopbarBadge();
+  const adminBtn = userIsAdmin
+    ? `<a href="/admin" class="topbar-admin-btn" title="Panel admin" aria-label="Panel admin">${ICONS.settings}</a>`
+    : '';
+  if (!adminBtn && !badge) return '';
+  return `<div class="topbar-actions">${adminBtn}${badge}</div>`;
+}
+
+function renderTopbarSub() {
+  if (activeView === 'calc') return inputMode === 'simple' ? 'Modo rápido' : 'Modo completo';
+  if (activeView === 'home') return 'Tu panel';
+  if (activeView === 'profile') return 'Ajustes';
+  if (activeView === 'kit') {
+    const labels = { recetas: 'Recetas', archivos: 'Archivos', vender: 'Vender' };
+    return labels[kitHubTab] || '';
+  }
+  return '';
+}
+
 function readViewFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const view = params.get('view');
-  if (view && VIEW_META[view]) activeView = view;
+  if (view === 'bonus') {
+    activeView = 'kit';
+    kitHubTab = 'recetas';
+  } else if (view === 'files') {
+    activeView = 'kit';
+    kitHubTab = 'archivos';
+  } else if (view === 'account') {
+    activeView = 'kit';
+    kitHubTab = 'vender';
+  } else if (view && VIEW_META[view]) {
+    activeView = view;
+  }
   if (params.has('view')) {
     params.delete('view');
     const qs = params.toString();
@@ -343,23 +401,33 @@ function readViewFromUrl() {
   }
 }
 
-function viewLockSuffix(id) {
-  if ((id === 'bonus' || id === 'account' || id === 'files') && !hasKitContentAccess()) return ' 🔒';
-  return '';
+function getDrawerUserName() {
+  return currentUser.displayName || getLocalDisplayName(currentUser.uid) || getUserLabel(currentUser);
+}
+
+function getDrawerUserInitial() {
+  return (getDrawerUserName() || currentUser.email || '?').charAt(0).toUpperCase();
+}
+
+async function signOutToLanding() {
+  await logout();
+  window.location.href = '/';
 }
 
 function renderDrawer() {
-  const navItems = Object.entries(VIEW_META)
-    .map(([id, meta]) => {
+  const drawerOrder = ['home', 'calc', 'kit', 'results', 'profile'];
+  const navItems = drawerOrder
+    .map((id) => {
+      const meta = VIEW_META[id];
+      if (!meta) return '';
       const badge =
         id === 'results' && currentResults.status
           ? `<span class="drawer-badge ${currentResults.status}"></span>`
           : '';
-          const lock = viewLockSuffix(id);
-          return `
+      return `
         <button type="button" class="drawer-link ${activeView === id ? 'active' : ''}" data-view="${id}">
           <span class="drawer-link-icon">${ICONS[meta.icon]}</span>
-          <span class="drawer-link-text">${meta.label}${lock}</span>
+          <span class="drawer-link-text">${meta.label}</span>
           ${badge}
         </button>
       `;
@@ -370,7 +438,7 @@ function renderDrawer() {
     <div class="drawer-overlay ${drawerOpen ? 'open' : ''}" data-drawer-close aria-hidden="true"></div>
     <aside class="app-drawer ${drawerOpen ? 'open' : ''}" aria-label="Menu principal">
       <div class="drawer-head">
-        <div class="drawer-brand">${BRAND_LOGO}<div><strong>Paletas de WhatsApp</strong><small>${escapeHtml(getUserLabel(currentUser))}</small></div></div>
+        <div class="drawer-brand">${BRAND_LOGO}<strong>${escapeHtml(BRAND_NAME)}</strong></div>
         <button type="button" class="icon-btn" data-drawer-close aria-label="Cerrar menú">${ICONS.close}</button>
       </div>
       <div class="drawer-summary ${currentResults.status}">
@@ -380,14 +448,81 @@ function renderDrawer() {
       </div>
       <nav class="drawer-nav">${navItems}</nav>
       <div class="drawer-foot">
-        <span class="drawer-mode">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}${canCloudSync() ? ' · nube' : ''}</span>
-        <a href="/" class="drawer-home drawer-home-muted">${ICONS.home}<span>Página de venta</span></a>
-        <button type="button" class="drawer-link drawer-logout" id="drawer-logout">
-          <span class="drawer-link-icon">${ICONS.logOut}</span>
-          <span>Salir</span>
-        </button>
+        <div class="drawer-user">
+          <button type="button" class="drawer-user-profile" data-view="profile">
+            <span class="drawer-user-avatar" aria-hidden="true">${escapeHtml(getDrawerUserInitial())}</span>
+            <span class="drawer-user-meta">
+              <span class="drawer-user-name">${escapeHtml(getDrawerUserName())}</span>
+              <span class="drawer-user-email">${escapeHtml(currentUser.email || '')}</span>
+            </span>
+            <span class="drawer-user-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
+          </button>
+          <button type="button" class="drawer-user-exit" id="drawer-logout">
+            ${ICONS.logOut}<span>Salir</span>
+          </button>
+        </div>
       </div>
     </aside>
+  `;
+}
+
+function renderTabBar() {
+  return `
+    <nav class="app-tabbar" aria-label="Navegación principal">
+      ${TAB_VIEWS.map((id) => {
+        const meta = VIEW_META[id];
+        const isKitActive = id === 'kit' && activeView === 'kit';
+        const isActive = activeView === id || isKitActive;
+        return `
+          <button type="button" class="tab-btn ${isActive ? 'active' : ''}" data-view="${id}">
+            <span class="tab-icon">${ICONS[meta.icon]}</span>
+            <span class="tab-label">${meta.label}</span>
+          </button>
+        `;
+      }).join('')}
+    </nav>
+  `;
+}
+
+const KIT_HUB_TABS = [
+  { id: 'recetas', label: 'Recetas', icon: 'book' },
+  { id: 'archivos', label: 'Archivos', icon: 'folder' },
+  { id: 'vender', label: 'Vender', icon: 'message' },
+];
+
+function renderKitHubNav() {
+  return `
+    <div class="kit-hub-nav" role="tablist" aria-label="Secciones del kit">
+      ${KIT_HUB_TABS.map(
+        (tab) => `
+        <button type="button" role="tab" class="kit-hub-btn ${kitHubTab === tab.id ? 'active' : ''}" data-kit-hub="${tab.id}" aria-selected="${kitHubTab === tab.id}">
+          <span class="kit-hub-icon">${ICONS[tab.icon]}</span>
+          <span>${tab.label}</span>
+        </button>
+      `
+      ).join('')}
+    </div>
+  `;
+}
+
+function renderKit() {
+  let body = '';
+  switch (kitHubTab) {
+    case 'archivos':
+      body = renderFiles();
+      break;
+    case 'vender':
+      body = renderAccount();
+      break;
+    default:
+      body = renderBonus();
+  }
+
+  return `
+    <div class="kit-hub-page">
+      ${renderKitHubNav()}
+      <div class="kit-hub-body">${body}</div>
+    </div>
   `;
 }
 
@@ -478,20 +613,148 @@ function renderCalcFooter() {
   `;
 }
 
+function renderHome() {
+  const r = currentResults;
+  const name = escapeHtml(currentUser.displayName || getLocalDisplayName(currentUser.uid) || 'emprendedor/a');
+  const statusLabel =
+    r.status === 'prejuizo'
+      ? 'Revisa tu precio — estás perdiendo'
+      : r.status === 'alerta'
+        ? 'Puedes mejorar tu margen'
+        : '¡Tus paletas están dando ganancia!';
+
+  const quickLinks = [
+    { id: 'calc', icon: 'calc', label: 'Calcular precio', desc: 'Modo rápido o completo' },
+    { id: 'results', icon: 'chart', label: 'Ver ganancia', desc: `${money(r.profitPerUnit)} por paleta` },
+    { id: 'kit', kitHub: 'recetas', icon: 'book', label: 'Recetas', desc: 'Sabores y combos' },
+    { id: 'kit', kitHub: 'archivos', icon: 'folder', label: 'Archivos', desc: 'PDFs y plantillas' },
+    { id: 'kit', kitHub: 'vender', icon: 'message', label: 'Vender', desc: 'Mensajes WhatsApp' },
+  ];
+
+  return `
+    <div class="home-page">
+      ${renderKitPendingBanner()}
+      ${renderPostPurchaseBanner()}
+
+      <div class="home-hero ${r.status}">
+        <p class="home-greeting">Hola, <strong>${name}</strong></p>
+        <div class="home-hero-stats">
+          <div class="home-stat">
+            <span>Ganancia/un</span>
+            <strong>${money(r.profitPerUnit)}</strong>
+          </div>
+          <div class="home-stat">
+            <span>Margen</span>
+            <strong>${percent(r.margin)}</strong>
+          </div>
+        </div>
+        <p class="home-hero-status">${statusLabel}</p>
+        <button type="button" class="btn btn-primary btn-block home-cta" data-view="calc">
+          ${ICONS.calc}<span>Calcular mi precio</span>
+        </button>
+      </div>
+
+      <h2 class="home-section-title">Accesos rápidos</h2>
+      <div class="home-grid">
+        ${quickLinks
+          .map(
+            (link) => `
+          <button type="button" class="home-tile" data-view="${link.id}"${link.kitHub ? ` data-kit-hub="${link.kitHub}"` : ''}>
+            <span class="home-tile-icon">${ICONS[link.icon]}</span>
+            <span class="home-tile-text">
+              <strong>${link.label}</strong>
+              <em>${link.desc}</em>
+            </span>
+            <span class="home-tile-arrow">${ICONS.chevronRight}</span>
+          </button>
+        `
+          )
+          .join('')}
+      </div>
+
+      ${
+        !kitUnlocked
+          ? `
+        <div class="home-notice">
+          <p>Tu kit se activa en breve. Mientras tanto, usa la calculadora gratis.</p>
+        </div>
+      `
+          : ''
+      }
+    </div>
+  `;
+}
+
+function renderProfile() {
+  const displayName = currentUser.displayName || getLocalDisplayName(currentUser.uid) || '';
+  const initial = (displayName || currentUser.email || '?').charAt(0).toUpperCase();
+  const currencyOptions = CURRENCIES.map(
+    (c) =>
+      `<option value="${c.code}" ${c.code === getCurrencyCode() ? 'selected' : ''}>${escapeHtml(c.label)} (${c.symbol})</option>`
+  ).join('');
+
+  return `
+    <div class="profile-page">
+      <div class="profile-hero">
+        <div class="profile-avatar" aria-hidden="true">${escapeHtml(initial)}</div>
+        <p class="profile-email">${escapeHtml(currentUser.email || '')}</p>
+        ${
+          kitUnlocked
+            ? '<span class="profile-badge">Kit activo</span>'
+            : '<span class="profile-badge pending">Acceso pendiente</span>'
+        }
+      </div>
+
+      <form id="profile-form" class="profile-form section-card">
+        <div class="field">
+          <label for="profile-name">Tu nombre</label>
+          <input id="profile-name" name="name" type="text" value="${escapeHtml(displayName)}" placeholder="Ej: María" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="profile-currency">Moneda</label>
+          <select id="profile-currency" name="currency">${currencyOptions}</select>
+          <span class="field-hint">Afecta calculadora y resultados</span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">${ICONS.check}<span>Guardar cambios</span></button>
+      </form>
+
+      <div class="profile-actions section-card">
+        ${
+          userIsAdmin
+            ? `<a href="/admin" class="btn btn-secondary btn-block admin-link">${ICONS.settings}<span>Panel admin</span></a>`
+            : ''
+        }
+        <button type="button" id="install-pwa" class="btn btn-secondary btn-block">
+          ${ICONS.plus}<span>Instalar en pantalla inicio</span>
+        </button>
+        <button type="button" id="profile-logout" class="btn btn-ghost btn-block btn-danger-text">
+          ${ICONS.logOut}<span>Cerrar sesión</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 function renderActiveView() {
   switch (activeView) {
+    case 'home':
+      return renderHome();
     case 'calc':
       return `${renderKitPendingBanner()}${renderPostPurchaseBanner()}${renderCalculatorForm()}`;
     case 'results':
       return `${renderKitPendingBanner()}${renderResults()}`;
+    case 'kit':
+      return renderKit();
     case 'bonus':
       return renderBonus();
     case 'account':
       return renderAccount();
     case 'files':
       return renderFiles();
+    case 'profile':
+      return renderProfile();
     default:
-      return '';
+      return renderHome();
   }
 }
 
@@ -549,22 +812,33 @@ function renderFiles() {
   `;
 }
 
+function formatWhatsAppMessage(text) {
+  return String(text || '').replace(/🍭/g, BRAND_EMOJI);
+}
+
+function renderTopbarCenter() {
+  return `
+    <button type="button" class="topbar-center" data-view="home" aria-label="Ir al inicio">
+      <span class="topbar-brand">
+        <img src="/favicon.svg?v=3" width="22" height="22" alt="" class="topbar-brand-icon" decoding="async">
+        <span class="topbar-brand-text">${escapeHtml(BRAND_NAME)}</span>
+      </span>
+    </button>
+  `;
+}
+
 function render() {
-  const viewTitle = VIEW_META[activeView]?.label || 'App';
-  const shellClass = ['app-shell', activeView === 'calc' ? 'has-calc-footer' : ''].filter(Boolean).join(' ');
+  const shellClass = ['app-shell', 'has-tabbar', activeView === 'calc' ? 'has-calc-footer' : '']
+    .filter(Boolean)
+    .join(' ');
 
   root.innerHTML = `
     <div class="${shellClass}">
       ${renderDrawer()}
       <header class="app-topbar">
         <button type="button" class="icon-btn menu-btn" id="menu-toggle" aria-label="Abrir menú">${ICONS.menu}</button>
-        <div class="topbar-center">
-          <div class="topbar-titles">
-            <h1 class="topbar-title">${viewTitle}</h1>
-            <p class="topbar-sub">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}</p>
-          </div>
-        </div>
-        ${renderTopbarBadge()}
+        ${renderTopbarCenter()}
+        ${renderTopbarActions()}
       </header>
 
       <main class="app-content">
@@ -572,6 +846,7 @@ function render() {
       </main>
 
       ${renderCalcFooter()}
+      ${renderTabBar()}
     </div>
   `;
 
@@ -591,11 +866,12 @@ function fieldGroup(title, desc, fieldsHtml) {
 }
 
 function moneyField(id, name, label, value, hint = '') {
+  const sym = getCurrencySymbol();
   return `
     <div class="field">
       <label for="${id}">${label}</label>
       <div class="input-wrap">
-        <span class="input-prefix">US$</span>
+        <span class="input-prefix">${sym}</span>
         <input id="${id}" name="${name}" inputmode="decimal" value="${value}">
       </div>
       ${hint ? `<span class="field-hint">${hint}</span>` : ''}
@@ -911,13 +1187,13 @@ function renderResults() {
 
       <div class="price-action">
         <div class="price-action-card ideal">
-          <span>Precio sugerido</span>
+          <span class="card-label">Precio sugerido</span>
           <strong>${money(r.idealPrice)}</strong>
           <em>Meta ${percent(Math.min(target, 80))} de margen</em>
           <button type="button" class="btn btn-sm btn-ideal" id="apply-ideal-price">${ICONS.check}<span>Aplicar este precio</span></button>
         </div>
         <div class="price-action-card">
-          <span>Precio mínimo</span>
+          <span class="card-label">Precio mínimo</span>
           <strong>${money(r.minPrice)}</strong>
           <em>Debajo de esto = pérdida</em>
         </div>
@@ -1041,10 +1317,19 @@ function renderMenuByWeek(recipes = RECETAS_PALETAS) {
   }
 
   return weeks
-    .map(
-      (week, wi) => `
-        <details class="menu-week" ${wi === 0 ? 'open' : ''}>
-          <summary>Semana ${wi + 1}${week[0].dia ? ` · Días ${week[0].dia}–${week[week.length - 1].dia}` : ''}</summary>
+    .map((week, wi) => {
+      const dayRange =
+        week[0].dia && week[week.length - 1].dia
+          ? ` · Días ${week[0].dia}–${week[week.length - 1].dia}`
+          : '';
+      const countLabel = `${week.length} receta${week.length === 1 ? '' : 's'}`;
+
+      return `
+        <details class="menu-week">
+          <summary>
+            <span class="menu-week-title">Semana ${wi + 1}${dayRange}</span>
+            <span class="menu-week-meta">${countLabel}</span>
+          </summary>
           <div class="menu-week-body">
             ${week
               .map((item) =>
@@ -1053,9 +1338,21 @@ function renderMenuByWeek(recipes = RECETAS_PALETAS) {
               .join('')}
           </div>
         </details>
-      `
-    )
+      `;
+    })
     .join('');
+}
+
+function renderRecipeListTools(recipeCount) {
+  return `
+    <div class="menu-list-tools">
+      <p class="menu-list-count" id="menu-list-count">${recipeCount} recetas · toca una semana para ver</p>
+      <div class="menu-list-actions">
+        <button type="button" class="menu-list-action" id="menu-expand-all">Abrir todo</button>
+        <button type="button" class="menu-list-action" id="menu-collapse-all">Cerrar</button>
+      </div>
+    </div>
+  `;
 }
 
 function renderRecipeCatalogToggle() {
@@ -1103,7 +1400,15 @@ function renderBonus() {
     `;
   } else {
     const recipes = isPremium ? RECETAS_PREMIUM : RECETAS_PALETAS;
-    listHtml = `<div class="menu-list" id="menu-list">${renderMenuByWeek(recipes)}</div>
+    listHtml = `
+      ${!isPremium ? `
+        <div class="recipe-plan-tip">
+          <strong>Plan de 30 días</strong>
+          <p>Una receta por día, organizada por semana. Abre solo la semana en la que estás produciendo.</p>
+        </div>
+      ` : ''}
+      ${renderRecipeListTools(recipes.length)}
+      <div class="menu-list" id="menu-list">${renderMenuByWeek(recipes)}</div>
       <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada.</p>`;
   }
 
@@ -1114,7 +1419,7 @@ function renderBonus() {
         <p>${desc}</p>
         ${renderRecipeCatalogToggle()}
         ${!isPremium || hasPremiumAccess() ? renderRecipeFilterBar() : ''}
-        <p class="bonus-hint">Toca una receta para ver la preparación completa.</p>
+        <p class="bonus-hint">Busca por sabor o filtra por tipo. Toca una receta para ver ingredientes y pasos.</p>
         <div class="search-wrap">
           ${ICONS.search}
           <input type="search" class="bonus-search" id="bonus-search" placeholder="Buscar receta o tipo..." autocomplete="off">
@@ -1219,12 +1524,12 @@ function renderMensajesWhatsApp() {
               .map(
                 (msg) => `
                   <li class="message-item">
-                    <p>${escapeHtml(msg.texto)}</p>
+                    <p>${escapeHtml(formatWhatsAppMessage(msg.texto))}</p>
                     <div class="message-actions">
                       <button type="button" class="btn btn-sm btn-secondary copy-msg" data-copy-index="${msg.idx}">
                         ${ICONS.copy}<span>Copiar</span>
                       </button>
-                      <a href="${whatsAppShareUrl(msg.texto)}" class="btn btn-sm btn-wa share-msg" target="_blank" rel="noopener noreferrer" data-share-index="${msg.idx}">
+                      <a href="${whatsAppShareUrl(formatWhatsAppMessage(msg.texto))}" class="btn btn-sm btn-wa share-msg" target="_blank" rel="noopener noreferrer" data-share-index="${msg.idx}">
                         ${ICONS.message}<span>Publicar</span>
                       </a>
                     </div>
@@ -1384,7 +1689,7 @@ function renderKitArchivos() {
         <li><a href="/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf" download>Plan 7 días</a></li>
         <li><a href="/paletas-de-whatsapp/produto/Checklist_Paletas.pdf" download>Checklist</a></li>
       </ul>
-      <button type="button" class="btn btn-secondary btn-sm" data-view="files" style="margin-top:12px">Ver todos los archivos →</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-view="kit" data-kit-hub="archivos" style="margin-top:12px">Ver todos los archivos →</button>
     </div>
     ${hasPremiumAccess() ? `
       <div class="section-card">
@@ -1542,6 +1847,9 @@ function navigateTo(view) {
   if (view !== activeView) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  if (view === 'kit' && !['recetas', 'archivos', 'vender'].includes(kitHubTab)) {
+    kitHubTab = 'recetas';
+  }
   activeView = view;
   closeDrawer();
   render();
@@ -1552,9 +1860,30 @@ function bindEvents() {
 
   document.getElementById('menu-toggle')?.addEventListener('click', openDrawer);
 
-  document.getElementById('drawer-logout')?.addEventListener('click', async () => {
-    await logout();
-    window.location.href = '/login';
+  document.getElementById('drawer-logout')?.addEventListener('click', signOutToLanding);
+
+  document.getElementById('profile-form')?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const name = document.getElementById('profile-name')?.value ?? '';
+    const currency = document.getElementById('profile-currency')?.value ?? 'USD';
+    const saved = await saveDisplayName(currentUser, name);
+    if (saved) currentUser.displayName = saved;
+    setCurrencyCode(currency);
+    showToast('Perfil actualizado');
+    render();
+  });
+
+  document.getElementById('profile-logout')?.addEventListener('click', signOutToLanding);
+
+  document.getElementById('install-pwa')?.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) {
+      showToast('En Chrome: menú ⋮ → Instalar app o Añadir a inicio');
+      return;
+    }
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    if (outcome === 'accepted') showToast('¡App instalada!');
   });
 
   root.querySelectorAll('.file-row.locked').forEach((el) => {
@@ -1569,7 +1898,19 @@ function bindEvents() {
   });
 
   root.querySelectorAll('[data-view]').forEach((el) => {
-    el.addEventListener('click', () => navigateTo(el.dataset.view));
+    el.addEventListener('click', () => {
+      if (el.dataset.kitHub) kitHubTab = el.dataset.kitHub;
+      navigateTo(el.dataset.view);
+    });
+  });
+
+  root.querySelectorAll('[data-kit-hub]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      kitHubTab = btn.dataset.kitHub;
+      if (activeView !== 'kit') activeView = 'kit';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      render();
+    });
   });
 
   root.querySelectorAll('[data-mode]').forEach((btn) => {
@@ -1664,6 +2005,7 @@ function bindEvents() {
   if (bonusSearch) {
     const applyRecipeFilters = () => {
       const q = bonusSearch.value.trim().toLowerCase();
+      const isFiltering = Boolean(q) || recipeFilter !== 'all';
       let visible = 0;
       document.querySelectorAll('#menu-list .menu-item').forEach((item) => {
         const tipoOk = recipeFilter === 'all' || item.dataset.tipo === recipeFilter;
@@ -1673,16 +2015,44 @@ function bindEvents() {
         if (show) visible += 1;
       });
       document.querySelectorAll('#menu-list .menu-week').forEach((week) => {
-        const hasVisible = [...week.querySelectorAll('.menu-item')].some((i) => i.style.display !== 'none');
+        const visibleItems = [...week.querySelectorAll('.menu-item')].filter(
+          (i) => i.style.display !== 'none'
+        );
+        const hasVisible = visibleItems.length > 0;
         week.style.display = hasVisible ? '' : 'none';
-        if (hasVisible) week.open = true;
+        if (isFiltering && hasVisible) {
+          week.open = true;
+        } else if (!isFiltering) {
+          week.open = false;
+        }
       });
+      const countEl = document.getElementById('menu-list-count');
+      if (countEl) {
+        countEl.textContent = isFiltering
+          ? `${visible} receta${visible === 1 ? '' : 's'} encontrada${visible === 1 ? '' : 's'}`
+          : `${document.querySelectorAll('#menu-list .menu-item').length} recetas · toca una semana para ver`;
+      }
       document.getElementById('menu-empty')?.classList.toggle('hidden', visible > 0);
     };
 
     bonusSearch.addEventListener('input', applyRecipeFilters);
     applyRecipeFilters();
   }
+
+  document.getElementById('menu-expand-all')?.addEventListener('click', () => {
+    document.querySelectorAll('#menu-list .menu-week').forEach((week) => {
+      if (week.style.display !== 'none') week.open = true;
+    });
+  });
+
+  document.getElementById('menu-collapse-all')?.addEventListener('click', () => {
+    document.querySelectorAll('#menu-list .menu-week').forEach((week) => {
+      week.open = false;
+    });
+    document.querySelectorAll('#menu-list .menu-item').forEach((item) => {
+      item.open = false;
+    });
+  });
 
   root.querySelectorAll('[data-recipe-filter]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -1755,7 +2125,7 @@ function bindEvents() {
   root.querySelectorAll('.copy-msg').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = parseNumber(btn.dataset.copyIndex);
-      const text = MENSAJES_WHATSAPP[idx]?.texto;
+      const text = formatWhatsAppMessage(MENSAJES_WHATSAPP[idx]?.texto);
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);

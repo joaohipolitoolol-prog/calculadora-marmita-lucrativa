@@ -216,7 +216,7 @@ h3 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 55%, var(--orange-dark) 100%);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
   color: var(--white);
   padding: 16px 28px;
   box-shadow: 0 6px 24px rgba(232, 67, 122, 0.35);
@@ -257,7 +257,7 @@ h3 {
 }
 
 .hero-price-bar {
-  background: linear-gradient(135deg, var(--pink) 0%, var(--orange) 100%);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
   color: var(--white);
   padding: 12px 0;
   box-shadow: 0 8px 24px rgba(232, 67, 122, 0.22);
@@ -611,9 +611,9 @@ h3 {
 .hero {
   background:
     radial-gradient(circle at 92% 6%, rgba(232, 67, 122, 0.16) 0%, transparent 40%),
-    radial-gradient(circle at 6% 88%, rgba(245, 180, 35, 0.14) 0%, transparent 38%),
-    radial-gradient(circle at 50% 50%, rgba(244, 132, 42, 0.08) 0%, transparent 55%),
-    linear-gradient(165deg, var(--pink-light) 0%, var(--cream) 72%);
+    radial-gradient(circle at 6% 88%, rgba(240, 77, 130, 0.12) 0%, transparent 38%),
+    radial-gradient(circle at 50% 50%, rgba(232, 67, 122, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, var(--pink-light) 0%, var(--cream) 72%);
   padding: 18px 0 10px;
   text-align: center;
 }
@@ -1386,7 +1386,7 @@ h3 {
 
 .pain-icon--price {
   background: var(--orange-light);
-  border-color: rgba(244, 132, 42, 0.22);
+  border-color: rgba(232, 67, 122, 0.22);
   color: var(--orange-dark);
 }
 
@@ -1576,7 +1576,7 @@ h3 {
 
 /* ===== Bonus stack ===== */
 .bonus-stack {
-  background: linear-gradient(180deg, var(--yellow-soft) 0%, var(--cream) 100%);
+  background: linear-gradient(180deg, var(--pink-light) 0%, var(--cream) 100%);
   text-align: center;
 }
 
@@ -1887,7 +1887,7 @@ h3 {
 
 /* ===== Offer ===== */
 .offer {
-  background: linear-gradient(180deg, var(--pink-light) 0%, var(--orange-light) 55%, var(--cream) 100%);
+  background: linear-gradient(180deg, var(--pink-light) 0%, var(--pink-soft) 55%, var(--cream) 100%);
   padding: 24px 0;
 }
 
@@ -1988,7 +1988,7 @@ h3 {
 }
 
 .price-box {
-  background: linear-gradient(135deg, var(--pink-light) 0%, var(--orange-light) 100%);
+  background: linear-gradient(135deg, var(--pink-light) 0%, var(--pink-soft) 100%);
   border-radius: var(--radius);
   padding: 18px 16px;
   margin-bottom: 16px;
@@ -2246,7 +2246,7 @@ h3 {
 }
 
 .turnaround-box {
-  background: linear-gradient(135deg, var(--pink-light) 0%, var(--yellow-soft) 100%);
+  background: linear-gradient(135deg, var(--pink-light) 0%, var(--pink-soft) 100%);
   border: 1.5px solid rgba(232, 67, 122, 0.18);
   border-radius: var(--radius);
   padding: 24px 20px;

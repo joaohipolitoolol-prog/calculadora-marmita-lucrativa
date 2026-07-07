@@ -7,6 +7,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         login: resolve(__dirname, 'login.html'),
+        cadastrar: resolve(__dirname, 'cadastrar.html'),
         app: resolve(__dirname, 'app.html'),
         membros: resolve(__dirname, 'membros.html'),
         upsell: resolve(__dirname, 'upsell-paletas-premium.html'),

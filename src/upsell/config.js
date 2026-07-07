@@ -6,15 +6,15 @@ import { SITE_URL } from '../site/config.js';
  * FLUJO (URLs relativas — funcionan en paletasparawhatsapp.vercel.app):
  * 1. Compra kit → upsell
  * 2. Acepta → checkout Kiwify
- * 3. Rechaza → /login?compra=1
- * 4. Compra upsell → /login?compra=1&premium=1
+ * 3. Rechaza → /cadastrar?compra=1
+ * 4. Compra upsell → /cadastrar?compra=1&premium=1
  */
 
 export const UPSELL_CHECKOUT_URL = 'https://pay.kiwify.com/XblcKD0';
 
 /** Rutas relativas — siempre en el dominio actual */
-export const ACCESS_URL = '/login?compra=1';
-export const UPSELL_POST_PURCHASE_URL = '/login?compra=1&premium=1';
+export const ACCESS_URL = '/cadastrar?compra=1';
+export const UPSELL_POST_PURCHASE_URL = '/cadastrar?compra=1&premium=1';
 
 export const UPSELL_CURRENCY = 'USD';
 export const UPSELL_PRICE_USD = 12;

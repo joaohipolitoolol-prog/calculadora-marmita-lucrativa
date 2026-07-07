@@ -1,9 +1,6 @@
-import { BRAND_NAME } from '../site/brand.js';
-
-/** Marca única — morango (favicon + app + PWA) */
-export const LOGO_VIEWBOX = '0 0 32 32';
-
-export const LOGO_MARK_PATHS = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Paletas para WhatsApp">
+  <rect width="512" height="512" rx="113" fill="#FFF6F9"/>
+  <g transform="translate(97.28 97.28) scale(9.92)">
   <defs>
     <linearGradient id="berry" x1="16" y1="8" x2="16" y2="28" gradientUnits="userSpaceOnUse">
       <stop stop-color="#FF5A8A"/>
@@ -27,27 +24,5 @@ export const LOGO_MARK_PATHS = `
   <ellipse cx="11.5" cy="18.5" rx=".8" ry="1" fill="#FFE8F0" opacity=".85"/>
   <ellipse cx="21" cy="18" rx=".8" ry="1" fill="#FFD0E0" opacity=".85"/>
   <path d="M10 12.5c3.5-1.2 8.5-1.2 12 0" stroke="#fff" stroke-width=".6" stroke-linecap="round" opacity=".28" fill="none"/>
-`;
-
-export const BRAND_EMOJI = '🍓';
-
-export function logoMarkSvg({ width = 32, height = 32, ariaHidden = true, className = '' } = {}) {
-  const a11y = ariaHidden
-    ? 'aria-hidden="true"'
-    : `role="img" aria-label="${BRAND_NAME}"`;
-  const cls = className ? ` class="${className}"` : '';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}" width="${width}" height="${height}" ${a11y}${cls}>${LOGO_MARK_PATHS}</svg>`;
-}
-
-export function logoMarkFaviconDoc() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}" role="img" aria-label="${BRAND_NAME}">${LOGO_MARK_PATHS}\n</svg>\n`;
-}
-
-export function logoMaskableSvg({ size = 512, background = '#FFF6F9' } = {}) {
-  const pad = (size - size * 0.62) / 2;
-  const scale = (size * 0.62) / 32;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" role="img" aria-label="${BRAND_NAME}">
-  <rect width="${size}" height="${size}" rx="${Math.round(size * 0.22)}" fill="${background}"/>
-  <g transform="translate(${pad} ${pad}) scale(${scale})">${LOGO_MARK_PATHS}</g>
-</svg>`;
-}
+</g>
+</svg>

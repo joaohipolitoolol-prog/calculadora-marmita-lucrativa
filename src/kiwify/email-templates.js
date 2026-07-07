@@ -1,28 +1,29 @@
 import {
-  LOGIN_PATH,
-  MEMBERS_PATH,
   POST_PURCHASE_UPSELL_URL,
+  REGISTER_PATH,
+  MEMBERS_PATH,
   SITE_URL,
   UPSELL_PATH,
 } from '../site/config.js';
+import { BRAND_KIT, BRAND_NAME } from '../site/brand.js';
 
 /** URLs para colar na Kiwify — página de obrigado e emails */
 export const KIWIFY_URLS = {
-  accessShort: `${SITE_URL}${LOGIN_PATH}?compra=1`,
-  accessPremiumShort: `${SITE_URL}${LOGIN_PATH}?compra=1&premium=1`,
-  loginKit: `${SITE_URL}${LOGIN_PATH}?compra=1`,
-  loginPremium: `${SITE_URL}${LOGIN_PATH}?compra=1&premium=1`,
+  accessShort: `${SITE_URL}${REGISTER_PATH}?compra=1`,
+  accessPremiumShort: `${SITE_URL}${REGISTER_PATH}?compra=1&premium=1`,
+  loginKit: `${SITE_URL}${REGISTER_PATH}?compra=1`,
+  loginPremium: `${SITE_URL}${REGISTER_PATH}?compra=1&premium=1`,
   membros: `${SITE_URL}/app?view=files`,
   upsell: POST_PURCHASE_UPSELL_URL,
   upsellPath: `${SITE_URL}${UPSELL_PATH}`,
 };
 
 export const KIWIFY_EMAIL_KIT = {
-  subject: 'Tu Kit Paletas de WhatsApp está listo 🍓',
+  subject: `Tu ${BRAND_KIT} está listo 🍓`,
   preheader: 'Crea tu cuenta y accede al kit en minutos.',
   plain: `¡Hola!
 
-Gracias por tu compra del Kit Paletas de WhatsApp.
+Gracias por tu compra del ${BRAND_KIT}.
 
 PASO 1 — Crea tu cuenta (2 minutos)
 ${KIWIFY_URLS.accessShort}
@@ -42,7 +43,7 @@ Ahí encontrarás PDFs, calculadora, recetas y mensajes para WhatsApp.
 
 ¿Dudas con el acceso? Responde a este correo con tu email de compra.
 
-— Paletas de WhatsApp
+— ${BRAND_NAME}
 Prepara · Calcula · Publica`,
 };
 
@@ -62,7 +63,7 @@ Dentro del área de miembros encontrarás los PDFs premium y en la app:
 
 Si aún no creaste tu cuenta del kit principal, el enlace de arriba activa todo junto.
 
-— Paletas de WhatsApp`,
+— ${BRAND_NAME}`,
 };
 
 export function kiwifyKitEmailHtml() {
