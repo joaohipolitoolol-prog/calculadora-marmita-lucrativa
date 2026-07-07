@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /paletas-de-whatsapp/
+Disallow: /paletas-premium/
+Disallow: /app
+Disallow: /admin
+Disallow: /login
+Disallow: /cadastrar
+Disallow: /acesso
+Disallow: /membros
+
+Sitemap: https://paletasparawhatsapp.vercel.app/sitemap.xml
