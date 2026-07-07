@@ -32,6 +32,14 @@ export function getWhatsAppLink(message = WHATSAPP_PURCHASE_MESSAGE) {
 
 export const WHATSAPP_PURCHASE_LINK = getWhatsAppLink();
 
+export const WHATSAPP_SUPPORT_MESSAGE = `¡Hola! 👋 Acabo de comprar el Kit Paletas de WhatsApp y necesito ayuda para crear mi cuenta o acceder al kit.
+
+📧 Mi correo de compra: [escribe tu correo]
+
+Gracias 🍓`;
+
+export const WHATSAPP_SUPPORT_LINK = getWhatsAppLink(WHATSAPP_SUPPORT_MESSAGE);
+
 export const PRODUCT_ICON = '/favicon.svg';
 
 export const META_PIXEL_ID = '1369803401885896';

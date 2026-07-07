@@ -1,4 +1,5 @@
 import { isFirebaseConfigured } from '../lib/firebase.js';
+import { WHATSAPP_SUPPORT_LINK } from '../landing/config.js';
 import {
   login,
   register,
@@ -15,6 +16,11 @@ const panels = document.querySelectorAll('.panel');
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const forgotBtn = document.getElementById('forgot-btn');
+const registerWaSupport = document.getElementById('register-wa-support');
+
+if (registerWaSupport) {
+  registerWaSupport.href = WHATSAPP_SUPPORT_LINK;
+}
 
 const purchaseParams = new URLSearchParams(window.location.search);
 

@@ -226,6 +226,41 @@
 
 .auth-submit { width: 100%; margin-top: 4px; }
 
+.auth-register-help {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--gray-border);
+  text-align: center;
+}
+
+.auth-register-help-text {
+  font-size: 0.82rem;
+  color: var(--gray);
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+.btn-wa {
+  width: 100%;
+  gap: 10px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: var(--white);
+  padding: 13px 20px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(37, 140, 126, 0.28);
+}
+
+.btn-wa:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(37, 140, 126, 0.34);
+}
+
+.btn-wa-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
 .auth-links {
   margin-top: 16px;
   text-align: center;
