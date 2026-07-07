@@ -2204,16 +2204,56 @@ h3 {
   font-size: 0.76rem;
 }
 
-.seo-keywords {
-  margin-top: 14px;
-  font-size: 0.5rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.07);
-  letter-spacing: 0.2px;
-  max-width: 720px;
+.seo-tags {
+  margin-top: 16px;
+  max-width: 640px;
   margin-left: auto;
   margin-right: auto;
-  user-select: none;
+  text-align: left;
+}
+
+.seo-tags summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.38);
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.seo-tags summary::-webkit-details-marker {
+  display: none;
+}
+
+.seo-tags summary::after {
+  content: '+';
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.seo-tags[open] summary::after {
+  content: '−';
+}
+
+.seo-tags summary:hover {
+  color: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.seo-keywords {
+  margin-top: 12px;
+  font-size: 0.68rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.32);
+  letter-spacing: 0.1px;
 }
 
 .footer-login {
