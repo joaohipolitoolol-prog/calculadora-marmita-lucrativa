@@ -220,7 +220,11 @@ a { text-decoration: none; color: inherit; }
   font-size: 0.9rem;
   color: var(--gray);
   line-height: 1.55;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
+}
+
+.downsell-text + .downsell-text {
+  margin-bottom: 16px;
 }
 
 .downsell-price {

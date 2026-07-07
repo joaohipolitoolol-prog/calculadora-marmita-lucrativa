@@ -28,10 +28,10 @@ export const UPSELL_PRICE_LABEL =
   UPSELL_CURRENCY === 'BRL' ? `R$ ${UPSELL_PRICE_BRL}` : `US$ ${UPSELL_PRICE_USD}`;
 
 export const DOWNSELL_PRICE_USD = 9.97;
-export const DOWNSELL_PRICE_LABEL = 'US$ 9,97';
+export const DOWNSELL_PRICE_LABEL = 'US$9,97';
 
 export const UPSELL_NAME = 'Paletas Premium y Combos Rentables';
-export const UPSELL_CTA_LABEL = 'Sí, agregar Paletas Premium';
+export const UPSELL_CTA_LABEL = 'Sí, agregar por US$12';
 export const UPSELL_DECLINE_LABEL = 'No gracias, continuar al acceso del kit';
 
 /** Duración de la oferta única en la página de upsell (ms) */
