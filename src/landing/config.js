@@ -54,11 +54,11 @@ export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
-export const HERO_CTA_LABEL = 'Quiero mi Kit de Paletas';
+export const HERO_CTA_LABEL = 'Quiero preparar, calcular y publicar';
 
 export const CALC_CTA_LABEL = 'Quiero preparar, calcular y publicar';
 
-export const OFFER_CTA_LABEL = 'Quiero acceder al kit';
+export const OFFER_CTA_LABEL = 'Quiero acceder al kit completo';
 
 export const TRUST_CTA_LABEL = 'Quiero empezar con claridad';
 
