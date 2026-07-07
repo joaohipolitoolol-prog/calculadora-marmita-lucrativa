@@ -52,7 +52,7 @@ export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 5,97';
 
 export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
-export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp`;
+export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
 export const HERO_CTA_LABEL = 'Quiero mi Kit de Paletas';
 
