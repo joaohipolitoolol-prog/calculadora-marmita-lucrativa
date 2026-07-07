@@ -12,7 +12,7 @@ export const KIWIFY_URLS = {
   accessPremiumShort: `${SITE_URL}${LOGIN_PATH}?compra=1&premium=1`,
   loginKit: `${SITE_URL}${LOGIN_PATH}?compra=1`,
   loginPremium: `${SITE_URL}${LOGIN_PATH}?compra=1&premium=1`,
-  membros: `${SITE_URL}${MEMBERS_PATH}`,
+  membros: `${SITE_URL}/app?view=files`,
   upsell: POST_PURCHASE_UPSELL_URL,
   upsellPath: `${SITE_URL}${UPSELL_PATH}`,
 };

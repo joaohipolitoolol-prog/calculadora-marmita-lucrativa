@@ -2,7 +2,7 @@
 export const SITE_URL = 'https://paletasparawhatsapp.vercel.app';
 
 export const LOGIN_PATH = '/login';
-export const MEMBERS_PATH = '/membros';
+export const MEMBERS_PATH = '/app';
 export const APP_PATH = '/app';
 export const UPSELL_PATH = '/upsell-paletas-premium';
 

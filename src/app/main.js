@@ -13,7 +13,7 @@ import {
   readInputsFromForm,
 } from '../lib/calculator.js';
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
-import { redirectIfGuest, watchAuth } from '../lib/auth.js';
+import { logout, redirectIfGuest, watchAuth } from '../lib/auth.js';
 import { getUserProfile, hasKitAccess, resolveUserProfile } from '../lib/user-profile.js';
 import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
 import { UPSELL_CHECKOUT_URL, UPSELL_PRICE_LABEL, UPSELL_NAME } from '../upsell/config.js';
@@ -35,7 +35,7 @@ import {
   saveChecklistToCloud,
 } from '../lib/storage.js';
 import { canCloudSync } from '../lib/cloud-sync.js';
-import { ICONS, VIEW_META } from './icons.js';
+import { ICONS, VIEW_META, BRAND_LOGO } from './icons.js';
 import {
   clearOnboardingSeen,
   hasSeenOnboarding,
@@ -78,6 +78,67 @@ const RECIPE_FILTERS = [
   { id: 'rellena', label: 'Rellenas' },
   { id: 'postre', label: 'Postre' },
   { id: 'banada', label: 'Bañadas' },
+];
+
+const KIT_DOWNLOADS = [
+  {
+    href: '/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.pdf',
+    title: 'Kit Principal',
+    desc: '30 recetas + guía completa del método 3P',
+    tag: 'Empezar aquí',
+    icon: '📘',
+    accent: '#ff4f8b',
+    featured: true,
+    download: true,
+  },
+  {
+    href: '/paletas-de-whatsapp/produto/Calculadora_Precios_Paletas.xlsx',
+    title: 'Calculadora Excel',
+    desc: 'Compatible con Google Sheets',
+    icon: '📊',
+    accent: '#ff7a1a',
+    download: true,
+  },
+  {
+    href: '/paletas-de-whatsapp/produto/Menu_Editable_Paletas.html',
+    title: 'Menú editable',
+    desc: 'Copia directo a WhatsApp',
+    icon: '📋',
+    accent: '#5ecf9a',
+  },
+  {
+    href: '/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.pdf',
+    title: 'Mensajes WhatsApp',
+    desc: '60 textos listos para copiar',
+    icon: '💬',
+    accent: '#a78bfa',
+    download: true,
+  },
+  {
+    href: '/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf',
+    title: 'Plan de 7 días',
+    desc: 'Guía paso a paso',
+    icon: '📅',
+    accent: '#60a5fa',
+    download: true,
+  },
+  {
+    href: '/paletas-de-whatsapp/produto/Checklist_Paletas.pdf',
+    title: 'Checklist',
+    desc: 'Compras, producción y venta',
+    icon: '✅',
+    accent: '#f472b6',
+    download: true,
+  },
+];
+
+const PREMIUM_DOWNLOADS = [
+  { href: '/paletas-premium/produto/Kit_Premium_Paletas.html', title: 'Kit Premium', desc: '20 recetas premium', icon: '✨', accent: '#ffc94a' },
+  { href: '/paletas-premium/produto/Combos_Rentables.html', title: 'Combos rentables', desc: '10 ideas con precio guía', icon: '📦', accent: '#ff7a1a' },
+  { href: '/paletas-premium/produto/Menu_Premium_Editable.html', title: 'Menú premium', desc: 'Copia y pega en WhatsApp', icon: '📋', accent: '#5ecf9a' },
+  { href: '/paletas-premium/produto/Mensajes_Premium.html', title: 'Mensajes premium', desc: 'Combos y fechas especiales', icon: '💬', accent: '#a78bfa' },
+  { href: '/paletas-premium/produto/Fechas_Especiales.html', title: 'Fechas especiales', desc: 'Día de la Madre, Navidad…', icon: '🎉', accent: '#60a5fa' },
+  { href: '/paletas-premium/produto/Guia_Presentacion.html', title: 'Guía de presentación', desc: 'Fotos y empaque', icon: '📸', accent: '#f472b6' },
 ];
 
 function checklistKey(uid) {
@@ -127,6 +188,7 @@ const INSIGHTS = {
 async function bootstrap() {
   maybeWelcome();
   unlockPremiumFromQuery();
+  readViewFromUrl();
 
   const draft = await loadDraft(currentUser.uid);
   if (draft?.inputs) {
@@ -270,6 +332,22 @@ function renderTopbarBadge() {
   return '';
 }
 
+function readViewFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const view = params.get('view');
+  if (view && VIEW_META[view]) activeView = view;
+  if (params.has('view')) {
+    params.delete('view');
+    const qs = params.toString();
+    window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
+  }
+}
+
+function viewLockSuffix(id) {
+  if ((id === 'bonus' || id === 'account' || id === 'files') && !hasKitContentAccess()) return ' 🔒';
+  return '';
+}
+
 function renderDrawer() {
   const navItems = Object.entries(VIEW_META)
     .map(([id, meta]) => {
@@ -277,10 +355,7 @@ function renderDrawer() {
         id === 'results' && currentResults.status
           ? `<span class="drawer-badge ${currentResults.status}"></span>`
           : '';
-          const lock =
-            (id === 'bonus' || id === 'account') && !hasKitContentAccess()
-              ? ' 🔒'
-              : '';
+          const lock = viewLockSuffix(id);
           return `
         <button type="button" class="drawer-link ${activeView === id ? 'active' : ''}" data-view="${id}">
           <span class="drawer-link-icon">${ICONS[meta.icon]}</span>
@@ -295,7 +370,7 @@ function renderDrawer() {
     <div class="drawer-overlay ${drawerOpen ? 'open' : ''}" data-drawer-close aria-hidden="true"></div>
     <aside class="app-drawer ${drawerOpen ? 'open' : ''}" aria-label="Menu principal">
       <div class="drawer-head">
-        <div class="drawer-brand">${ICONS.logo}<div><strong>Paletas de WhatsApp</strong><small>${escapeHtml(getUserLabel(currentUser))}</small></div></div>
+        <div class="drawer-brand">${BRAND_LOGO}<div><strong>Paletas de WhatsApp</strong><small>${escapeHtml(getUserLabel(currentUser))}</small></div></div>
         <button type="button" class="icon-btn" data-drawer-close aria-label="Cerrar menú">${ICONS.close}</button>
       </div>
       <div class="drawer-summary ${currentResults.status}">
@@ -305,38 +380,14 @@ function renderDrawer() {
       </div>
       <nav class="drawer-nav">${navItems}</nav>
       <div class="drawer-foot">
-        <span class="drawer-mode">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}${canCloudSync() ? ' · ☁️ sync' : ''}</span>
-        <a href="/membros" class="drawer-home">${ICONS.book}<span>Mis archivos</span></a>
+        <span class="drawer-mode">${inputMode === 'simple' ? 'Modo rápido' : 'Modo completo'}${canCloudSync() ? ' · nube' : ''}</span>
         <a href="/" class="drawer-home drawer-home-muted">${ICONS.home}<span>Página de venta</span></a>
+        <button type="button" class="drawer-link drawer-logout" id="drawer-logout">
+          <span class="drawer-link-icon">${ICONS.logOut}</span>
+          <span>Salir</span>
+        </button>
       </div>
     </aside>
-  `;
-}
-
-function renderTabBar() {
-  return `
-    <nav class="app-tabbar" aria-label="Navegación rápida">
-      ${Object.entries(VIEW_META)
-        .map(([id, meta]) => {
-          const badge =
-            id === 'results' && currentResults.status !== 'lucro'
-              ? `<span class="tab-badge ${currentResults.status}"></span>`
-              : '';
-          const lock =
-            (id === 'bonus' || id === 'account') && !hasKitContentAccess()
-              ? '<span class="tab-lock">🔒</span>'
-              : '';
-          return `
-            <button type="button" class="tab-btn ${activeView === id ? 'active' : ''}" data-view="${id}">
-              <span class="tab-icon">${ICONS[meta.icon]}</span>
-              <span class="tab-label">${meta.label}</span>
-              ${lock}
-              ${badge}
-            </button>
-          `;
-        })
-        .join('')}
-    </nav>
   `;
 }
 
@@ -437,14 +488,70 @@ function renderActiveView() {
       return renderBonus();
     case 'account':
       return renderAccount();
+    case 'files':
+      return renderFiles();
     default:
       return '';
   }
 }
 
+function renderFileRow(file, locked) {
+  const action = locked ? '🔒' : file.download ? '↓' : '→';
+  const tag = file.tag ? `<span class="file-tag">${escapeHtml(file.tag)}</span>` : '';
+  const attrs = locked
+    ? 'href="#" class="file-row locked" aria-disabled="true"'
+    : `href="${file.href}" class="file-row${file.featured ? ' featured' : ''}"${file.download ? ' download' : ' target="_blank" rel="noopener"'}`;
+
+  return `
+    <a ${attrs} style="--file-accent:${file.accent}">
+      <span class="file-icon">${file.icon}</span>
+      <span class="file-info">
+        <strong>${escapeHtml(file.title)} ${tag}</strong>
+        <em>${escapeHtml(file.desc)}</em>
+      </span>
+      <span class="file-action">${action}</span>
+    </a>
+  `;
+}
+
+function renderFiles() {
+  const locked = !hasKitContentAccess();
+
+  return `
+    <div class="files-page">
+      ${renderKitPendingBanner()}
+      <div class="section-card files-head">
+        <h2>Archivos del kit</h2>
+        <p class="section-text">PDFs, Excel y plantillas para descargar.</p>
+      </div>
+      <div class="files-list">${KIT_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
+      ${
+        hasPremiumAccess()
+          ? `
+        <div class="section-card files-head files-head-premium">
+          <h2>Complemento premium</h2>
+          <p class="section-text">Recetas y combos avanzados.</p>
+        </div>
+        <div class="files-list">${PREMIUM_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
+      `
+          : `
+        <div class="section-card files-upsell">
+          <p class="section-text">¿Quieres 20 recetas premium y combos rentables?</p>
+          ${renderPremiumUpsell()}
+        </div>
+      `
+      }
+      <div class="section-card files-support">
+        <p class="section-text">¿Dudas con tu acceso?</p>
+        <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">WhatsApp · ${WHATSAPP_DISPLAY}</a>
+      </div>
+    </div>
+  `;
+}
+
 function render() {
   const viewTitle = VIEW_META[activeView]?.label || 'App';
-  const shellClass = ['app-shell', activeView === 'calc' ? 'has-calc-footer' : '', 'has-tabbar'].filter(Boolean).join(' ');
+  const shellClass = ['app-shell', activeView === 'calc' ? 'has-calc-footer' : ''].filter(Boolean).join(' ');
 
   root.innerHTML = `
     <div class="${shellClass}">
@@ -465,7 +572,6 @@ function render() {
       </main>
 
       ${renderCalcFooter()}
-      ${renderTabBar()}
     </div>
   `;
 
@@ -1278,7 +1384,7 @@ function renderKitArchivos() {
         <li><a href="/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf" download>Plan 7 días</a></li>
         <li><a href="/paletas-de-whatsapp/produto/Checklist_Paletas.pdf" download>Checklist</a></li>
       </ul>
-      <a href="/membros" class="btn btn-secondary btn-sm" style="margin-top:12px">Ver todos en mi área →</a>
+      <button type="button" class="btn btn-secondary btn-sm" data-view="files" style="margin-top:12px">Ver todos los archivos →</button>
     </div>
     ${hasPremiumAccess() ? `
       <div class="section-card">
@@ -1445,6 +1551,18 @@ function bindEvents() {
   document.getElementById('welcome-banner-close')?.addEventListener('click', dismissPostPurchaseBanner);
 
   document.getElementById('menu-toggle')?.addEventListener('click', openDrawer);
+
+  document.getElementById('drawer-logout')?.addEventListener('click', async () => {
+    await logout();
+    window.location.href = '/login';
+  });
+
+  root.querySelectorAll('.file-row.locked').forEach((el) => {
+    el.addEventListener('click', (event) => {
+      event.preventDefault();
+      showToast('Archivo bloqueado — verificando tu compra.');
+    });
+  });
 
   root.querySelectorAll('[data-drawer-close]').forEach((el) => {
     el.addEventListener('click', closeDrawer);

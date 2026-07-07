@@ -84,7 +84,7 @@ async function renderDashboard(user, profile) {
           <p style="font-size:0.78rem;color:var(--muted);margin-top:4px">${user.email}</p>
         </div>
         <div class="admin-topbar-actions">
-          <a href="/membros" class="admin-btn">Área miembros</a>
+          <a href="/app" class="admin-btn">Área miembros</a>
           <button type="button" class="admin-btn" id="admin-logout">Salir</button>
         </div>
       </header>
