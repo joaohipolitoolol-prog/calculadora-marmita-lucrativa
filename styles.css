@@ -2204,6 +2204,18 @@ h3 {
   font-size: 0.76rem;
 }
 
+.seo-keywords {
+  margin-top: 14px;
+  font-size: 0.5rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.07);
+  letter-spacing: 0.2px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  user-select: none;
+}
+
 .footer-login {
   margin-top: 8px;
 }
