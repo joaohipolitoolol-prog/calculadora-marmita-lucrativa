@@ -46,9 +46,9 @@ export const PRODUCT_ICON = '/favicon.svg';
 export const META_PIXEL_ID = '1369803401885896';
 
 /** Preço principal em USD — fonte única para LP e pixel */
-export const MAIN_PRICE = 5;
-export const MAIN_PRICE_LABEL = 'US$ 5';
-export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 5';
+export const MAIN_PRICE = 5.97;
+export const MAIN_PRICE_LABEL = 'US$ 5,97';
+export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 5,97';
 
 export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
@@ -62,6 +62,6 @@ export const OFFER_CTA_LABEL = 'Quiero acceder al kit';
 
 export const TRUST_CTA_LABEL = 'Quiero empezar con claridad';
 
-export const STICKY_CTA_LABEL = 'Acceder por US$ 5';
+export const STICKY_CTA_LABEL = 'Acceder por US$ 5,97';
 
 export const CTA_LABEL = HERO_CTA_LABEL;
