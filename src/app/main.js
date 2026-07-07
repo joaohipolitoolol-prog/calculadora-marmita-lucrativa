@@ -65,6 +65,17 @@ let kitUnlocked = true;
 let userIsAdmin = false;
 let deferredInstallPrompt = null;
 
+function isPwaInstalled() {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  );
+}
+
+function shouldShowInstallButton() {
+  return !isPwaInstalled();
+}
+
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
@@ -73,9 +84,22 @@ if (typeof window !== 'undefined') {
 }
 
 function registerPwa() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
-  }
+  if (!('serviceWorker' in navigator)) return;
+
+  navigator.serviceWorker
+    .register('/sw.js')
+    .then((registration) => {
+      registration.addEventListener('updatefound', () => {
+        const worker = registration.installing;
+        if (!worker) return;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+            showToast('Nueva versión lista — recarga la app');
+          }
+        });
+      });
+    })
+    .catch(() => {});
 }
 
 const STEPS = [
@@ -728,9 +752,13 @@ function renderProfile() {
             ? `<a href="/admin" class="btn btn-secondary btn-block admin-link">${ICONS.settings}<span>Panel admin</span></a>`
             : ''
         }
-        <button type="button" id="install-pwa" class="btn btn-secondary btn-block">
+        ${
+          shouldShowInstallButton()
+            ? `<button type="button" id="install-pwa" class="btn btn-secondary btn-block">
           ${ICONS.plus}<span>Instalar en pantalla inicio</span>
-        </button>
+        </button>`
+            : ''
+        }
         <button type="button" id="profile-logout" class="btn btn-ghost btn-block btn-danger-text">
           ${ICONS.logOut}<span>Cerrar sesión</span>
         </button>
@@ -1880,8 +1908,9 @@ function bindEvents() {
   document.getElementById('profile-logout')?.addEventListener('click', signOutToLanding);
 
   document.getElementById('install-pwa')?.addEventListener('click', async () => {
+    if (isPwaInstalled()) return;
     if (!deferredInstallPrompt) {
-      showToast('En Chrome: menú ⋮ → Instalar app o Añadir a inicio');
+      showToast('En Chrome: menú ⋮ → Instalar app. En iPhone: Compartir → Añadir a inicio');
       return;
     }
     deferredInstallPrompt.prompt();

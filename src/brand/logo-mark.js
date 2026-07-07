@@ -43,9 +43,9 @@ export function logoMarkFaviconDoc() {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}" role="img" aria-label="${BRAND_NAME}">${LOGO_MARK_PATHS}\n</svg>\n`;
 }
 
-export function logoMaskableSvg({ size = 512, background = '#FFF6F9' } = {}) {
-  const pad = (size - size * 0.62) / 2;
-  const scale = (size * 0.62) / 32;
+export function logoMaskableSvg({ size = 512, background = '#FFF6F9', markScale = 0.62 } = {}) {
+  const pad = (size - size * markScale) / 2;
+  const scale = (size * markScale) / 32;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" role="img" aria-label="${BRAND_NAME}">
   <rect width="${size}" height="${size}" rx="${Math.round(size * 0.22)}" fill="${background}"/>
   <g transform="translate(${pad} ${pad}) scale(${scale})">${LOGO_MARK_PATHS}</g>

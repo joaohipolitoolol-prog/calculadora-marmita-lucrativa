@@ -21,14 +21,16 @@ try {
 }
 
 const maskableSvg = logoMaskableSvg({ size: 512 });
+const maskableSafeSvg = logoMaskableSvg({ size: 512, markScale: 0.5 });
 const sizes = [
-  { name: 'icon-192.png', size: 192 },
-  { name: 'icon-512.png', size: 512 },
-  { name: 'apple-touch-icon.png', size: 180 },
+  { name: 'icon-192.png', size: 192, svg: maskableSvg },
+  { name: 'icon-512.png', size: 512, svg: maskableSvg },
+  { name: 'icon-maskable-512.png', size: 512, svg: maskableSafeSvg },
+  { name: 'apple-touch-icon.png', size: 180, svg: maskableSvg },
 ];
 
-for (const { name, size } of sizes) {
-  await sharp(Buffer.from(maskableSvg))
+for (const { name, size, svg } of sizes) {
+  await sharp(Buffer.from(svg))
     .resize(size, size)
     .png()
     .toFile(resolve(iconsDir, name));
