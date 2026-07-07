@@ -250,8 +250,8 @@ h3 {
 .hero-cta-stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: var(--space-md);
+  gap: 12px;
+  margin-bottom: var(--space-lg);
 }
 
 .hero-price-note {
@@ -627,7 +627,7 @@ h3 {
     radial-gradient(circle at 6% 88%, rgba(240, 77, 130, 0.12) 0%, transparent 38%),
     radial-gradient(circle at 50% 50%, rgba(232, 67, 122, 0.08) 0%, transparent 55%),
     linear-gradient(180deg, var(--pink-light) 0%, var(--cream) 72%);
-  padding: 18px 0 10px;
+  padding: 22px 0 14px;
   text-align: center;
 }
 
@@ -635,7 +635,7 @@ h3 {
   display: inline-flex;
   flex-direction: column;
   gap: 2px;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   padding: 8px 14px;
   background: rgba(232, 67, 122, 0.1);
   border: 1px solid rgba(232, 67, 122, 0.22);
@@ -679,19 +679,19 @@ h3 {
 
 .hero-bullets {
   list-style: none;
-  margin: 0 auto var(--space-md);
+  margin: 0 auto var(--space-lg);
   padding: 0;
-  max-width: 34ch;
+  max-width: 30ch;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .hero-bullets li {
   position: relative;
-  padding-left: 22px;
-  font-size: 0.88rem;
+  padding-left: 24px;
+  font-size: 0.94rem;
   font-weight: 700;
   color: var(--brown-mid);
   line-height: 1.4;
@@ -721,7 +721,7 @@ h3 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 5px;
-  margin: 0 auto 12px;
+  margin: 0 auto 20px;
   max-width: 100%;
   aspect-ratio: 1;
   border-radius: var(--radius);
@@ -885,9 +885,9 @@ h3 {
 }
 
 .hero h1 {
-  margin: 0 auto 14px;
-  font-size: clamp(1.95rem, 7.2vw, 2.5rem);
-  line-height: 1.16;
+  margin: 0 auto 20px;
+  font-size: clamp(2.05rem, 7.6vw, 2.6rem);
+  line-height: 1.15;
 }
 
 .hero-urgency {
@@ -971,14 +971,36 @@ h3 {
 
   .purchase-sticky-inner {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .purchase-sticky-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    flex-shrink: 0;
+  }
+
+  .purchase-sticky-kit {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--gray);
+  }
+
+  .purchase-sticky-price {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--brown);
+    letter-spacing: -0.01em;
   }
 
   .purchase-sticky-btn {
-    width: 100%;
-    max-width: 420px;
+    flex: 1;
+    max-width: 240px;
     font-size: 0.95rem;
-    padding: 14px 18px;
+    padding: 13px 18px;
   }
 }
 
@@ -1919,9 +1941,9 @@ h3 {
   border-radius: 24px;
   padding: 0;
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 50px rgba(232, 67, 122, 0.24);
   text-align: center;
-  border: 2px solid rgba(232, 67, 122, 0.2);
+  border: 3px solid var(--pink);
 }
 
 .offer-flavors {
@@ -2197,7 +2219,7 @@ h3 {
 
 @media (max-width: 390px) {
   .hero h1 {
-    font-size: 1.85rem;
+    font-size: 1.92rem;
   }
 
   .demo-field input {
@@ -2340,7 +2362,7 @@ h3 {
 
 /* ===== Method 3P ===== */
 .mechanism {
-  background: var(--white);
+  background: var(--pink-soft);
   text-align: center;
 }
 
