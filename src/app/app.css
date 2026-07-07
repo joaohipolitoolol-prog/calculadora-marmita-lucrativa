@@ -2188,3 +2188,87 @@ body.onboarding-open {
   color: var(--pink);
   font-weight: 800;
 }
+
+.combo-list-app {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.combo-card-app {
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border-left: 4px solid #ffc94a;
+}
+
+.combo-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.combo-card-head h3 {
+  font-size: 1rem;
+  margin: 0;
+  color: var(--brown);
+}
+
+.combo-card-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255, 201, 74, 0.25);
+  color: var(--brown);
+  padding: 4px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.combo-card-meta {
+  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.combo-card-meta div {
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.combo-card-meta dt {
+  font-weight: 800;
+  color: var(--brown);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.combo-card-meta dd {
+  margin: 2px 0 0;
+  color: var(--brown-mid);
+}
+
+.combo-card-message {
+  background: var(--gray-light);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.combo-card-message p {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--brown-mid);
+  margin: 0 0 10px;
+}
+
+.combo-calc-link {
+  width: 100%;
+  justify-content: center;
+}

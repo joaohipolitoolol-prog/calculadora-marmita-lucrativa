@@ -1,11 +1,16 @@
 import recetasData from './recetas-paletas.json';
 import recetasPremiumData from './recetas-premium.json';
 
+import combosPremiumData from './combos-premium.json';
+
 /** 30 recetas completas — sincronizadas con el kit PDF */
 export const RECETAS_PALETAS = recetasData;
 
 /** 20 recetas premium — complemento digital */
 export const RECETAS_PREMIUM = recetasPremiumData;
+
+/** 10 combos rentables — complemento premium */
+export const COMBOS_PREMIUM = combosPremiumData;
 
 export const MENSAJES_WHATSAPP = [
   { categoria: 'Estado / Story', texto: '🍭 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.' },

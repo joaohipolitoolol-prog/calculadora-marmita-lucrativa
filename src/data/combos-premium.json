@@ -1,0 +1,72 @@
+[
+  {
+    "nombre": "Combo Antojo",
+    "contenido": "3 paletas surtidas (1 frutal + 1 cremosa + 1 premium)",
+    "precio_guia": "15-20% menos que comprar 3 sueltas",
+    "publico": "Quien quiere probar sin comprometerse",
+    "mensaje": "¿Primera vez? Prueba 3 sabores por [precio]."
+  },
+  {
+    "nombre": "Combo Familiar x6",
+    "contenido": "6 paletas a elegir, mínimo 2 premium",
+    "precio_guia": "Ticket medio alto — buen margen si incluyes 2 básicas",
+    "publico": "Familias y vecinos",
+    "mensaje": "Combo familiar: 6 paletas surtidas por [precio]. Ideal para compartir."
+  },
+  {
+    "nombre": "Combo Fin de Semana",
+    "contenido": "Caja con 4 cremosas + 2 rellenas premium",
+    "precio_guia": "Precio fijo redondo (ej. US$ 12 o R$ 45)",
+    "publico": "Pedidos anticipados viernes-sábado",
+    "mensaje": "Caja fin de semana lista — aparta la tuya hoy."
+  },
+  {
+    "nombre": "Combo Infantil",
+    "contenido": "4 paletas coloridas (frutales + Oreo o vainilla chispas)",
+    "precio_guia": "Precio accesible, volumen en barrios",
+    "publico": "Padres y cumpleaños infantiles",
+    "mensaje": "Pack infantil: 4 paletas de colores por [precio]."
+  },
+  {
+    "nombre": "Combo Premium",
+    "contenido": "3 paletas rellenas o bañadas a elección",
+    "precio_guia": "El más caro del menú — 30-40% sobre unitario",
+    "publico": "Clientes que buscan algo especial",
+    "mensaje": "Selección premium: cheesecake, brownie y chocolate belga."
+  },
+  {
+    "nombre": "Combo Pareja",
+    "contenido": "2 paletas premium + 1 frutal para compartir",
+    "precio_guia": "San Valentín y aniversarios",
+    "publico": "Parejas",
+    "mensaje": "Combo dulce para dos — 3 paletas por [precio]."
+  },
+  {
+    "nombre": "Combo Oficina",
+    "contenido": "10 paletas surtidas en caja",
+    "precio_guia": "Descuento por volumen del 10-15%",
+    "publico": "Pedidos corporativos pequeños",
+    "mensaje": "Caja oficina: 10 paletas para el equipo. Pide con 48 h."
+  },
+  {
+    "nombre": "Combo Degustación",
+    "contenido": "5 mini paletas (mitad de tamaño) de sabores premium",
+    "precio_guia": "Precio de entrada bajo para nuevos clientes",
+    "publico": "Indecisos",
+    "mensaje": "Degusta 5 sabores premium en formato mini."
+  },
+  {
+    "nombre": "Combo Verano",
+    "contenido": "4 frutales + 2 tropicales premium",
+    "precio_guia": "Estacional — enfatiza frescura",
+    "publico": "Días calurosos",
+    "mensaje": "Pack verano: lo más refrescante del menú."
+  },
+  {
+    "nombre": "Combo Encargo",
+    "contenido": "Sabores a elegir del menú premium, cantidad personalizada",
+    "precio_guia": "Cotiza según calculadora + recargo por encargo",
+    "publico": "Eventos y cumpleaños",
+    "mensaje": "¿Evento especial? Armo tu caja con los sabores que quieras."
+  }
+]

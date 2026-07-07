@@ -1,6 +1,5 @@
 import { isFirebaseConfigured } from './firebase.js';
-import { validateAccessCodeFromDb, consumeAccessCode } from './access-codes-db.js';
-import { createUserProfile, syncAdminFlag } from './user-profile.js';
+import { createUserProfile, isAdminEmail, syncAdminFlag } from './user-profile.js';
 
 const DEMO_USERS_KEY = 'marmita_demo_users';
 const DEMO_SESSION_KEY = 'marmita_demo_session';
@@ -20,6 +19,9 @@ function createDemoUser(name, email, password) {
     displayName: name.trim(),
     password,
     demo: true,
+    hasKit: false,
+    hasPremium: false,
+    isAdmin: isAdminEmail(email),
   };
 }
 
@@ -43,11 +45,6 @@ export function isDemoMode() {
   return !isFirebaseConfigured;
 }
 
-export async function validateAccessCode(code) {
-  const result = await validateAccessCodeFromDb(code);
-  return result.valid;
-}
-
 export async function login(email, password) {
   if (isDemoMode()) {
     const users = readDemoUsers();
@@ -66,21 +63,10 @@ export async function login(email, password) {
   return result.user;
 }
 
-export async function register(name, email, password, accessCode, options = {}) {
-  const codeResult = await validateAccessCodeFromDb(accessCode);
-  if (!codeResult.valid) {
-    throw new Error(
-      codeResult.reason || 'Código de acceso inválido. Usa el código enviado después de la compra.'
-    );
-  }
-
+export async function register(name, email, password, options = {}) {
   const urlPremium = new URLSearchParams(window.location.search).get('premium') === '1';
-  const hasPremium =
-    Boolean(options.hasPremium) ||
-    urlPremium ||
-    codeResult.hasPremium ||
-    codeResult.type === 'premium' ||
-    codeResult.type === 'both';
+  const hasPremium = Boolean(options.hasPremium) || urlPremium;
+  const admin = isAdminEmail(email);
 
   if (isDemoMode()) {
     const normalizedEmail = email.trim().toLowerCase();
@@ -90,6 +76,10 @@ export async function register(name, email, password, accessCode, options = {}) 
     }
     const user = createDemoUser(name, normalizedEmail, password);
     user.hasPremium = hasPremium;
+    if (admin) {
+      user.hasKit = true;
+      user.isAdmin = true;
+    }
     users.push(user);
     writeDemoUsers(users);
     setDemoSession(user);
@@ -107,9 +97,7 @@ export async function register(name, email, password, accessCode, options = {}) 
     email: result.user.email,
     displayName: name.trim(),
     hasPremium,
-    accessCodeUsed: accessCode,
   });
-  await consumeAccessCode(codeResult);
   await syncAdminFlag(result.user.uid, result.user.email);
 
   if (hasPremium) localStorage.setItem('paletas_premium', '1');
@@ -162,11 +150,11 @@ export function redirectIfAuthenticated(user, target) {
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
     const premium = params.get('premium') === '1';
-    window.location.href = premium ? '/app?compra=1&premium=1' : '/app?compra=1';
+    window.location.href = premium ? '/membros?compra=1&premium=1' : '/membros?compra=1';
     return;
   }
   const next = params.get('next');
-  window.location.href = next && next.startsWith('/') ? next : target || '/app';
+  window.location.href = next && next.startsWith('/') ? next : target || '/membros';
 }
 
 export function redirectIfGuest(user, target = '/login') {

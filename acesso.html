@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Acceso | Paletas de WhatsApp</title>
+  <meta http-equiv="refresh" content="0;url=/login?compra=1">
+  <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+  <style>
+    body {
+      font-family: Nunito, system-ui, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; margin: 0; background: #fff8f3; color: #3d2218;
+    }
+    a { color: #ff4f8b; font-weight: 800; }
+  </style>
+  <script>
+    (function () {
+      var premium = new URLSearchParams(location.search).get('premium') === '1';
+      var target = '/login?compra=1' + (premium ? '&premium=1' : '');
+      location.replace(target);
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirigiendo a tu acceso… <a href="/login?compra=1">Clic aquí</a> si no avanza.</p>
+</body>
+</html>

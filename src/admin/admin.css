@@ -192,3 +192,65 @@ th {
   color: var(--rosa);
   cursor: pointer;
 }
+
+.admin-hint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.admin-hint code, .kiwify-value {
+  font-size: 0.78rem;
+  background: #120d0f;
+  padding: 2px 6px;
+  border-radius: 6px;
+  word-break: break-all;
+}
+
+.kiwify-url-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.kiwify-url-card {
+  background: #120d0f;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kiwify-url-card p { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+
+.email-template-block {
+  background: #120d0f;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.email-template-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.email-template-head h3 { font-size: 0.88rem; }
+
+.email-template-block pre {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow: auto;
+}

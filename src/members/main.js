@@ -1,6 +1,6 @@
 import { WHATSAPP_PURCHASE_LINK } from '../landing/config.js';
 import { getUserLabel, logout, watchAuth } from '../lib/auth.js';
-import { getUserProfile } from '../lib/user-profile.js';
+import { getUserProfile, hasKitAccess, resolveUserProfile } from '../lib/user-profile.js';
 
 const THEME_KEY = 'paletas-kit-theme';
 const PREMIUM_KEY = 'paletas_premium';
@@ -112,8 +112,55 @@ function renderPremiumUpsellTeaser(profile) {
   `;
 }
 
+function renderPendingAccess(user) {
+  const wrap = document.querySelector('.wrap');
+  if (!wrap) return;
+
+  wrap.innerHTML = `
+    <section class="hero">
+      <div class="hero-badge">Cuenta creada</div>
+      <h1>Estamos preparando tu acceso</h1>
+      <p>Tu cuenta fue creada con éxito. Verificamos tu compra y en breve liberamos el kit completo — recibirás un email cuando esté listo.</p>
+      <div class="pills">
+        <span class="pill">⏳ Verificación</span>
+        <span class="pill">📧 Te avisamos</span>
+        <span class="pill">🍭 Kit digital</span>
+      </div>
+    </section>
+
+    <div class="section-label">Mientras tanto</div>
+    <div class="panel" style="margin-bottom:24px">
+      <ol>
+        <li>Revisa tu bandeja de entrada (y spam) con el correo <strong>${user.email || 'de la compra'}</strong></li>
+        <li>Si compraste hace poco, la liberación suele tardar unos minutos</li>
+        <li>¿Urgente? Escríbenos por WhatsApp con tu comprobante</li>
+      </ol>
+    </div>
+
+    <footer>
+      <p class="tagline">Prepara · Calcula · Publica</p>
+      <p style="margin-top:10px">¿Ya pagaste y sigues esperando?</p>
+      <p style="margin-top:8px"><a id="wa-support" href="${WHATSAPP_PURCHASE_LINK}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-weight:800;text-decoration:none;">Confirmar compra por WhatsApp</a></p>
+      <p style="margin-top:8px;font-size:12px;opacity:0.75">+44 7402 867442</p>
+    </footer>
+  `;
+}
+
+function hideKitContent() {
+  document.querySelectorAll('.wrap > .section-label, .wrap > .steps-row, .wrap > .downloads, .wrap > .tips-grid, .wrap > .panel, .wrap > footer').forEach((el) => {
+    if (!el.closest('#premium-downloads') && !el.closest('#premium-upsell-teaser')) {
+      el.style.display = 'none';
+    }
+  });
+  const hero = document.querySelector('.hero');
+  if (hero) hero.style.display = 'none';
+  document.getElementById('premium-downloads')?.remove();
+  document.getElementById('premium-upsell-teaser')?.remove();
+}
+
 function showFirstVisitGuide() {
   if (sessionStorage.getItem('paletas_membros_intro') === '1') return;
+  if (document.querySelector('.hero')?.style.display === 'none') return;
   sessionStorage.setItem('paletas_membros_intro', '1');
 
   const guide = document.createElement('div');
@@ -151,12 +198,19 @@ watchAuth(async (user) => {
     return;
   }
 
-  const profile = await getUserProfile(user.uid);
+  const profile = await resolveUserProfile(user);
   if (profile?.hasPremium) localStorage.setItem(PREMIUM_KEY, '1');
 
   unlockPremiumFromQuery();
   initTheme();
   bindUserUI(user);
+
+  if (!hasKitAccess(profile, user)) {
+    hideKitContent();
+    renderPendingAccess(user);
+    return;
+  }
+
   renderPremiumSection(profile);
   renderPremiumUpsellTeaser(profile);
   showFirstVisitGuide();

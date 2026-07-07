@@ -11,6 +11,7 @@ export default defineConfig({
         membros: resolve(__dirname, 'membros.html'),
         upsell: resolve(__dirname, 'upsell-paletas-premium.html'),
         admin: resolve(__dirname, 'admin.html'),
+        acesso: resolve(__dirname, 'acesso.html'),
       },
     },
   },

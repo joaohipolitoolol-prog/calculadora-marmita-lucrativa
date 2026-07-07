@@ -42,11 +42,11 @@ function getAfterLoginUrl() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
     const premium = params.get('premium') === '1' ? '&premium=1' : '';
-    return `/app?compra=1${premium}`;
+    return `/membros?compra=1${premium}`;
   }
   const next = params.get('next');
   if (next && next.startsWith('/')) return next;
-  return '/app';
+  return '/membros';
 }
 
 watchAuth((user) => redirectIfAuthenticated(user));
@@ -98,13 +98,12 @@ registerForm.addEventListener('submit', async (event) => {
   button.textContent = 'Creando cuenta...';
 
   try {
-    await register(
-      data.get('name'),
-      data.get('email'),
-      data.get('password'),
-      data.get('accessCode')
+    await register(data.get('name'), data.get('email'), data.get('password'));
+    showAlert(
+      formAlert,
+      '¡Cuenta creada! Estamos verificando tu compra — te avisaremos por email.',
+      'success'
     );
-    showAlert(formAlert, '¡Cuenta creada! Redirigiendo...', 'success');
     setTimeout(() => {
       window.location.href = getAfterLoginUrl();
     }, 700);

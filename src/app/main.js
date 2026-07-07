@@ -5,6 +5,7 @@ import {
   PLAN_7_DIAS,
   RECETAS_PALETAS,
   RECETAS_PREMIUM,
+  COMBOS_PREMIUM,
 } from '../data/kit-paletas.js';
 import {
   calculate,
@@ -13,6 +14,7 @@ import {
 } from '../lib/calculator.js';
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
 import { redirectIfGuest, watchAuth } from '../lib/auth.js';
+import { getUserProfile, hasKitAccess, resolveUserProfile } from '../lib/user-profile.js';
 import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
 import { UPSELL_CHECKOUT_URL, UPSELL_PRICE_LABEL, UPSELL_NAME } from '../upsell/config.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
@@ -185,6 +187,13 @@ watchAuth(async (user) => {
     redirectIfGuest(null);
     return;
   }
+
+  const profile = await resolveUserProfile(user);
+  if (!hasKitAccess(profile, user)) {
+    window.location.replace('/membros');
+    return;
+  }
+
   currentUser = {
     uid: user.uid,
     displayName: user.displayName || getUserLabel(user),
@@ -979,6 +988,7 @@ function renderBonus() {
 function renderKitSectionNav() {
   const sections = [
     { id: 'mensajes', label: 'Mensajes', icon: 'message' },
+    { id: 'combos', label: 'Combos', icon: 'dollar', premium: true },
     { id: 'plan', label: 'Plan 7d', icon: 'calendar' },
     { id: 'lista', label: 'Compras', icon: 'list' },
     { id: 'checklist', label: 'Producción', icon: 'check' },
@@ -993,11 +1003,61 @@ function renderKitSectionNav() {
           (s) => `
             <button type="button" class="kit-nav-btn ${kitSection === s.id ? 'active' : ''}" data-kit-section="${s.id}" role="tab">
               <span class="kit-nav-icon">${ICONS[s.icon]}</span>
-              <span>${s.label}</span>
+              <span>${s.label}${s.premium && !hasPremiumAccess() ? ' 🔒' : ''}</span>
             </button>
           `
         )
         .join('')}
+    </div>
+  `;
+}
+
+function renderCombosPremium() {
+  if (!hasPremiumAccess()) {
+    return `
+      <div class="section-card">
+        <h2>10 Combos Rentables</h2>
+        <p class="section-text">Ideas con precio guía, público objetivo y mensaje listo para WhatsApp — incluidos en el complemento premium.</p>
+        <div class="premium-locked-card">${renderPremiumUpsell()}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="combos-page">
+      <div class="section-card">
+        <h2>10 Combos Rentables</h2>
+        <p class="section-text">Usa la calculadora en Precios para fijar tu precio real. Los valores guía son orientativos.</p>
+      </div>
+      <div class="combo-list-app">
+        ${COMBOS_PREMIUM.map(
+          (combo, idx) => `
+            <article class="combo-card-app">
+              <div class="combo-card-head">
+                <h3>${escapeHtml(combo.nombre)}</h3>
+                <span class="combo-card-tag">Premium</span>
+              </div>
+              <dl class="combo-card-meta">
+                <div><dt>Contenido</dt><dd>${escapeHtml(combo.contenido)}</dd></div>
+                <div><dt>Precio guía</dt><dd>${escapeHtml(combo.precio_guia)}</dd></div>
+                <div><dt>Público</dt><dd>${escapeHtml(combo.publico)}</dd></div>
+              </dl>
+              <div class="combo-card-message">
+                <p>${escapeHtml(combo.mensaje)}</p>
+                <div class="message-actions">
+                  <button type="button" class="btn btn-sm btn-secondary copy-combo" data-combo-index="${idx}">
+                    ${ICONS.copy}<span>Copiar</span>
+                  </button>
+                  <a href="${whatsAppShareUrl(combo.mensaje)}" class="btn btn-sm btn-wa" target="_blank" rel="noopener noreferrer">
+                    ${ICONS.message}<span>Publicar</span>
+                  </a>
+                </div>
+              </div>
+              <button type="button" class="btn btn-ghost btn-sm combo-calc-link" data-view="calc">Calcular precio en Precios →</button>
+            </article>
+          `
+        ).join('')}
+      </div>
     </div>
   `;
 }
@@ -1206,6 +1266,8 @@ function renderKitContent() {
   switch (kitSection) {
     case 'mensajes':
       return renderMensajesWhatsApp();
+    case 'combos':
+      return renderCombosPremium();
     case 'plan':
       return renderPlan7Dias();
     case 'lista':
@@ -1505,6 +1567,24 @@ function bindEvents() {
       kitSection = btn.dataset.kitSection;
       render();
     });
+  });
+
+  root.querySelectorAll('.copy-combo').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const idx = parseNumber(btn.dataset.comboIndex);
+      const text = COMBOS_PREMIUM[idx]?.mensaje;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('¡Mensaje del combo copiado!');
+      } catch {
+        showToast('No se pudo copiar.');
+      }
+    });
+  });
+
+  root.querySelectorAll('.combo-calc-link').forEach((btn) => {
+    btn.addEventListener('click', () => navigateTo('calc'));
   });
 
   root.querySelectorAll('.copy-msg').forEach((btn) => {

@@ -26,7 +26,7 @@
     <div class="auth-card">
       <p class="auth-eyebrow" id="purchase-banner" hidden>✓ Compra confirmada</p>
       <h1>Accede a tu kit</h1>
-      <p class="auth-sub">Usa el código del correo de compra para crear tu cuenta, o entra si ya tienes una.</p>
+      <p class="auth-sub">Crea tu cuenta con el mismo correo de la compra, o entra si ya tienes una.</p>
 
       <div id="config-alert" class="auth-alert info"></div>
       <div id="form-alert" class="auth-alert"></div>
@@ -67,11 +67,7 @@
             <label for="register-password">Contraseña</label>
             <input id="register-password" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder="Mínimo 6 caracteres">
           </div>
-          <div class="form-group">
-            <label for="register-code">Código de acceso</label>
-            <input id="register-code" name="accessCode" type="text" required placeholder="Ej: PALETAS-XXXX" autocapitalize="characters">
-            <p class="form-hint">Lo recibes en el email de confirmación de Kiwify, justo después del pago. Busca la línea "Código de acceso" o "Access code".</p>
-          </div>
+          <p class="form-hint" style="margin-top:4px">Usa el mismo correo con el que compraste en Kiwify. Liberamos tu acceso en minutos y te avisamos por email.</p>
           <button type="submit" class="btn btn-primary auth-submit">Crear mi cuenta</button>
         </form>
       </section>

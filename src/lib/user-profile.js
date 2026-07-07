@@ -24,16 +24,16 @@ export async function getUserProfile(uid) {
   return snap.exists() ? { id: snap.id, ...snap.data() } : null;
 }
 
-export async function createUserProfile(uid, { email, displayName, hasPremium = false, accessCodeUsed = '' }) {
+export async function createUserProfile(uid, { email, displayName, hasPremium = false }) {
   if (!isFirebaseConfigured || !db) return null;
 
+  const admin = isAdminEmail(email);
   const profile = {
     email: email.trim().toLowerCase(),
     displayName: displayName.trim(),
-    hasKit: true,
+    hasKit: admin,
     hasPremium: Boolean(hasPremium),
-    isAdmin: isAdminEmail(email),
-    accessCodeUsed: accessCodeUsed || '',
+    isAdmin: admin,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
@@ -64,5 +64,35 @@ export async function listUsers() {
 
 export async function syncAdminFlag(uid, email) {
   if (!isAdminEmail(email)) return;
-  await updateUserProfile(uid, { isAdmin: true });
+  await updateUserProfile(uid, { isAdmin: true, hasKit: true });
+}
+
+export async function resolveUserProfile(user) {
+  if (!user) return null;
+  const profile = await getUserProfile(user.uid);
+  if (profile) return profile;
+
+  if (user.demo) {
+    try {
+      const users = JSON.parse(localStorage.getItem('marmita_demo_users') || '[]');
+      const demo = users.find((u) => u.uid === user.uid);
+      if (demo) {
+        return {
+          hasKit: Boolean(demo.hasKit),
+          hasPremium: Boolean(demo.hasPremium),
+          isAdmin: Boolean(demo.isAdmin),
+        };
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+export function hasKitAccess(profile, user) {
+  if (profile?.isAdmin || profile?.hasKit) return true;
+  if (user?.email && isAdminEmail(user.email)) return true;
+  return false;
 }

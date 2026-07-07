@@ -10,6 +10,7 @@
     { "source": "/paletas-de-whatsapp", "destination": "/membros.html" },
     { "source": "/paletas-de-whatsapp/entrega.html", "destination": "/membros.html" },
     { "source": "/paletas-premium", "destination": "/membros.html" },
+    { "source": "/acesso", "destination": "/acesso.html" },
     { "source": "/upsell-paletas-premium", "destination": "/upsell-paletas-premium.html" }
   ]
 }

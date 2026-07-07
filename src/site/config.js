@@ -8,4 +8,9 @@ export const UPSELL_PATH = '/upsell-paletas-premium';
 
 export const LOGIN_URL = `${SITE_URL}${LOGIN_PATH}`;
 export const MEMBERS_URL = `${SITE_URL}${MEMBERS_PATH}`;
+export const APP_URL = `${SITE_URL}${APP_PATH}`;
 export const POST_PURCHASE_UPSELL_URL = `${SITE_URL}${UPSELL_PATH}`;
+export const ACCESS_SHORT_PATH = '/acesso';
+export const ACCESS_SHORT_URL = `${SITE_URL}${ACCESS_SHORT_PATH}`;
+export const POST_PURCHASE_LOGIN_URL = `${LOGIN_URL}?compra=1`;
+export const POST_PURCHASE_APP_URL = `${APP_URL}?compra=1`;
