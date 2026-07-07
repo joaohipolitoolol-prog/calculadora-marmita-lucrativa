@@ -2209,7 +2209,7 @@ h3 {
   max-width: 640px;
   margin-left: auto;
   margin-right: auto;
-  text-align: left;
+  text-align: center;
 }
 
 .seo-tags summary {
@@ -2222,9 +2222,8 @@ h3 {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.38);
   padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  border: none;
+  transition: color 0.2s, background 0.2s;
 }
 
 .seo-tags summary::-webkit-details-marker {
@@ -2244,8 +2243,6 @@ h3 {
 
 .seo-tags summary:hover {
   color: rgba(255, 255, 255, 0.55);
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.04);
 }
 
 .seo-keywords {
