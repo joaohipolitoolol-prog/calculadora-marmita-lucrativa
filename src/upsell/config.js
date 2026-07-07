@@ -14,7 +14,7 @@ export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E';
 
 /** Downsell (US$ 9,97) — se muestra al rechazar el upsell.
  * ⚠️ Reemplaza por el link real de Hotmart del downsell a US$ 9,97. */
-export const DOWNSELL_CHECKOUT_URL = 'COLOCAR_LINK_DOWNSELL';
+export const DOWNSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E?off=16xak8rd';
 
 /** Rutas relativas — siempre en el dominio actual */
 export const ACCESS_URL = '/cadastrar?compra=1';

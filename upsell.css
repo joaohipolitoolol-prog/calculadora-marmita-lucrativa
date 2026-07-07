@@ -301,13 +301,12 @@ a { text-decoration: none; color: inherit; }
   margin-bottom: 18px;
 }
 
-body.upsell-urgency-high .upsell-urgency-bar {
-  animation: upsell-shake 0.45s ease-in-out infinite alternate;
-}
-
 body.upsell-urgency-high .upsell-urgency-timer,
 body.upsell-urgency-high [data-upsell-timer] {
-  color: #c1121f;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.18);
+  padding: 1px 6px;
+  border-radius: 6px;
 }
 
 body.upsell-expired [data-upsell-checkout] {
@@ -316,13 +315,8 @@ body.upsell-expired [data-upsell-checkout] {
 }
 
 @keyframes upsell-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(0.85); }
-}
-
-@keyframes upsell-shake {
-  from { transform: translateX(-1px); }
-  to { transform: translateX(1px); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 /* Typography */
