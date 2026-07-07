@@ -65,15 +65,6 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
 
 initDemo();
 
-const demoExpandBtn = document.getElementById('demo-expand-btn');
-const demoInputs = document.getElementById('demo-inputs');
-if (demoExpandBtn && demoInputs) {
-  demoExpandBtn.addEventListener('click', () => {
-    demoInputs.classList.remove('is-collapsed');
-    demoExpandBtn.hidden = true;
-  });
-}
-
 const sticky = document.getElementById('purchase-sticky');
 if (sticky) {
   const showAfter = 420;

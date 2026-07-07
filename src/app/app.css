@@ -48,14 +48,23 @@ body.drawer-open { overflow: hidden; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
+  gap: 6px;
+  min-width: 38px;
   height: 38px;
+  padding: 0 10px;
   border-radius: 12px;
   background: var(--brown);
   color: var(--white);
   text-decoration: none;
   flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
   transition: transform var(--transition), opacity var(--transition);
+}
+
+.topbar-admin-label {
+  line-height: 1;
 }
 
 .topbar-admin-btn svg {
@@ -363,6 +372,26 @@ body.drawer-open { overflow: hidden; }
 
 .drawer-badge.alerta { background: var(--yellow); }
 .drawer-badge.prejuizo { background: var(--red); }
+
+.drawer-link-admin {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brown-light);
+  text-decoration: none;
+}
+
+.drawer-link-admin .drawer-link-icon svg {
+  width: 18px;
+  height: 18px;
+  opacity: 0.75;
+}
+
+.drawer-link-admin:hover,
+.drawer-link-admin:focus-visible {
+  color: var(--pink);
+  background: rgba(232, 67, 122, 0.06);
+}
 
 .drawer-foot {
   padding: 8px 12px calc(10px + env(safe-area-inset-bottom));

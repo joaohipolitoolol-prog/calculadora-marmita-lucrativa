@@ -26,39 +26,59 @@ function createDemoUser(name, email, password) {
 }
 
 function getDemoSessionUser() {
-  const raw = localStorage.getItem(DEMO_SESSION_KEY);
+  const raw = readDemoSessionRaw();
   if (!raw) return null;
   const session = JSON.parse(raw);
   const users = readDemoUsers();
   return users.find((u) => u.uid === session.uid) || null;
 }
 
-function setDemoSession(user) {
-  localStorage.setItem(DEMO_SESSION_KEY, JSON.stringify({ uid: user.uid }));
+function setDemoSession(user, rememberMe = true) {
+  const payload = JSON.stringify({ uid: user.uid });
+  if (rememberMe) {
+    sessionStorage.removeItem(DEMO_SESSION_KEY);
+    localStorage.setItem(DEMO_SESSION_KEY, payload);
+    return;
+  }
+  localStorage.removeItem(DEMO_SESSION_KEY);
+  sessionStorage.setItem(DEMO_SESSION_KEY, payload);
 }
 
 function clearDemoSession() {
   localStorage.removeItem(DEMO_SESSION_KEY);
+  sessionStorage.removeItem(DEMO_SESSION_KEY);
+}
+
+function readDemoSessionRaw() {
+  return localStorage.getItem(DEMO_SESSION_KEY) || sessionStorage.getItem(DEMO_SESSION_KEY);
 }
 
 export function isDemoMode() {
   return !isFirebaseConfigured;
 }
 
-export async function login(email, password) {
+export async function login(email, password, options = {}) {
+  const rememberMe = options.rememberMe !== false;
+
   if (isDemoMode()) {
     const users = readDemoUsers();
     const user = users.find((u) => u.email === email.trim().toLowerCase());
     if (!user || user.password !== password) {
       throw new Error('Correo o contraseña incorrectos.');
     }
-    setDemoSession(user);
+    setDemoSession(user, rememberMe);
     return toPublicUser(user);
   }
 
   const { requireFirebase } = await import('./firebase.js');
-  const { signInWithEmailAndPassword } = await import('firebase/auth');
+  const {
+    signInWithEmailAndPassword,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
+  } = await import('firebase/auth');
   const auth = requireFirebase();
+  await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
   const result = await signInWithEmailAndPassword(auth, email.trim(), password);
   return result.user;
 }

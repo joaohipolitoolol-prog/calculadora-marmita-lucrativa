@@ -33,7 +33,8 @@ loginForm?.addEventListener('submit', async (event) => {
   button.textContent = 'Entrando...';
 
   try {
-    await login(data.get('email'), data.get('password'));
+    const rememberMe = loginForm.querySelector('#login-remember')?.checked ?? true;
+    await login(data.get('email'), data.get('password'), { rememberMe });
     window.location.href = getAfterLoginUrl();
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');

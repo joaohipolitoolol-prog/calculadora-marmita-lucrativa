@@ -45,7 +45,7 @@ registerForm?.addEventListener('submit', async (event) => {
     await register(data.get('name'), data.get('email'), data.get('password'));
     showAlert(
       formAlert,
-      '¡Cuenta creada! Estamos verificando tu compra — te avisaremos por email.',
+      '¡Cuenta creada! Estamos verificando tu compra — te avisaremos por correo.',
       'success'
     );
     setTimeout(() => {

@@ -44,6 +44,7 @@ import {
   hasSeenOnboarding,
   showOnboarding,
 } from './onboarding.js';
+import { DEV_ADMIN_ACCESS, DEV_UNLOCK_ALL_CONTENT } from '../site/dev.js';
 
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
@@ -112,9 +113,6 @@ const STEPS = [
 
 const CHECKLIST_STORAGE_KEY = 'paletas_checklist';
 const PREMIUM_STORAGE_KEY = 'paletas_premium';
-
-/** Desbloqueia todo o kit durante o desenvolvimento — desativar antes do lançamento */
-const DEV_UNLOCK_ALL_CONTENT = true;
 
 const SIMULATION_VOLUMES = [10, 20, 30];
 
@@ -293,7 +291,7 @@ function renderKitLockedCard(title = 'Contenido del kit') {
     <div class="section-card kit-locked-card">
       <span class="kit-locked-badge" aria-hidden="true">🔒</span>
       <h2>${escapeHtml(title)}</h2>
-      <p class="section-text">Estamos confirmando tu compra. Puedes usar la calculadora mientras tanto; te avisamos por email cuando el kit esté listo.</p>
+      <p class="section-text">Estamos confirmando tu compra. Puedes usar la calculadora mientras tanto; te avisamos por correo cuando el kit esté listo.</p>
       <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Ayuda por WhatsApp</a>
     </div>
   `;
@@ -331,7 +329,7 @@ watchAuth(async (user) => {
 
   const profile = await resolveUserProfile(user);
   kitUnlocked = hasKitAccess(profile, user);
-  userIsAdmin = await isUserAdmin(user, profile);
+  userIsAdmin = (await isUserAdmin(user, profile)) || DEV_ADMIN_ACCESS;
   if (profile?.hasPremium) localStorage.setItem(PREMIUM_STORAGE_KEY, '1');
 
   currentUser = {
@@ -389,11 +387,8 @@ function renderTopbarBadge() {
 
 function renderTopbarActions() {
   const badge = renderTopbarBadge();
-  const adminBtn = userIsAdmin
-    ? `<a href="/admin" class="topbar-admin-btn" title="Panel admin" aria-label="Panel admin">${ICONS.settings}</a>`
-    : '';
-  if (!adminBtn && !badge) return '';
-  return `<div class="topbar-actions">${adminBtn}${badge}</div>`;
+  if (!badge) return '';
+  return `<div class="topbar-actions">${badge}</div>`;
 }
 
 function renderTopbarSub() {
@@ -462,6 +457,15 @@ function renderDrawer() {
     })
     .join('');
 
+  const adminLink = userIsAdmin
+    ? `
+      <a href="/admin" class="drawer-link drawer-link-admin" title="Panel admin">
+        <span class="drawer-link-icon">${ICONS.settings}</span>
+        <span class="drawer-link-text">Admin</span>
+      </a>
+    `
+    : '';
+
   return `
     <div class="drawer-overlay ${drawerOpen ? 'open' : ''}" data-drawer-close aria-hidden="true"></div>
     <aside class="app-drawer ${drawerOpen ? 'open' : ''}" aria-label="Menu principal">
@@ -474,7 +478,7 @@ function renderDrawer() {
         <strong>${money(currentResults.profitPerUnit)}</strong>
         <em>${percent(currentResults.margin)} margen</em>
       </div>
-      <nav class="drawer-nav">${navItems}</nav>
+      <nav class="drawer-nav">${navItems}${adminLink}</nav>
       <div class="drawer-foot">
         <div class="drawer-user">
           <button type="button" class="drawer-user-profile" data-view="profile">

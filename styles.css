@@ -1068,6 +1068,10 @@ h3 {
 }
 
 .demo-result-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
   text-align: center;
   background: var(--green-light);
   border: 2px solid var(--green);
@@ -1098,6 +1102,9 @@ h3 {
 }
 
 .demo-result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   background: var(--white);
   border-radius: var(--radius-sm);
   padding: 12px;

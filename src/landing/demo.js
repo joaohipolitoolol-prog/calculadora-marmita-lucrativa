@@ -6,7 +6,7 @@ const MAX_TARGET_MARGIN = 80;
 function moneyDemo(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return 'US$ 0.00';
-  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  return `US$ ${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 /** Converte "1,20", "1.20" ou "US$ 1.20" em número. Vazio → 0. */
@@ -99,16 +99,24 @@ function calcDemo(values) {
   };
 }
 
+function isDemoCollapsed(root) {
+  const inputs = root.querySelector('.demo-inputs');
+  if (!inputs?.classList.contains('is-collapsed')) return false;
+  return window.matchMedia('(max-width: 639px)').matches;
+}
+
 function readValues(root) {
   const get = (name) => root.querySelector(`[data-demo="${name}"]`)?.value ?? '';
+  const collapsed = isDemoCollapsed(root);
+
   return {
     sellingPrice: get('sellingPrice'),
     foodCost: get('foodCost'),
-    packaging: get('packaging'),
-    gasSpices: get('gasSpices'),
-    delivery: get('delivery'),
-    waste: get('waste'),
-    marmitasPerDay: get('marmitasPerDay'),
+    packaging: collapsed ? '0' : get('packaging'),
+    gasSpices: collapsed ? '0' : get('gasSpices'),
+    delivery: collapsed ? '0' : get('delivery'),
+    waste: collapsed ? '0' : get('waste'),
+    marmitasPerDay: collapsed ? '0' : get('marmitasPerDay'),
     targetMargin: get('targetMargin'),
   };
 }
@@ -173,6 +181,18 @@ export function initDemo() {
   inputs.forEach((input) => {
     input.addEventListener('input', update);
   });
+
+  const demoExpandBtn = document.getElementById('demo-expand-btn');
+  const demoInputs = root.querySelector('.demo-inputs');
+  if (demoExpandBtn && demoInputs) {
+    demoExpandBtn.addEventListener('click', () => {
+      demoInputs.classList.remove('is-collapsed');
+      demoExpandBtn.hidden = true;
+      update();
+    });
+  }
+
+  window.matchMedia('(max-width: 639px)').addEventListener('change', update);
 
   update();
 }

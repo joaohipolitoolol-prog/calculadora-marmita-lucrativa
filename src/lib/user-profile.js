@@ -6,7 +6,6 @@ import {
   getDocs,
   serverTimestamp,
   setDoc,
-  updateDoc,
 } from 'firebase/firestore';
 
 const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || '')
@@ -44,7 +43,11 @@ export async function createUserProfile(uid, { email, displayName, hasPremium = 
 
 export async function updateUserProfile(uid, data) {
   if (!isFirebaseConfigured || !db) return;
-  await updateDoc(doc(db, 'users', uid), { ...data, updatedAt: serverTimestamp() });
+  await setDoc(
+    doc(db, 'users', uid),
+    { ...data, updatedAt: serverTimestamp() },
+    { merge: true }
+  );
 }
 
 export async function isUserAdmin(user, profile) {
