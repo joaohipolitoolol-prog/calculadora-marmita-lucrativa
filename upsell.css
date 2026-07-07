@@ -326,6 +326,23 @@ h2 {
   margin-bottom: 10px;
 }
 
+.upsell-hero-sub {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--brown-dark, #2a1c15);
+  margin: 10px auto 14px;
+  max-width: 30ch;
+  line-height: 1.35;
+}
+
+.upsell-hero-note {
+  margin: 14px auto 0;
+  max-width: 42ch;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--gray);
+}
+
 .upsell-badge {
   display: inline-block;
   margin: 12px 0 16px;

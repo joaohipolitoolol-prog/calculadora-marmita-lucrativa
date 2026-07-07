@@ -24,8 +24,8 @@ export const UPSELL_PRICE_LABEL =
   UPSELL_CURRENCY === 'BRL' ? `R$ ${UPSELL_PRICE_BRL}` : `US$ ${UPSELL_PRICE_USD}`;
 
 export const UPSELL_NAME = 'Paletas Premium y Combos Rentables';
-export const UPSELL_CTA_LABEL = 'Sí, quiero agregar Paletas Premium';
-export const UPSELL_DECLINE_LABEL = 'No, gracias. Continuar al acceso del kit';
+export const UPSELL_CTA_LABEL = 'Sí, agregar Paletas Premium';
+export const UPSELL_DECLINE_LABEL = 'No gracias, continuar al acceso del kit';
 
 /** Duración de la oferta única en la página de upsell (ms) */
 export const UPSELL_TIMER_MS = 10 * 60 * 1000;
