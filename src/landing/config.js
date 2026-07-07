@@ -6,8 +6,8 @@ import {
   SITE_URL,
 } from '../site/config.js';
 
-/** Link de checkout — atualizar quando tiver o link LATAM */
-export const CHECKOUT_URL = 'https://pay.kiwify.com.br/ugy1jyQ';
+/** Link de checkout — Hotmart */
+export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y';
 
 /** Página pós-compra — upsell (antes da área de membros) */
 export const POST_PURCHASE_URL = POST_PURCHASE_UPSELL_URL;
