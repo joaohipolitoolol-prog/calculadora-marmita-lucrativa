@@ -30,9 +30,33 @@ html.postres-theme {
   --font-script: 'Dancing Script', cursive;
 }
 
+html.postres-theme {
+  overflow-x: clip;
+  width: 100%;
+}
+
 body.postres-theme {
   background: linear-gradient(180deg, #FFF7FB 0%, #FFF0F6 40%, #FFF7FB 100%);
   padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  overflow-x: clip;
+  width: 100%;
+  max-width: 100%;
+}
+
+.postres-theme .container {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.postres-theme img {
+  max-width: 100%;
+  height: auto;
+}
+
+.postres-theme picture {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .postres-theme .site-header {
@@ -61,17 +85,27 @@ body.postres-theme {
   position: relative;
   margin: 16px auto 20px;
   max-width: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .postres-hero-grid {
   margin: 0;
+  width: 100%;
+  min-width: 0;
 }
 
-.postres-hero-grid picture,
+.postres-hero-grid picture {
+  display: contents;
+}
+
 .postres-hero-grid .hero-flavor-grid__item {
   display: block;
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
   object-fit: cover;
   border-radius: 16px;
 }
@@ -224,20 +258,28 @@ body.postres-theme {
 /* Product kit visuals */
 .product-kit-visuals {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin: 20px 0 24px;
+  width: 100%;
+  min-width: 0;
 }
 
-.product-kit-visuals picture,
+.product-kit-visuals picture {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-sm);
+}
+
 .product-kit-visuals img {
   display: block;
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
-  border-radius: var(--radius-sm);
-  border: 2px solid #fff;
-  box-shadow: var(--shadow-sm);
 }
 
 /* Flavors showcase */
@@ -245,28 +287,40 @@ body.postres-theme {
   background: linear-gradient(180deg, #FFF0F6 0%, #FFF7FB 100%);
   padding-top: 36px;
   padding-bottom: 36px;
+  overflow: hidden;
 }
 
 .postres-theme .visual-grid.visual-flavors {
-  grid-template-columns: repeat(2, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+  overflow: visible;
+  scroll-snap-type: none;
+  padding-bottom: 0;
+  width: 100%;
+  min-width: 0;
+  margin-top: 14px;
 }
 
-.postres-theme .visual-card {
-  background: #fff;
-  border-radius: var(--radius-sm);
+.postres-theme .visual-flavors .visual-card {
+  flex: none;
+  max-width: none;
+  width: auto;
+  margin-left: 0;
+  min-width: 0;
+}
+
+.postres-theme .visual-card picture {
+  display: block;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--gray-border);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.postres-theme .visual-card:active {
-  transform: scale(0.98);
+  border-radius: var(--radius-sm);
 }
 
 .postres-theme .visual-card-img {
   width: 100%;
+  max-width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   display: block;
@@ -281,6 +335,15 @@ body.postres-theme {
   background: #fff;
 }
 
+.postres-theme .visual-card {
+  background: #fff;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--gray-border);
+  box-shadow: var(--shadow-sm);
+  min-width: 0;
+}
+
 /* Offer */
 .postres-offer .offer-card {
   background: linear-gradient(180deg, #fff 0%, #FFF0F6 100%);
@@ -292,12 +355,19 @@ body.postres-theme {
 
 .offer-flavors-postres {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0;
   margin: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
-.offer-flavors-postres picture,
+.offer-flavors-postres picture {
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
 .offer-flavors-postres img {
   width: 100%;
   height: 72px;
@@ -364,6 +434,18 @@ body.postres-theme {
 .postres-theme .purchase-sticky-btn {
   background: var(--btn-grad);
   border: none;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.postres-theme .purchase-sticky-inner {
+  min-width: 0;
+  gap: 10px;
+}
+
+.postres-theme .purchase-sticky-info {
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* Cards polish */
@@ -406,7 +488,11 @@ body.postres-theme {
     width: 100px;
     height: 100px;
     top: 16px;
-    right: -8px;
+    right: 0;
+  }
+
+  .postres-theme .visual-grid.visual-flavors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .postres-price-badge strong {
