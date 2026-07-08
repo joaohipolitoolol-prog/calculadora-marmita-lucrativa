@@ -1,4 +1,4 @@
-import { login, resetPassword, redirectIfAuthenticated, watchAuth } from '../lib/auth.js';
+import { login, resetPassword, guardAuthPage } from '../lib/auth.js';
 import {
   getAfterLoginUrl,
   hideAlert,
@@ -21,7 +21,7 @@ if (params.get('compra') === '1') {
 
 initPasswordToggles();
 initConfigAlert();
-watchAuth((user) => redirectIfAuthenticated(user));
+guardAuthPage();
 
 loginForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -35,7 +35,7 @@ loginForm?.addEventListener('submit', async (event) => {
   try {
     const rememberMe = loginForm.querySelector('#login-remember')?.checked ?? true;
     await login(data.get('email'), data.get('password'), { rememberMe });
-    window.location.href = getAfterLoginUrl();
+    window.location.replace(getAfterLoginUrl());
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');
   } finally {

@@ -1,5 +1,5 @@
 import { WHATSAPP_SUPPORT_LINK } from '../landing/config.js';
-import { register, redirectIfAuthenticated, watchAuth } from '../lib/auth.js';
+import { register, guardAuthPage } from '../lib/auth.js';
 import {
   getAfterLoginUrl,
   hideAlert,
@@ -22,7 +22,7 @@ if (registerWaSupport) {
 
 initPasswordToggles();
 initConfigAlert();
-watchAuth((user) => redirectIfAuthenticated(user));
+guardAuthPage();
 
 if (params.get('compra') === '1' && purchaseBanner) {
   purchaseBanner.hidden = false;
@@ -50,7 +50,7 @@ registerForm?.addEventListener('submit', async (event) => {
       'success'
     );
     setTimeout(() => {
-      window.location.href = getAfterLoginUrl();
+      window.location.replace(getAfterLoginUrl());
     }, 700);
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');

@@ -11,8 +11,33 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/login/login.css">
+  <style>
+    body.auth-checking .auth-header,
+    body.auth-checking .auth-main,
+    body.auth-checking .auth-footer { visibility: hidden; }
+    body.auth-resolved .auth-checking-overlay { display: none; }
+    .auth-checking-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff6f9;
+    }
+    .auth-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #f0d4de;
+      border-top-color: #e8437a;
+      border-radius: 50%;
+      animation: auth-spin 0.7s linear infinite;
+    }
+    @keyframes auth-spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
-<body class="auth-page auth-login">
+<body class="auth-page auth-login auth-checking">
+  <div class="auth-checking-overlay" aria-hidden="true"><div class="auth-spinner"></div></div>
   <div class="auth-bg" aria-hidden="true"></div>
 
   <header class="auth-header">

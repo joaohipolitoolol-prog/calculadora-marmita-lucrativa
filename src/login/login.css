@@ -14,6 +14,17 @@
   overflow-x: hidden;
 }
 
+body.auth-resolved .auth-header,
+body.auth-resolved .auth-main,
+body.auth-resolved .auth-footer {
+  animation: auth-fade-in 0.25s ease;
+}
+
+@keyframes auth-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .auth-bg {
   position: fixed;
   inset: 0;

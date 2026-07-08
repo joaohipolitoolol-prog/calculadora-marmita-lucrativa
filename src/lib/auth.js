@@ -1,4 +1,5 @@
-import { isFirebaseConfigured } from './firebase.js';
+import { auth, isFirebaseConfigured } from './firebase.js';
+import { onAuthStateChanged } from 'firebase/auth';
 import { createUserProfile, isAdminEmail, syncAdminFlag, updateUserProfile } from './user-profile.js';
 import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
 
@@ -24,6 +25,10 @@ function createDemoUser(name, email, password) {
     hasPremium: false,
     isAdmin: isAdminEmail(email),
   };
+}
+
+function readDemoSessionRaw() {
+  return localStorage.getItem(DEMO_SESSION_KEY) || sessionStorage.getItem(DEMO_SESSION_KEY);
 }
 
 function getDemoSessionUser() {
@@ -213,14 +218,22 @@ export function watchAuth(callback) {
     return () => {};
   }
 
-  import('./firebase.js').then(({ auth, isFirebaseConfigured }) => {
-    if (!isFirebaseConfigured || !auth) {
-      callback(null);
+  if (!isFirebaseConfigured || !auth) {
+    callback(null);
+    return () => {};
+  }
+
+  return onAuthStateChanged(auth, callback);
+}
+
+export function guardAuthPage() {
+  watchAuth((user) => {
+    if (user) {
+      redirectIfAuthenticated(user);
       return;
     }
-    import('firebase/auth').then(({ onAuthStateChanged }) => {
-      onAuthStateChanged(auth, callback);
-    });
+    document.body.classList.remove('auth-checking');
+    document.body.classList.add('auth-resolved');
   });
 }
 
@@ -229,11 +242,11 @@ export function redirectIfAuthenticated(user, target) {
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
     const premium = params.get('premium') === '1';
-    window.location.href = premium ? '/app?compra=1&premium=1' : '/app?compra=1';
+    window.location.replace(premium ? '/app?compra=1&premium=1' : '/app?compra=1');
     return;
   }
   const next = params.get('next');
-  window.location.href = next && next.startsWith('/') ? next : target || '/app';
+  window.location.replace(next && next.startsWith('/') ? next : target || '/app');
 }
 
 export function redirectIfGuest(user, target = '/login') {

@@ -45,6 +45,12 @@ import {
   showOnboarding,
 } from './onboarding.js';
 import { DEV_ADMIN_ACCESS, DEV_UNLOCK_ALL_CONTENT } from '../site/dev.js';
+import {
+  bindPwaHint,
+  isPwaInstalled,
+  openPwaGuide,
+  renderPwaHintBanner,
+} from './pwa-install.js';
 
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
@@ -66,15 +72,23 @@ let kitUnlocked = true;
 let userIsAdmin = false;
 let deferredInstallPrompt = null;
 
-function isPwaInstalled() {
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true
-  );
-}
-
 function shouldShowInstallButton() {
   return !isPwaInstalled();
+}
+
+async function triggerPwaInstall() {
+  if (isPwaInstalled()) return;
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    if (outcome === 'accepted') {
+      showToast('¡App instalada!');
+      render();
+    }
+    return;
+  }
+  openPwaGuide({ deferredInstallPrompt: null, showToast });
 }
 
 if (typeof window !== 'undefined') {
@@ -668,6 +682,7 @@ function renderHome() {
     <div class="home-page">
       ${renderKitPendingBanner()}
       ${renderPostPurchaseBanner()}
+      ${renderPwaHintBanner(Boolean(deferredInstallPrompt))}
 
       <div class="home-hero ${r.status}">
         <p class="home-greeting">Hola, <strong>${name}</strong></p>
@@ -760,7 +775,7 @@ function renderProfile() {
         ${
           shouldShowInstallButton()
             ? `<button type="button" id="install-pwa" class="btn btn-secondary btn-block">
-          ${ICONS.plus}<span>Instalar en pantalla inicio</span>
+          ${ICONS.plus}<span>Añadir a pantalla de inicio</span>
         </button>`
             : ''
         }
@@ -1910,19 +1925,14 @@ function bindEvents() {
     render();
   });
 
+  bindPwaHint({
+    onInstall: triggerPwaInstall,
+    showToast,
+  });
+
   document.getElementById('profile-logout')?.addEventListener('click', signOutToLanding);
 
-  document.getElementById('install-pwa')?.addEventListener('click', async () => {
-    if (isPwaInstalled()) return;
-    if (!deferredInstallPrompt) {
-      showToast('En Chrome: menú ⋮ → Instalar app. En iPhone: Compartir → Añadir a inicio');
-      return;
-    }
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    if (outcome === 'accepted') showToast('¡App instalada!');
-  });
+  document.getElementById('install-pwa')?.addEventListener('click', triggerPwaInstall);
 
   root.querySelectorAll('.file-row.locked').forEach((el) => {
     el.addEventListener('click', (event) => {
