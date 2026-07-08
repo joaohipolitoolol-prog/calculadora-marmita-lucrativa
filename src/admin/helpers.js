@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 export function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -6,18 +8,22 @@ export function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
+function dateLocale() {
+  return t('nav.dashboard') === 'Resumo' ? 'pt-BR' : 'es';
+}
+
 export function formatDate(value) {
   if (!value) return '—';
   const d = value?.toDate ? value.toDate() : new Date(value);
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(dateLocale(), { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 export function formatDateTime(value) {
   if (!value) return '—';
   const d = value?.toDate ? value.toDate() : new Date(value);
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleString('es', {
+  return d.toLocaleString(dateLocale(), {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -31,7 +37,10 @@ export function getUserInitial(user) {
   return name.charAt(0).toUpperCase();
 }
 
-export function confirmDialog({ title, message, confirmLabel = 'Confirmar', danger = false }) {
+export function confirmDialog({ title, message, confirmLabel, danger = false }) {
+  const cancelLabel = t('modal.cancel');
+  const confirm = confirmLabel || t('modal.confirm');
+
   return new Promise((resolve) => {
     const overlay = document.createElement('div');
     overlay.className = 'admin-modal-overlay visible';
@@ -40,8 +49,8 @@ export function confirmDialog({ title, message, confirmLabel = 'Confirmar', dang
         <h3>${escapeHtml(title)}</h3>
         <p>${message}</p>
         <div class="admin-modal-actions">
-          <button type="button" class="admin-btn ghost" data-modal-cancel>Cancelar</button>
-          <button type="button" class="admin-btn ${danger ? 'danger' : 'primary'}" data-modal-confirm>${escapeHtml(confirmLabel)}</button>
+          <button type="button" class="admin-btn ghost" data-modal-cancel>${escapeHtml(cancelLabel)}</button>
+          <button type="button" class="admin-btn ${danger ? 'danger' : 'primary'}" data-modal-confirm>${escapeHtml(confirm)}</button>
         </div>
       </div>
     `;
@@ -73,11 +82,12 @@ export function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
 }
 
-export async function copyText(text, label = 'Copiado') {
+export async function copyText(text, label) {
+  const successLabel = label || t('toast.copied');
   try {
     await navigator.clipboard.writeText(text);
-    showToast(label);
+    showToast(successLabel);
   } catch {
-    showToast('No se pudo copiar');
+    showToast(t('toast.copyError'));
   }
 }

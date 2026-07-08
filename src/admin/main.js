@@ -31,6 +31,7 @@ import {
 } from '../kiwify/email-templates.js';
 import { DEV_ADMIN_ACCESS } from '../site/dev.js';
 import { confirmDialog, copyText, escapeHtml, showToast } from './helpers.js';
+import { productLabel, setAdminLang, t } from './i18n.js';
 import { renderShell } from './views.js';
 
 const root = document.getElementById('admin-root');
@@ -146,7 +147,7 @@ async function bulkUpdateProduct(productId, active) {
   for (const uid of ids) {
     await updateUserProfile(uid, { [product.field]: active });
   }
-  showToast(`${ids.length} usuario(s) actualizado(s)`);
+  showToast(t('toast.usersUpdated', { n: ids.length }));
   state.selectedUserIds.clear();
   await refreshAll();
 }
@@ -180,9 +181,19 @@ function bindEvents() {
     paint();
   });
 
-  root.querySelector('[data-close-sidebar]')?.addEventListener('click', () => {
-    state.sidebarOpen = false;
-    paint();
+  root.querySelectorAll('[data-admin-lang]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      setAdminLang(btn.dataset.adminLang);
+      state.sidebarOpen = false;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-close-sidebar]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.sidebarOpen = false;
+      paint();
+    });
   });
 
   root.querySelectorAll('[data-tab]').forEach((btn) => {
@@ -275,7 +286,7 @@ function bindEvents() {
           }
         }
       }
-      showToast('Acceso actualizado');
+      showToast(t('toast.accessUpdated'));
       await refreshAll();
       state.detailUserId = uid;
       paint();
@@ -293,9 +304,9 @@ function bindEvents() {
     const ids = Array.from(state.selectedUserIds);
     if (!ids.length) return;
     const ok = await confirmDialog({
-      title: 'Eliminar usuarios',
-      message: `Se eliminarán <strong>${ids.length}</strong> cuenta(s) permanentemente.`,
-      confirmLabel: 'Eliminar todos',
+      title: t('confirm.deleteUsers.title'),
+      message: t('confirm.deleteUsers.msg', { n: ids.length }),
+      confirmLabel: t('confirm.deleteUsers.btn'),
       danger: true,
     });
     if (!ok) return;
@@ -309,7 +320,7 @@ function bindEvents() {
       }
     }
     state.selectedUserIds.clear();
-    showToast('Usuarios eliminados');
+    showToast(t('toast.usersDeleted'));
     await refreshAll();
   });
 
@@ -320,38 +331,35 @@ function bindEvents() {
       const token = await state.currentAdminUser.getIdToken();
       const data = await syncAdminUsers(token);
       state.usersCache = data.users || [];
-      showToast(`${data.created || 0} perfil(es) sincronizado(s)`);
+      showToast(t('toast.profilesSynced', { n: data.created || 0 }));
       paint();
     } catch (error) {
-      showToast(error.message || 'Error al sincronizar');
+      showToast(error.message || t('toast.syncError'));
       btn.disabled = false;
     }
   });
 
   root.querySelector('[data-open-add-user]')?.addEventListener('click', () => {
-    const modal = document.createElement('div');
-    modal.innerHTML = document.querySelector('[data-add-user-template]')?.innerHTML || '';
-    // render modal inline
     document.body.insertAdjacentHTML(
       'beforeend',
       `
       <div class="admin-modal-overlay visible" id="add-user-modal">
         <div class="admin-modal admin-modal-lg">
-          <h3>Crear usuario</h3>
-          <p>El usuario podrá entrar con este correo y contraseña.</p>
+          <h3>${escapeHtml(t('modal.createUser.title'))}</h3>
+          <p>${escapeHtml(t('modal.createUser.sub'))}</p>
           <form id="add-user-form" class="admin-form-grid">
-            <label>Nombre<input name="displayName" type="text" required></label>
-            <label>Correo<input name="email" type="email" required></label>
-            <label>Contraseña<input name="password" type="password" required minlength="6"></label>
+            <label>${escapeHtml(t('modal.createUser.name'))}<input name="displayName" type="text" required></label>
+            <label>${escapeHtml(t('modal.createUser.email'))}<input name="email" type="email" required></label>
+            <label>${escapeHtml(t('modal.createUser.password'))}<input name="password" type="password" required minlength="6"></label>
             <div class="admin-form-products">
-              <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_kit"><span>🍓 Paletas Kit</span></label>
-              <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_premium"><span>⭐ Paletas Premium</span></label>
-              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_kit"><span>🍮 Postres Kit</span></label>
-              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_premium"><span>✨ Postres Premium</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_kit"><span>🍓 ${escapeHtml(productLabel('paletas_kit'))}</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_premium"><span>⭐ ${escapeHtml(productLabel('paletas_premium'))}</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_kit"><span>🍮 ${escapeHtml(productLabel('postres_kit'))}</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_premium"><span>✨ ${escapeHtml(productLabel('postres_premium'))}</span></label>
             </div>
             <div class="admin-modal-actions">
-              <button type="button" class="admin-btn ghost" data-close-add-user>Cancelar</button>
-              <button type="submit" class="admin-btn primary">Crear</button>
+              <button type="button" class="admin-btn ghost" data-close-add-user>${escapeHtml(t('modal.cancel'))}</button>
+              <button type="submit" class="admin-btn primary">${escapeHtml(t('modal.createUser.submit'))}</button>
             </div>
           </form>
         </div>
@@ -381,10 +389,10 @@ function bindEvents() {
         });
         state.usersCache = data.users || state.usersCache;
         document.getElementById('add-user-modal')?.remove();
-        showToast('Usuario creado');
+        showToast(t('toast.userCreated'));
         paint();
       } catch (error) {
-        showToast(error.message || 'No se pudo crear');
+        showToast(error.message || t('toast.createError'));
       }
     });
   });
@@ -397,9 +405,9 @@ function bindEvents() {
           email: btn.dataset.email,
           name: btn.dataset.name,
         });
-        showToast('Email reenviado');
+        showToast(t('toast.emailResent'));
       } catch {
-        showToast('No se pudo reenviar');
+        showToast(t('toast.emailResendFail'));
       }
     });
   });
@@ -407,13 +415,13 @@ function bindEvents() {
   root.querySelectorAll('[data-user-admin]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const ok = await confirmDialog({
-        title: 'Hacer administrador',
-        message: 'Este usuario tendrá acceso total al panel.',
-        confirmLabel: 'Confirmar',
+        title: t('confirm.makeAdmin.title'),
+        message: t('confirm.makeAdmin.msg'),
+        confirmLabel: t('modal.confirm'),
       });
       if (!ok) return;
       await updateUserProfile(btn.dataset.userAdmin, { isAdmin: true, hasKit: true });
-      showToast('Admin promovido');
+      showToast(t('toast.adminPromoted'));
       await refreshAll();
       state.detailUserId = btn.dataset.userAdmin;
       paint();
@@ -423,16 +431,16 @@ function bindEvents() {
   root.querySelectorAll('[data-user-delete]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const ok = await confirmDialog({
-        title: 'Eliminar usuario',
-        message: `Eliminar <strong>${escapeHtml(btn.dataset.email)}</strong> permanentemente.`,
-        confirmLabel: 'Eliminar',
+        title: t('confirm.deleteUser.title'),
+        message: t('confirm.deleteUser.msg', { email: escapeHtml(btn.dataset.email) }),
+        confirmLabel: t('confirm.deleteUser.btn'),
         danger: true,
       });
       if (!ok) return;
       const token = await state.currentAdminUser.getIdToken();
       await deleteUserAccount(token, btn.dataset.userDelete);
       state.detailUserId = null;
-      showToast('Usuario eliminado');
+      showToast(t('toast.userDeleted'));
       await refreshAll();
     });
   });
@@ -449,10 +457,10 @@ function bindEvents() {
       });
       form.reset();
       state.codesCache = await listAccessCodes();
-      showToast('Código creado');
+      showToast(t('toast.codeCreated'));
       paint();
     } catch (error) {
-      showToast(error.message || 'Error');
+      showToast(error.message || t('toast.error'));
     }
   });
 
@@ -460,7 +468,7 @@ function bindEvents() {
     btn.addEventListener('click', async () => {
       await toggleAccessCode(btn.dataset.codeToggle, btn.dataset.active !== 'true');
       state.codesCache = await listAccessCodes();
-      showToast('Código actualizado');
+      showToast(t('toast.codeUpdated'));
       paint();
     });
   });
@@ -468,15 +476,15 @@ function bindEvents() {
   root.querySelectorAll('[data-code-delete]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const ok = await confirmDialog({
-        title: 'Eliminar código',
-        message: 'Esta acción no se puede deshacer.',
-        confirmLabel: 'Eliminar',
+        title: t('confirm.deleteCode.title'),
+        message: t('confirm.deleteCode.msg'),
+        confirmLabel: t('confirm.deleteUser.btn'),
         danger: true,
       });
       if (!ok) return;
       await deleteAccessCode(btn.dataset.codeDelete);
       state.codesCache = await listAccessCodes();
-      showToast('Código eliminado');
+      showToast(t('toast.codeDeleted'));
       paint();
     });
   });
@@ -489,17 +497,17 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       const html =
         btn.dataset.copyHtml === 'premium' ? kiwifyPremiumEmailHtml() : kiwifyKitEmailHtml();
-      copyText(html, 'HTML copiado');
+      copyText(html, t('toast.htmlCopied'));
     });
   });
 }
 
 function renderLoading() {
-  root.innerHTML = `<div class="admin-loading-screen"><div class="admin-spinner"></div><p>Cargando panel...</p></div>`;
+  root.innerHTML = `<div class="admin-loading-screen"><div class="admin-spinner"></div><p>${escapeHtml(t('loading'))}</p></div>`;
 }
 
 function renderDenied(message) {
-  root.innerHTML = `<div class="admin-error"><div class="admin-error-card"><h1>Acceso restringido</h1><p>${escapeHtml(message)}</p><a href="/login" class="admin-btn primary">Ir al login</a></div></div>`;
+  root.innerHTML = `<div class="admin-error"><div class="admin-error-card"><h1>${escapeHtml(t('denied.title'))}</h1><p>${escapeHtml(message)}</p><a href="/login" class="admin-btn primary">${escapeHtml(t('denied.login'))}</a></div></div>`;
 }
 
 renderLoading();
@@ -511,14 +519,14 @@ watchAuth(async (user) => {
       return;
     }
     if (!isFirebaseConfigured) {
-      renderDenied('Firebase no está configurado.');
+      renderDenied(t('denied.noFirebase'));
       return;
     }
 
     let profile = await getUserProfile(user.uid);
     const admin = (await isUserAdmin(user, profile)) || DEV_ADMIN_ACCESS;
     if (!admin) {
-      renderDenied('Tu cuenta no tiene permisos de administrador.');
+      renderDenied(t('denied.noAdmin'));
       return;
     }
 
@@ -537,6 +545,6 @@ watchAuth(async (user) => {
     paint();
   } catch (error) {
     console.error('[admin]', error);
-    renderDenied(error.message || 'Error al cargar el panel');
+    renderDenied(error.message || t('denied.loadError'));
   }
 });

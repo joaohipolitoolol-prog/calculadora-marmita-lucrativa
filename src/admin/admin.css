@@ -779,6 +779,58 @@ body {
   max-width: 520px;
 }
 
+.admin-sidebar-top {
+  display: contents;
+}
+
+.admin-sidebar-close {
+  display: none;
+}
+
+.admin-lang-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-lang-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-right: 4px;
+}
+
+.admin-lang-btn {
+  min-width: 36px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.admin-lang-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.admin-lang-btn.active {
+  background: rgba(232, 67, 122, 0.28);
+  border-color: rgba(232, 67, 122, 0.45);
+  color: #fff;
+}
+
 /* ── Stats ── */
 
 .admin-stats {
@@ -1381,8 +1433,13 @@ body {
 }
 
 @media (max-width: 768px) {
+  body.admin-sidebar-open {
+    overflow: hidden;
+  }
+
   .admin-sidebar {
     transform: translateX(-100%);
+    z-index: 50;
   }
 
   .admin-sidebar.open {
@@ -1390,10 +1447,43 @@ body {
     box-shadow: var(--shadow-lg);
   }
 
-  .admin-sidebar-overlay.visible {
+  .admin-sidebar-overlay {
     display: block;
+    z-index: 45;
+  }
+
+  .admin-sidebar-overlay.visible {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .admin-sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-right: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .admin-sidebar-top .admin-brand {
+    border-bottom: none;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .admin-sidebar-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
   }
 
   .admin-main {

@@ -19,11 +19,3 @@ export const ICONS = {
   plus: svg('<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'),
   sync: svg('<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/>'),
 };
-
-export const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Resumen', icon: 'dashboard' },
-  { id: 'users', label: 'Usuarios', icon: 'users' },
-  { id: 'analytics', label: 'Tráfico', icon: 'analytics' },
-  { id: 'codes', label: 'Códigos', icon: 'key' },
-  { id: 'kiwify', label: 'Kiwify', icon: 'mail' },
-];

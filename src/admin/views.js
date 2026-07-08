@@ -1,31 +1,16 @@
 import { PRODUCTS, profileStatus } from '../lib/products.js';
-import { ICONS, NAV_ITEMS } from './icons.js';
+import { ICONS } from './icons.js';
 import { escapeHtml, formatDate, formatDateTime, getUserInitial } from './helpers.js';
-
-export const VIEW_META = {
-  dashboard: { title: 'Resumen', subtitle: 'Métricas, usuarios y accesos' },
-  users: { title: 'Usuarios', subtitle: 'Control total de accesos por producto' },
-  analytics: { title: 'Tráfico', subtitle: 'Visitas en landing pages' },
-  codes: { title: 'Códigos', subtitle: 'Códigos de liberación automática' },
-  kiwify: { title: 'Kiwify', subtitle: 'Enlaces y plantillas de email' },
-};
-
-export const USER_FILTERS = [
-  { id: 'all', label: 'Todos' },
-  { id: 'pending', label: 'Pendientes' },
-  { id: 'active', label: 'Con acceso' },
-  { id: 'premium', label: 'Con upsell' },
-  { id: 'orphan', label: 'Sin perfil' },
-];
-
-export const CODE_TYPES = [
-  { value: 'kit', label: 'Kit Paletas' },
-  { value: 'premium', label: 'Premium Paletas' },
-  { value: 'both', label: 'Paletas completo' },
-  { value: 'postres_kit', label: 'Kit Postres' },
-  { value: 'postres_premium', label: 'Premium Postres' },
-  { value: 'postres_both', label: 'Postres completo' },
-];
+import {
+  ADMIN_LANGS,
+  getAdminLang,
+  getCodeTypes,
+  getNavItems,
+  getUserFilters,
+  getViewMeta,
+  productLabel,
+  t,
+} from './i18n.js';
 
 export function getStats(users) {
   return {
@@ -66,51 +51,51 @@ export function filterUsers(users, userFilter, userSearch) {
 
 function renderProductPills(user) {
   const active = PRODUCTS.filter((p) => user[p.field]);
-  if (!active.length) return '<span class="admin-pill muted">Sin acceso</span>';
+  if (!active.length) return `<span class="admin-pill muted">${t('pill.noAccess')}</span>`;
   return active
     .map(
       (p) =>
-        `<span class="admin-pill ${p.tier === 'upsell' ? 'gold' : 'active'}" title="${escapeHtml(p.label)}">${p.emoji} ${escapeHtml(p.short)}</span>`
+        `<span class="admin-pill ${p.tier === 'upsell' ? 'gold' : 'active'}" title="${escapeHtml(productLabel(p.id))}">${p.emoji} ${escapeHtml(p.short)}</span>`
     )
     .join('');
 }
 
 function renderStatusBadge(user) {
   const status = profileStatus(user);
-  if (status === 'admin') return '<span class="admin-badge admin">Admin</span>';
-  if (status === 'orphan') return '<span class="admin-badge warn">Sin perfil</span>';
-  if (status === 'active') return '<span class="admin-badge active">Activo</span>';
-  return '<span class="admin-badge pending">Pendiente</span>';
+  if (status === 'admin') return `<span class="admin-badge admin">${t('status.admin')}</span>`;
+  if (status === 'orphan') return `<span class="admin-badge warn">${t('status.orphan')}</span>`;
+  if (status === 'active') return `<span class="admin-badge active">${t('status.active')}</span>`;
+  return `<span class="admin-badge pending">${t('status.pending')}</span>`;
 }
 
 export function renderStatsGrid(stats, analytics) {
   return `
     <div class="admin-stats">
       <div class="admin-stat">
-        <span class="admin-stat-label">Usuarios</span>
+        <span class="admin-stat-label">${t('stat.users')}</span>
         <span class="admin-stat-value">${stats.total}</span>
       </div>
       <div class="admin-stat accent-green">
-        <span class="admin-stat-label">Con acceso</span>
+        <span class="admin-stat-label">${t('stat.active')}</span>
         <span class="admin-stat-value">${stats.active}</span>
       </div>
       <div class="admin-stat accent-warn">
-        <span class="admin-stat-label">Pendientes</span>
+        <span class="admin-stat-label">${t('stat.pending')}</span>
         <span class="admin-stat-value">${stats.pending}</span>
       </div>
       <div class="admin-stat accent-gold">
-        <span class="admin-stat-label">Upsell activo</span>
+        <span class="admin-stat-label">${t('stat.upsell')}</span>
         <span class="admin-stat-value">${stats.premium}</span>
       </div>
       ${
         analytics
           ? `
       <div class="admin-stat accent-blue">
-        <span class="admin-stat-label">Visitas hoy</span>
+        <span class="admin-stat-label">${t('stat.visitsToday')}</span>
         <span class="admin-stat-value">${analytics.todayTotal || 0}</span>
       </div>
       <div class="admin-stat accent-purple">
-        <span class="admin-stat-label">Visitas total</span>
+        <span class="admin-stat-label">${t('stat.visitsTotal')}</span>
         <span class="admin-stat-value">${analytics.allTimeTotal || 0}</span>
       </div>`
           : ''
@@ -122,28 +107,34 @@ export function renderStatsGrid(stats, analytics) {
 export function renderUserFilters(userFilter) {
   return `
     <div class="admin-filters">
-      ${USER_FILTERS.map(
-        (f) => `
+      ${getUserFilters()
+        .map(
+          (f) => `
         <button type="button" class="admin-filter-chip ${userFilter === f.id ? 'active' : ''}" data-user-filter="${f.id}">
           ${f.label}
         </button>`
-      ).join('')}
+        )
+        .join('')}
     </div>
   `;
 }
 
 export function renderBulkBar(selectedCount) {
   if (!selectedCount) return '';
+  const label =
+    selectedCount === 1
+      ? `1 ${t('bulk.selected')}`
+      : `${selectedCount} ${t('bulk.selectedPlural')}`;
   return `
     <div class="admin-bulk-bar">
-      <span><strong>${selectedCount}</strong> seleccionado${selectedCount > 1 ? 's' : ''}</span>
+      <span><strong>${label}</strong></span>
       <div class="admin-bulk-actions">
-        <button type="button" class="admin-btn sm success" data-bulk-product="paletas_kit" data-value="1">+ Paletas Kit</button>
-        <button type="button" class="admin-btn sm ghost" data-bulk-product="paletas_kit" data-value="0">− Paletas Kit</button>
-        <button type="button" class="admin-btn sm success" data-bulk-product="paletas_premium" data-value="1">+ Premium</button>
-        <button type="button" class="admin-btn sm ghost" data-bulk-product="paletas_premium" data-value="0">− Premium</button>
-        <button type="button" class="admin-btn sm success" data-bulk-product="postres_kit" data-value="1">+ Postres</button>
-        <button type="button" class="admin-btn sm danger" data-bulk-delete>Eliminar</button>
+        <button type="button" class="admin-btn sm success" data-bulk-product="paletas_kit" data-value="1">${t('bulk.addPaletas')}</button>
+        <button type="button" class="admin-btn sm ghost" data-bulk-product="paletas_kit" data-value="0">${t('bulk.removePaletas')}</button>
+        <button type="button" class="admin-btn sm success" data-bulk-product="paletas_premium" data-value="1">${t('bulk.addPremium')}</button>
+        <button type="button" class="admin-btn sm ghost" data-bulk-product="paletas_premium" data-value="0">${t('bulk.removePremium')}</button>
+        <button type="button" class="admin-btn sm success" data-bulk-product="postres_kit" data-value="1">${t('bulk.addPostres')}</button>
+        <button type="button" class="admin-btn sm danger" data-bulk-delete>${t('bulk.delete')}</button>
       </div>
     </div>
   `;
@@ -156,13 +147,13 @@ export function renderUsersTable(users, selectedIds, allSelected) {
         <thead>
           <tr>
             <th class="col-check">
-              <input type="checkbox" id="select-all-users" ${allSelected ? 'checked' : ''} aria-label="Seleccionar todos">
+              <input type="checkbox" id="select-all-users" ${allSelected ? 'checked' : ''} aria-label="${t('table.selectAll')}">
             </th>
-            <th>Usuario</th>
-            <th>Productos</th>
-            <th>Estado</th>
-            <th>Registro</th>
-            <th class="col-actions">Acciones</th>
+            <th>${t('table.user')}</th>
+            <th>${t('table.products')}</th>
+            <th>${t('table.status')}</th>
+            <th>${t('table.registered')}</th>
+            <th class="col-actions">${t('table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -175,22 +166,22 @@ export function renderUsersTable(users, selectedIds, allSelected) {
                     return `
             <tr data-user-row="${u.id}" class="${u.missingProfile ? 'row-warn' : ''}">
               <td class="col-check">
-                <input type="checkbox" class="user-select" data-user-select="${u.id}" ${checked} ${isSelf ? 'disabled' : ''} aria-label="Seleccionar usuario">
+                <input type="checkbox" class="user-select" data-user-select="${u.id}" ${checked} ${isSelf ? 'disabled' : ''} aria-label="${t('table.selectUser')}">
               </td>
               <td class="user-cell">
-                <strong>${escapeHtml(u.displayName || 'Sin nombre')}</strong>
+                <strong>${escapeHtml(u.displayName || t('table.noName'))}</strong>
                 <span>${escapeHtml(u.email || '—')}</span>
               </td>
               <td><div class="admin-pill-row">${renderProductPills(u)}</div></td>
               <td>${renderStatusBadge(u)}</td>
               <td>${formatDate(u.createdAt)}</td>
               <td class="col-actions">
-                <button type="button" class="admin-icon-btn" data-user-view="${u.id}" title="Ver detalle">${ICONS.eye}</button>
+                <button type="button" class="admin-icon-btn" data-user-view="${u.id}" title="${t('table.viewDetail')}">${ICONS.eye}</button>
               </td>
             </tr>`;
                   })
                   .join('')
-              : `<tr><td colspan="6" class="admin-table-empty">Ningún usuario coincide con el filtro.</td></tr>`
+              : `<tr><td colspan="6" class="admin-table-empty">${t('table.noMatch')}</td></tr>`
           }
         </tbody>
       </table>
@@ -205,8 +196,8 @@ export function renderUserDrawer(user) {
     (p) => `
     <label class="admin-toggle-row">
       <div>
-        <strong>${p.emoji} ${escapeHtml(p.label)}</strong>
-        <span>${p.tier === 'upsell' ? 'Upsell' : 'Producto principal'}</span>
+        <strong>${p.emoji} ${escapeHtml(productLabel(p.id))}</strong>
+        <span>${p.tier === 'upsell' ? t('drawer.upsell') : t('drawer.mainProduct')}</span>
       </div>
       <input type="checkbox" data-drawer-product="${p.id}" data-user-id="${user.id}" ${user[p.field] ? 'checked' : ''}>
     </label>`
@@ -214,45 +205,41 @@ export function renderUserDrawer(user) {
 
   return `
     <div class="admin-drawer-overlay visible" data-close-drawer></div>
-    <aside class="admin-drawer open" aria-label="Detalle de usuario">
+    <aside class="admin-drawer open" aria-label="${t('drawer.title')}">
       <div class="admin-drawer-head">
         <div class="admin-drawer-user">
           <span class="admin-user-avatar lg">${escapeHtml(getUserInitial(user))}</span>
           <div>
-            <h2>${escapeHtml(user.displayName || 'Sin nombre')}</h2>
+            <h2>${escapeHtml(user.displayName || t('table.noName'))}</h2>
             <p>${escapeHtml(user.email || '—')}</p>
           </div>
         </div>
-        <button type="button" class="admin-icon-btn" data-close-drawer aria-label="Cerrar">${ICONS.close}</button>
+        <button type="button" class="admin-icon-btn" data-close-drawer aria-label="${t('drawer.close')}">${ICONS.close}</button>
       </div>
       <div class="admin-drawer-body">
-        ${
-          user.missingProfile
-            ? `<div class="admin-alert warn">Este usuario existe en Auth pero no tenía perfil en Firestore. Ya aparece aquí para que puedas gestionarlo.</div>`
-            : ''
-        }
+        ${user.missingProfile ? `<div class="admin-alert warn">${t('drawer.orphanWarn')}</div>` : ''}
         <div class="admin-detail-grid">
           <div><span>UID</span><code>${escapeHtml(user.id)}</code></div>
-          <div><span>Origen</span><strong>${escapeHtml(user.registeredFrom || '—')}</strong></div>
-          <div><span>Registro</span><strong>${formatDateTime(user.createdAt)}</strong></div>
-          <div><span>Último acceso</span><strong>${formatDateTime(user.lastLoginAt)}</strong></div>
+          <div><span>${t('drawer.origin')}</span><strong>${escapeHtml(user.registeredFrom || '—')}</strong></div>
+          <div><span>${t('drawer.registered')}</span><strong>${formatDateTime(user.createdAt)}</strong></div>
+          <div><span>${t('drawer.lastLogin')}</span><strong>${formatDateTime(user.lastLoginAt)}</strong></div>
         </div>
-        <h3>Productos y accesos</h3>
+        <h3>${t('drawer.products')}</h3>
         <div class="admin-toggle-list">${productToggles}</div>
         <div class="admin-drawer-actions">
           ${
             user.hasKit && user.email
-              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}">${ICONS.mailSend} Reenviar email</button>`
+              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}">${ICONS.mailSend} ${t('drawer.resendEmail')}</button>`
               : ''
           }
           ${
             !user.isAdmin && user.id !== window.__adminSelfUid
-              ? `<button type="button" class="admin-btn ghost" data-user-admin="${user.id}">Hacer admin</button>`
+              ? `<button type="button" class="admin-btn ghost" data-user-admin="${user.id}">${t('drawer.makeAdmin')}</button>`
               : ''
           }
           ${
             !user.isAdmin && user.id !== window.__adminSelfUid
-              ? `<button type="button" class="admin-btn danger" data-user-delete="${user.id}" data-email="${escapeHtml(user.email || '')}">${ICONS.trash} Eliminar</button>`
+              ? `<button type="button" class="admin-btn danger" data-user-delete="${user.id}" data-email="${escapeHtml(user.email || '')}">${ICONS.trash} ${t('drawer.delete')}</button>`
               : ''
           }
         </div>
@@ -261,38 +248,9 @@ export function renderUserDrawer(user) {
   `;
 }
 
-export function renderAddUserModal() {
-  return `
-    <div class="admin-modal-overlay visible" data-close-modal>
-      <div class="admin-modal admin-modal-lg" role="dialog" aria-modal="true">
-        <h3>Crear usuario</h3>
-        <p>El usuario podrá entrar con este correo y contraseña. Puedes activar productos ahora o después.</p>
-        <form id="add-user-form" class="admin-form-grid">
-          <label>Nombre<input name="displayName" type="text" required placeholder="Nombre"></label>
-          <label>Correo<input name="email" type="email" required placeholder="correo@ejemplo.com"></label>
-          <label>Contraseña<input name="password" type="password" required minlength="6" placeholder="Mínimo 6 caracteres"></label>
-          <div class="admin-form-products">
-            ${PRODUCTS.map(
-              (p) => `
-              <label class="admin-check-card">
-                <input type="checkbox" name="product" value="${p.id}">
-                <span>${p.emoji} ${escapeHtml(p.label)}</span>
-              </label>`
-            ).join('')}
-          </div>
-          <div class="admin-modal-actions">
-            <button type="button" class="admin-btn ghost" data-close-modal>Cancelar</button>
-            <button type="submit" class="admin-btn primary">Crear usuario</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  `;
-}
-
 export function renderAnalyticsView(analytics) {
   if (!analytics) {
-    return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">Cargando métricas...</p></div></div>`;
+    return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">${t('analytics.loading')}</p></div></div>`;
   }
 
   const pages = analytics.pages || [];
@@ -301,11 +259,11 @@ export function renderAnalyticsView(analytics) {
   return `
     ${renderStatsGrid({ total: 0, pending: 0, active: 0, premium: 0 }, analytics)}
     <div class="admin-card">
-      <div class="admin-card-head"><h2>Landing pages</h2></div>
+      <div class="admin-card-head"><h2>${t('analytics.landingPages')}</h2></div>
       <div class="admin-card-body flush">
         <div class="admin-table-wrap">
           <table class="admin-table">
-            <thead><tr><th>Página</th><th>Ruta</th><th>Hoy</th><th>Total</th></tr></thead>
+            <thead><tr><th>${t('analytics.page')}</th><th>${t('analytics.path')}</th><th>${t('analytics.today')}</th><th>${t('analytics.total')}</th></tr></thead>
             <tbody>
               ${
                 pages.length
@@ -320,7 +278,7 @@ export function renderAnalyticsView(analytics) {
                 </tr>`
                       )
                       .join('')
-                  : `<tr><td colspan="4" class="admin-table-empty">Aún no hay visitas registradas.</td></tr>`
+                  : `<tr><td colspan="4" class="admin-table-empty">${t('analytics.noVisits')}</td></tr>`
               }
             </tbody>
           </table>
@@ -331,7 +289,7 @@ export function renderAnalyticsView(analytics) {
       history.length
         ? `
     <div class="admin-card">
-      <div class="admin-card-head"><h2>Últimos 14 días</h2></div>
+      <div class="admin-card-head"><h2>${t('analytics.last14')}</h2></div>
       <div class="admin-card-body">
         <div class="admin-history-bars">
           ${history
@@ -341,7 +299,7 @@ export function renderAnalyticsView(analytics) {
               const max = Math.max(...history.map((d) => d.total || 0), 1);
               const height = Math.round(((day.total || 0) / max) * 100);
               return `
-              <div class="admin-history-bar" title="${day.date}: ${day.total || 0} visitas">
+              <div class="admin-history-bar" title="${day.date}: ${day.total || 0} ${t('analytics.visits')}">
                 <div class="admin-history-fill" style="height:${height}%"></div>
                 <span>${String(day.date).slice(5)}</span>
               </div>`;
@@ -363,19 +321,19 @@ export function renderDashboardView(users, analytics) {
     ${renderStatsGrid(stats, analytics)}
     ${
       stats.orphans
-        ? `<div class="admin-alert warn">Hay <strong>${stats.orphans}</strong> usuario(s) en Auth sin perfil completo. Usa <em>Sincronizar</em> en Usuarios para corregirlo.</div>`
+        ? `<div class="admin-alert warn">${t('dashboard.orphanWarn', { n: stats.orphans })}</div>`
         : ''
     }
     <div class="admin-grid-2">
       <div class="admin-card">
         <div class="admin-card-head">
-          <div><h2>Pendientes de liberación</h2><p>Compraron pero aún no tienen acceso.</p></div>
-          <button type="button" class="admin-btn ghost" data-tab="users">Ver todos</button>
+          <div><h2>${t('dashboard.pendingTitle')}</h2><p>${t('dashboard.pendingSub')}</p></div>
+          <button type="button" class="admin-btn ghost" data-tab="users">${t('dashboard.viewAll')}</button>
         </div>
         <div class="admin-card-body flush">${renderUsersTable(pending, new Set(), false)}</div>
       </div>
       <div class="admin-card">
-        <div class="admin-card-head"><div><h2>Tráfico rápido</h2><p>Visitas en landing pages hoy.</p></div></div>
+        <div class="admin-card-head"><div><h2>${t('dashboard.trafficTitle')}</h2><p>${t('dashboard.trafficSub')}</p></div></div>
         <div class="admin-card-body">
           ${
             analytics?.pages?.length
@@ -388,7 +346,7 @@ export function renderDashboardView(users, analytics) {
               </div>`
                   )
                   .join('')
-              : '<p class="admin-table-empty">Sin datos de tráfico aún.</p>'
+              : `<p class="admin-table-empty">${t('dashboard.noTraffic')}</p>`
           }
         </div>
       </div>
@@ -403,14 +361,14 @@ export function renderUsersView(users, selectedIds, userFilter, userSearch) {
   return `
     ${renderStatsGrid(getStats(users))}
     <div class="admin-toolbar">
-      <button type="button" class="admin-btn primary" data-open-add-user>${ICONS.plus} Crear usuario</button>
-      <button type="button" class="admin-btn ghost" data-sync-users>${ICONS.sync} Sincronizar perfiles</button>
+      <button type="button" class="admin-btn primary" data-open-add-user>${ICONS.plus} ${t('users.create')}</button>
+      <button type="button" class="admin-btn ghost" data-sync-users>${ICONS.sync} ${t('users.sync')}</button>
     </div>
     ${renderBulkBar(selectedIds.size)}
     <div class="admin-card">
       <div class="admin-card-head">
-        <div><h2>Usuarios</h2><p>Selecciona uno o varios para acciones en masa. Usa el ojo para ver detalle.</p></div>
-        <div class="admin-search">${ICONS.search}<input type="search" id="user-search" placeholder="Buscar..." value="${escapeHtml(userSearch)}" autocomplete="off"></div>
+        <div><h2>${t('users.title')}</h2><p>${t('users.hint')}</p></div>
+        <div class="admin-search">${ICONS.search}<input type="search" id="user-search" placeholder="${t('users.search')}" value="${escapeHtml(userSearch)}" autocomplete="off"></div>
       </div>
       <div class="admin-card-body">
         ${renderUserFilters(userFilter)}
@@ -423,17 +381,17 @@ export function renderUsersView(users, selectedIds, userFilter, userSearch) {
 export function renderCodesView(codes) {
   return `
     <div class="admin-card">
-      <div class="admin-card-head"><div><h2>Códigos de acceso</h2><p>Link: <code>/cadastrar?code=TUCODIGO</code></p></div></div>
+      <div class="admin-card-head"><div><h2>${t('codes.title')}</h2><p>${t('codes.hint')}</p></div></div>
       <div class="admin-card-body">
         <form class="codes-form" id="codes-form">
-          <label>Código<input type="text" name="code" required placeholder="ej. postres2026" autocomplete="off"></label>
-          <label>Tipo<select name="type">${CODE_TYPES.map((t) => `<option value="${t.value}">${t.label}</option>`).join('')}</select></label>
-          <label>Máx. usos<input type="number" name="maxUses" min="1" placeholder="Ilimitado"></label>
-          <button type="submit" class="admin-btn primary">Crear</button>
+          <label>${t('codes.code')}<input type="text" name="code" required placeholder="postres2026" autocomplete="off"></label>
+          <label>${t('codes.type')}<select name="type">${getCodeTypes().map((ct) => `<option value="${ct.value}">${ct.label}</option>`).join('')}</select></label>
+          <label>${t('codes.maxUses')}<input type="number" name="maxUses" min="1" placeholder="${t('codes.unlimited')}"></label>
+          <button type="submit" class="admin-btn primary">${t('codes.create')}</button>
         </form>
         <div class="admin-table-wrap flush">
           <table class="admin-table">
-            <thead><tr><th>Código</th><th>Tipo</th><th>Usos</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>${t('codes.code')}</th><th>${t('codes.type')}</th><th>${t('codes.uses')}</th><th>${t('table.status')}</th><th>${t('table.actions')}</th></tr></thead>
             <tbody>
               ${
                 codes.length
@@ -448,18 +406,18 @@ export function renderCodesView(codes) {
                   <td><code>${escapeHtml(code.code)}</code></td>
                   <td>${escapeHtml(code.type)}</td>
                   <td>${uses}</td>
-                  <td>${code.active ? '<span class="admin-badge active">Activo</span>' : '<span class="admin-badge pending">Inactivo</span>'}</td>
+                  <td>${code.active ? `<span class="admin-badge active">${t('status.active')}</span>` : `<span class="admin-badge pending">${t('status.inactive')}</span>`}</td>
                   <td>
                     <div class="admin-actions-row">
                       <button type="button" class="admin-btn sm ghost copy-btn" data-copy="${encodeURIComponent(code.code)}">${ICONS.copy}</button>
-                      <button type="button" class="admin-btn sm ghost" data-code-toggle="${code.id}" data-active="${Boolean(code.active)}">${code.active ? 'Desactivar' : 'Activar'}</button>
+                      <button type="button" class="admin-btn sm ghost" data-code-toggle="${code.id}" data-active="${Boolean(code.active)}">${code.active ? t('codes.deactivate') : t('codes.activate')}</button>
                       <button type="button" class="admin-btn sm danger" data-code-delete="${code.id}">${ICONS.trash}</button>
                     </div>
                   </td>
                 </tr>`;
                       })
                       .join('')
-                  : `<tr><td colspan="5" class="admin-table-empty">Sin códigos creados.</td></tr>`
+                  : `<tr><td colspan="5" class="admin-table-empty">${t('codes.empty')}</td></tr>`
               }
             </tbody>
           </table>
@@ -473,63 +431,84 @@ export function renderKiwifyView(kiwifySubTab, kiwifyContent) {
   return `
     <div class="admin-card">
       <div class="admin-tabs">
-        <button type="button" class="admin-tab ${kiwifySubTab === 'urls' ? 'active' : ''}" data-kiwify-tab="urls">Enlaces</button>
-        <button type="button" class="admin-tab ${kiwifySubTab === 'kit' ? 'active' : ''}" data-kiwify-tab="kit">Email kit</button>
-        <button type="button" class="admin-tab ${kiwifySubTab === 'premium' ? 'active' : ''}" data-kiwify-tab="premium">Email premium</button>
+        <button type="button" class="admin-tab ${kiwifySubTab === 'urls' ? 'active' : ''}" data-kiwify-tab="urls">${t('kiwify.urls')}</button>
+        <button type="button" class="admin-tab ${kiwifySubTab === 'kit' ? 'active' : ''}" data-kiwify-tab="kit">${t('kiwify.emailKit')}</button>
+        <button type="button" class="admin-tab ${kiwifySubTab === 'premium' ? 'active' : ''}" data-kiwify-tab="premium">${t('kiwify.emailPremium')}</button>
       </div>
       <div class="admin-card-body">${kiwifyContent}</div>
     </div>
   `;
 }
 
-export function renderSidebar(activeTab, users, user) {
+function renderLangSwitcher() {
+  const current = getAdminLang();
+  return `
+    <div class="admin-lang-switch" role="group" aria-label="${t('sidebar.lang')}">
+      <span class="admin-lang-label">${t('sidebar.lang')}</span>
+      ${ADMIN_LANGS.map(
+        (lang) => `
+        <button type="button" class="admin-lang-btn ${current === lang.id ? 'active' : ''}" data-admin-lang="${lang.id}">${lang.label}</button>`
+      ).join('')}
+    </div>
+  `;
+}
+
+export function renderSidebar(activeTab, users, user, sidebarOpen) {
   const stats = getStats(users);
   const pendingBadge = stats.pending > 0 ? `<span class="admin-nav-badge">${stats.pending}</span>` : '';
   const orphanBadge = stats.orphans > 0 ? `<span class="admin-nav-badge warn">${stats.orphans}</span>` : '';
+  const navItems = getNavItems();
 
   return `
-    <aside class="admin-sidebar" aria-label="Navegación admin">
-      <div class="admin-brand">
-        <div class="admin-brand-mark">🍓</div>
-        <div class="admin-brand-text"><strong>Paletas Admin</strong><span>Panel premium</span></div>
+    <aside class="admin-sidebar ${sidebarOpen ? 'open' : ''}" aria-label="Admin navigation">
+      <div class="admin-sidebar-top">
+        <div class="admin-brand">
+          <div class="admin-brand-mark">🍓</div>
+          <div class="admin-brand-text"><strong>${t('sidebar.brand')}</strong><span>${t('sidebar.sub')}</span></div>
+        </div>
+        <button type="button" class="admin-sidebar-close" data-close-sidebar aria-label="${t('sidebar.close')}">${ICONS.close}</button>
       </div>
       <nav class="admin-nav">
-        ${NAV_ITEMS.map((item) => {
-          let badge = '';
-          if (item.id === 'users') badge = pendingBadge || orphanBadge;
-          return `
+        ${navItems
+          .map((item) => {
+            let badge = '';
+            if (item.id === 'users') badge = pendingBadge || orphanBadge;
+            return `
           <button type="button" class="admin-nav-item ${activeTab === item.id ? 'active' : ''}" data-tab="${item.id}">
             ${ICONS[item.icon]}<span>${item.label}</span>${badge}
           </button>`;
-        }).join('')}
+          })
+          .join('')}
       </nav>
       <div class="admin-sidebar-foot">
+        ${renderLangSwitcher()}
         <div class="admin-user-chip">
           <span class="admin-user-avatar">${escapeHtml(getUserInitial(user))}</span>
           <div class="admin-user-meta"><strong>${escapeHtml(user.displayName || 'Admin')}</strong><span>${escapeHtml(user.email || '')}</span></div>
         </div>
-        <a href="/app" class="admin-foot-link">${ICONS.app} Área miembros</a>
-        <button type="button" class="admin-foot-logout" id="admin-logout">${ICONS.logout} Salir</button>
+        <a href="/app" class="admin-foot-link">${ICONS.app} ${t('sidebar.members')}</a>
+        <button type="button" class="admin-foot-logout" id="admin-logout">${ICONS.logout} ${t('sidebar.logout')}</button>
       </div>
     </aside>
   `;
 }
 
-export function renderShell({
-  activeTab,
-  users,
-  codes,
-  analytics,
-  selectedIds,
-  userFilter,
-  userSearch,
-  detailUser,
-  kiwifySubTab,
-  kiwifyContent,
-  user,
-  sidebarOpen,
-}) {
-  const meta = VIEW_META[activeTab] || VIEW_META.dashboard;
+export function renderShell(props) {
+  const {
+    activeTab,
+    users,
+    codes,
+    analytics,
+    selectedIds,
+    userFilter,
+    userSearch,
+    detailUser,
+    kiwifySubTab,
+    kiwifyContent,
+    user,
+    sidebarOpen,
+  } = props;
+  const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
 
   switch (activeTab) {
@@ -549,13 +528,15 @@ export function renderShell({
       content = renderDashboardView(users, analytics);
   }
 
+  document.body.classList.toggle('admin-sidebar-open', Boolean(sidebarOpen));
+
   return `
     <div class="admin-layout">
       <div class="admin-sidebar-overlay ${sidebarOpen ? 'visible' : ''}" data-close-sidebar></div>
-      ${renderSidebar(activeTab, users, user)}
+      ${renderSidebar(activeTab, users, user, sidebarOpen)}
       <div class="admin-main">
         <header class="admin-header">
-          <button type="button" class="admin-menu-btn" id="admin-menu-toggle">${ICONS.menu}</button>
+          <button type="button" class="admin-menu-btn" id="admin-menu-toggle" aria-label="Menu">${ICONS.menu}</button>
           <div class="admin-header-titles"><h1>${meta.title}</h1><p>${meta.subtitle}</p></div>
         </header>
         <main class="admin-content"><div class="admin-content-inner">${content}</div></main>
