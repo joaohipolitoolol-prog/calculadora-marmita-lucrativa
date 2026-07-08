@@ -11,6 +11,8 @@ export default defineConfig({
         app: resolve(__dirname, 'app.html'),
         membros: resolve(__dirname, 'membros.html'),
         upsell: resolve(__dirname, 'upsell-paletas-premium.html'),
+        postres: resolve(__dirname, 'postres.html'),
+        postresUpsell: resolve(__dirname, 'postres-upsell.html'),
         admin: resolve(__dirname, 'admin.html'),
         acesso: resolve(__dirname, 'acesso.html'),
       },

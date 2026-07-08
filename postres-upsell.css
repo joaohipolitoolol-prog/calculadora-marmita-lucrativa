@@ -1,0 +1,38 @@
+@import './src/styles/tokens.css';
+@import './upsell.css';
+
+html.postres-upsell-theme {
+  --pink: #EC3F7A;
+  --pink-light: #FFF0F6;
+  --pink-dark: #D42E68;
+  --orange: #FFB533;
+  --orange-dark: #E89B20;
+  --cream: #FFF7FB;
+  --brown: #2A1712;
+  --brown-mid: #6D5550;
+  --green: #25D366;
+  --green-light: #E8F9EE;
+  --gray-border: #F6C9D8;
+  --upsell-grad: linear-gradient(135deg, #EC3F7A 0%, #FFB533 100%);
+}
+
+.postres-upsell-theme .btn-primary {
+  background: var(--upsell-grad);
+  border: none;
+}
+
+.postres-upsell-theme .upsell-hero-visual {
+  margin: 20px auto;
+  max-width: 100%;
+}
+
+.postres-upsell-theme .upsell-hero-visual img {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 18px;
+  box-shadow: 0 12px 32px rgba(236, 63, 122, 0.18);
+  border: 3px solid #fff;
+}

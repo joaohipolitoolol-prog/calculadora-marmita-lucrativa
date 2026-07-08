@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-label="Cheesecake en vaso">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF0F6"/>
+      <stop offset="100%" stop-color="#FFF7EC"/>
+    </linearGradient>
+    <linearGradient id="cup" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.55)"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="url(#bg)"/>
+  <ellipse cx="160" cy="248" rx="72" ry="10" fill="rgba(74,37,24,0.08)"/>
+  <path d="M96 88 L224 88 L208 252 Q160 268 112 252 Z" fill="url(#cup)" stroke="#F6C9D8" stroke-width="2"/>
+  <rect x="88" y="148" width="144" height="24" rx="4" fill="#FFF7EC"/>
+    <rect x="88" y="120" width="144" height="24" rx="4" fill="#F6C9D8"/>
+    <rect x="88" y="92" width="144" height="24" rx="4" fill="#FFF7EC"/>
+    <rect x="88" y="64" width="144" height="24" rx="4" fill="#F04468"/>
+  <ellipse cx="160" cy="88" rx="64" ry="10" fill="rgba(255,255,255,0.7)"/>
+  <text x="160" y="292" text-anchor="middle" font-family="Nunito, sans-serif" font-size="13" font-weight="700" fill="#4A2518">Cheesecake en vaso</text>
+</svg>

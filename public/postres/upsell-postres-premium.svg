@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" role="img" aria-label="Postres Premium y Combos">
+  <rect width="480" height="320" fill="#FFF7FB"/>
+  <rect x="24" y="40" width="140" height="200" rx="16" fill="#FFF" stroke="#F6C9D8"/>
+  <rect x="170" y="24" width="140" height="216" rx="16" fill="#FFF0F6" stroke="#EC3F7A" stroke-width="2"/>
+  <rect x="316" y="48" width="140" height="192" rx="16" fill="#FFF" stroke="#F6C9D8"/>
+  <text x="240" y="278" text-anchor="middle" font-family="Nunito, sans-serif" font-size="16" font-weight="800" fill="#EC3F7A">Premium y Combos</text>
+  <text x="240" y="300" text-anchor="middle" font-family="Nunito, sans-serif" font-size="12" fill="#6D5550">Complemento opcional</text>
+</svg>
