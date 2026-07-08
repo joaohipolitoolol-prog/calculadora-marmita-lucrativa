@@ -44,12 +44,9 @@ registerForm?.addEventListener('submit', async (event) => {
 
   try {
     await register(data.get('name'), data.get('email'), data.get('password'), { accessCode });
-    const grantedByCode = Boolean(accessCode);
     showAlert(
       formAlert,
-      grantedByCode
-        ? '¡Cuenta creada! Tu acceso ya está activo.'
-        : '¡Cuenta creada! Estamos verificando tu compra — te avisaremos por correo.',
+      '¡Cuenta creada! Tu kit ya está activo — entra y empieza a usar.',
       'success'
     );
     setTimeout(() => {

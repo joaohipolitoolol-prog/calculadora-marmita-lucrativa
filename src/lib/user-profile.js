@@ -31,9 +31,9 @@ export async function createUserProfile(uid, { email, displayName, hasPremium = 
   const profile = normalizeProfile({
     email: email.trim().toLowerCase(),
     displayName: displayName.trim(),
-    hasKit: admin,
+    hasKit: true,
     hasPremium: Boolean(hasPremium),
-    hasPostres: false,
+    hasPostres: true,
     hasPostresPremium: false,
     isAdmin: admin,
     registeredFrom,
@@ -114,7 +114,12 @@ export async function resolveUserProfile(user) {
 }
 
 export function hasKitAccess(profile, user) {
-  if (profile?.isAdmin || profile?.hasKit) return true;
-  if (user?.email && isAdminEmail(user.email)) return true;
-  return false;
+  if (!user) return false;
+  // Main kit open for all registered users; premium stays gated separately.
+  return true;
+}
+
+export function hasPremiumAccess(profile) {
+  if (!profile) return false;
+  return Boolean(profile.hasPremium || profile.hasPostresPremium);
 }

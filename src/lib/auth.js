@@ -20,7 +20,7 @@ function createDemoUser(name, email, password) {
     displayName: name.trim(),
     password,
     demo: true,
-    hasKit: false,
+    hasKit: true,
     hasPremium: false,
     isAdmin: isAdminEmail(email),
   };

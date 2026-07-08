@@ -66,7 +66,5 @@ export function activeProductCount(profile) {
 export function profileStatus(profile) {
   if (profile?.isAdmin) return 'admin';
   if (profile?.missingProfile) return 'orphan';
-  const hasMain = PRODUCTS.some((p) => p.tier === 'main' && profile?.[p.field]);
-  if (hasMain) return 'active';
-  return 'pending';
+  return 'active';
 }
