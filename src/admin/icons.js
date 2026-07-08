@@ -13,10 +13,14 @@ export const ICONS = {
   search: svg('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>'),
   check: svg('<polyline points="20 6 9 17 4 12"/>'),
   chevron: svg('<polyline points="9 18 15 12 9 6"/>', 16),
+  key: svg('<path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"/>'),
+  trash: svg('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),
+  mailSend: svg('<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>'),
 };
 
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Resumen', icon: 'dashboard' },
   { id: 'users', label: 'Usuarios', icon: 'users' },
+  { id: 'codes', label: 'Códigos', icon: 'key' },
   { id: 'kiwify', label: 'Kiwify', icon: 'mail' },
 ];

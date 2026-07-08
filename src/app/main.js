@@ -331,6 +331,7 @@ watchAuth(async (user) => {
   kitUnlocked = hasKitAccess(profile, user);
   userIsAdmin = (await isUserAdmin(user, profile)) || DEV_ADMIN_ACCESS;
   if (profile?.hasPremium) localStorage.setItem(PREMIUM_STORAGE_KEY, '1');
+  else localStorage.removeItem(PREMIUM_STORAGE_KEY);
 
   currentUser = {
     uid: user.uid,

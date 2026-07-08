@@ -839,7 +839,141 @@ body {
   opacity: 1;
 }
 
-/* ── Responsive ── */
+/* ── Filters ── */
+
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-filter-chip {
+  padding: 8px 14px;
+  border: 1px solid var(--gray-border);
+  border-radius: 50px;
+  background: var(--white);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--brown-light);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.admin-filter-chip:hover {
+  border-color: rgba(232, 67, 122, 0.25);
+  color: var(--brown-mid);
+}
+
+.admin-filter-chip.active {
+  background: var(--pink-soft);
+  border-color: rgba(232, 67, 122, 0.35);
+  color: var(--pink);
+}
+
+/* ── Modal ── */
+
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(61, 34, 40, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.admin-modal-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.admin-modal {
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-modal h3 {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--brown);
+  margin-bottom: 10px;
+}
+
+.admin-modal p {
+  font-size: 0.88rem;
+  color: var(--gray);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+.admin-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* ── Access codes form ── */
+
+.codes-form {
+  display: grid;
+  grid-template-columns: 1fr 140px 120px auto;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: end;
+}
+
+.codes-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.codes-form input,
+.codes-form select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--brown-mid);
+  background: var(--white);
+}
+
+.codes-form input:focus,
+.codes-form select:focus {
+  outline: none;
+  border-color: rgba(232, 67, 122, 0.45);
+}
+
+.admin-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin-actions-row .admin-btn {
+  white-space: nowrap;
+}
+
+/* ── Toast ── */
 
 @media (max-width: 1024px) {
   .admin-stats {
@@ -903,6 +1037,10 @@ body {
 
   .admin-search {
     max-width: none;
+  }
+
+  .codes-form {
+    grid-template-columns: 1fr;
   }
 }
 

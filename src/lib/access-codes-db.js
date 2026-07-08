@@ -1,6 +1,7 @@
 import { db, isFirebaseConfigured } from './firebase.js';
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   increment,
@@ -90,4 +91,9 @@ export async function createAccessCode({ code, type = 'kit', maxUses = null }) {
 export async function toggleAccessCode(id, active) {
   if (!isFirebaseConfigured || !db) return;
   await updateDoc(doc(db, 'accessCodes', id), { active });
+}
+
+export async function deleteAccessCode(id) {
+  if (!isFirebaseConfigured || !db) return;
+  await deleteDoc(doc(db, 'accessCodes', id));
 }

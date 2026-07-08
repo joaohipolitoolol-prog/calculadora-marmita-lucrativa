@@ -37,15 +37,19 @@ registerForm?.addEventListener('submit', async (event) => {
   hideAlert(formAlert);
 
   const data = new FormData(registerForm);
+  const accessCode = params.get('code')?.trim() || '';
   const button = registerForm.querySelector('button[type="submit"]');
   button.disabled = true;
   button.textContent = 'Creando cuenta...';
 
   try {
-    await register(data.get('name'), data.get('email'), data.get('password'));
+    await register(data.get('name'), data.get('email'), data.get('password'), { accessCode });
+    const grantedByCode = Boolean(accessCode);
     showAlert(
       formAlert,
-      '¡Cuenta creada! Estamos verificando tu compra — te avisaremos por correo.',
+      grantedByCode
+        ? '¡Cuenta creada! Tu acceso ya está activo.'
+        : '¡Cuenta creada! Estamos verificando tu compra — te avisaremos por correo.',
       'success'
     );
     setTimeout(() => {

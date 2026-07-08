@@ -1,5 +1,6 @@
 import { isFirebaseConfigured } from './firebase.js';
-import { createUserProfile, isAdminEmail, syncAdminFlag } from './user-profile.js';
+import { createUserProfile, isAdminEmail, syncAdminFlag, updateUserProfile } from './user-profile.js';
+import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
 
 const DEMO_USERS_KEY = 'marmita_demo_users';
 const DEMO_SESSION_KEY = 'marmita_demo_session';
@@ -49,8 +50,30 @@ function clearDemoSession() {
   sessionStorage.removeItem(DEMO_SESSION_KEY);
 }
 
-function readDemoSessionRaw() {
-  return localStorage.getItem(DEMO_SESSION_KEY) || sessionStorage.getItem(DEMO_SESSION_KEY);
+function getRegisterAccessCode(options = {}) {
+  const fromOptions = String(options.accessCode || '').trim();
+  if (fromOptions) return fromOptions;
+  return new URLSearchParams(window.location.search).get('code')?.trim() || '';
+}
+
+function grantsFromAccessCode(result) {
+  const grants = { hasKit: false, hasPremium: false };
+  if (!result?.valid) return grants;
+  if (result.type === 'kit' || result.type === 'both') grants.hasKit = true;
+  if (result.type === 'premium' || result.type === 'both') grants.hasPremium = true;
+  return grants;
+}
+
+async function applyAccessCodeToUser(uid, accessCode) {
+  if (!accessCode) return null;
+
+  const result = await validateAccessCodeFromDb(accessCode);
+  if (!result.valid) return null;
+
+  const grants = grantsFromAccessCode(result);
+  await updateUserProfile(uid, grants);
+  await consumeAccessCode(result);
+  return grants;
 }
 
 export function isDemoMode() {
@@ -87,6 +110,7 @@ export async function register(name, email, password, options = {}) {
   const urlPremium = new URLSearchParams(window.location.search).get('premium') === '1';
   const hasPremium = Boolean(options.hasPremium) || urlPremium;
   const admin = isAdminEmail(email);
+  const accessCode = getRegisterAccessCode(options);
 
   if (isDemoMode()) {
     const normalizedEmail = email.trim().toLowerCase();
@@ -100,10 +124,16 @@ export async function register(name, email, password, options = {}) {
       user.hasKit = true;
       user.isAdmin = true;
     }
+    if (accessCode) {
+      const result = await validateAccessCodeFromDb(accessCode);
+      const grants = grantsFromAccessCode(result);
+      if (grants.hasKit) user.hasKit = true;
+      if (grants.hasPremium) user.hasPremium = true;
+    }
     users.push(user);
     writeDemoUsers(users);
     setDemoSession(user);
-    if (hasPremium) localStorage.setItem('paletas_premium', '1');
+    if (user.hasPremium) localStorage.setItem('paletas_premium', '1');
     return toPublicUser(user);
   }
 
@@ -120,7 +150,8 @@ export async function register(name, email, password, options = {}) {
   });
   await syncAdminFlag(result.user.uid, result.user.email);
 
-  if (hasPremium) localStorage.setItem('paletas_premium', '1');
+  const codeGrants = await applyAccessCodeToUser(result.user.uid, accessCode);
+  if (codeGrants?.hasPremium || hasPremium) localStorage.setItem('paletas_premium', '1');
 
   return result.user;
 }
