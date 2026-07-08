@@ -13,6 +13,7 @@ export default defineConfig({
         upsell: resolve(__dirname, 'upsell-paletas-premium.html'),
         postres: resolve(__dirname, 'postres.html'),
         postresUpsell: resolve(__dirname, 'postres-upsell.html'),
+        postresAviso: resolve(__dirname, 'postres-aviso.html'),
         admin: resolve(__dirname, 'admin.html'),
         acesso: resolve(__dirname, 'acesso.html'),
       },
