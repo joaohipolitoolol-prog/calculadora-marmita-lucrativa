@@ -444,10 +444,15 @@ function renderLangSwitcher() {
   const current = getAdminLang();
   return `
     <div class="admin-lang-switch" role="group" aria-label="${t('sidebar.lang')}">
-      <span class="admin-lang-label">${t('sidebar.lang')}</span>
       ${ADMIN_LANGS.map(
         (lang) => `
-        <button type="button" class="admin-lang-btn ${current === lang.id ? 'active' : ''}" data-admin-lang="${lang.id}">${lang.label}</button>`
+        <button
+          type="button"
+          class="admin-lang-btn ${current === lang.id ? 'active' : ''}"
+          data-admin-lang="${lang.id}"
+          title="${escapeHtml(lang.title)}"
+          aria-label="${escapeHtml(lang.title)}"
+        ><span class="admin-lang-flag" aria-hidden="true">${lang.flag}</span></button>`
       ).join('')}
     </div>
   `;

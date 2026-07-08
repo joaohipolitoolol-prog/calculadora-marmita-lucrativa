@@ -326,8 +326,8 @@ const STRINGS = {
 };
 
 export const ADMIN_LANGS = [
-  { id: 'es', label: 'ES' },
-  { id: 'pt', label: 'PT' },
+  { id: 'es', flag: '🇪🇸', title: 'Español' },
+  { id: 'pt', flag: '🇧🇷', title: 'Português' },
 ];
 
 export function getAdminLang() {
