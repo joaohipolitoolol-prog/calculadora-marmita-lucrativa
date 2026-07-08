@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="postres-theme">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +24,7 @@
   <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="postres.css">
 </head>
 <body class="postres-theme">
@@ -40,51 +40,22 @@
     </div>
   </header>
 
-  <section class="hero postres-hero">
+  <section class="hero">
     <div class="container">
       <div class="hero-kit-badge" aria-label="Kit digital descargable">
         <span class="hero-kit-badge-type">Kit digital descargable</span>
         <span class="hero-kit-badge-parts">Recetas + Precios + Mensajes</span>
       </div>
-
-      <div class="postres-hero-visual-wrap">
-        <figure class="hero-flavor-grid postres-hero-grid" aria-label="Sabores: fresa, Oreo, chocolate y maracuyá">
-          <picture><source srcset="/postres/postre-fresa.webp" type="image/webp"><img src="/postres/postre-fresa.png" alt="Postre en vaso de fresa" class="hero-flavor-grid__item" width="200" height="200" loading="eager" fetchpriority="high"></picture>
-          <picture><source srcset="/postres/postre-oreo.webp" type="image/webp"><img src="/postres/postre-oreo.png" alt="Postre en vaso de Oreo" class="hero-flavor-grid__item" width="200" height="200" loading="eager"></picture>
-          <picture><source srcset="/postres/postre-chocolate.webp" type="image/webp"><img src="/postres/postre-chocolate.png" alt="Postre en vaso de chocolate" class="hero-flavor-grid__item" width="200" height="200" loading="eager"></picture>
-          <picture><source srcset="/postres/postre-maracuya.webp" type="image/webp"><img src="/postres/postre-maracuya.png" alt="Postre en vaso de maracuyá" class="hero-flavor-grid__item" width="200" height="200" loading="eager"></picture>
-        </figure>
-        <div class="postres-price-badge" aria-label="Precio US$5,97">
-          <span class="postres-price-badge-label">Solo por</span>
-          <strong>US$5,97</strong>
-        </div>
-      </div>
-
-      <h1>Prepara <span class="hl-pink">postres en vaso</span> en casa, calcula cuánto cobrar y publícalos por <span class="hl-wa">WhatsApp</span> sin improvisar.</h1>
-
+      <h1>Prepara postres en vaso en casa, calcula cuánto cobrar y publícalos por WhatsApp sin improvisar.</h1>
+      <figure class="hero-flavor-grid" aria-label="Sabores: fresa, Oreo, chocolate y maracuyá">
+        <img src="/postres/postre-fresa.webp" alt="Postre en vaso de fresa" class="hero-flavor-grid__item" width="200" height="200" loading="eager" fetchpriority="high">
+        <img src="/postres/postre-oreo.webp" alt="Postre en vaso de Oreo" class="hero-flavor-grid__item" width="200" height="200" loading="eager">
+        <img src="/postres/postre-chocolate.webp" alt="Postre en vaso de chocolate" class="hero-flavor-grid__item" width="200" height="200" loading="eager">
+        <img src="/postres/postre-maracuya.webp" alt="Postre en vaso de maracuyá" class="hero-flavor-grid__item" width="200" height="200" loading="eager">
+      </figure>
       <p class="subheadline">
-        Recibe un kit digital con recetas simples, calculadora de precios, menú editable y mensajes listos para organizar tu primera oferta desde casa, aunque nunca hayas vendido antes.
+        Recibe un kit digital con recetas simples, calculadora de precios, menú editable y mensajes listos para organizar tu primera oferta de postres desde casa, aunque nunca hayas vendido antes.
       </p>
-
-      <div class="postres-feature-row" aria-label="Qué incluye el kit">
-        <div class="postres-feature-item">
-          <span class="postres-feature-icon" aria-hidden="true">🥣</span>
-          <span>Recetas fáciles</span>
-        </div>
-        <div class="postres-feature-item">
-          <span class="postres-feature-icon" aria-hidden="true">🧮</span>
-          <span>Calculadora</span>
-        </div>
-        <div class="postres-feature-item">
-          <span class="postres-feature-icon" aria-hidden="true">📋</span>
-          <span>Menú editable</span>
-        </div>
-        <div class="postres-feature-item">
-          <span class="postres-feature-icon" aria-hidden="true">💬</span>
-          <span>Mensajes listos</span>
-        </div>
-      </div>
-
       <ul class="hero-bullets">
         <li>30 recetas fáciles para empezar</li>
         <li>Calculadora para no cobrar "a ojo"</li>
@@ -92,18 +63,10 @@
         <li>Mensajes listos para publicar</li>
         <li>Plan simple de 7 días</li>
       </ul>
-
       <div class="hero-cta-stack">
-        <a href="#" class="btn btn-primary btn-large postres-cta-main" data-checkout>Quiero preparar, calcular y publicar</a>
+        <a href="#" class="btn btn-primary btn-large" data-checkout>Quiero preparar, calcular y publicar</a>
         <p class="cta-note cta-reassure"><strong>Acceso completo por US$5,97.</strong> Producto digital. Acceso inmediato. Garantía simple de 7 días.</p>
       </div>
-
-      <div class="postres-hero-band">
-        <span>🔒 Acceso inmediato</span>
-        <span>📱 Desde el celular</span>
-        <span>✅ Listo para usar</span>
-      </div>
-
       <div class="trust-row">
         <div class="trust-item">
           <span class="trust-icon" aria-hidden="true">
@@ -127,9 +90,19 @@
     </div>
   </section>
 
-  <div class="postres-triade-strip" aria-label="Método 3P">
+  <div class="hero-price-bar" aria-label="Precio del kit">
     <div class="container">
-      <p><strong>Prepara · Calcula · Publica</strong> · El kit completo para WhatsApp</p>
+      <div class="price-card">
+        <span class="price-card-tag">Kit Postres en Vaso para WhatsApp</span>
+        <strong class="price-card-value" data-price>Acceso completo por US$5,97</strong>
+        <p class="price-card-note">Producto digital. Acceso inmediato. Garantía simple de 7 días.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="triade-strip" aria-label="Qué incluye el kit">
+    <div class="container">
+      <p><strong>Recetas + Precios + Mensajes</strong> · Prepara. Calcula. Publica.</p>
     </div>
   </div>
 
@@ -151,7 +124,7 @@
     </div>
   </section>
 
-  <section class="section pain-strong postres-pain-section">
+  <section class="section pain-strong">
     <div class="container">
       <p class="section-label">● El problema real</p>
       <h2>Vender barato no siempre parece un error al principio.</h2>
@@ -173,14 +146,12 @@
     <div class="container">
       <h2>Todo lo que necesitas para preparar, calcular y publicar en un solo kit digital.</h2>
       <p class="section-text">No es un curso largo. Es un kit práctico para tomar acción con más claridad.</p>
-      <div class="product-kit-visuals" aria-label="Ejemplos de postres en vaso del kit">
-        <picture><source srcset="/postres/postre-fresa.webp" type="image/webp"><img src="/postres/postre-fresa.png" alt="Postre en vaso de fresa con crema" loading="lazy" width="200" height="200"></picture>
-        <picture><source srcset="/postres/postre-oreo.webp" type="image/webp"><img src="/postres/postre-oreo.png" alt="Postre en vaso de Oreo cremoso" loading="lazy" width="200" height="200"></picture>
-        <picture><source srcset="/postres/postre-chocolate.webp" type="image/webp"><img src="/postres/postre-chocolate.png" alt="Postre en vaso de chocolate" loading="lazy" width="200" height="200"></picture>
-        <picture><source srcset="/postres/postre-dulce-leche.webp" type="image/webp"><img src="/postres/postre-dulce-leche.png" alt="Postre en vaso de dulce de leche" loading="lazy" width="200" height="200"></picture>
-      </div>
       <div class="product-grid">
-        <article class="product-card"><span class="product-card-icon" aria-hidden="true">🍮</span><h3>30 recetas de postres en vaso</h3><p>Cremosas, frutales y de chocolate para preparar desde casa.</p></article>
+        <article class="product-card product-card-visual">
+          <img src="/postres/postre-fresa.webp" alt="Recetas de postres en vaso" class="product-card-photo" loading="lazy">
+          <h3>30 recetas de postres en vaso</h3>
+          <p>Cremosas, frutales y de chocolate para preparar desde casa.</p>
+        </article>
         <article class="product-card product-card-featured"><span class="product-card-badge">Incluido</span><span class="product-card-icon" aria-hidden="true">🧮</span><h3>Calculadora editable de precios</h3><p>Organiza costos, precio sugerido y margen estimado.</p></article>
         <article class="product-card"><span class="product-card-icon" aria-hidden="true">📋</span><h3>Menú editable para WhatsApp</h3><p>Modelo visual para mostrar sabores y precios con claridad.</p></article>
         <article class="product-card"><span class="product-card-icon" aria-hidden="true">💬</span><h3>Mensajes listos para publicar</h3><p>Textos para estados, promociones y pedidos.</p></article>
@@ -229,7 +200,7 @@
     </div>
   </section>
 
-  <section class="section objection postres-objection-section">
+  <section class="section objection">
     <div class="container">
       <p class="section-label">● Por qué pagar por esto</p>
       <h2>¿Por qué no es solo buscar recetas gratis?</h2>
@@ -274,17 +245,36 @@
     </div>
   </section>
 
-  <section class="visual-showcase postres-flavors" aria-label="Sabores de postres en vaso">
+  <section class="visual-showcase" aria-label="Sabores de postres en vaso">
     <div class="container">
-      <p class="section-label">Sabores del kit</p>
-      <h2>Postres cremosos, frutales y de chocolate que puedes preparar con el kit.</h2>
+      <p class="section-label">Postres en vaso</p>
+      <h2>Postres cremosos, frutales y de chocolate que puedes preparar con el kit</h2>
+      <p class="visual-flavors-hint">Desliza para ver más sabores →</p>
       <div class="visual-grid visual-flavors">
-        <figure class="visual-card"><picture><source srcset="/postres/postre-fresa.webp" type="image/webp"><img src="/postres/postre-fresa.png" alt="Postre en vaso de fresa con crema" class="visual-card-img" width="200" height="200" loading="lazy"></picture><figcaption>Fresa con crema</figcaption></figure>
-        <figure class="visual-card"><picture><source srcset="/postres/postre-oreo.webp" type="image/webp"><img src="/postres/postre-oreo.png" alt="Postre en vaso de Oreo cremoso" class="visual-card-img" width="200" height="200" loading="lazy"></picture><figcaption>Oreo cremoso</figcaption></figure>
-        <figure class="visual-card"><picture><source srcset="/postres/postre-chocolate.webp" type="image/webp"><img src="/postres/postre-chocolate.png" alt="Postre en vaso de chocolate intenso" class="visual-card-img" width="200" height="200" loading="lazy"></picture><figcaption>Chocolate intenso</figcaption></figure>
-        <figure class="visual-card"><picture><source srcset="/postres/postre-maracuya.webp" type="image/webp"><img src="/postres/postre-maracuya.png" alt="Postre en vaso de maracuyá" class="visual-card-img" width="200" height="200" loading="lazy"></picture><figcaption>Maracuyá</figcaption></figure>
-        <figure class="visual-card"><picture><source srcset="/postres/postre-dulce-leche.webp" type="image/webp"><img src="/postres/postre-dulce-leche.png" alt="Postre en vaso de dulce de leche" class="visual-card-img" width="200" height="200" loading="lazy"></picture><figcaption>Dulce de leche</figcaption></figure>
-        <figure class="visual-card"><picture><source srcset="/postres/postre-cheesecake.webp" type="image/webp"><img src="/postres/postre-cheesecake.png" alt="Cheesecake en vaso" class="visual-card-img" width="200" height="200" loading="lazy"></picture><figcaption>Cheesecake en vaso</figcaption></figure>
+        <figure class="visual-card">
+          <img src="/postres/postre-fresa.webp" alt="Postre en vaso de fresa con crema" class="visual-card-img" width="280" height="350" loading="lazy">
+          <figcaption>Fresa con crema</figcaption>
+        </figure>
+        <figure class="visual-card">
+          <img src="/postres/postre-oreo.webp" alt="Postre en vaso de Oreo cremoso" class="visual-card-img" width="280" height="350" loading="lazy">
+          <figcaption>Oreo cremoso</figcaption>
+        </figure>
+        <figure class="visual-card">
+          <img src="/postres/postre-chocolate.webp" alt="Postre en vaso de chocolate intenso" class="visual-card-img" width="280" height="350" loading="lazy">
+          <figcaption>Chocolate intenso</figcaption>
+        </figure>
+        <figure class="visual-card">
+          <img src="/postres/postre-maracuya.webp" alt="Postre en vaso de maracuyá" class="visual-card-img" width="280" height="350" loading="lazy">
+          <figcaption>Maracuyá</figcaption>
+        </figure>
+        <figure class="visual-card">
+          <img src="/postres/postre-dulce-leche.webp" alt="Postre en vaso de dulce de leche" class="visual-card-img" width="280" height="350" loading="lazy">
+          <figcaption>Dulce de leche</figcaption>
+        </figure>
+        <figure class="visual-card">
+          <img src="/postres/postre-cheesecake.webp" alt="Cheesecake en vaso" class="visual-card-img" width="280" height="350" loading="lazy">
+          <figcaption>Cheesecake en vaso</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -398,27 +388,15 @@
     </div>
   </section>
 
-  <section class="section offer postres-offer" id="oferta">
+  <section class="section offer" id="oferta">
     <div class="container">
       <div class="offer-card">
-        <figure class="offer-flavors-postres" aria-hidden="true">
-          <picture>
-            <source srcset="/postres/postre-fresa.webp" type="image/webp">
-            <img src="/postres/postre-fresa.png" alt="">
-          </picture>
-          <picture>
-            <source srcset="/postres/postre-oreo.webp" type="image/webp">
-            <img src="/postres/postre-oreo.png" alt="">
-          </picture>
-          <picture>
-            <source srcset="/postres/postre-chocolate.webp" type="image/webp">
-            <img src="/postres/postre-chocolate.png" alt="">
-          </picture>
-          <picture>
-            <source srcset="/postres/postre-maracuya.webp" type="image/webp">
-            <img src="/postres/postre-maracuya.png" alt="">
-          </picture>
-        </figure>
+        <div class="offer-flavors" aria-hidden="true">
+          <img src="/postres/postre-fresa.webp" alt="">
+          <img src="/postres/postre-oreo.webp" alt="">
+          <img src="/postres/postre-chocolate.webp" alt="">
+          <img src="/postres/postre-maracuya.webp" alt="">
+        </div>
         <div class="offer-card-body">
           <span class="offer-tag">Kit digital completo</span>
           <h2>Empieza hoy con el Kit Postres en Vaso para WhatsApp.</h2>
