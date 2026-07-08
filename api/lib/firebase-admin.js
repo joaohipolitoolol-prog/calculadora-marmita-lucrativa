@@ -2,6 +2,8 @@ import admin from 'firebase-admin';
 
 let initialized = false;
 
+export const FieldValue = admin.firestore.FieldValue;
+
 export function getFirebaseAdmin() {
   if (initialized) return admin;
 

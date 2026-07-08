@@ -12,6 +12,9 @@ import {
   TRUST_CTA_LABEL,
 } from './config.js';
 import { initDemo } from './demo.js';
+import { trackCurrentPage } from '../lib/page-analytics.js';
+
+trackCurrentPage();
 
 function trackInitiateCheckout() {
   if (typeof window.fbq === 'function') {

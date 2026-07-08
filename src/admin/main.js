@@ -11,9 +11,16 @@ import {
   listAccessCodes,
   toggleAccessCode,
 } from '../lib/access-codes-db.js';
-import { deleteUserAccount } from '../lib/admin-api.js';
+import {
+  createAdminUser,
+  deleteUserAccount,
+  fetchAdminAnalytics,
+  fetchAdminUsers,
+  syncAdminUsers,
+} from '../lib/admin-api.js';
 import { sendWelcomeEmail } from '../lib/send-welcome.js';
 import { isFirebaseConfigured } from '../lib/firebase.js';
+import { PRODUCT_BY_ID } from '../lib/products.js';
 import {
   KIWIFY_EMAIL_KIT,
   KIWIFY_EMAIL_PREMIUM,
@@ -22,939 +29,477 @@ import {
   kiwifyKitEmailHtml,
   kiwifyPremiumEmailHtml,
 } from '../kiwify/email-templates.js';
-import { BRAND_NAME } from '../site/brand.js';
 import { DEV_ADMIN_ACCESS } from '../site/dev.js';
-import { ICONS, NAV_ITEMS } from './icons.js';
+import { confirmDialog, copyText, escapeHtml, showToast } from './helpers.js';
+import { renderShell } from './views.js';
 
 const root = document.getElementById('admin-root');
 
-let currentAdminUser = null;
-let usersCache = [];
-let codesCache = [];
-let activeTab = 'dashboard';
-let kiwifySubTab = 'urls';
-let userSearch = '';
-let userFilter = 'all';
-let sidebarOpen = false;
-
-const VIEW_META = {
-  dashboard: { title: 'Resumen', subtitle: 'Vista general del área de miembros' },
-  users: { title: 'Usuarios', subtitle: 'Gestiona accesos al kit y premium' },
-  codes: { title: 'Códigos de acceso', subtitle: 'Crea y controla códigos de liberación' },
-  kiwify: { title: 'Kiwify', subtitle: 'Enlaces y plantillas de email' },
+const state = {
+  currentAdminUser: null,
+  usersCache: [],
+  codesCache: [],
+  analyticsCache: null,
+  activeTab: 'dashboard',
+  kiwifySubTab: 'urls',
+  userSearch: '',
+  userFilter: 'all',
+  selectedUserIds: new Set(),
+  detailUserId: null,
+  sidebarOpen: false,
 };
 
-const USER_FILTERS = [
-  { id: 'all', label: 'Todos' },
-  { id: 'pending', label: 'Pendientes' },
-  { id: 'kit', label: 'Kit activo' },
-  { id: 'premium', label: 'Premium' },
-];
-
-const CODE_TYPES = [
-  { value: 'kit', label: 'Kit' },
-  { value: 'premium', label: 'Premium' },
-  { value: 'both', label: 'Kit + Premium' },
-];
-
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+function getDetailUser() {
+  return state.usersCache.find((u) => u.id === state.detailUserId) || null;
 }
 
-function formatDate(ts) {
-  if (!ts) return '—';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
-  return d.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function getUserInitial(user) {
-  const name = user?.displayName || user?.email || '?';
-  return name.charAt(0).toUpperCase();
-}
-
-function getStats(users) {
-  return {
-    total: users.length,
-    activeKit: users.filter((u) => u.hasKit).length,
-    pendingKit: users.filter((u) => !u.hasKit && !u.isAdmin).length,
-    premium: users.filter((u) => u.hasPremium).length,
-  };
-}
-
-function filterUsers(users) {
-  let list = users;
-
-  switch (userFilter) {
-    case 'pending':
-      list = list.filter((u) => !u.hasKit && !u.isAdmin);
-      break;
-    case 'kit':
-      list = list.filter((u) => u.hasKit);
-      break;
-    case 'premium':
-      list = list.filter((u) => u.hasPremium);
-      break;
-    default:
-      break;
+function renderKiwifyContent() {
+  if (state.kiwifySubTab === 'kit') {
+    return `
+      <p class="admin-hint">Sin código de acceso — el cliente crea cuenta y tú liberas en Usuarios.</p>
+      <div class="email-block"><div class="email-block-head"><h3>Asunto (kit)</h3><button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_KIT.subject)}">Copiar</button></div><pre>${escapeHtml(KIWIFY_EMAIL_KIT.subject)}</pre></div>
+      <div class="email-block"><div class="email-block-head"><h3>Texto plano (kit)</h3><button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_KIT.plain)}">Copiar</button></div><pre>${escapeHtml(KIWIFY_EMAIL_KIT.plain)}</pre></div>
+      <div class="email-block"><div class="email-block-head"><h3>HTML (kit)</h3><button type="button" class="admin-btn sm copy-btn" data-copy-html="kit">Copiar HTML</button></div><pre>Usa Copiar HTML para pegar en Kiwify.</pre></div>`;
   }
-
-  const q = userSearch.trim().toLowerCase();
-  if (!q) return list;
-  return list.filter((u) => {
-    const name = String(u.displayName || '').toLowerCase();
-    const email = String(u.email || '').toLowerCase();
-    return name.includes(q) || email.includes(q);
-  });
-}
-
-function confirmDialog({ title, message, confirmLabel = 'Confirmar', danger = false }) {
-  return new Promise((resolve) => {
-    const overlay = document.createElement('div');
-    overlay.className = 'admin-modal-overlay visible';
-    overlay.innerHTML = `
-      <div class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
-        <h3 id="admin-modal-title">${escapeHtml(title)}</h3>
-        <p>${message}</p>
-        <div class="admin-modal-actions">
-          <button type="button" class="admin-btn ghost" data-modal-cancel>Cancelar</button>
-          <button type="button" class="admin-btn ${danger ? 'danger' : 'primary'}" data-modal-confirm>${escapeHtml(confirmLabel)}</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(overlay);
-
-    const close = (result) => {
-      overlay.remove();
-      resolve(result);
-    };
-
-    overlay.querySelector('[data-modal-cancel]')?.addEventListener('click', () => close(false));
-    overlay.querySelector('[data-modal-confirm]')?.addEventListener('click', () => close(true));
-    overlay.addEventListener('click', (event) => {
-      if (event.target === overlay) close(false);
-    });
-  });
-}
-
-function showToast(message) {
-  let toast = document.getElementById('admin-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = 'admin-toast';
-    toast.className = 'admin-toast';
-    document.body.appendChild(toast);
+  if (state.kiwifySubTab === 'premium') {
+    return `
+      <div class="email-block"><div class="email-block-head"><h3>Asunto (premium)</h3><button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_PREMIUM.subject)}">Copiar</button></div><pre>${escapeHtml(KIWIFY_EMAIL_PREMIUM.subject)}</pre></div>
+      <div class="email-block"><div class="email-block-head"><h3>Texto plano (premium)</h3><button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_PREMIUM.plain)}">Copiar</button></div><pre>${escapeHtml(KIWIFY_EMAIL_PREMIUM.plain)}</pre></div>
+      <div class="email-block"><div class="email-block-head"><h3>HTML (premium)</h3><button type="button" class="admin-btn sm copy-btn" data-copy-html="premium">Copiar HTML</button></div><pre>Usa Copiar HTML para pegar en Kiwify.</pre></div>`;
   }
-  toast.textContent = message;
-  toast.classList.add('show');
-  clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => toast.classList.remove('show'), 2400);
+  const urlSteps = KIWIFY_SETUP_STEPS.filter((s) => typeof s.value === 'string' && s.value.startsWith('http'));
+  return `
+    <p class="admin-hint">Enlace corto: <code>${escapeHtml(KIWIFY_URLS.accessShort)}</code></p>
+    <div class="kiwify-grid">${urlSteps
+      .map(
+        (step) => `
+      <div class="kiwify-card"><strong>${escapeHtml(step.title)}</strong><code class="kiwify-code">${escapeHtml(step.value)}</code><p>${escapeHtml(step.note || '')}</p><button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(step.value)}">Copiar</button></div>`
+      )
+      .join('')}</div>`;
 }
 
-async function copyText(text, label = 'Copiado') {
+function paint() {
+  window.__adminSelfUid = state.currentAdminUser?.uid;
+  root.innerHTML = renderShell({
+    activeTab: state.activeTab,
+    users: state.usersCache,
+    codes: state.codesCache,
+    analytics: state.analyticsCache,
+    selectedIds: state.selectedUserIds,
+    userFilter: state.userFilter,
+    userSearch: state.userSearch,
+    detailUser: getDetailUser(),
+    kiwifySubTab: state.kiwifySubTab,
+    kiwifyContent: renderKiwifyContent(),
+    user: state.currentAdminUser,
+    sidebarOpen: state.sidebarOpen,
+  });
+  bindEvents();
+}
+
+async function loadUsers() {
   try {
-    await navigator.clipboard.writeText(text);
-    showToast(label);
-    return label;
+    const token = await state.currentAdminUser.getIdToken();
+    const data = await fetchAdminUsers(token);
+    state.usersCache = (data.users || []).map((u) => ({
+      ...u,
+      id: u.id || u.uid,
+    }));
+  } catch (error) {
+    console.warn('[admin] users API fallback:', error);
+    state.usersCache = (await listUsers()).map((u) => ({ ...u, missingProfile: false }));
+  }
+}
+
+async function loadAnalytics() {
+  try {
+    const token = await state.currentAdminUser.getIdToken();
+    state.analyticsCache = await fetchAdminAnalytics(token);
   } catch {
-    showToast('No se pudo copiar');
-    return 'Error';
+    state.analyticsCache = { pages: [], todayTotal: 0, allTimeTotal: 0, history: [] };
   }
 }
 
-function renderLoading() {
-  root.innerHTML = `
-    <div class="admin-loading-screen">
-      <div class="admin-spinner" aria-hidden="true"></div>
-      <p>Cargando panel...</p>
-    </div>
-  `;
-}
-
-function renderDenied(message) {
-  root.innerHTML = `
-    <div class="admin-error">
-      <div class="admin-error-card">
-        <h1>Acceso restringido</h1>
-        <p>${escapeHtml(message)}</p>
-        <a href="/login" class="admin-btn primary">Ir al login</a>
-      </div>
-    </div>
-  `;
-}
-
-function renderBadge(user) {
-  if (user.isAdmin) return '<span class="admin-badge admin">Admin</span>';
-  if (user.hasKit) return '<span class="admin-badge active">Kit activo</span>';
-  return '<span class="admin-badge pending">Pendiente</span>';
-}
-
-function renderPremiumBadge(hasPremium) {
-  return hasPremium
-    ? '<span class="admin-badge premium">Premium</span>'
-    : '<span style="color:var(--gray)">—</span>';
-}
-
-function renderUserActions(u, compact = false) {
-  const kitLabel = u.hasKit ? 'Revocar kit' : 'Liberar kit';
-  const premiumLabel = u.hasPremium ? 'Quitar premium' : 'Dar premium';
-  const kitClass = u.hasKit ? 'danger' : 'success';
-  const size = compact ? 'sm' : '';
-  const isSelf = u.id === currentAdminUser?.uid;
-  const resendBtn =
-    u.hasKit && u.email
-      ? `<button type="button" class="admin-btn ghost ${size}" data-resend-email="${u.id}" data-email="${escapeHtml(u.email || '')}" data-name="${escapeHtml(u.displayName || '')}">${ICONS.mailSend} Email</button>`
-      : '';
-  const adminBtn =
-    !isSelf && !u.isAdmin
-      ? `<button type="button" class="admin-btn ghost ${size}" data-user-admin="${u.id}">Hacer admin</button>`
-      : '';
-  const deleteBtn =
-    !isSelf && !u.isAdmin
-      ? `<button type="button" class="admin-btn danger ${size}" data-user-delete="${u.id}" data-email="${escapeHtml(u.email || '')}">${ICONS.trash}</button>`
-      : '';
-
-  return `
-    <div class="admin-actions-row">
-      <button
-        type="button"
-        class="admin-btn ${kitClass} ${size}"
-        data-user-kit="${u.id}"
-        data-has-kit="${Boolean(u.hasKit)}"
-        data-email="${escapeHtml(u.email || '')}"
-        data-name="${escapeHtml(u.displayName || '')}"
-      >${kitLabel}</button>
-      <button
-        type="button"
-        class="admin-btn ghost ${size}"
-        data-user-premium="${u.id}"
-        data-has-premium="${Boolean(u.hasPremium)}"
-      >${premiumLabel}</button>
-      ${resendBtn}
-      ${adminBtn}
-      ${deleteBtn}
-    </div>
-  `;
-}
-
-function renderUserFilters() {
-  return `
-    <div class="admin-filters" role="group" aria-label="Filtrar usuarios">
-      ${USER_FILTERS.map(
-        (filter) => `
-          <button
-            type="button"
-            class="admin-filter-chip ${userFilter === filter.id ? 'active' : ''}"
-            data-user-filter="${filter.id}"
-          >${filter.label}</button>
-        `
-      ).join('')}
-    </div>
-  `;
-}
-
-function renderStatsGrid(stats) {
-  return `
-    <div class="admin-stats">
-      <div class="admin-stat">
-        <span class="admin-stat-label">Usuarios</span>
-        <span class="admin-stat-value">${stats.total}</span>
-      </div>
-      <div class="admin-stat accent-green">
-        <span class="admin-stat-label">Kit activo</span>
-        <span class="admin-stat-value">${stats.activeKit}</span>
-      </div>
-      <div class="admin-stat accent-warn">
-        <span class="admin-stat-label">Pendientes</span>
-        <span class="admin-stat-value">${stats.pendingKit}</span>
-      </div>
-      <div class="admin-stat accent-gold">
-        <span class="admin-stat-label">Premium</span>
-        <span class="admin-stat-value">${stats.premium}</span>
-      </div>
-    </div>
-  `;
-}
-
-function renderDashboardView(users) {
-  const stats = getStats(users);
-  const pending = users.filter((u) => !u.hasKit && !u.isAdmin).slice(0, 6);
-
-  return `
-    ${renderStatsGrid(stats)}
-    <div class="admin-card">
-      <div class="admin-card-head">
-        <div>
-          <h2>Pendientes de liberación</h2>
-          <p>Usuarios que crearon cuenta pero aún no tienen el kit activo.</p>
-        </div>
-        ${
-          stats.pendingKit > 0
-            ? `<button type="button" class="admin-btn ghost" data-tab="users">Ver todos</button>`
-            : ''
-        }
-      </div>
-      <div class="admin-card-body flush">
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Estado</th>
-                <th>Registro</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${
-                pending.length
-                  ? pending
-                      .map(
-                        (u) => `
-                <tr>
-                  <td class="user-cell">
-                    <strong>${escapeHtml(u.displayName || 'Sin nombre')}</strong>
-                    <span>${escapeHtml(u.email || '—')}</span>
-                  </td>
-                  <td>${renderBadge(u)}</td>
-                  <td>${formatDate(u.createdAt)}</td>
-                  <td>${renderUserActions(u, true)}</td>
-                </tr>
-              `
-                      )
-                      .join('')
-                  : `<tr><td colspan="4" class="admin-table-empty">No hay usuarios pendientes 🎉</td></tr>`
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderUsersView(users) {
-  const filtered = filterUsers(users);
-
-  return `
-    ${renderStatsGrid(getStats(users))}
-    <div class="admin-card">
-      <div class="admin-card-head">
-        <div>
-          <h2>Todos los usuarios</h2>
-          <p>Libera el kit tras verificar la compra. Al liberar, se envía email automático.</p>
-        </div>
-        <div class="admin-search">
-          ${ICONS.search}
-          <input
-            type="search"
-            id="user-search"
-            placeholder="Buscar por nombre o correo..."
-            value="${escapeHtml(userSearch)}"
-            autocomplete="off"
-          >
-        </div>
-      </div>
-      <div class="admin-card-body">
-        ${renderUserFilters()}
-        <div class="admin-table-wrap flush">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Kit</th>
-                <th>Premium</th>
-                <th>Rol</th>
-                <th>Registro</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${
-                filtered.length
-                  ? filtered
-                      .map(
-                        (u) => `
-                <tr>
-                  <td class="user-cell">
-                    <strong>${escapeHtml(u.displayName || 'Sin nombre')}</strong>
-                    <span>${escapeHtml(u.email || '—')}</span>
-                  </td>
-                  <td>${u.hasKit ? '<span class="admin-badge active">Activo</span>' : '<span class="admin-badge pending">Pendiente</span>'}</td>
-                  <td>${renderPremiumBadge(u.hasPremium)}</td>
-                  <td>${u.isAdmin ? '<span class="admin-badge admin">Admin</span>' : '—'}</td>
-                  <td>${formatDate(u.createdAt)}</td>
-                  <td>${renderUserActions(u)}</td>
-                </tr>
-              `
-                      )
-                      .join('')
-                  : `<tr><td colspan="6" class="admin-table-empty">${userSearch || userFilter !== 'all' ? 'Ningún usuario coincide con el filtro.' : 'Aún no hay usuarios registrados.'}</td></tr>`
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderCodeTypeLabel(type) {
-  const match = CODE_TYPES.find((item) => item.value === type);
-  return match?.label || type || 'Kit';
-}
-
-function renderCodesView(codes) {
-  return `
-    <div class="admin-card">
-      <div class="admin-card-head">
-        <div>
-          <h2>Códigos de acceso</h2>
-          <p>Crea códigos para liberar kit o premium al registrarse. Desactiva los que ya no uses.</p>
-        </div>
-      </div>
-      <div class="admin-card-body">
-        <form class="codes-form" id="codes-form">
-          <label>
-            Código
-            <input type="text" name="code" placeholder="ej. postres2026" required autocomplete="off">
-          </label>
-          <label>
-            Tipo
-            <select name="type">
-              ${CODE_TYPES.map((item) => `<option value="${item.value}">${item.label}</option>`).join('')}
-            </select>
-          </label>
-          <label>
-            Máx. usos
-            <input type="number" name="maxUses" min="1" placeholder="Ilimitado">
-          </label>
-          <button type="submit" class="admin-btn primary">Crear</button>
-        </form>
-        <div class="admin-table-wrap flush">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Tipo</th>
-                <th>Usos</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${
-                codes.length
-                  ? codes
-                      .map((code) => {
-                        const uses =
-                          code.maxUses != null
-                            ? `${code.usedCount || 0} / ${code.maxUses}`
-                            : `${code.usedCount || 0}`;
-                        return `
-                <tr>
-                  <td><code>${escapeHtml(code.code)}</code></td>
-                  <td>${escapeHtml(renderCodeTypeLabel(code.type))}</td>
-                  <td>${uses}</td>
-                  <td>${code.active ? '<span class="admin-badge active">Activo</span>' : '<span class="admin-badge pending">Inactivo</span>'}</td>
-                  <td>
-                    <div class="admin-actions-row">
-                      <button type="button" class="admin-btn sm ghost copy-btn" data-copy="${encodeURIComponent(code.code)}">${ICONS.copy}</button>
-                      <button type="button" class="admin-btn sm ghost" data-code-toggle="${code.id}" data-active="${Boolean(code.active)}">${code.active ? 'Desactivar' : 'Activar'}</button>
-                      <button type="button" class="admin-btn sm danger" data-code-delete="${code.id}" data-code-label="${escapeHtml(code.code)}">${ICONS.trash}</button>
-                    </div>
-                  </td>
-                </tr>
-              `;
-                      })
-                      .join('')
-                  : `<tr><td colspan="5" class="admin-table-empty">Aún no hay códigos creados.</td></tr>`
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderKiwifyUrls() {
-  const urlSteps = KIWIFY_SETUP_STEPS.filter(
-    (s) => typeof s.value === 'string' && s.value.startsWith('http')
-  );
-
-  return `
-    <p class="admin-hint">
-      Pega en Kiwify → Producto → Emails. Enlace corto recomendado:
-      <code>${escapeHtml(KIWIFY_URLS.accessShort)}</code>
-    </p>
-    <div class="kiwify-grid">
-      ${urlSteps
-        .map(
-          (step) => `
-        <div class="kiwify-card">
-          <strong>${escapeHtml(step.title)}</strong>
-          <code class="kiwify-code">${escapeHtml(step.value)}</code>
-          <p>${escapeHtml(step.note || '')}</p>
-          <button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(step.value)}">
-            ${ICONS.copy} Copiar
-          </button>
-        </div>
-      `
-        )
-        .join('')}
-    </div>
-  `;
-}
-
-function renderKiwifyKit() {
-  return `
-    <p class="admin-hint">Sin código de acceso — el cliente crea cuenta y tú liberas en la pestaña Usuarios.</p>
-    <div class="email-block">
-      <div class="email-block-head">
-        <h3>Asunto del email (kit)</h3>
-        <button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_KIT.subject)}">${ICONS.copy} Copiar</button>
-      </div>
-      <pre>${escapeHtml(KIWIFY_EMAIL_KIT.subject)}</pre>
-    </div>
-    <div class="email-block">
-      <div class="email-block-head">
-        <h3>Texto plano (kit)</h3>
-        <button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_KIT.plain)}">${ICONS.copy} Copiar</button>
-      </div>
-      <pre>${escapeHtml(KIWIFY_EMAIL_KIT.plain)}</pre>
-    </div>
-    <div class="email-block">
-      <div class="email-block-head">
-        <h3>HTML (kit)</h3>
-        <button type="button" class="admin-btn sm copy-btn" data-copy-html="kit">${ICONS.copy} Copiar HTML</button>
-      </div>
-      <pre>Vista previa no disponible — usa Copiar HTML para pegar en Kiwify.</pre>
-    </div>
-  `;
-}
-
-function renderKiwifyPremium() {
-  return `
-    <div class="email-block">
-      <div class="email-block-head">
-        <h3>Asunto del email (premium)</h3>
-        <button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_PREMIUM.subject)}">${ICONS.copy} Copiar</button>
-      </div>
-      <pre>${escapeHtml(KIWIFY_EMAIL_PREMIUM.subject)}</pre>
-    </div>
-    <div class="email-block">
-      <div class="email-block-head">
-        <h3>Texto plano (premium)</h3>
-        <button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_PREMIUM.plain)}">${ICONS.copy} Copiar</button>
-      </div>
-      <pre>${escapeHtml(KIWIFY_EMAIL_PREMIUM.plain)}</pre>
-    </div>
-    <div class="email-block">
-      <div class="email-block-head">
-        <h3>HTML (premium)</h3>
-        <button type="button" class="admin-btn sm copy-btn" data-copy-html="premium">${ICONS.copy} Copiar HTML</button>
-      </div>
-      <pre>Vista previa no disponible — usa Copiar HTML para pegar en Kiwify.</pre>
-    </div>
-  `;
-}
-
-function renderKiwifyView() {
-  const subContent =
-    kiwifySubTab === 'kit'
-      ? renderKiwifyKit()
-      : kiwifySubTab === 'premium'
-        ? renderKiwifyPremium()
-        : renderKiwifyUrls();
-
-  return `
-    <div class="admin-card">
-      <div class="admin-tabs" role="tablist">
-        <button type="button" class="admin-tab ${kiwifySubTab === 'urls' ? 'active' : ''}" data-kiwify-tab="urls" role="tab">Enlaces</button>
-        <button type="button" class="admin-tab ${kiwifySubTab === 'kit' ? 'active' : ''}" data-kiwify-tab="kit" role="tab">Email kit</button>
-        <button type="button" class="admin-tab ${kiwifySubTab === 'premium' ? 'active' : ''}" data-kiwify-tab="premium" role="tab">Email premium</button>
-      </div>
-      <div class="admin-card-body">${subContent}</div>
-    </div>
-  `;
-}
-
-function renderMainContent() {
-  switch (activeTab) {
-    case 'users':
-      return renderUsersView(usersCache);
-    case 'codes':
-      return renderCodesView(codesCache);
-    case 'kiwify':
-      return renderKiwifyView();
-    default:
-      return renderDashboardView(usersCache);
+async function refreshAll() {
+  await loadUsers();
+  if (state.activeTab === 'codes') {
+    state.codesCache = await listAccessCodes();
   }
-}
-
-function renderSidebar(user) {
-  const stats = getStats(usersCache);
-  const pendingBadge =
-    stats.pendingKit > 0
-      ? `<span class="admin-nav-badge">${stats.pendingKit}</span>`
-      : '';
-
-  return `
-    <aside class="admin-sidebar ${sidebarOpen ? 'open' : ''}" aria-label="Navegación admin">
-      <div class="admin-brand">
-        <div class="admin-brand-mark" aria-hidden="true">🍓</div>
-        <div class="admin-brand-text">
-          <strong>${escapeHtml(BRAND_NAME)}</strong>
-          <span>Panel admin</span>
-        </div>
-      </div>
-      <nav class="admin-nav">
-        ${NAV_ITEMS.map((item) => {
-          const badge = item.id === 'users' ? pendingBadge : '';
-          return `
-            <button
-              type="button"
-              class="admin-nav-item ${activeTab === item.id ? 'active' : ''}"
-              data-tab="${item.id}"
-            >
-              ${ICONS[item.icon]}
-              <span>${item.label}</span>
-              ${badge}
-            </button>
-          `;
-        }).join('')}
-      </nav>
-      <div class="admin-sidebar-foot">
-        <div class="admin-user-chip">
-          <span class="admin-user-avatar" aria-hidden="true">${escapeHtml(getUserInitial(user))}</span>
-          <div class="admin-user-meta">
-            <strong>${escapeHtml(user.displayName || user.email?.split('@')[0] || 'Admin')}</strong>
-            <span>${escapeHtml(user.email || '')}</span>
-          </div>
-        </div>
-        <a href="/app" class="admin-foot-link">${ICONS.app} Área miembros</a>
-        <button type="button" class="admin-foot-logout" id="admin-logout">${ICONS.logout} Salir</button>
-      </div>
-    </aside>
-  `;
-}
-
-function renderShell(user) {
-  const meta = VIEW_META[activeTab] || VIEW_META.dashboard;
-
-  root.innerHTML = `
-    <div class="admin-layout">
-      <div class="admin-sidebar-overlay ${sidebarOpen ? 'visible' : ''}" data-close-sidebar aria-hidden="true"></div>
-      ${renderSidebar(user)}
-      <div class="admin-main">
-        <header class="admin-header">
-          <button type="button" class="admin-menu-btn" id="admin-menu-toggle" aria-label="Abrir menú">
-            ${ICONS.menu}
-          </button>
-          <div class="admin-header-titles">
-            <h1>${meta.title}</h1>
-            <p>${meta.subtitle}</p>
-          </div>
-        </header>
-        <main class="admin-content">
-          <div class="admin-content-inner">
-            ${renderMainContent()}
-          </div>
-        </main>
-      </div>
-    </div>
-  `;
-}
-
-async function togglePremium(uid, current) {
-  await updateUserProfile(uid, { hasPremium: !current });
-  showToast(current ? 'Premium revocado' : 'Premium activado');
-  await refreshDashboard();
-}
-
-async function resendWelcome(authUser, { email, name }) {
-  if (!email) {
-    showToast('Este usuario no tiene email');
-    return;
+  if (state.activeTab === 'dashboard' || state.activeTab === 'analytics') {
+    await loadAnalytics();
   }
-  try {
-    const token = await authUser.getIdToken();
-    await sendWelcomeEmail(token, { email, name });
-    showToast('Email reenviado');
-  } catch (error) {
-    showToast('No se pudo reenviar el email');
-    console.warn('[admin] resend email:', error);
-  }
+  paint();
 }
 
-async function promoteToAdmin(uid) {
-  const ok = await confirmDialog({
-    title: 'Hacer administrador',
-    message: 'Este usuario tendrá acceso total al panel admin y al kit. ¿Continuar?',
-    confirmLabel: 'Hacer admin',
-  });
-  if (!ok) return;
-
-  await updateUserProfile(uid, { isAdmin: true, hasKit: true });
-  showToast('Usuario promovido a admin');
-  await refreshDashboard();
+async function updateProduct(uid, productId, active) {
+  const product = PRODUCT_BY_ID[productId];
+  if (!product) return;
+  await updateUserProfile(uid, { [product.field]: active });
 }
 
-async function deleteUser(uid, email) {
-  if (uid === currentAdminUser?.uid) {
-    showToast('No puedes eliminar tu propia cuenta');
-    return;
-  }
+async function bulkUpdateProduct(productId, active) {
+  const ids = Array.from(state.selectedUserIds);
+  if (!ids.length) return;
+  const product = PRODUCT_BY_ID[productId];
+  if (!product) return;
 
-  const ok = await confirmDialog({
-    title: 'Eliminar usuario',
-    message: `Se eliminará permanentemente la cuenta <strong>${escapeHtml(email || uid)}</strong>, su perfil en Firestore y sus datos guardados. Esta acción no se puede deshacer.`,
-    confirmLabel: 'Eliminar',
-    danger: true,
-  });
-  if (!ok) return;
-
-  try {
-    const token = await currentAdminUser.getIdToken();
-    await deleteUserAccount(token, uid);
-    showToast('Usuario eliminado');
-    await refreshDashboard();
-  } catch (error) {
-    showToast(error.message || 'No se pudo eliminar');
-    console.warn('[admin] delete user:', error);
+  for (const uid of ids) {
+    await updateUserProfile(uid, { [product.field]: active });
   }
+  showToast(`${ids.length} usuario(s) actualizado(s)`);
+  state.selectedUserIds.clear();
+  await refreshAll();
 }
 
-async function handleCreateCode(form) {
-  const code = form.code.value.trim();
-  const type = form.type.value;
-  const maxUsesRaw = form.maxUses.value.trim();
-  const maxUses = maxUsesRaw ? Number(maxUsesRaw) : null;
-
-  if (!code) {
-    showToast('Escribe un código');
-    return;
-  }
-
-  try {
-    await createAccessCode({ code, type, maxUses });
-    form.reset();
-    showToast('Código creado');
-    codesCache = await listAccessCodes();
-    renderShell(currentAdminUser);
-    bindEvents(currentAdminUser);
-  } catch (error) {
-    showToast(error.message || 'No se pudo crear el código');
-  }
-}
-
-async function toggleKit(uid, current, userRecord, authUser) {
-  const next = !current;
-  await updateUserProfile(uid, { hasKit: next });
-
-  if (next) {
+async function toggleKitWithEmail(uid, active, userRecord) {
+  await updateUserProfile(uid, { hasKit: active });
+  if (active && userRecord?.email) {
     try {
-      const token = await authUser.getIdToken();
+      const token = await state.currentAdminUser.getIdToken();
       await sendWelcomeEmail(token, {
         email: userRecord.email,
         name: userRecord.displayName,
       });
       showToast('Kit liberado y email enviado');
-    } catch (error) {
+    } catch {
       showToast('Kit liberado — email no enviado');
-      console.warn('[admin] welcome email:', error);
     }
   } else {
-    showToast('Kit revocado');
+    showToast(active ? 'Acceso activado' : 'Acceso revocado');
   }
-
-  await refreshDashboard();
 }
 
-async function refreshDashboard() {
-  if (!currentAdminUser) return;
-  usersCache = await listUsers();
-  if (activeTab === 'codes') {
-    codesCache = await listAccessCodes();
-  }
-  renderShell(currentAdminUser);
-  bindEvents(currentAdminUser);
-}
-
-function bindEvents(user) {
+function bindEvents() {
   document.getElementById('admin-logout')?.addEventListener('click', async () => {
     await logout();
     window.location.href = '/login';
   });
 
   document.getElementById('admin-menu-toggle')?.addEventListener('click', () => {
-    sidebarOpen = true;
-    root.querySelector('.admin-sidebar')?.classList.add('open');
-    root.querySelector('.admin-sidebar-overlay')?.classList.add('visible');
+    state.sidebarOpen = true;
+    paint();
   });
 
   root.querySelector('[data-close-sidebar]')?.addEventListener('click', () => {
-    sidebarOpen = false;
-    root.querySelector('.admin-sidebar')?.classList.remove('open');
-    root.querySelector('.admin-sidebar-overlay')?.classList.remove('visible');
+    state.sidebarOpen = false;
+    paint();
   });
 
   root.querySelectorAll('[data-tab]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      activeTab = btn.dataset.tab;
-      sidebarOpen = false;
-      if (activeTab === 'codes') {
-        codesCache = await listAccessCodes();
+      state.activeTab = btn.dataset.tab;
+      state.sidebarOpen = false;
+      if (state.activeTab === 'codes') {
+        state.codesCache = await listAccessCodes();
       }
-      renderShell(user);
-      bindEvents(user);
+      if (state.activeTab === 'dashboard' || state.activeTab === 'analytics') {
+        await loadAnalytics();
+      }
+      paint();
     });
   });
 
   root.querySelectorAll('[data-kiwify-tab]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      kiwifySubTab = btn.dataset.kiwifyTab;
-      renderShell(user);
-      bindEvents(user);
+      state.kiwifySubTab = btn.dataset.kiwifyTab;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-user-filter]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.userFilter = btn.dataset.userFilter;
+      paint();
     });
   });
 
   const searchInput = document.getElementById('user-search');
   searchInput?.addEventListener('input', () => {
-    userSearch = searchInput.value;
-    const tbody = root.querySelector('.admin-table tbody');
-    if (!tbody || activeTab !== 'users') return;
-    renderShell(user);
-    bindEvents(user);
+    state.userSearch = searchInput.value;
+    paint();
     const next = document.getElementById('user-search');
-    if (next) {
-      next.focus();
-      next.setSelectionRange(next.value.length, next.value.length);
+    next?.focus();
+    next?.setSelectionRange(next.value.length, next.value.length);
+  });
+
+  document.getElementById('select-all-users')?.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    if (!checked) {
+      state.selectedUserIds.clear();
+      paint();
+      return;
+    }
+    root.querySelectorAll('[data-user-select]').forEach((input) => {
+      state.selectedUserIds.add(input.dataset.userSelect);
+    });
+    paint();
+  });
+
+  root.querySelectorAll('[data-user-select]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const uid = input.dataset.userSelect;
+      if (input.checked) state.selectedUserIds.add(uid);
+      else state.selectedUserIds.delete(uid);
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-user-view]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.detailUserId = btn.dataset.userView;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-close-drawer]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.detailUserId = null;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-drawer-product]').forEach((input) => {
+    input.addEventListener('change', async () => {
+      const uid = input.dataset.userId;
+      const productId = input.dataset.drawerProduct;
+      const active = input.checked;
+      await updateProduct(uid, productId, active);
+      if (productId === 'paletas_kit' && active) {
+        const user = state.usersCache.find((u) => u.id === uid);
+        if (user?.email) {
+          try {
+            const token = await state.currentAdminUser.getIdToken();
+            await sendWelcomeEmail(token, { email: user.email, name: user.displayName });
+          } catch {
+            /* optional */
+          }
+        }
+      }
+      showToast('Acceso actualizado');
+      await refreshAll();
+      state.detailUserId = uid;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-bulk-product]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      await bulkUpdateProduct(btn.dataset.bulkProduct, btn.dataset.value === '1');
+    });
+  });
+
+  root.querySelector('[data-bulk-delete]')?.addEventListener('click', async () => {
+    const ids = Array.from(state.selectedUserIds);
+    if (!ids.length) return;
+    const ok = await confirmDialog({
+      title: 'Eliminar usuarios',
+      message: `Se eliminarán <strong>${ids.length}</strong> cuenta(s) permanentemente.`,
+      confirmLabel: 'Eliminar todos',
+      danger: true,
+    });
+    if (!ok) return;
+    const token = await state.currentAdminUser.getIdToken();
+    for (const uid of ids) {
+      if (uid === state.currentAdminUser.uid) continue;
+      try {
+        await deleteUserAccount(token, uid);
+      } catch (error) {
+        console.warn('[admin] delete', uid, error);
+      }
+    }
+    state.selectedUserIds.clear();
+    showToast('Usuarios eliminados');
+    await refreshAll();
+  });
+
+  root.querySelector('[data-sync-users]')?.addEventListener('click', async () => {
+    const btn = root.querySelector('[data-sync-users]');
+    btn.disabled = true;
+    try {
+      const token = await state.currentAdminUser.getIdToken();
+      const data = await syncAdminUsers(token);
+      state.usersCache = data.users || [];
+      showToast(`${data.created || 0} perfil(es) sincronizado(s)`);
+      paint();
+    } catch (error) {
+      showToast(error.message || 'Error al sincronizar');
+      btn.disabled = false;
     }
   });
 
-  root.querySelectorAll('[data-user-filter]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      userFilter = btn.dataset.userFilter;
-      renderShell(user);
-      bindEvents(user);
-    });
-  });
+  root.querySelector('[data-open-add-user]')?.addEventListener('click', () => {
+    const modal = document.createElement('div');
+    modal.innerHTML = document.querySelector('[data-add-user-template]')?.innerHTML || '';
+    // render modal inline
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      `
+      <div class="admin-modal-overlay visible" id="add-user-modal">
+        <div class="admin-modal admin-modal-lg">
+          <h3>Crear usuario</h3>
+          <p>El usuario podrá entrar con este correo y contraseña.</p>
+          <form id="add-user-form" class="admin-form-grid">
+            <label>Nombre<input name="displayName" type="text" required></label>
+            <label>Correo<input name="email" type="email" required></label>
+            <label>Contraseña<input name="password" type="password" required minlength="6"></label>
+            <div class="admin-form-products">
+              <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_kit"><span>🍓 Paletas Kit</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_premium"><span>⭐ Paletas Premium</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_kit"><span>🍮 Postres Kit</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_premium"><span>✨ Postres Premium</span></label>
+            </div>
+            <div class="admin-modal-actions">
+              <button type="button" class="admin-btn ghost" data-close-add-user>Cancelar</button>
+              <button type="submit" class="admin-btn primary">Crear</button>
+            </div>
+          </form>
+        </div>
+      </div>`
+    );
 
-  root.querySelectorAll('[data-user-kit]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      await toggleKit(
-        btn.dataset.userKit,
-        btn.dataset.hasKit === 'true',
-        { email: btn.dataset.email, displayName: btn.dataset.name },
-        user
-      );
+    document.querySelector('[data-close-add-user]')?.addEventListener('click', () => {
+      document.getElementById('add-user-modal')?.remove();
     });
-  });
-
-  root.querySelectorAll('[data-user-premium]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      await togglePremium(btn.dataset.userPremium, btn.dataset.hasPremium === 'true');
+    document.getElementById('add-user-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'add-user-modal') e.currentTarget.remove();
+    });
+    document.getElementById('add-user-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const products = {};
+      form.querySelectorAll('[name="product"]:checked').forEach((el) => {
+        products[el.value] = true;
+      });
+      try {
+        const token = await state.currentAdminUser.getIdToken();
+        const data = await createAdminUser(token, {
+          displayName: form.displayName.value,
+          email: form.email.value,
+          password: form.password.value,
+          products,
+        });
+        state.usersCache = data.users || state.usersCache;
+        document.getElementById('add-user-modal')?.remove();
+        showToast('Usuario creado');
+        paint();
+      } catch (error) {
+        showToast(error.message || 'No se pudo crear');
+      }
     });
   });
 
   root.querySelectorAll('[data-resend-email]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      await resendWelcome(user, {
-        email: btn.dataset.email,
-        name: btn.dataset.name,
-      });
-      btn.disabled = false;
+      try {
+        const token = await state.currentAdminUser.getIdToken();
+        await sendWelcomeEmail(token, {
+          email: btn.dataset.email,
+          name: btn.dataset.name,
+        });
+        showToast('Email reenviado');
+      } catch {
+        showToast('No se pudo reenviar');
+      }
     });
   });
 
   root.querySelectorAll('[data-user-admin]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      await promoteToAdmin(btn.dataset.userAdmin);
+      const ok = await confirmDialog({
+        title: 'Hacer administrador',
+        message: 'Este usuario tendrá acceso total al panel.',
+        confirmLabel: 'Confirmar',
+      });
+      if (!ok) return;
+      await updateUserProfile(btn.dataset.userAdmin, { isAdmin: true, hasKit: true });
+      showToast('Admin promovido');
+      await refreshAll();
+      state.detailUserId = btn.dataset.userAdmin;
+      paint();
     });
   });
 
   root.querySelectorAll('[data-user-delete]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      await deleteUser(btn.dataset.userDelete, btn.dataset.email);
-      btn.disabled = false;
+      const ok = await confirmDialog({
+        title: 'Eliminar usuario',
+        message: `Eliminar <strong>${escapeHtml(btn.dataset.email)}</strong> permanentemente.`,
+        confirmLabel: 'Eliminar',
+        danger: true,
+      });
+      if (!ok) return;
+      const token = await state.currentAdminUser.getIdToken();
+      await deleteUserAccount(token, btn.dataset.userDelete);
+      state.detailUserId = null;
+      showToast('Usuario eliminado');
+      await refreshAll();
     });
   });
 
-  document.getElementById('codes-form')?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const submitBtn = form.querySelector('[type="submit"]');
-    submitBtn.disabled = true;
-    await handleCreateCode(form);
-    submitBtn.disabled = false;
+  document.getElementById('codes-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const maxUsesRaw = form.maxUses.value.trim();
+    try {
+      await createAccessCode({
+        code: form.code.value,
+        type: form.type.value,
+        maxUses: maxUsesRaw ? Number(maxUsesRaw) : null,
+      });
+      form.reset();
+      state.codesCache = await listAccessCodes();
+      showToast('Código creado');
+      paint();
+    } catch (error) {
+      showToast(error.message || 'Error');
+    }
   });
 
   root.querySelectorAll('[data-code-toggle]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      const next = btn.dataset.active !== 'true';
-      await toggleAccessCode(btn.dataset.codeToggle, next);
-      showToast(next ? 'Código activado' : 'Código desactivado');
-      codesCache = await listAccessCodes();
-      renderShell(user);
-      bindEvents(user);
+      await toggleAccessCode(btn.dataset.codeToggle, btn.dataset.active !== 'true');
+      state.codesCache = await listAccessCodes();
+      showToast('Código actualizado');
+      paint();
     });
   });
 
   root.querySelectorAll('[data-code-delete]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const label = btn.dataset.codeLabel || 'este código';
       const ok = await confirmDialog({
         title: 'Eliminar código',
-        message: `Se eliminará el código <strong>${escapeHtml(label)}</strong>. Los usuarios que ya lo usaron no se verán afectados.`,
+        message: 'Esta acción no se puede deshacer.',
         confirmLabel: 'Eliminar',
         danger: true,
       });
       if (!ok) return;
-
-      btn.disabled = true;
       await deleteAccessCode(btn.dataset.codeDelete);
+      state.codesCache = await listAccessCodes();
       showToast('Código eliminado');
-      codesCache = await listAccessCodes();
-      renderShell(user);
-      bindEvents(user);
+      paint();
     });
   });
 
   root.querySelectorAll('.copy-btn[data-copy]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const text = decodeURIComponent(btn.dataset.copy || '');
-      if (!text) return;
-      await copyText(text);
-    });
+    btn.addEventListener('click', () => copyText(decodeURIComponent(btn.dataset.copy || '')));
   });
 
   root.querySelectorAll('.copy-btn[data-copy-html]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', () => {
       const html =
-        btn.dataset.copyHtml === 'premium'
-          ? kiwifyPremiumEmailHtml()
-          : kiwifyKitEmailHtml();
-      await copyText(html, 'HTML copiado');
+        btn.dataset.copyHtml === 'premium' ? kiwifyPremiumEmailHtml() : kiwifyKitEmailHtml();
+      copyText(html, 'HTML copiado');
     });
   });
 }
 
-async function renderDashboard(user) {
-  usersCache = await listUsers();
-  renderShell(user);
-  bindEvents(user);
+function renderLoading() {
+  root.innerHTML = `<div class="admin-loading-screen"><div class="admin-spinner"></div><p>Cargando panel...</p></div>`;
+}
+
+function renderDenied(message) {
+  root.innerHTML = `<div class="admin-error"><div class="admin-error-card"><h1>Acceso restringido</h1><p>${escapeHtml(message)}</p><a href="/login" class="admin-btn primary">Ir al login</a></div></div>`;
 }
 
 renderLoading();
@@ -965,19 +510,15 @@ watchAuth(async (user) => {
       window.location.replace('/login?next=/admin');
       return;
     }
-
     if (!isFirebaseConfigured) {
-      renderDenied('Firebase no está configurado. Agrega las variables en Vercel.');
+      renderDenied('Firebase no está configurado.');
       return;
     }
 
     let profile = await getUserProfile(user.uid);
     const admin = (await isUserAdmin(user, profile)) || DEV_ADMIN_ACCESS;
-
     if (!admin) {
-      renderDenied(
-        'Tu cuenta no tiene permisos de administrador. Agrega tu email en VITE_ADMIN_EMAILS en Vercel.'
-      );
+      renderDenied('Tu cuenta no tiene permisos de administrador.');
       return;
     }
 
@@ -988,13 +529,14 @@ watchAuth(async (user) => {
         isAdmin: true,
         hasKit: true,
       });
-      profile = await getUserProfile(user.uid);
     }
 
-    currentAdminUser = user;
-    await renderDashboard(user);
+    state.currentAdminUser = user;
+    await loadUsers();
+    await loadAnalytics();
+    paint();
   } catch (error) {
     console.error('[admin]', error);
-    renderDenied(`No se pudo cargar el panel: ${error.message || 'Error desconocido'}`);
+    renderDenied(error.message || 'Error al cargar el panel');
   }
 });

@@ -45,7 +45,7 @@ export async function validateAccessCodeFromDb(code) {
       valid: true,
       type: data.type || 'kit',
       id: entry.id,
-      hasPremium: data.type === 'premium' || data.type === 'both',
+      hasPremium: data.type === 'premium' || data.type === 'both' || data.type === 'postres_premium' || data.type === 'postres_both',
       source: 'firestore',
     };
   }

@@ -6,6 +6,9 @@ import {
   WHATSAPP_URL,
 } from './config.js';
 import { initDemo } from './demo.js';
+import { trackCurrentPage } from '../lib/page-analytics.js';
+
+trackCurrentPage();
 
 function isPlaceholder(url) {
   return !url || url.includes('COLOCAR_LINK') || url === '#';

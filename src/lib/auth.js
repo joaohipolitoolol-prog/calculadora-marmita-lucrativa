@@ -57,10 +57,38 @@ function getRegisterAccessCode(options = {}) {
 }
 
 function grantsFromAccessCode(result) {
-  const grants = { hasKit: false, hasPremium: false };
+  const grants = {
+    hasKit: false,
+    hasPremium: false,
+    hasPostres: false,
+    hasPostresPremium: false,
+  };
   if (!result?.valid) return grants;
-  if (result.type === 'kit' || result.type === 'both') grants.hasKit = true;
-  if (result.type === 'premium' || result.type === 'both') grants.hasPremium = true;
+
+  switch (result.type) {
+    case 'kit':
+      grants.hasKit = true;
+      break;
+    case 'premium':
+      grants.hasPremium = true;
+      break;
+    case 'both':
+      grants.hasKit = true;
+      grants.hasPremium = true;
+      break;
+    case 'postres_kit':
+      grants.hasPostres = true;
+      break;
+    case 'postres_premium':
+      grants.hasPostresPremium = true;
+      break;
+    case 'postres_both':
+      grants.hasPostres = true;
+      grants.hasPostresPremium = true;
+      break;
+    default:
+      grants.hasKit = true;
+  }
   return grants;
 }
 
