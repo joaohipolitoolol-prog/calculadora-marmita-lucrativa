@@ -45,7 +45,7 @@ export const ICONS = {
 };
 
 export const BRAND_LOGO =
-  '<img src="/favicon.svg?v=3" width="32" height="32" alt="" class="app-brand-img" decoding="async">';
+  '<img src="/favicon.svg?v=5" width="32" height="32" alt="" class="app-brand-img" decoding="async">';
 
 export const VIEW_META = {
   home: { label: 'Inicio', icon: 'home', tab: true },
@@ -56,6 +56,7 @@ export const VIEW_META = {
   bonus: { label: 'Recetas', icon: 'book', tab: false },
   files: { label: 'Archivos', icon: 'folder', tab: false },
   account: { label: 'Vender', icon: 'message', tab: false },
+  document: { label: 'Documento', icon: 'folder', tab: false },
 };
 
 export const TAB_VIEWS = Object.entries(VIEW_META)

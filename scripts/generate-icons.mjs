@@ -10,7 +10,7 @@ const iconsDir = resolve(publicDir, 'icons');
 mkdirSync(iconsDir, { recursive: true });
 
 writeFileSync(resolve(publicDir, 'favicon.svg'), logoMarkFaviconDoc());
-writeFileSync(resolve(iconsDir, 'icon-maskable.svg'), logoMaskableSvg({ size: 512 }));
+writeFileSync(resolve(iconsDir, 'icon-maskable.svg'), logoMaskableSvg({ size: 512, markScale: 1 }));
 
 let sharp;
 try {
@@ -20,13 +20,14 @@ try {
   process.exit(0);
 }
 
-const maskableSvg = logoMaskableSvg({ size: 512 });
-const maskableSafeSvg = logoMaskableSvg({ size: 512, markScale: 0.5 });
+const anySvg = logoMaskableSvg({ size: 512, markScale: 1 });
+const maskableSvg = logoMaskableSvg({ size: 512, markScale: 0.78 });
+
 const sizes = [
-  { name: 'icon-192.png', size: 192, svg: maskableSvg },
-  { name: 'icon-512.png', size: 512, svg: maskableSvg },
-  { name: 'icon-maskable-512.png', size: 512, svg: maskableSafeSvg },
-  { name: 'apple-touch-icon.png', size: 180, svg: maskableSvg },
+  { name: 'icon-192.png', size: 192, svg: anySvg },
+  { name: 'icon-512.png', size: 512, svg: anySvg },
+  { name: 'icon-maskable-512.png', size: 512, svg: maskableSvg },
+  { name: 'apple-touch-icon.png', size: 180, svg: anySvg },
 ];
 
 for (const { name, size, svg } of sizes) {

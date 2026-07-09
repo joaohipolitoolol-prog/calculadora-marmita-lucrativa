@@ -51,6 +51,13 @@ import {
   openPwaGuide,
   renderPwaHintBanner,
 } from './pwa-install.js';
+import {
+  KIT_DOWNLOADS,
+  PREMIUM_DOWNLOADS,
+  getDocById,
+  isViewableDoc,
+  kindLabel,
+} from './documents.js';
 
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
@@ -64,6 +71,7 @@ let scenarios = [];
 let activeView = 'home';
 let kitHubTab = 'recetas';
 let kitSection = 'mensajes';
+let activeDocId = null;
 let openStep = 1;
 let drawerOpen = false;
 let recipeCatalog = 'base';
@@ -137,67 +145,6 @@ const RECIPE_FILTERS = [
   { id: 'rellena', label: 'Rellenas' },
   { id: 'postre', label: 'Postre' },
   { id: 'banada', label: 'Bañadas' },
-];
-
-const KIT_DOWNLOADS = [
-  {
-    href: '/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.pdf',
-    title: 'Kit Principal',
-    desc: '30 recetas + guía completa del método 3P',
-    tag: 'Empezar aquí',
-    icon: '📘',
-    accent: '#ff4f8b',
-    featured: true,
-    download: true,
-  },
-  {
-    href: '/paletas-de-whatsapp/produto/Calculadora_Precios_Paletas.xlsx',
-    title: 'Calculadora Excel',
-    desc: 'Compatible con Google Sheets',
-    icon: '📊',
-    accent: '#ff7a1a',
-    download: true,
-  },
-  {
-    href: '/paletas-de-whatsapp/produto/Menu_Editable_Paletas.html',
-    title: 'Menú editable',
-    desc: 'Copia directo a WhatsApp',
-    icon: '📋',
-    accent: '#5ecf9a',
-  },
-  {
-    href: '/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.pdf',
-    title: 'Mensajes WhatsApp',
-    desc: '60 textos listos para copiar',
-    icon: '💬',
-    accent: '#a78bfa',
-    download: true,
-  },
-  {
-    href: '/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf',
-    title: 'Plan de 7 días',
-    desc: 'Guía paso a paso',
-    icon: '📅',
-    accent: '#60a5fa',
-    download: true,
-  },
-  {
-    href: '/paletas-de-whatsapp/produto/Checklist_Paletas.pdf',
-    title: 'Checklist',
-    desc: 'Compras, producción y venta',
-    icon: '✅',
-    accent: '#f472b6',
-    download: true,
-  },
-];
-
-const PREMIUM_DOWNLOADS = [
-  { href: '/paletas-premium/produto/Kit_Premium_Paletas.html', title: 'Kit Premium', desc: '20 recetas premium', icon: '✨', accent: '#ffc94a' },
-  { href: '/paletas-premium/produto/Combos_Rentables.html', title: 'Combos rentables', desc: '10 ideas con precio guía', icon: '📦', accent: '#ff7a1a' },
-  { href: '/paletas-premium/produto/Menu_Premium_Editable.html', title: 'Menú premium', desc: 'Copia y pega en WhatsApp', icon: '📋', accent: '#5ecf9a' },
-  { href: '/paletas-premium/produto/Mensajes_Premium.html', title: 'Mensajes premium', desc: 'Combos y fechas especiales', icon: '💬', accent: '#a78bfa' },
-  { href: '/paletas-premium/produto/Fechas_Especiales.html', title: 'Fechas especiales', desc: 'Día de la Madre, Navidad…', icon: '🎉', accent: '#60a5fa' },
-  { href: '/paletas-premium/produto/Guia_Presentacion.html', title: 'Guía de presentación', desc: 'Fotos y empaque', icon: '📸', accent: '#f472b6' },
 ];
 
 function checklistKey(uid) {
@@ -407,6 +354,10 @@ function renderTopbarActions() {
 }
 
 function renderTopbarSub() {
+  if (activeView === 'document') {
+    const doc = getDocById(activeDocId);
+    return doc ? doc.title : 'Documento';
+  }
   if (activeView === 'calc') return inputMode === 'simple' ? 'Modo rápido' : 'Modo completo';
   if (activeView === 'home') return 'Tu panel';
   if (activeView === 'profile') return 'Ajustes';
@@ -420,6 +371,8 @@ function renderTopbarSub() {
 function readViewFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const view = params.get('view');
+  const docId = params.get('doc');
+
   if (view === 'bonus') {
     activeView = 'kit';
     kitHubTab = 'recetas';
@@ -429,11 +382,23 @@ function readViewFromUrl() {
   } else if (view === 'account') {
     activeView = 'kit';
     kitHubTab = 'vender';
+  } else if (view === 'document' && getDocById(docId)) {
+    activeView = 'document';
+    activeDocId = docId;
+    kitHubTab = 'archivos';
   } else if (view && VIEW_META[view]) {
     activeView = view;
   }
-  if (params.has('view')) {
+
+  if (docId && getDocById(docId) && activeView !== 'document') {
+    activeView = 'document';
+    activeDocId = docId;
+    kitHubTab = 'archivos';
+  }
+
+  if (params.has('view') || params.has('doc')) {
     params.delete('view');
+    params.delete('doc');
     const qs = params.toString();
     window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
   }
@@ -463,7 +428,7 @@ function renderDrawer() {
           ? `<span class="drawer-badge ${currentResults.status}"></span>`
           : '';
       return `
-        <button type="button" class="drawer-link ${activeView === id ? 'active' : ''}" data-view="${id}">
+        <button type="button" class="drawer-link ${activeView === id || (id === 'kit' && activeView === 'document') ? 'active' : ''}" data-view="${id}">
           <span class="drawer-link-icon">${ICONS[meta.icon]}</span>
           <span class="drawer-link-text">${meta.label}</span>
           ${badge}
@@ -518,7 +483,7 @@ function renderTabBar() {
     <nav class="app-tabbar" aria-label="Navegación principal">
       ${TAB_VIEWS.map((id) => {
         const meta = VIEW_META[id];
-        const isKitActive = id === 'kit' && activeView === 'kit';
+        const isKitActive = id === 'kit' && (activeView === 'kit' || activeView === 'document');
         const isActive = activeView === id || isKitActive;
         return `
           <button type="button" class="tab-btn ${isActive ? 'active' : ''}" data-view="${id}">
@@ -787,6 +752,70 @@ function renderProfile() {
   `;
 }
 
+function openDocument(id) {
+  const doc = getDocById(id);
+  if (!doc || !isViewableDoc(doc)) return;
+  if (!hasKitContentAccess()) {
+    showToast('Archivo bloqueado — verificando tu compra.');
+    return;
+  }
+  activeDocId = id;
+  activeView = 'document';
+  kitHubTab = 'archivos';
+  closeDrawer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+function closeDocument() {
+  activeDocId = null;
+  activeView = 'kit';
+  kitHubTab = 'archivos';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+function renderDocumentView() {
+  const doc = getDocById(activeDocId);
+  if (!doc || !isViewableDoc(doc)) {
+    return `
+      <div class="doc-viewer">
+        <div class="doc-toolbar">
+          <button type="button" class="btn btn-ghost btn-sm" id="doc-back">${ICONS.chevronLeft}<span>Volver</span></button>
+        </div>
+        <div class="doc-missing">
+          <p>No encontramos este archivo.</p>
+          <button type="button" class="btn btn-secondary" id="doc-back-alt">Ver archivos</button>
+        </div>
+      </div>
+    `;
+  }
+
+  const downloadLabel = doc.kind === 'html' && doc.downloadHref?.endsWith('.pdf') ? 'Descargar PDF' : 'Descargar';
+
+  return `
+    <div class="doc-viewer">
+      <div class="doc-toolbar">
+        <button type="button" class="btn btn-ghost btn-sm doc-back-btn" id="doc-back">${ICONS.chevronLeft}<span>Volver</span></button>
+        <div class="doc-toolbar-title">
+          <strong>${escapeHtml(doc.title)}</strong>
+          <span class="doc-kind-badge">${kindLabel(doc.kind)}</span>
+        </div>
+        <div class="doc-toolbar-actions">
+          <a class="btn btn-secondary btn-sm" href="${doc.downloadHref || doc.href}" download>${downloadLabel}</a>
+          <a class="btn btn-ghost btn-sm" href="${doc.href}" target="_blank" rel="noopener">Abrir</a>
+        </div>
+      </div>
+      <iframe
+        class="doc-frame"
+        title="${escapeHtml(doc.title)}"
+        src="${doc.href}"
+        loading="lazy"
+      ></iframe>
+    </div>
+  `;
+}
+
 function renderActiveView() {
   switch (activeView) {
     case 'home':
@@ -797,6 +826,8 @@ function renderActiveView() {
       return `${renderKitPendingBanner()}${renderResults()}`;
     case 'kit':
       return renderKit();
+    case 'document':
+      return renderDocumentView();
     case 'bonus':
       return renderBonus();
     case 'account':
@@ -811,21 +842,47 @@ function renderActiveView() {
 }
 
 function renderFileRow(file, locked) {
-  const action = locked ? '🔒' : file.download ? '↓' : '→';
+  const kind = kindLabel(file.kind);
+  const kindBadge = kind ? `<span class="file-kind">${kind}</span>` : '';
   const tag = file.tag ? `<span class="file-tag">${escapeHtml(file.tag)}</span>` : '';
-  const attrs = locked
-    ? 'href="#" class="file-row locked" aria-disabled="true"'
-    : `href="${file.href}" class="file-row${file.featured ? ' featured' : ''}"${file.download ? ' download' : ' target="_blank" rel="noopener"'}`;
+  const action = locked ? '🔒' : file.kind === 'xlsx' ? '↓' : '↗';
+  const featured = file.featured ? ' featured' : '';
+
+  if (locked) {
+    return `
+      <a href="#" class="file-row locked${featured}" style="--file-accent:${file.accent}" aria-disabled="true">
+        <span class="file-icon">${file.icon}</span>
+        <span class="file-info">
+          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
+          <em>${escapeHtml(file.desc)}</em>
+        </span>
+        <span class="file-action">${action}</span>
+      </a>
+    `;
+  }
+
+  if (file.kind === 'xlsx') {
+    return `
+      <a href="${file.href}" class="file-row${featured}" style="--file-accent:${file.accent}" download>
+        <span class="file-icon">${file.icon}</span>
+        <span class="file-info">
+          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
+          <em>${escapeHtml(file.desc)}</em>
+        </span>
+        <span class="file-action">${action}</span>
+      </a>
+    `;
+  }
 
   return `
-    <a ${attrs} style="--file-accent:${file.accent}">
+    <button type="button" class="file-row${featured}" style="--file-accent:${file.accent}" data-doc="${file.id}">
       <span class="file-icon">${file.icon}</span>
       <span class="file-info">
-        <strong>${escapeHtml(file.title)} ${tag}</strong>
+        <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
         <em>${escapeHtml(file.desc)}</em>
       </span>
       <span class="file-action">${action}</span>
-    </a>
+    </button>
   `;
 }
 
@@ -837,7 +894,7 @@ function renderFiles() {
       ${renderKitPendingBanner()}
       <div class="section-card files-head">
         <h2>Archivos del kit</h2>
-        <p class="section-text">PDFs, Excel y plantillas para descargar.</p>
+        <p class="section-text">Ábrelos aquí o descárgalos a tu celular.</p>
       </div>
       <div class="files-list">${KIT_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
       ${
@@ -872,7 +929,7 @@ function renderTopbarCenter() {
   return `
     <button type="button" class="topbar-center" data-view="home" aria-label="Ir al inicio">
       <span class="topbar-brand">
-        <img src="/favicon.svg?v=3" width="22" height="22" alt="" class="topbar-brand-icon" decoding="async">
+        <img src="/favicon.svg?v=5" width="22" height="22" alt="" class="topbar-brand-icon" decoding="async">
         <span class="topbar-brand-text">${escapeHtml(BRAND_NAME)}</span>
       </span>
     </button>
@@ -880,7 +937,12 @@ function renderTopbarCenter() {
 }
 
 function render() {
-  const shellClass = ['app-shell', 'has-tabbar', activeView === 'calc' ? 'has-calc-footer' : '']
+  const shellClass = [
+    'app-shell',
+    'has-tabbar',
+    activeView === 'calc' ? 'has-calc-footer' : '',
+    activeView === 'document' ? 'has-doc-viewer' : '',
+  ]
     .filter(Boolean)
     .join(' ');
 
@@ -893,7 +955,7 @@ function render() {
         ${renderTopbarActions()}
       </header>
 
-      <main class="app-content">
+      <main class="app-content${activeView === 'document' ? ' app-content-doc' : ''}">
         ${renderActiveView()}
       </main>
 
@@ -1609,6 +1671,7 @@ function renderPlan7Dias() {
                 <span class="plan-day-num">Día ${day.dia}</span>
                 <strong>${escapeHtml(day.titulo)}</strong>
               </div>
+              ${day.duracion || day.meta ? `<p class="plan-day-meta">${escapeHtml([day.duracion, day.meta].filter(Boolean).join(' · '))}</p>` : ''}
               <ul>
                 ${day.tareas.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}
               </ul>
@@ -1729,33 +1792,23 @@ function renderKitAyuda() {
 }
 
 function renderKitArchivos() {
+  const locked = !hasKitContentAccess();
   return `
     <div class="section-card">
       <h2>Archivos del kit</h2>
-      <p class="section-text">Descarga o abre los PDFs y plantillas. La calculadora interactiva está en la pestaña Precios.</p>
-      <ul class="kit-files-list">
-        <li><a href="/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.pdf" download>Kit Principal (PDF)</a></li>
-        <li><a href="/paletas-de-whatsapp/produto/Calculadora_Precios_Paletas.xlsx" download>Calculadora Excel</a></li>
-        <li><a href="/paletas-de-whatsapp/produto/Menu_Editable_Paletas.html" target="_blank" rel="noopener">Menú editable</a></li>
-        <li><a href="/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.pdf" download>Mensajes WhatsApp (PDF)</a></li>
-        <li><a href="/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf" download>Plan 7 días</a></li>
-        <li><a href="/paletas-de-whatsapp/produto/Checklist_Paletas.pdf" download>Checklist</a></li>
-      </ul>
-      <button type="button" class="btn btn-secondary btn-sm" data-view="kit" data-kit-hub="archivos" style="margin-top:12px">Ver todos los archivos →</button>
+      <p class="section-text">Ábrelos aquí dentro de la app o descárgalos. La calculadora interactiva está en Precios.</p>
+      <div class="files-list kit-inline-files">${KIT_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
     </div>
-    ${hasPremiumAccess() ? `
+    ${
+      hasPremiumAccess()
+        ? `
       <div class="section-card">
         <h2>Archivos premium</h2>
-        <ul class="kit-files-list">
-          <li><a href="/paletas-premium/produto/Kit_Premium_Paletas.html" target="_blank" rel="noopener">20 recetas premium</a></li>
-          <li><a href="/paletas-premium/produto/Combos_Rentables.html" target="_blank" rel="noopener">Combos rentables</a></li>
-          <li><a href="/paletas-premium/produto/Menu_Premium_Editable.html" target="_blank" rel="noopener">Menú premium</a></li>
-          <li><a href="/paletas-premium/produto/Mensajes_Premium.html" target="_blank" rel="noopener">Mensajes premium</a></li>
-          <li><a href="/paletas-premium/produto/Fechas_Especiales.html" target="_blank" rel="noopener">Fechas especiales</a></li>
-          <li><a href="/paletas-premium/produto/Guia_Presentacion.html" target="_blank" rel="noopener">Guía de presentación</a></li>
-        </ul>
+        <div class="files-list kit-inline-files">${PREMIUM_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
       </div>
-    ` : ''}
+    `
+        : ''
+    }
   `;
 }
 
@@ -1899,6 +1952,7 @@ function navigateTo(view) {
   if (view !== activeView) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  if (view !== 'document') activeDocId = null;
   if (view === 'kit' && !['recetas', 'archivos', 'vender'].includes(kitHubTab)) {
     kitHubTab = 'recetas';
   }
@@ -1934,10 +1988,20 @@ function bindEvents() {
 
   document.getElementById('install-pwa')?.addEventListener('click', triggerPwaInstall);
 
+  document.getElementById('doc-back')?.addEventListener('click', closeDocument);
+  document.getElementById('doc-back-alt')?.addEventListener('click', closeDocument);
+
   root.querySelectorAll('.file-row.locked').forEach((el) => {
     el.addEventListener('click', (event) => {
       event.preventDefault();
       showToast('Archivo bloqueado — verificando tu compra.');
+    });
+  });
+
+  root.querySelectorAll('[data-doc]').forEach((el) => {
+    el.addEventListener('click', (event) => {
+      event.preventDefault();
+      openDocument(el.dataset.doc);
     });
   });
 
@@ -1956,6 +2020,7 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       kitHubTab = btn.dataset.kitHub;
       if (activeView !== 'kit') activeView = 'kit';
+      activeDocId = null;
       window.scrollTo({ top: 0, behavior: 'smooth' });
       render();
     });

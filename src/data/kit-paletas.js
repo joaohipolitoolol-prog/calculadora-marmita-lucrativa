@@ -35,14 +35,85 @@ export const MENSAJES_WHATSAPP = [
   { categoria: 'Encomienda', texto: 'Acepto pedidos con 24h de anticipación. ¿Para qué día y cuántas paletas necesitas?' },
 ];
 
+/** Sincronizado con paletas-de-whatsapp/build/content.py (fuente del PDF) */
 export const PLAN_7_DIAS = [
-  { dia: 1, titulo: 'Elige tus recetas', tareas: ['Revisa las 30 recetas del kit', 'Marca 5 sabores fáciles para empezar', 'Elige 2 cremosas y 3 frutales'] },
-  { dia: 2, titulo: 'Calcula tus precios', tareas: ['Abre la calculadora de precios', 'Anota costo de ingredientes por paleta', 'Define tu precio sugerido con margen'] },
-  { dia: 3, titulo: 'Arma tu menú', tareas: ['Selecciona 6–8 sabores para el menú inicial', 'Anota precio de cada uno', 'Prepara foto o diseño simple para WhatsApp'] },
-  { dia: 4, titulo: 'Publica en WhatsApp', tareas: ['Publica tu menú en estado/story', 'Usa uno de los mensajes listos del kit', 'Avisa a amigos y familia'] },
-  { dia: 5, titulo: 'Toma pedidos', tareas: ['Responde con los mensajes de pedido', 'Confirma sabores y cantidad', 'Organiza entrega o recogida'] },
-  { dia: 6, titulo: 'Organiza producción', tareas: ['Usa el checklist de producción', 'Prepara ingredientes con anticipación', 'Separa pedidos por cliente'] },
-  { dia: 7, titulo: 'Ajusta sabores y precios', tareas: ['Revisa qué sabores pidieron más', 'Ajusta precios en la calculadora si cambió algo', 'Planifica la semana siguiente'] },
+  {
+    dia: 1,
+    titulo: 'Elige tus primeras recetas',
+    duracion: '30–45 min',
+    meta: 'Tener 3 a 5 sabores definidos y lista de compras',
+    tareas: [
+      'Revisa las 30 recetas del kit',
+      'Elige 3 a 5 sabores para empezar (1 frutal, 1 cremosa, 1 rellena)',
+      'Anota los ingredientes en la lista de compras de la calculadora',
+    ],
+  },
+  {
+    dia: 2,
+    titulo: 'Calcula tus costos',
+    duracion: '20–30 min',
+    meta: 'Saber cuánto te cuesta cada paleta y a qué precio vender',
+    tareas: [
+      'Abre la Calculadora de Precios',
+      'Ingresa el costo real de cada ingrediente en tu ciudad',
+      'Define tu margen y anota el precio sugerido por paleta',
+    ],
+  },
+  {
+    dia: 3,
+    titulo: 'Prepara una pequeña tanda',
+    duracion: '1–2 horas + congelación',
+    meta: 'Probar que la receta sale bien antes de vender',
+    tareas: [
+      'Produce solo 6-10 paletas como prueba',
+      'Prueba textura y dulzor',
+      'Ajusta la receta si es necesario antes de producir más',
+    ],
+  },
+  {
+    dia: 4,
+    titulo: 'Toma fotos y arma tu menú',
+    duracion: '45–60 min',
+    meta: 'Tener menú y foto listos para publicar',
+    tareas: [
+      'Fotografía con luz natural y fondo limpio',
+      'Completa el menú editable con sabores y precios',
+      'Prepara imagen o texto para publicar en WhatsApp',
+    ],
+  },
+  {
+    dia: 5,
+    titulo: 'Publica en WhatsApp',
+    duracion: '20–30 min',
+    meta: 'Que al menos 10 personas vean tu oferta',
+    tareas: [
+      'Publica tu menú en estado o historia',
+      'Usa uno de los mensajes listos del kit',
+      'Comparte con amigos, familia y vecinos con educación',
+    ],
+  },
+  {
+    dia: 6,
+    titulo: 'Organiza pedidos',
+    duracion: 'Según demanda',
+    meta: 'Responder con claridad y anotar cada pedido',
+    tareas: [
+      'Anota cada pedido en la pestaña Pedidos de la calculadora',
+      'Confirma sabores, cantidad y forma de pago',
+      'Organiza entrega o punto de recogida',
+    ],
+  },
+  {
+    dia: 7,
+    titulo: 'Ajusta sabores y precios',
+    duracion: '30 min',
+    meta: 'Planificar la semana 2 con datos reales',
+    tareas: [
+      'Revisa qué sabores preguntaron más',
+      'Ajusta precios si algún ingrediente subió',
+      'Planifica la tanda de la próxima semana',
+    ],
+  },
 ];
 
 export const LISTA_COMPRAS = {

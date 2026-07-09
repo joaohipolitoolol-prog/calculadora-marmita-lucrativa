@@ -1,32 +1,61 @@
 import { BRAND_NAME } from '../site/brand.js';
 
-/** Marca única — morango (favicon + app + PWA) */
-export const LOGO_VIEWBOX = '0 0 32 32';
+/**
+ * Marca — morango premium full-bleed (favicon + PWA + apple-touch).
+ * O fruto preenche o canvas como ícones top da App Store (sem “adesivo” pequeno).
+ */
+export const LOGO_VIEWBOX = '0 0 100 100';
 
 export const LOGO_MARK_PATHS = `
   <defs>
-    <linearGradient id="berry" x1="16" y1="8" x2="16" y2="28" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FF5A8A"/>
-      <stop offset="1" stop-color="#D91E5A"/>
+    <linearGradient id="berryBody" x1="50" y1="14" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFA3CB"/>
+      <stop offset="0.22" stop-color="#FF4F8B"/>
+      <stop offset="0.65" stop-color="#D91852"/>
+      <stop offset="1" stop-color="#8F0A32"/>
     </linearGradient>
-    <linearGradient id="leaf" x1="16" y1="2" x2="16" y2="10" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#6BCB4A"/>
-      <stop offset="1" stop-color="#3D9E2E"/>
+    <radialGradient id="berryGlow" cx="34" cy="36" r="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE6F1" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#FFE6F1" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="leafFill" x1="50" y1="-2" x2="50" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#C4FF7A"/>
+      <stop offset="1" stop-color="#1F862C"/>
+    </linearGradient>
+    <linearGradient id="stemFill" x1="50" y1="-2" x2="50" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#96F060"/>
+      <stop offset="1" stop-color="#146820"/>
     </linearGradient>
   </defs>
-  <path d="M16 3.5c-1.2 1.8-3.4 3.2-5.8 3.6.8 1.6 2.6 2.7 4.6 2.7h2.4c2 0 3.8-1.1 4.6-2.7-2.4-.4-4.6-1.8-5.8-3.6z" fill="url(#leaf)"/>
-  <path d="M13 5.2c.6-.8 1.8-.8 2.4 0" stroke="#2E7D22" stroke-width=".8" stroke-linecap="round" fill="none"/>
-  <path d="M16 4.2c.7-.9 2-.9 2.7 0" stroke="#2E7D22" stroke-width=".8" stroke-linecap="round" fill="none"/>
-  <path d="M19.2 5.8c.6-.8 1.8-.8 2.4 0" stroke="#2E7D22" stroke-width=".8" stroke-linecap="round" fill="none"/>
-  <path d="M8.5 10.5c0-1.2 1-2.2 2.2-2.2h10.6c1.2 0 2.2 1 2.2 2.2v.8c0 5.8-3.4 10.8-7.5 12.2-4.1-1.4-7.5-6.4-7.5-12.2v-.8z" fill="url(#berry)"/>
-  <ellipse cx="12" cy="14.5" rx="1" ry="1.3" fill="#FFD0E0" opacity=".95"/>
-  <ellipse cx="16.5" cy="17" rx="1" ry="1.3" fill="#FFE8F0" opacity=".95"/>
-  <ellipse cx="20" cy="14" rx="1" ry="1.3" fill="#FFD0E0" opacity=".95"/>
-  <ellipse cx="14.5" cy="20" rx="1" ry="1.3" fill="#FFE8F0" opacity=".9"/>
-  <ellipse cx="18.5" cy="21" rx="1" ry="1.3" fill="#FFD0E0" opacity=".9"/>
-  <ellipse cx="11.5" cy="18.5" rx=".8" ry="1" fill="#FFE8F0" opacity=".85"/>
-  <ellipse cx="21" cy="18" rx=".8" ry="1" fill="#FFD0E0" opacity=".85"/>
-  <path d="M10 12.5c3.5-1.2 8.5-1.2 12 0" stroke="#fff" stroke-width=".6" stroke-linecap="round" opacity=".28" fill="none"/>
+
+  <!-- Folhas quase no topo do canvas -->
+  <g fill="url(#leafFill)">
+    <path d="M50 24 L26 0 C16 8 14 20 22 26 Z"/>
+    <path d="M50 24 L74 0 C84 8 86 20 78 26 Z"/>
+    <path d="M50 24 L50 -2 C38 4 32 14 36 23 Z"/>
+    <path d="M50 24 L10 14 C12 26 24 34 38 30 Z"/>
+    <path d="M50 24 L90 14 C88 26 76 34 62 30 Z"/>
+  </g>
+  <path fill="url(#stemFill)" d="M46.8 1c1.2-4.2 5.2-4.2 6.4 0l1.2 5.4c.4 1.5-.85 2.8-2.35 3H48c-1.5-.2-2.75-1.5-2.35-3L46.8 1z"/>
+
+  <!-- Corpo: quase edge-to-edge -->
+  <path fill="url(#berryBody)" d="M50 100C24 92 6 68 6 38.5V32c0-7 5.6-12.6 12.6-12.6h62.8C88.4 19.4 94 25 94 32v6.5C94 68 76 92 50 100z"/>
+  <path fill="url(#berryGlow)" d="M50 100C24 92 6 68 6 38.5V32c0-7 5.6-12.6 12.6-12.6h62.8C88.4 19.4 94 25 94 32v6.5C94 68 76 92 50 100z"/>
+  <path fill="#FFFFFF" opacity=".36" d="M20 36c7-14 22-20 38-17-2 16-11 28-24 36-8 5.5-17 7-26 6 3-10 7-18 12-25z"/>
+
+  <!-- Sementes menores e mais naturais -->
+  <g fill="#FFF2F7">
+    <ellipse cx="28" cy="42" rx="2.8" ry="3.6" transform="rotate(-24 28 42)"/>
+    <ellipse cx="50" cy="38" rx="2.8" ry="3.6"/>
+    <ellipse cx="72" cy="42" rx="2.8" ry="3.6" transform="rotate(24 72 42)"/>
+    <ellipse cx="36" cy="56" rx="2.6" ry="3.4" transform="rotate(-14 36 56)"/>
+    <ellipse cx="62" cy="54" rx="2.6" ry="3.4" transform="rotate(14 62 54)"/>
+    <ellipse cx="24" cy="70" rx="2.4" ry="3.1" transform="rotate(-28 24 70)"/>
+    <ellipse cx="50" cy="72" rx="2.6" ry="3.4"/>
+    <ellipse cx="76" cy="68" rx="2.4" ry="3.1" transform="rotate(28 76 68)"/>
+    <ellipse cx="36" cy="86" rx="2.3" ry="3" transform="rotate(-10 36 86)"/>
+    <ellipse cx="62" cy="84" rx="2.3" ry="3" transform="rotate(10 62 84)"/>
+  </g>
 `;
 
 export const BRAND_EMOJI = '🍓';
@@ -40,14 +69,37 @@ export function logoMarkSvg({ width = 32, height = 32, ariaHidden = true, classN
 }
 
 export function logoMarkFaviconDoc() {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}" role="img" aria-label="${BRAND_NAME}">${LOGO_MARK_PATHS}\n</svg>\n`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}" role="img" aria-label="${BRAND_NAME}">
+  <rect width="100" height="100" rx="22" fill="#FFC8DC"/>
+  ${LOGO_MARK_PATHS}
+</svg>
+`;
 }
 
-export function logoMaskableSvg({ size = 512, background = '#FFF6F9', markScale = 0.62 } = {}) {
+/**
+ * Ícone de app: morango full-bleed no squircle.
+ * Fundo só aparece nas cantos arredondados.
+ */
+export function logoMaskableSvg({
+  size = 512,
+  background = null,
+  markScale = 1,
+} = {}) {
   const pad = (size - size * markScale) / 2;
-  const scale = (size * markScale) / 32;
+  const scale = (size * markScale) / 100;
+  const rx = Math.round(size * 0.2237);
+  const bg = background
+    ? `<rect width="${size}" height="${size}" rx="${rx}" fill="${background}"/>`
+    : `<defs>
+    <linearGradient id="appBg" x1="0" y1="0" x2="${size}" y2="${size}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFD6E8"/>
+      <stop offset="1" stop-color="#FF9EC0"/>
+    </linearGradient>
+  </defs>
+  <rect width="${size}" height="${size}" rx="${rx}" fill="url(#appBg)"/>`;
+
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" role="img" aria-label="${BRAND_NAME}">
-  <rect width="${size}" height="${size}" rx="${Math.round(size * 0.22)}" fill="${background}"/>
+  ${bg}
   <g transform="translate(${pad} ${pad}) scale(${scale})">${LOGO_MARK_PATHS}</g>
 </svg>`;
 }

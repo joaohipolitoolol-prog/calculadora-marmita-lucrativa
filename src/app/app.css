@@ -20,6 +20,109 @@
   padding-bottom: calc(148px + env(safe-area-inset-bottom));
 }
 
+.app-shell.has-doc-viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+.app-shell.has-doc-viewer .app-content-doc {
+  flex: 1;
+  min-height: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Document viewer ── */
+
+.doc-viewer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  background: var(--white);
+}
+
+.doc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gray-border);
+  background: var(--cream);
+  flex-shrink: 0;
+}
+
+.doc-toolbar-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doc-toolbar-title strong {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--brown);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-kind-badge {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--pink);
+  background: var(--pink-soft);
+}
+
+.doc-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.doc-frame {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: none;
+  background: var(--white);
+}
+
+.doc-missing {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--gray);
+}
+
+.doc-back-btn {
+  flex-shrink: 0;
+}
+
+.kit-inline-files {
+  margin-top: 8px;
+}
+
 body.drawer-open { overflow: hidden; }
 
 /* ── Topbar ── */
@@ -2466,12 +2569,16 @@ body.onboarding-open {
   display: flex;
   align-items: center;
   gap: 14px;
+  width: 100%;
   padding: 14px 16px;
   border-radius: var(--radius-md);
   background: var(--white);
   border: 1px solid var(--gray-border);
   text-decoration: none;
   color: inherit;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
   transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 
@@ -2515,6 +2622,20 @@ body.onboarding-open {
   font-size: 0.92rem;
   color: var(--brown);
   line-height: 1.3;
+}
+
+.file-kind {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  color: var(--gray);
+  background: var(--gray-light);
+  border: 1px solid var(--gray-border);
 }
 
 .file-info em {
@@ -2919,6 +3040,13 @@ body.onboarding-open {
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
+}
+
+.plan-day-meta {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--gray);
 }
 
 .plan-day-num {
