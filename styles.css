@@ -3095,6 +3095,63 @@ h3 {
   line-height: 1.5;
 }
 
+.no-clients {
+  background: var(--cream);
+  text-align: center;
+}
+
+.no-clients .section-text {
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.investment-block {
+  background: var(--green-light);
+}
+
+.currency-block {
+  margin: var(--space-lg) 0;
+  padding: 18px 20px;
+  background: var(--white);
+  border: 1px solid rgba(232, 67, 122, 0.2);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.currency-block h3 {
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.currency-block p {
+  font-size: 0.92rem;
+  color: var(--gray);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.objections-block {
+  background: var(--pink-soft);
+}
+
+.offer-value-phrase {
+  margin: 16px 0 0;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--brown);
+  text-align: center;
+}
+
+.guarantee-reassure {
+  margin-top: 14px;
+  margin-bottom: 0;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--pink-dark);
+}
+
 /* Comparison cards: recetas gratis vs kit */
 .compare-grid {
   margin-top: var(--space-lg);
