@@ -1,8 +1,14 @@
 import {
+  CALC_CTA_LABEL,
   CHECKOUT_URL,
+  CTA_LABEL,
+  HERO_CTA_LABEL,
   MAIN_PRICE,
+  OFFER_CTA_LABEL,
   PRICE_ACCESS_LABEL,
   PRODUCT_NAME,
+  STICKY_CTA_LABEL,
+  TRUST_CTA_LABEL,
   WHATSAPP_NUMBER_ID,
   WHATSAPP_URL,
 } from './config.js';
@@ -64,6 +70,19 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
   link.setAttribute('rel', 'noopener');
   link.dataset.checkout = 'kit';
   if (!link.dataset.track) link.dataset.track = 'checkout_kit';
+  if (link.dataset.checkoutHero !== undefined) {
+    link.textContent = HERO_CTA_LABEL;
+  } else if (link.dataset.checkoutOffer !== undefined) {
+    link.textContent = OFFER_CTA_LABEL;
+  } else if (link.dataset.checkoutCalc !== undefined) {
+    link.textContent = CALC_CTA_LABEL;
+  } else if (link.dataset.checkoutTrust !== undefined) {
+    link.textContent = TRUST_CTA_LABEL;
+  } else if (link.dataset.checkoutSticky !== undefined) {
+    link.textContent = STICKY_CTA_LABEL;
+  } else if (link.dataset.checkoutCustom === undefined) {
+    link.textContent = CTA_LABEL;
+  }
   link.addEventListener('click', (e) => {
     e.preventDefault();
     trackCheckout('kit', { page: 'postres', line: 'postres', ctaId: link.dataset.track });

@@ -1,7 +1,33 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
+const htmlRewrites = {
+  '/upsell-paletas-premium': '/upsell-paletas-premium.html',
+  '/postres/upsell': '/postres-upsell.html',
+  '/upsell-postres-premium': '/postres-upsell.html',
+  '/postres': '/postres.html',
+  '/postresaviso': '/postres-aviso.html',
+};
+
+function devHtmlRewrites() {
+  return {
+    name: 'dev-html-rewrites',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const pathname = req.url?.split('?')[0] ?? '';
+        const target = htmlRewrites[pathname];
+        if (target) {
+          const query = req.url?.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+          req.url = `${target}${query}`;
+        }
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
+  plugins: [devHtmlRewrites()],
   build: {
     rollupOptions: {
       input: {

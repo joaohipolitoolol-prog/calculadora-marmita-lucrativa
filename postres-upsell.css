@@ -7,18 +7,45 @@ html.postres-upsell-theme {
   --pink-dark: #D42E68;
   --orange: #FFB533;
   --orange-dark: #E89B20;
+  --orange-light: #FFF7EC;
   --cream: #FFF7FB;
   --brown: #2A1712;
   --brown-mid: #6D5550;
   --green: #25D366;
   --green-light: #E8F9EE;
   --gray-border: #F6C9D8;
+  --gold: var(--orange);
+  --gold-soft: var(--orange-light);
   --upsell-grad: linear-gradient(135deg, #EC3F7A 0%, #FFB533 100%);
 }
 
 .postres-upsell-theme .btn-primary {
   background: var(--upsell-grad);
   border: none;
+}
+
+.postres-upsell-theme .upsell-urgency-bar {
+  background: linear-gradient(90deg, var(--pink-dark) 0%, var(--pink) 55%, var(--orange) 100%);
+  box-shadow: 0 4px 16px rgba(212, 46, 104, 0.28);
+}
+
+.postres-upsell-theme .upsell-badge {
+  background: var(--upsell-grad);
+  border-color: rgba(236, 63, 122, 0.35);
+  box-shadow: 0 4px 14px rgba(236, 63, 122, 0.2);
+}
+
+.postres-upsell-theme .downsell-label {
+  background: var(--pink-dark);
+}
+
+.postres-upsell-theme .downsell-card {
+  border-color: var(--gray-border);
+}
+
+.postres-upsell-theme .upsell-hero-visual,
+.postres-upsell-theme .offer-box {
+  border-color: rgba(236, 63, 122, 0.28);
 }
 
 .postres-upsell-theme .upsell-hero-visual {

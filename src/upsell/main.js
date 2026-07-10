@@ -1,14 +1,18 @@
 import {
   ACCESS_URL,
   DOWNSELL_CHECKOUT_URL,
+  DOWNSELL_CTA_LABEL,
+  DOWNSELL_DECLINE_LABEL,
   DOWNSELL_PRICE_LABEL,
   DOWNSELL_PRICE_USD,
   META_PIXEL_ID,
   UPSELL_CHECKOUT_URL,
   UPSELL_CURRENCY,
+  STICKY_CTA_LABEL,
   UPSELL_CTA_LABEL,
   UPSELL_DECLINE_LABEL,
   UPSELL_PRICE_BRL,
+  UPSELL_PRICE_COMPARE_LABEL,
   UPSELL_PRICE_LABEL,
   UPSELL_PRICE_USD,
   UPSELL_TIMER_MS,
@@ -27,7 +31,7 @@ function trackInitiateCheckout() {
     window.fbq('track', 'InitiateCheckout', {
       value: UPSELL_CURRENCY === 'BRL' ? UPSELL_PRICE_BRL : UPSELL_PRICE_USD,
       currency: UPSELL_CURRENCY === 'BRL' ? 'BRL' : 'USD',
-      content_name: 'Paletas Premium y Combos Rentables',
+      content_name: 'Pack Premium de Combos para WhatsApp',
     });
   }
 }
@@ -113,6 +117,11 @@ if (downsellModal) {
   document.querySelectorAll('[data-downsell-final-decline]').forEach((link) => {
     link.href = ACCESS_URL;
     link.setAttribute('rel', 'noopener');
+    link.textContent = DOWNSELL_DECLINE_LABEL;
+  });
+
+  document.querySelectorAll('[data-downsell-cta]').forEach((el) => {
+    el.textContent = DOWNSELL_CTA_LABEL;
   });
 
   document.querySelectorAll('[data-downsell-checkout]').forEach((link) => {
@@ -132,7 +141,7 @@ if (downsellModal) {
         window.fbq('track', 'InitiateCheckout', {
           value: DOWNSELL_PRICE_USD,
           currency: 'USD',
-          content_name: 'Paletas Premium (downsell)',
+          content_name: 'Mini Pack de Combos para WhatsApp',
         });
       }
     });
@@ -143,12 +152,20 @@ document.querySelectorAll('[data-upsell-cta]').forEach((el) => {
   el.textContent = UPSELL_CTA_LABEL;
 });
 
+document.querySelectorAll('[data-upsell-sticky-cta]').forEach((el) => {
+  el.textContent = STICKY_CTA_LABEL;
+});
+
 document.querySelectorAll('[data-upsell-decline-label]').forEach((el) => {
   el.textContent = UPSELL_DECLINE_LABEL;
 });
 
 document.querySelectorAll('[data-upsell-price]').forEach((el) => {
   el.textContent = UPSELL_PRICE_LABEL;
+});
+
+document.querySelectorAll('[data-upsell-price-compare]').forEach((el) => {
+  el.textContent = UPSELL_PRICE_COMPARE_LABEL;
 });
 
 if (typeof window.fbq === 'function' && META_PIXEL_ID) {

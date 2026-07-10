@@ -1,0 +1,37 @@
+@import './src/styles/tokens.css';
+@import './upsell.css';
+
+html.paletas-upsell-theme {
+  --gold: var(--pink);
+  --gold-soft: var(--pink-light);
+  --upsell-grad: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+}
+
+.paletas-upsell-theme .btn-primary {
+  background: var(--upsell-grad);
+  border: none;
+}
+
+.paletas-upsell-theme .upsell-urgency-bar {
+  background: linear-gradient(90deg, var(--pink-dark) 0%, var(--pink) 55%, var(--berry) 100%);
+  box-shadow: 0 4px 16px rgba(199, 46, 98, 0.28);
+}
+
+.paletas-upsell-theme .upsell-badge {
+  background: var(--upsell-grad);
+  border-color: rgba(232, 67, 122, 0.35);
+  box-shadow: 0 4px 14px rgba(232, 67, 122, 0.2);
+}
+
+.paletas-upsell-theme .downsell-label {
+  background: var(--pink-dark);
+}
+
+.paletas-upsell-theme .downsell-card {
+  border-color: var(--pink-light);
+}
+
+.paletas-upsell-theme .upsell-hero-visual,
+.paletas-upsell-theme .offer-box {
+  border-color: rgba(232, 67, 122, 0.28);
+}

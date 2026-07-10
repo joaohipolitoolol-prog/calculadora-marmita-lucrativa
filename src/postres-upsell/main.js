@@ -1,12 +1,16 @@
 import {
   ACCESS_URL,
   DOWNSELL_CHECKOUT_URL,
+  DOWNSELL_CTA_LABEL,
+  DOWNSELL_DECLINE_LABEL,
   DOWNSELL_PRICE_LABEL,
   DOWNSELL_PRICE_USD,
   UPSELL_CHECKOUT_URL,
+  STICKY_CTA_LABEL,
   UPSELL_CTA_LABEL,
   UPSELL_DECLINE_LABEL,
   UPSELL_NAME,
+  UPSELL_PRICE_COMPARE_LABEL,
   UPSELL_PRICE_LABEL,
   UPSELL_PRICE_USD,
   UPSELL_TIMER_MS,
@@ -105,6 +109,11 @@ if (downsellModal) {
   document.querySelectorAll('[data-downsell-final-decline]').forEach((link) => {
     link.href = isPlaceholder(ACCESS_URL) ? '#' : ACCESS_URL;
     link.setAttribute('rel', 'noopener');
+    link.textContent = DOWNSELL_DECLINE_LABEL;
+  });
+
+  document.querySelectorAll('[data-downsell-cta]').forEach((el) => {
+    el.textContent = DOWNSELL_CTA_LABEL;
   });
 
   document.querySelectorAll('[data-downsell-checkout]').forEach((link) => {
@@ -129,6 +138,10 @@ document.querySelectorAll('[data-upsell-cta]').forEach((el) => {
   el.textContent = UPSELL_CTA_LABEL;
 });
 
+document.querySelectorAll('[data-upsell-sticky-cta]').forEach((el) => {
+  el.textContent = STICKY_CTA_LABEL;
+});
+
 document.querySelectorAll('[data-upsell-decline-label]').forEach((el) => {
   el.textContent = UPSELL_DECLINE_LABEL;
 });
@@ -136,6 +149,25 @@ document.querySelectorAll('[data-upsell-decline-label]').forEach((el) => {
 document.querySelectorAll('[data-upsell-price]').forEach((el) => {
   el.textContent = UPSELL_PRICE_LABEL;
 });
+
+document.querySelectorAll('[data-upsell-price-compare]').forEach((el) => {
+  el.textContent = UPSELL_PRICE_COMPARE_LABEL;
+});
+
+const stickyBar = document.getElementById('upsell-sticky');
+const heroCta = document.querySelector('.upsell-hero [data-upsell-checkout]');
+
+if (stickyBar && heroCta && 'IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      stickyBar.hidden = entry.isIntersecting;
+    },
+    { threshold: 0.1 }
+  );
+  observer.observe(heroCta);
+} else if (stickyBar) {
+  stickyBar.hidden = false;
+}
 
 function formatTimer(ms) {
   const total = Math.max(0, Math.ceil(ms / 1000));
