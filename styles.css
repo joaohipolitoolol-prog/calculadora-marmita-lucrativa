@@ -3034,6 +3034,35 @@ h3 {
 
 /* ===== Direct-response additions ===== */
 
+.hero-hook {
+  margin: 16px 0 12px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.45;
+  color: var(--brown);
+  text-wrap: balance;
+}
+
+.sell-first-block {
+  background: linear-gradient(180deg, var(--pink-light) 0%, var(--cream) 100%);
+}
+
+.sell-first-block .section-text {
+  max-width: 40ch;
+}
+
+.calc-hook {
+  margin: var(--space-md) 0 var(--space-lg);
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--pink-light);
+  color: var(--brown);
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 /* Pull-quote: destaca frase-chave dentro de blocos de dor/objeção */
 .pull-quote {
   margin: var(--space-md) 0;
