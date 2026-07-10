@@ -53,6 +53,12 @@ export function normalizeProfile(profile = {}) {
     paletas: Boolean(pending.paletas),
     postres: Boolean(pending.postres),
   };
+  // null = inherit line setting; true/false = per-user override
+  if (profile.audioGuideEnabled === true || profile.audioGuideEnabled === false) {
+    normalized.audioGuideEnabled = profile.audioGuideEnabled;
+  } else {
+    normalized.audioGuideEnabled = null;
+  }
   return normalized;
 }
 

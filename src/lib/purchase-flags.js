@@ -16,15 +16,16 @@ export function purchaseFlagsFromSearch(search = typeof window !== 'undefined' ?
   const postres = params.get('postres') === '1';
   const postresPremium = params.get('postres_premium') === '1';
   const paletas = params.get('paletas') === '1';
+  const line = params.get('line');
 
   const hasExplicit = compra || premium || postres || postresPremium || paletas;
   if (!hasExplicit) return null;
 
-  const hasPostres = postres || postresPremium;
+  const hasPostres = postres || postresPremium || (compra && line === 'postres');
   const hasPostresPremium = postresPremium;
   const hasPremium = premium;
   // Postres-only purchase does not grant Paletas unless paletas=1 (or premium) is set.
-  const hasKit = paletas || hasPremium || (compra && !hasPostres);
+  const hasKit = paletas || hasPremium || (compra && line !== 'postres' && !hasPostres);
 
   return {
     hasKit: Boolean(hasKit),

@@ -15,20 +15,23 @@ export default async function handler(req, res) {
   try {
     await verifyAdminRequest(req);
 
-    const { email, name } = req.body || {};
+    const { email, name, line = 'paletas' } = req.body || {};
     if (!email) {
       return res.status(400).json({ error: 'email es obligatorio' });
     }
 
     const resend = new Resend(process.env.RESEND_API_KEY);
     const siteUrl = process.env.SITE_URL || 'https://paletasparawhatsapp.vercel.app';
+    const isPostres = line === 'postres';
     const from = process.env.RESEND_FROM_EMAIL || `${BRAND_NAME} <onboarding@resend.dev>`;
 
     const { error } = await resend.emails.send({
       from,
       to: email,
-      subject: `Tu ${BRAND_KIT} está listo 🍓`,
-      html: buildWelcomeEmailHtml(name, siteUrl),
+      subject: isPostres
+        ? 'Tu Kit Postres en Vaso está listo 🍨'
+        : `Tu ${BRAND_KIT} está listo 🍓`,
+      html: buildWelcomeEmailHtml(name, siteUrl, { line }),
     });
 
     if (error) {

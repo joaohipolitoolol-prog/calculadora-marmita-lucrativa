@@ -5,6 +5,8 @@
   "rewrites": [
     { "source": "/login", "destination": "/login.html" },
     { "source": "/cadastrar", "destination": "/cadastrar.html" },
+    { "source": "/postres/login", "destination": "/login-postres.html" },
+    { "source": "/postres/cadastrar", "destination": "/cadastrar-postres.html" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/app", "destination": "/app.html" },
     { "source": "/membros", "destination": "/membros.html" },
@@ -20,5 +22,19 @@
     { "source": "/postres/entrega", "destination": "/postres/entrega.html" },
     { "source": "/postres-premium/entrega", "destination": "/postres-premium/entrega.html" },
     { "source": "/m/:slug", "destination": "/m.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/cadastrar",
+      "has": [{ "type": "query", "key": "line", "value": "postres" }],
+      "destination": "/postres/cadastrar",
+      "permanent": false
+    },
+    {
+      "source": "/login",
+      "has": [{ "type": "query", "key": "line", "value": "postres" }],
+      "destination": "/postres/login",
+      "permanent": false
+    }
   ]
 }

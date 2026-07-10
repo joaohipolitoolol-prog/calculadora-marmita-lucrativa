@@ -2521,6 +2521,20 @@ body.drawer-open { overflow: hidden; }
   flex-shrink: 0;
 }
 
+.menu-list-audio-hint--off {
+  color: var(--text-muted, #8a7a82);
+}
+
+.menu-audio-paused-note {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff4f8;
+  border: 1px solid #f3d4df;
+  font-size: 0.82rem;
+  color: #7a4f60;
+}
+
 .recipe-audio-bar {
   position: sticky;
   bottom: calc(64px + env(safe-area-inset-bottom));

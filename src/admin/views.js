@@ -255,6 +255,13 @@ export function renderUserDrawer(user) {
   const hasPending =
     user.premiumPending?.paletas || user.premiumPending?.postres;
 
+  const audioValue =
+    user.audioGuideEnabled === true ? 'on' : user.audioGuideEnabled === false ? 'off' : 'inherit';
+
+  const canResendPaletas = user.hasKit && user.email;
+  const canResendPostres = user.hasPostres && user.email;
+  const isSelf = user.id === window.__adminSelfUid;
+
   return `
     <div class="admin-drawer-overlay visible" data-close-drawer></div>
     <aside class="admin-drawer open" aria-label="${t('drawer.title')}">
@@ -270,6 +277,14 @@ export function renderUserDrawer(user) {
       </div>
       <div class="admin-drawer-body">
         ${user.missingProfile ? `<div class="admin-alert warn">${t('drawer.orphanWarn')}</div>` : ''}
+        ${
+          user.lastGrantSource || user.lastGrantAt
+            ? `<div class="admin-drawer-meta-note">
+                <div><span>${t('drawer.grantSource')}:</span> <strong>${escapeHtml(user.lastGrantSource || '—')}</strong></div>
+                <div><span>${t('drawer.grantAt')}:</span> <strong>${formatDateTime(user.lastGrantAt)}</strong></div>
+              </div>`
+            : ''
+        }
         <div class="admin-detail-grid">
           <div><span>UID</span><code>${escapeHtml(user.id)}</code></div>
           <div><span>${t('drawer.origin')}</span><strong>${escapeHtml(user.registeredFrom || '—')}</strong></div>
@@ -279,6 +294,18 @@ export function renderUserDrawer(user) {
         </div>
         <h3>${t('drawer.products')}</h3>
         <div class="admin-toggle-list">${productToggles}</div>
+        <h3>${t('drawer.audioTitle')}</h3>
+        <label class="admin-toggle-row">
+          <div>
+            <strong>${t('drawer.audioTitle')}</strong>
+            <span class="admin-toggle-hint">${t('content.audioGuideOpenHint')}</span>
+          </div>
+          <select class="admin-select-inline" data-drawer-audio="${user.id}">
+            <option value="inherit" ${audioValue === 'inherit' ? 'selected' : ''}>${t('drawer.audioInherit')}</option>
+            <option value="on" ${audioValue === 'on' ? 'selected' : ''}>${t('drawer.audioOn')}</option>
+            <option value="off" ${audioValue === 'off' ? 'selected' : ''}>${t('drawer.audioOff')}</option>
+          </select>
+        </label>
         <div class="admin-drawer-actions">
           ${
             hasPending
@@ -286,17 +313,27 @@ export function renderUserDrawer(user) {
               : ''
           }
           ${
-            user.hasKit && user.email
-              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}">${ICONS.mailSend} ${t('drawer.resendEmail')}</button>`
+            canResendPaletas
+              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}" data-line="paletas">${ICONS.mailSend} ${t('drawer.resendEmail')}</button>`
               : ''
           }
           ${
-            !user.isAdmin && user.id !== window.__adminSelfUid
+            canResendPostres
+              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}" data-line="postres">${ICONS.mailSend} ${t('drawer.resendEmailPostres')}</button>`
+              : ''
+          }
+          ${
+            !user.isAdmin && !isSelf
               ? `<button type="button" class="admin-btn ghost" data-user-admin="${user.id}">${t('drawer.makeAdmin')}</button>`
               : ''
           }
           ${
-            !user.isAdmin && user.id !== window.__adminSelfUid
+            user.isAdmin && !isSelf
+              ? `<button type="button" class="admin-btn ghost" data-user-demote="${user.id}">${t('drawer.removeAdmin')}</button>`
+              : ''
+          }
+          ${
+            !user.isAdmin && !isSelf
               ? `<button type="button" class="admin-btn danger" data-user-delete="${user.id}" data-email="${escapeHtml(user.email || '')}">${ICONS.trash} ${t('drawer.delete')}</button>`
               : ''
           }
@@ -442,41 +479,118 @@ export function renderAnalyticsView(analytics, lineFilter = 'all') {
   `;
 }
 
-export function renderDashboardView(users, analytics, lineFilter = 'all') {
-  const stats = getStats(users);
-  const pendingKit = users.filter((u) => profileStatus(u) === 'pending_kit').slice(0, 6);
-  const pendingUpsell = users.filter((u) => profileStatus(u) === 'pending_upsell').slice(0, 6);
+function renderInboxRow(user, kind) {
+  const name = escapeHtml(user.displayName || t('table.noName'));
+  const email = escapeHtml(user.email || '—');
+  let actions = `
+    <button type="button" class="admin-btn sm ghost" data-user-view="${user.id}">${t('inbox.open')}</button>
+  `;
+
+  if (kind === 'kit') {
+    const preferPostres = user.registeredLine === 'postres' || user.lastActiveLine === 'postres';
+    actions = `
+      <button type="button" class="admin-btn sm success" data-inbox-grant="${user.id}" data-product="${preferPostres ? 'postres_kit' : 'paletas_kit'}">${preferPostres ? t('inbox.grantPostres') : t('inbox.grantPaletas')}</button>
+      <button type="button" class="admin-btn sm ghost" data-inbox-grant="${user.id}" data-product="${preferPostres ? 'paletas_kit' : 'postres_kit'}">${preferPostres ? t('inbox.grantPaletas') : t('inbox.grantPostres')}</button>
+      ${actions}
+    `;
+  } else if (kind === 'upsell') {
+    const products = [];
+    if (user.premiumPending?.paletas && user.hasKit && !user.hasPremium) products.push('paletas_premium');
+    if (user.premiumPending?.postres && user.hasPostres && !user.hasPostresPremium) products.push('postres_premium');
+    if (!products.length) {
+      if (user.hasKit && !user.hasPremium) products.push('paletas_premium');
+      if (user.hasPostres && !user.hasPostresPremium) products.push('postres_premium');
+    }
+    actions = `
+      ${products
+        .map(
+          (pid) =>
+            `<button type="button" class="admin-btn sm success" data-inbox-grant="${user.id}" data-product="${pid}">${t('inbox.grantPremium')}${products.length > 1 ? ` · ${pid.includes('postres') ? 'Postres' : 'Paletas'}` : ''}</button>`
+        )
+        .join('')}
+      ${actions}
+    `;
+  }
 
   return `
-    ${renderLineFilter(lineFilter)}
-    ${renderStatsGrid(stats, analytics)}
+    <div class="admin-inbox-row">
+      <div class="admin-inbox-user">
+        <strong>${name}</strong>
+        <span>${email}</span>
+      </div>
+      <div class="admin-inbox-actions">${actions}</div>
+    </div>
+  `;
+}
+
+export function renderDashboardView(users, analytics, lineFilter = 'all') {
+  const stats = getStats(users);
+  const pendingKit = users.filter((u) => profileStatus(u) === 'pending_kit').slice(0, 8);
+  const pendingUpsell = users.filter((u) => profileStatus(u) === 'pending_upsell').slice(0, 8);
+
+  return `
+    <div class="admin-attention" role="group" aria-label="${escapeHtml(t('inbox.attention'))}">
+      <button type="button" class="admin-attention-card danger" data-tab="users" data-set-filter="pending_kit">
+        <strong>${stats.pendingKit}</strong>
+        <span>${t('inbox.pendingKit')}</span>
+      </button>
+      <button type="button" class="admin-attention-card warn" data-tab="users" data-set-filter="pending_upsell">
+        <strong>${stats.pendingUpsell}</strong>
+        <span>${t('inbox.pendingUpsell')}</span>
+      </button>
+      <button type="button" class="admin-attention-card" data-tab="users" data-set-filter="orphan">
+        <strong>${stats.orphans}</strong>
+        <span>${t('inbox.orphans')}</span>
+      </button>
+      <button type="button" class="admin-attention-card" data-tab="users" data-set-filter="active">
+        <strong>${stats.active}</strong>
+        <span>${t('stat.active')}</span>
+      </button>
+    </div>
+
     ${
       stats.orphans
         ? `<div class="admin-alert warn">${t('dashboard.orphanWarn', { n: stats.orphans })}</div>`
         : ''
     }
+
     <div class="admin-grid-2">
       <div class="admin-card">
         <div class="admin-card-head">
           <div><h2>${t('dashboard.pendingKitTitle')}</h2><p>${t('dashboard.pendingKitSub')}</p></div>
           <button type="button" class="admin-btn ghost" data-tab="users" data-set-filter="pending_kit">${t('dashboard.viewAll')}</button>
         </div>
-        <div class="admin-card-body flush">${renderUsersTable(pendingKit, new Set(), false)}</div>
+        <div class="admin-card-body flush">
+          ${
+            pendingKit.length
+              ? `<div class="admin-inbox-list">${pendingKit.map((u) => renderInboxRow(u, 'kit')).join('')}</div>`
+              : `<p class="admin-table-empty" style="padding:16px">${t('inbox.emptyKit')}</p>`
+          }
+        </div>
       </div>
       <div class="admin-card">
         <div class="admin-card-head">
           <div><h2>${t('dashboard.pendingUpsellTitle')}</h2><p>${t('dashboard.pendingUpsellSub')}</p></div>
           <button type="button" class="admin-btn ghost" data-tab="users" data-set-filter="pending_upsell">${t('dashboard.viewAll')}</button>
         </div>
-        <div class="admin-card-body flush">${renderUsersTable(pendingUpsell, new Set(), false)}</div>
+        <div class="admin-card-body flush">
+          ${
+            pendingUpsell.length
+              ? `<div class="admin-inbox-list">${pendingUpsell.map((u) => renderInboxRow(u, 'upsell')).join('')}</div>`
+              : `<p class="admin-table-empty" style="padding:16px">${t('inbox.emptyUpsell')}</p>`
+          }
+        </div>
       </div>
     </div>
+
+    ${renderLineFilter(lineFilter)}
     <div class="admin-card">
-      <div class="admin-card-head"><div><h2>${t('dashboard.trafficTitle')}</h2><p>${t('dashboard.trafficSub')}</p></div></div>
+      <div class="admin-card-head"><div><h2>${t('inbox.trafficSecondary')}</h2><p>${t('dashboard.trafficSub')}</p></div></div>
       <div class="admin-card-body">
         ${
           analytics?.pages?.length
             ? analytics.pages
+                .slice(0, 6)
                 .map(
                   (p) => `
             <div class="admin-traffic-row">
@@ -547,7 +661,8 @@ export function renderCodesView(codes) {
                   <td>${code.active ? `<span class="admin-badge active">${t('status.active')}</span>` : `<span class="admin-badge pending">${t('status.inactive')}</span>`}</td>
                   <td>
                     <div class="admin-actions-row">
-                      <button type="button" class="admin-btn sm ghost copy-btn" data-copy="${encodeURIComponent(code.code)}">${ICONS.copy}</button>
+                      <button type="button" class="admin-btn sm ghost copy-btn" data-copy="${encodeURIComponent(code.code)}" title="${t('codes.code')}">${ICONS.copy}</button>
+                      <button type="button" class="admin-btn sm ghost" data-copy-code-link="${escapeHtml(code.code)}" data-code-type="${escapeHtml(code.type)}" title="${t('codes.copyLink')}">${t('codes.copyLink')}</button>
                       <button type="button" class="admin-btn sm ghost" data-code-toggle="${code.id}" data-active="${Boolean(code.active)}">${code.active ? t('codes.deactivate') : t('codes.activate')}</button>
                       <button type="button" class="admin-btn sm danger" data-code-delete="${code.id}">${ICONS.trash}</button>
                     </div>
@@ -611,17 +726,45 @@ export function renderContentView() {
                 </div>
               </div>
               <label class="admin-toggle-row">
-                <span>${t('content.kitOpen')}</span>
+                <span>
+                  ${t('content.kitOpen')}
+                  <span class="admin-toggle-hint">${t('content.kitOpenHint')}</span>
+                </span>
                 <input type="checkbox" data-content-flag="kitOpen" data-content-line="${line.id}" ${flags.kitOpen !== false ? 'checked' : ''}>
               </label>
               <label class="admin-toggle-row">
-                <span>${t('content.premiumOpen')}</span>
+                <span>
+                  ${t('content.premiumOpen')}
+                  <span class="admin-toggle-hint">${t('content.premiumOpenHint')}</span>
+                </span>
                 <input type="checkbox" data-content-flag="premiumOpen" data-content-line="${line.id}" ${flags.premiumOpen !== false ? 'checked' : ''}>
+              </label>
+              <label class="admin-toggle-row">
+                <span>
+                  ${t('content.audioGuideOpen')}
+                  <span class="admin-toggle-hint">${t('content.audioGuideOpenHint')}</span>
+                </span>
+                <input type="checkbox" data-content-flag="audioGuideOpen" data-content-line="${line.id}" ${flags.audioGuideOpen !== false ? 'checked' : ''}>
               </label>
             </div>
           `;
             })
             .join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <div>
+          <h2>${t('content.audioTitle')}</h2>
+          <p class="admin-hint">${t('content.audioHint')}</p>
+        </div>
+      </div>
+      <div class="admin-card-body">
+        <div class="admin-audio-test">
+          <button type="button" class="admin-btn primary" id="admin-tts-test">${t('content.audioTest')}</button>
+          <p class="admin-hint" id="admin-tts-status" role="status" aria-live="polite"></p>
         </div>
       </div>
     </div>
@@ -704,7 +847,7 @@ export function renderSidebar(activeTab, users, user, sidebarOpen) {
     <aside class="admin-sidebar ${sidebarOpen ? 'open' : ''}" aria-label="Admin navigation">
       <div class="admin-sidebar-top">
         <div class="admin-brand">
-          <div class="admin-brand-mark">P</div>
+          <div class="admin-brand-mark">Ops</div>
           <div class="admin-brand-text"><strong>${t('sidebar.brand')}</strong><span>${t('sidebar.sub')}</span></div>
         </div>
         <button type="button" class="admin-sidebar-close" data-close-sidebar aria-label="${t('sidebar.close')}">${ICONS.close}</button>

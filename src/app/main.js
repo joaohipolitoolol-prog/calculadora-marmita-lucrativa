@@ -104,6 +104,7 @@ import {
 import { DEV_ADMIN_ACCESS, DEV_UNLOCK_ALL_CONTENT } from '../site/dev.js';
 import {
   getContentSettings,
+  isLineAudioGuideOpen,
   isLineKitOpen,
   isLinePremiumOpen,
   loadContentSettings,
@@ -149,7 +150,7 @@ import { canUseMenusCloud } from '../lib/menus.js';
 import {
   initRecipeNarration,
   recipeStableKey,
-  setRecipeNarrationContext,
+  setNarrationAccessCheck,
   setupRecipeNarration,
   stopRecipeNarration,
   syncRecipeNarrationUi,
@@ -409,6 +410,19 @@ function isKitPausedByAdmin() {
 
 function isPremiumPausedByAdmin() {
   return hasUserPremiumEntitlement() && !isLinePremiumOpen(lineBrand().id, getContentSettings());
+}
+
+function hasAudioGuideAccess() {
+  if (DEV_UNLOCK_ALL_CONTENT) return true;
+  if (!ownsLine(lineBrand().id)) return false;
+  const override = userProfile?.audioGuideEnabled;
+  if (override === true) return true;
+  if (override === false) return false;
+  return isLineAudioGuideOpen(lineBrand().id, getContentSettings());
+}
+
+function isAudioGuidePausedByAdmin() {
+  return ownsLine(lineBrand().id) && !isLineAudioGuideOpen(lineBrand().id, getContentSettings());
 }
 
 const SIMULATION_VOLUMES = [10, 20, 30];
@@ -2290,9 +2304,16 @@ function recipeMeta(item) {
   };
 }
 
-function renderRecipeItem(item, label, { premium = false, lineId } = {}) {
+function renderRecipeItem(item, label, { premium = false, lineId, audioEnabled = true } = {}) {
   const meta = recipeMeta(item);
   const recipeKey = recipeStableKey(item, { lineId, premium });
+  const playBtn = audioEnabled
+    ? `<button type="button" class="menu-item-play" data-recipe-play="${escapeHtml(recipeKey)}" aria-label="Escuchar receta en modo audio guiado" aria-pressed="false">
+          <span class="menu-item-play-icon menu-item-play-icon--play" aria-hidden="true">${ICONS.play}</span>
+          <span class="menu-item-play-icon menu-item-play-icon--pause" aria-hidden="true">${ICONS.pause}</span>
+          <span class="menu-item-play-icon menu-item-play-icon--load" aria-hidden="true">${ICONS.loader}</span>
+        </button>`
+    : '';
   return `
     <details class="menu-item ${premium ? 'menu-item--premium' : ''}" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}" data-recipe-key="${escapeHtml(recipeKey)}">
       <summary class="menu-item-summary">
@@ -2305,11 +2326,7 @@ function renderRecipeItem(item, label, { premium = false, lineId } = {}) {
           <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
           <span class="menu-item-preview">${escapeHtml(item.ingredientes?.[0] || '')}${item.ingredientes?.length > 1 ? ' · +' + (item.ingredientes.length - 1) + ' más' : ''}</span>
         </div>
-        <button type="button" class="menu-item-play" data-recipe-play="${escapeHtml(recipeKey)}" aria-label="Escuchar receta en modo audio guiado" aria-pressed="false">
-          <span class="menu-item-play-icon menu-item-play-icon--play" aria-hidden="true">${ICONS.play}</span>
-          <span class="menu-item-play-icon menu-item-play-icon--pause" aria-hidden="true">${ICONS.pause}</span>
-          <span class="menu-item-play-icon menu-item-play-icon--load" aria-hidden="true">${ICONS.loader}</span>
-        </button>
+        ${playBtn}
         <span class="menu-item-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
       </summary>
       <div class="menu-item-body">
@@ -2334,7 +2351,7 @@ function renderRecipeItem(item, label, { premium = false, lineId } = {}) {
   `;
 }
 
-function renderMenuByWeek(recipes, { premium = false, lineId } = {}) {
+function renderMenuByWeek(recipes, { premium = false, lineId, audioEnabled = true } = {}) {
   const weeks = [];
   for (let i = 0; i < recipes.length; i += 7) {
     weeks.push(recipes.slice(i, i + 7));
@@ -2363,7 +2380,7 @@ function renderMenuByWeek(recipes, { premium = false, lineId } = {}) {
                 renderRecipeItem(
                   item,
                   item.dia ? `Día ${item.dia}` : `Premium #${item.num}`,
-                  { premium, lineId }
+                  { premium, lineId, audioEnabled }
                 )
               )
               .join('')}
@@ -2374,12 +2391,15 @@ function renderMenuByWeek(recipes, { premium = false, lineId } = {}) {
     .join('');
 }
 
-function renderRecipeListTools(recipeCount, { premium = false } = {}) {
+function renderRecipeListTools(recipeCount, { premium = false, audioEnabled = true } = {}) {
+  const audioHint = audioEnabled
+    ? `<p class="menu-list-audio-hint">${ICONS.volume} Modo audio guiado — toca play en una receta</p>`
+    : `<p class="menu-list-audio-hint menu-list-audio-hint--off">${ICONS.volume} Audio guiado temporalmente no disponible</p>`;
   return `
     <div class="menu-list-tools">
       <div class="menu-list-tools-main">
         <p class="menu-list-count" id="menu-list-count">${recipeCount} recetas${premium ? ' premium' : ''}</p>
-        <p class="menu-list-audio-hint">${ICONS.volume} Modo audio guiado — toca play en una receta</p>
+        ${audioHint}
       </div>
       <div class="menu-list-actions">
         <button type="button" class="menu-list-action" id="menu-expand-all">Abrir</button>
@@ -2468,6 +2488,7 @@ function renderBonus() {
   const isPremium = recipeCatalog === 'premium';
   const title = isPremium ? kit.premiumRecipeTitle : kit.recipeTitle;
   const showFilters = !isPremium || hasPremiumAccess();
+  const audioEnabled = hasKitContentAccess() && hasAudioGuideAccess();
 
   let listHtml = '';
   if (!hasKitContentAccess()) {
@@ -2491,13 +2512,15 @@ function renderBonus() {
   } else {
     const recipes = isPremium ? kit.recipesPremium : kit.recipes;
     const lineId = lineBrand().id;
+    if (!audioEnabled) stopRecipeNarration();
     recipeLookup.clear();
     indexRecipeCatalog(kit.recipes, { lineId, premium: false });
     indexRecipeCatalog(kit.recipesPremium, { lineId, premium: true });
     listHtml = `
       ${renderCatalogLead(isPremium, recipes)}
-      ${renderRecipeListTools(recipes.length, { premium: isPremium })}
-      <div class="menu-list ${isPremium ? 'menu-list--premium' : ''}" id="menu-list">${renderMenuByWeek(recipes, { premium: isPremium, lineId })}</div>
+      ${isAudioGuidePausedByAdmin() ? '<p class="menu-audio-paused-note">El audio guiado está pausado por el equipo. Las recetas siguen disponibles en texto.</p>' : ''}
+      ${renderRecipeListTools(recipes.length, { premium: isPremium, audioEnabled })}
+      <div class="menu-list ${isPremium ? 'menu-list--premium' : ''}" id="menu-list">${renderMenuByWeek(recipes, { premium: isPremium, lineId, audioEnabled })}</div>
       <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada.</p>`;
   }
 
@@ -2518,7 +2541,7 @@ function renderBonus() {
         }
       </div>
       ${listHtml}
-      ${renderRecipeAudioBar()}
+      ${audioEnabled ? renderRecipeAudioBar() : ''}
     </div>
   `;
 }
@@ -3593,7 +3616,10 @@ function updateFromForm(form) {
 
 initRecipeNarration({
   onChange: () => syncRecipeNarrationUi(document.getElementById('app-root') || document),
+  canUseNarration: () => hasAudioGuideAccess(),
 });
+
+setNarrationAccessCheck(() => hasAudioGuideAccess());
 
 setupRecipeNarration({
   getRecipeContext: (key) => recipeLookup.get(key),

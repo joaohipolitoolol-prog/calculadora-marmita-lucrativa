@@ -7,6 +7,8 @@ const htmlRewrites = {
   '/upsell-postres-premium': '/postres-upsell.html',
   '/postres': '/postres.html',
   '/postresaviso': '/postres-aviso.html',
+  '/postres/cadastrar': '/cadastrar-postres.html',
+  '/postres/login': '/login-postres.html',
 };
 
 function devHtmlRewrites() {
@@ -43,6 +45,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         login: resolve(__dirname, 'login.html'),
         cadastrar: resolve(__dirname, 'cadastrar.html'),
+        cadastrarPostres: resolve(__dirname, 'cadastrar-postres.html'),
+        loginPostres: resolve(__dirname, 'login-postres.html'),
         app: resolve(__dirname, 'app.html'),
         membros: resolve(__dirname, 'membros.html'),
         upsell: resolve(__dirname, 'upsell-paletas-premium.html'),

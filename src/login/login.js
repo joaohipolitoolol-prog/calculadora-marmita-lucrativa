@@ -10,6 +10,7 @@ import {
   showAlert,
   translateAuthError,
 } from './shared.js';
+import { authRegisterPath } from './auth-lines.js';
 
 const formAlert = document.getElementById('form-alert');
 const loginForm = document.getElementById('login-form');
@@ -22,8 +23,9 @@ trackCurrentPage({ line: authLine?.id });
 bindTrackClicks({ page: 'login', line: authLine?.id });
 
 if (params.get('compra') === '1') {
-  const qs = params.toString();
-  window.location.replace(`/cadastrar${qs ? `?${qs}` : ''}`);
+  const line = getAuthProductLine();
+  const query = Object.fromEntries(params.entries());
+  window.location.replace(authRegisterPath(line?.id || 'paletas', query));
 }
 
 initPasswordToggles();

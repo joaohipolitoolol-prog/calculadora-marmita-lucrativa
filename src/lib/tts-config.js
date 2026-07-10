@@ -8,11 +8,13 @@ export const TTS_VOICE_CANDIDATES = [
 /** Preferida — el servidor prueba otras si falla */
 export const TTS_VOICE = TTS_VOICE_CANDIDATES[0];
 
+export const TTS_VOICE_LABEL = 'Voz femenina · español (México)';
+
 export const TTS_AUDIO_CONFIG = {
   audioEncoding: 'MP3',
-  speakingRate: 0.94,
-  pitch: 0,
+  speakingRate: 0.92,
+  pitch: 0.5,
 };
 
 /** Versión de caché — subir al cambiar voz */
-export const TTS_CACHE_VERSION = 'v3';
+export const TTS_CACHE_VERSION = 'v4';

@@ -1,13 +1,14 @@
 /** Página de aviso pós-compra Postres — editar aquí */
 
 import { getWhatsAppDisplay, getWhatsAppNumber, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
+import { authLoginPath, authRegisterPath } from '../login/auth-lines.js';
 
 export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
 
 /** Preferir upsell; aviso fica como fallback / suporte */
-export const ACCESS_URL = '/cadastrar?compra=1&postres=1&line=postres';
+export const ACCESS_URL = authRegisterPath('postres', { compra: '1' });
 export const UPSELL_URL = '/postres/upsell';
-export const LOGIN_URL = '/login?line=postres';
+export const LOGIN_URL = authLoginPath('postres');
 
 export const WHATSAPP_NUMBER_ID = 'postres_support';
 export const WHATSAPP_NUMBER = getWhatsAppNumber(WHATSAPP_NUMBER_ID).e164;

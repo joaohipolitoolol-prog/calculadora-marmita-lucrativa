@@ -18,6 +18,7 @@ let state = {
 };
 
 let onStateChange = null;
+let isNarrationAllowed = () => true;
 
 const FETCH_TIMEOUT_MS = 12000;
 
@@ -187,9 +188,11 @@ function scoreSpanishVoice(voice) {
 
   if (/google/i.test(name)) score += 18;
   if (/neural|natural|online|wavenet/i.test(name)) score += 12;
-  if (/paulina|helena|lucia|monica|mónica|sabina|soledad|laura|español|spanish|mexico|méxico/i.test(name)) {
+  if (/paulina|helena|lucia|monica|mónica|sabina|soledad|laura|paloma|español|spanish|mexico|méxico/i.test(name)) {
     score += 14;
   }
+  if (/\bf\b|female|femenina|woman|mujer/i.test(name)) score += 10;
+  if (/\bm\b|male|masculino|carlos|jorge|diego/i.test(name)) score -= 40;
   if (/english|inglés|united states english|uk english|zira|samantha/i.test(name)) score -= 100;
 
   return score;
@@ -332,8 +335,13 @@ export function getNarrationState() {
   return { ...state };
 }
 
-export function initRecipeNarration({ onChange } = {}) {
+export function setNarrationAccessCheck(fn) {
+  isNarrationAllowed = typeof fn === 'function' ? fn : () => true;
+}
+
+export function initRecipeNarration({ onChange, canUseNarration } = {}) {
   onStateChange = onChange || null;
+  if (canUseNarration) setNarrationAccessCheck(canUseNarration);
 }
 
 export function setRecipeNarrationContext({ getRecipeContext, root } = {}) {
@@ -504,6 +512,11 @@ async function handleRecipePlayClick(event) {
 
   event.preventDefault();
   event.stopPropagation();
+
+  if (!isNarrationAllowed()) {
+    window.alert?.('El audio guiado no está disponible en este momento. Vuelve a intentar más tarde.');
+    return;
+  }
 
   const key = btn.dataset.recipePlay;
   const item = getRecipeContextRef(key);

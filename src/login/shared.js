@@ -1,12 +1,14 @@
 import { isFirebaseConfigured } from '../lib/firebase.js';
 import {
   resolveLineFromSearch,
+  resolveLineFromPathname,
   rememberActiveLine,
   readRememberedLineId,
   authHomeHref,
   withLineQuery,
   PRODUCT_LINE_BY_ID,
 } from '../lib/product-lines.js';
+import { getAuthBrand } from './auth-lines.js';
 
 export function showAlert(el, message, type = 'error') {
   if (!el) return;
@@ -48,6 +50,12 @@ export function initConfigAlert() {
 
 /** Resolve + remember product line for auth pages. */
 export function getAuthProductLine() {
+  const fromPath = resolveLineFromPathname(window.location.pathname);
+  if (fromPath) {
+    rememberActiveLine(fromPath.id);
+    return fromPath;
+  }
+
   const fromUrl = resolveLineFromSearch(window.location.search);
   if (fromUrl) {
     rememberActiveLine(fromUrl.id);
@@ -67,9 +75,13 @@ export function getAuthProductLine() {
 export function applyAuthBrand(line = getAuthProductLine()) {
   if (!line) return line;
 
-  document.title = document.title.replace(/\|.+$/, `| ${line.name}`);
+  const brand = getAuthBrand(line);
+  const isRegister = document.body.classList.contains('auth-register');
+  const isLogin = document.body.classList.contains('auth-login');
+
+  document.title = `${isRegister ? brand.registerPageTitle : brand.loginPageTitle} | ${brand.name}`;
   const theme = document.querySelector('meta[name="theme-color"]');
-  if (theme) theme.setAttribute('content', line.accent);
+  if (theme) theme.setAttribute('content', brand.accent);
 
   const logo = document.querySelector('.auth-logo');
   if (logo) {
@@ -79,29 +91,47 @@ export function applyAuthBrand(line = getAuthProductLine()) {
       const emoji = document.createElement('span');
       emoji.className = 'auth-logo-emoji';
       emoji.setAttribute('aria-hidden', 'true');
-      emoji.textContent = line.emoji;
+      emoji.textContent = brand.emoji;
       icon.replaceWith(emoji);
     }
     const label = logo.querySelector('span:not(.auth-logo-emoji)');
-    if (label) label.textContent = line.name;
+    if (label) label.textContent = brand.name;
   }
 
   const cardIcon = document.querySelector('.auth-card-icon');
-  if (cardIcon) cardIcon.textContent = line.emoji;
+  if (cardIcon) cardIcon.textContent = brand.emoji;
+
+  const sub = document.querySelector('.auth-sub');
+  if (sub && !window.location.search.includes('compra=1')) {
+    sub.textContent = isRegister ? brand.registerSub : brand.loginSub;
+  }
+
+  const hint = document.querySelector('.form-hint');
+  if (hint && isRegister) hint.textContent = brand.kitHint;
+
+  const purchaseBanner = document.getElementById('purchase-banner');
+  if (purchaseBanner && window.location.search.includes('compra=1')) {
+    purchaseBanner.textContent = `✓ ${brand.purchaseBanner}`;
+  }
 
   document.querySelectorAll('.auth-switch a, .auth-footer a').forEach((a) => {
     const href = a.getAttribute('href') || '';
-    if (href.startsWith('/login') || href.startsWith('/cadastrar')) {
-      a.setAttribute('href', withLineQuery(href.split('?')[0], line.id));
-    } else if (href === '/' || href.startsWith('/#')) {
+    if (href.startsWith('/login') || href.startsWith('/cadastrar') || href.startsWith('/postres/login') || href.startsWith('/postres/cadastrar')) {
+      const target = isRegister && href.includes('login')
+        ? brand.loginPath
+        : !isRegister && href.includes('cadastrar')
+          ? brand.registerPath
+          : href.split('?')[0];
+      a.setAttribute('href', withLineQuery(target, line.id));
+    } else if (href === '/' || href.startsWith('/#') || href === '/postres') {
       a.setAttribute('href', authHomeHref(line));
       if (a.closest('.auth-footer')) {
-        a.textContent = `Ver kit · ${line.priceLabel}`;
+        a.textContent = `${brand.footerCta} · ${brand.priceLabel}`;
       }
     }
   });
 
-  document.documentElement.style.setProperty('--auth-accent', line.accent);
+  document.documentElement.style.setProperty('--auth-accent', brand.accent);
   document.body.dataset.productLine = line.id;
 
   return line;

@@ -10,7 +10,7 @@ export const TTS_VOICE_CANDIDATES = [
 
 export const TTS_AUDIO_CONFIG = {
   audioEncoding: 'MP3',
-  speakingRate: 0.94,
-  pitch: 0,
+  speakingRate: 0.92,
+  pitch: 0.5,
   volumeGainDb: 0,
 };

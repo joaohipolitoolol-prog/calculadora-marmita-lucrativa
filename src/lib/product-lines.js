@@ -114,6 +114,15 @@ function lineFromParams(params) {
   return null;
 }
 
+/** Infer product line from auth path (/postres/cadastrar, /postres/login). */
+export function resolveLineFromPathname(pathname = typeof window !== 'undefined' ? window.location.pathname : '') {
+  const path = String(pathname || '').replace(/\/+$/, '') || '/';
+  if (path === '/postres/cadastrar' || path === '/postres/login') {
+    return PRODUCT_LINE_BY_ID.postres;
+  }
+  return null;
+}
+
 /** Infer product line from URL search (?line= / purchase flags / nested ?next=). */
 export function resolveLineFromSearch(search = typeof window !== 'undefined' ? window.location.search : '') {
   const params = new URLSearchParams(search.startsWith('?') || !search ? search : `?${search}`);

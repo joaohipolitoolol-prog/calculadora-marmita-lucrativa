@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:api": "vercel dev --listen 3000",
-    "build": "node scripts/generate-icons.mjs && vite build",
+    "build": "node scripts/generate-icons.mjs && node scripts/generate-auth-pages.mjs && vite build",
+    "test:tts": "node scripts/test-tts.mjs",
     "sync:paletas": "node scripts/sync-paletas-deliverables.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "preview": "vite preview"

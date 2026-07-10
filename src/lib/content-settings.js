@@ -7,6 +7,7 @@ const DOC_PATH = ['settings', 'content'];
 export const DEFAULT_LINE_FLAGS = {
   kitOpen: true,
   premiumOpen: true,
+  audioGuideOpen: true,
 };
 
 function defaultSettings() {
@@ -31,6 +32,7 @@ export function normalizeContentSettings(raw = {}) {
     base.lines[line.id] = {
       kitOpen: entry.kitOpen !== false,
       premiumOpen: entry.premiumOpen !== false,
+      audioGuideOpen: entry.audioGuideOpen !== false,
     };
   }
   base.updatedAt = Number(raw.updatedAt) || 0;
@@ -43,6 +45,10 @@ export function isLineKitOpen(lineId, settings = cache) {
 
 export function isLinePremiumOpen(lineId, settings = cache) {
   return settings.lines[lineId]?.premiumOpen !== false;
+}
+
+export function isLineAudioGuideOpen(lineId, settings = cache) {
+  return settings.lines[lineId]?.audioGuideOpen !== false;
 }
 
 export async function loadContentSettings() {

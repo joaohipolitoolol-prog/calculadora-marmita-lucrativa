@@ -1,4 +1,4 @@
-import { t } from './i18n.js';
+import { t, getAdminLang } from './i18n.js';
 
 export function escapeHtml(value) {
   return String(value ?? '')
@@ -9,7 +9,7 @@ export function escapeHtml(value) {
 }
 
 function dateLocale() {
-  return t('nav.dashboard') === 'Resumo' ? 'pt-BR' : 'es';
+  return getAdminLang() === 'pt' ? 'pt-BR' : 'es';
 }
 
 export function formatDate(value) {

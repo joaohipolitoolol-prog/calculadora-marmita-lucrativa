@@ -7,6 +7,7 @@ import {
 } from './admin-access.js';
 import {
   collection,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -76,11 +77,11 @@ export async function markPremiumPending(uid, lineId) {
 
 export async function updateUserProfile(uid, data) {
   if (!isFirebaseConfigured || !db) return;
-  await setDoc(
-    doc(db, 'users', uid),
-    { ...data, updatedAt: serverTimestamp() },
-    { merge: true }
-  );
+  const payload = { ...data, updatedAt: serverTimestamp() };
+  if (Object.prototype.hasOwnProperty.call(data, 'audioGuideEnabled') && data.audioGuideEnabled === null) {
+    payload.audioGuideEnabled = deleteField();
+  }
+  await setDoc(doc(db, 'users', uid), payload, { merge: true });
 }
 
 export async function isUserAdmin(user, profile) {

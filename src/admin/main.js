@@ -39,9 +39,15 @@ import {
   loadContentSettings,
   saveContentSettings,
 } from '../lib/content-settings.js';
+import { TTS_VOICE } from '../lib/tts-config.js';
 import { confirmDialog, copyText, escapeHtml, showToast } from './helpers.js';
 import { productLabel, setAdminLang, t } from './i18n.js';
-import { renderShell } from './views.js';
+import {
+  filterUsers,
+  renderBulkBar,
+  renderShell,
+  renderUsersTable,
+} from './views.js';
 
 const root = document.getElementById('admin-root');
 
@@ -109,6 +115,91 @@ function paint() {
     apiWarnings: state.apiWarnings,
   });
   bindEvents();
+}
+
+/** Update users table + bulk bar without remounting the whole shell (keeps search focus). */
+function paintUsersListPartial() {
+  if (state.activeTab !== 'users') {
+    paint();
+    return;
+  }
+  const filtered = filterUsers(state.usersCache, state.userFilter, state.userSearch);
+  const allSelected = filtered.length > 0 && filtered.every((u) => state.selectedUserIds.has(u.id));
+  const tableHost = root.querySelector('.admin-table-users')?.closest('.admin-table-wrap');
+  if (tableHost) {
+    tableHost.outerHTML = renderUsersTable(filtered, state.selectedUserIds, allSelected);
+  }
+  const existingBulk = root.querySelector('.admin-bulk-bar');
+  const bulkHtml = renderBulkBar(state.selectedUserIds.size);
+  if (existingBulk) {
+    if (bulkHtml) existingBulk.outerHTML = bulkHtml;
+    else existingBulk.remove();
+  } else if (bulkHtml) {
+    root.querySelector('.admin-toolbar')?.insertAdjacentHTML('afterend', bulkHtml);
+  }
+  bindUsersListEvents();
+}
+
+function bindUsersListEvents() {
+  document.getElementById('select-all-users')?.addEventListener('change', (event) => {
+    const checked = event.target.checked;
+    if (!checked) {
+      state.selectedUserIds.clear();
+      paintUsersListPartial();
+      return;
+    }
+    root.querySelectorAll('[data-user-select]').forEach((input) => {
+      state.selectedUserIds.add(input.dataset.userSelect);
+    });
+    paintUsersListPartial();
+  });
+
+  root.querySelectorAll('[data-user-select]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const uid = input.dataset.userSelect;
+      if (input.checked) state.selectedUserIds.add(uid);
+      else state.selectedUserIds.delete(uid);
+      paintUsersListPartial();
+    });
+  });
+
+  root.querySelectorAll('[data-user-view]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.detailUserId = btn.dataset.userView;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-bulk-product]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      await bulkUpdateProduct(btn.dataset.bulkProduct, btn.dataset.value === '1');
+    });
+  });
+
+  root.querySelector('[data-bulk-delete]')?.addEventListener('click', async () => {
+    const ids = Array.from(state.selectedUserIds);
+    if (!ids.length) return;
+    const ok = await confirmDialog({
+      title: t('confirm.deleteUsers.title'),
+      message: t('confirm.deleteUsers.msg', { n: ids.length }),
+      confirmLabel: t('confirm.deleteUsers.btn'),
+      danger: true,
+    });
+    if (!ok) return;
+    const token = await state.currentAdminUser.getIdToken();
+    for (const uid of ids) {
+      if (uid === state.currentAdminUser.uid) continue;
+      try {
+        await deleteUserAccount(token, uid);
+      } catch (error) {
+        console.warn('[admin] delete', uid, error);
+      }
+    }
+    state.selectedUserIds.clear();
+    showToast(t('toast.usersDeleted'));
+    await refreshAll();
+  });
 }
 
 function isFirebaseAdminError(message) {
@@ -296,8 +387,55 @@ function bindEvents() {
         return;
       }
       input.checked = !checked;
-      showToast('No se pudo guardar');
+      showToast(t('toast.saveError'));
     });
+  });
+
+  document.getElementById('admin-tts-test')?.addEventListener('click', async () => {
+    const btn = document.getElementById('admin-tts-test');
+    const status = document.getElementById('admin-tts-status');
+    if (!btn || !status) return;
+
+    btn.disabled = true;
+    status.textContent = t('content.audioTesting');
+
+    const sample =
+      'Hola, soy tu guía de recetas. Hoy preparamos un postre en vaso de fresa. Paso uno, mezcla la crema con el queso.';
+
+    try {
+      const res = await fetch('/api/tts/narrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: sample, voice: TTS_VOICE }),
+      });
+      const payload = await res.json().catch(() => ({}));
+
+      if (!res.ok || !payload.audioContent) {
+        const detail = payload.detail || payload.error || `HTTP ${res.status}`;
+        const billing = /billing/i.test(detail);
+        status.textContent = t('content.audioFail', {
+          detail: billing ? t('content.audioBilling') : detail,
+        });
+        return;
+      }
+
+      const binary = atob(payload.audioContent);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }));
+      const audio = new Audio(url);
+      audio.onended = () => URL.revokeObjectURL(url);
+      await audio.play();
+
+      status.textContent = t('content.audioOk', {
+        voice: payload.voice || TTS_VOICE.name,
+        lang: payload.languageCode || TTS_VOICE.languageCode,
+      });
+    } catch (err) {
+      status.textContent = t('content.audioFail', { detail: err?.message || 'Error de red' });
+    } finally {
+      btn.disabled = false;
+    }
   });
 
   document.getElementById('admin-emails-form')?.addEventListener('submit', async (event) => {
@@ -313,7 +451,7 @@ function bindEvents() {
       paint();
       return;
     }
-    showToast('No se pudo guardar los accesos admin');
+    showToast(t('toast.adminsSaveError'));
   });
 
   root.querySelectorAll('[data-user-filter]').forEach((btn) => {
@@ -326,38 +464,44 @@ function bindEvents() {
   const searchInput = document.getElementById('user-search');
   searchInput?.addEventListener('input', () => {
     state.userSearch = searchInput.value;
-    paint();
-    const next = document.getElementById('user-search');
-    next?.focus();
-    next?.setSelectionRange(next.value.length, next.value.length);
+    paintUsersListPartial();
   });
 
-  document.getElementById('select-all-users')?.addEventListener('change', (event) => {
-    const checked = event.target.checked;
-    if (!checked) {
-      state.selectedUserIds.clear();
-      paint();
-      return;
-    }
-    root.querySelectorAll('[data-user-select]').forEach((input) => {
-      state.selectedUserIds.add(input.dataset.userSelect);
-    });
-    paint();
-  });
+  bindUsersListEvents();
 
-  root.querySelectorAll('[data-user-select]').forEach((input) => {
-    input.addEventListener('change', () => {
-      const uid = input.dataset.userSelect;
-      if (input.checked) state.selectedUserIds.add(uid);
-      else state.selectedUserIds.delete(uid);
-      paint();
-    });
-  });
-
-  root.querySelectorAll('[data-user-view]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      state.detailUserId = btn.dataset.userView;
-      paint();
+  root.querySelectorAll('[data-inbox-grant]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const uid = btn.dataset.inboxGrant;
+      const productId = btn.dataset.product;
+      const product = PRODUCT_BY_ID[productId];
+      if (!product) return;
+      btn.disabled = true;
+      const updates = {
+        [product.field]: true,
+        lastGrantSource: 'admin_inbox',
+        lastGrantAt: new Date().toISOString(),
+      };
+      if (product.tier === 'upsell') {
+        updates[`premiumPending.${product.group}`] = false;
+      }
+      await updateUserProfile(uid, updates);
+      if (productId === 'paletas_kit' || productId === 'postres_kit') {
+        const user = state.usersCache.find((u) => u.id === uid);
+        if (user?.email) {
+          try {
+            const token = await state.currentAdminUser.getIdToken();
+            await sendWelcomeEmail(token, {
+              email: user.email,
+              name: user.displayName,
+              line: product.group,
+            });
+          } catch {
+            /* optional */
+          }
+        }
+      }
+      showToast(t('toast.accessUpdated'));
+      await refreshAll();
     });
   });
 
@@ -373,26 +517,45 @@ function bindEvents() {
       const uid = input.dataset.userId;
       const productId = input.dataset.drawerProduct;
       const active = input.checked;
-      const updates = {};
       const product = PRODUCT_BY_ID[productId];
       if (!product) return;
-      updates[product.field] = active;
-      // Liberar upsell limpia pending de esa línea
+      const updates = { [product.field]: active };
       if (active && product.tier === 'upsell') {
         updates[`premiumPending.${product.group}`] = false;
       }
+      if (active) {
+        updates.lastGrantSource = 'admin_drawer';
+        updates.lastGrantAt = new Date().toISOString();
+      }
       await updateUserProfile(uid, updates);
-      if (productId === 'paletas_kit' && active) {
+      if ((productId === 'paletas_kit' || productId === 'postres_kit') && active) {
         const user = state.usersCache.find((u) => u.id === uid);
         if (user?.email) {
           try {
             const token = await state.currentAdminUser.getIdToken();
-            await sendWelcomeEmail(token, { email: user.email, name: user.displayName });
+            await sendWelcomeEmail(token, {
+              email: user.email,
+              name: user.displayName,
+              line: product.group,
+            });
           } catch {
             /* optional */
           }
         }
       }
+      showToast(t('toast.accessUpdated'));
+      await refreshAll();
+      state.detailUserId = uid;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-drawer-audio]').forEach((select) => {
+    select.addEventListener('change', async () => {
+      const uid = select.dataset.drawerAudio;
+      const value = select.value;
+      const audioGuideEnabled = value === 'on' ? true : value === 'off' ? false : null;
+      await updateUserProfile(uid, { audioGuideEnabled });
       showToast(t('toast.accessUpdated'));
       await refreshAll();
       state.detailUserId = uid;
@@ -412,37 +575,6 @@ function bindEvents() {
       state.detailUserId = uid;
       paint();
     });
-  });
-
-  root.querySelectorAll('[data-bulk-product]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      btn.disabled = true;
-      await bulkUpdateProduct(btn.dataset.bulkProduct, btn.dataset.value === '1');
-    });
-  });
-
-  root.querySelector('[data-bulk-delete]')?.addEventListener('click', async () => {
-    const ids = Array.from(state.selectedUserIds);
-    if (!ids.length) return;
-    const ok = await confirmDialog({
-      title: t('confirm.deleteUsers.title'),
-      message: t('confirm.deleteUsers.msg', { n: ids.length }),
-      confirmLabel: t('confirm.deleteUsers.btn'),
-      danger: true,
-    });
-    if (!ok) return;
-    const token = await state.currentAdminUser.getIdToken();
-    for (const uid of ids) {
-      if (uid === state.currentAdminUser.uid) continue;
-      try {
-        await deleteUserAccount(token, uid);
-      } catch (error) {
-        console.warn('[admin] delete', uid, error);
-      }
-    }
-    state.selectedUserIds.clear();
-    showToast(t('toast.usersDeleted'));
-    await refreshAll();
   });
 
   root.querySelector('[data-sync-users]')?.addEventListener('click', async () => {
@@ -525,6 +657,7 @@ function bindEvents() {
         await sendWelcomeEmail(token, {
           email: btn.dataset.email,
           name: btn.dataset.name,
+          line: btn.dataset.line || 'paletas',
         });
         showToast(t('toast.emailResent'));
       } catch {
@@ -541,10 +674,27 @@ function bindEvents() {
         confirmLabel: t('modal.confirm'),
       });
       if (!ok) return;
-      await updateUserProfile(btn.dataset.userAdmin, { isAdmin: true, hasKit: true });
+      await updateUserProfile(btn.dataset.userAdmin, { ...ADMIN_PROFILE_GRANTS });
       showToast(t('toast.adminPromoted'));
       await refreshAll();
       state.detailUserId = btn.dataset.userAdmin;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-user-demote]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const ok = await confirmDialog({
+        title: t('confirm.removeAdmin.title'),
+        message: t('confirm.removeAdmin.msg'),
+        confirmLabel: t('modal.confirm'),
+        danger: true,
+      });
+      if (!ok) return;
+      await updateUserProfile(btn.dataset.userDemote, { isAdmin: false });
+      showToast(t('toast.adminDemoted'));
+      await refreshAll();
+      state.detailUserId = btn.dataset.userDemote;
       paint();
     });
   });
@@ -607,6 +757,17 @@ function bindEvents() {
       state.codesCache = await listAccessCodes();
       showToast(t('toast.codeDeleted'));
       paint();
+    });
+  });
+
+  root.querySelectorAll('[data-copy-code-link]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const code = btn.dataset.copyCodeLink;
+      const type = btn.dataset.codeType || '';
+      const isPostres = String(type).startsWith('postres');
+      const path = isPostres ? '/postres/cadastrar' : '/cadastrar';
+      const url = `${window.location.origin}${path}?code=${encodeURIComponent(code)}`;
+      await copyText(url, t('toast.linkCopied'));
     });
   });
 

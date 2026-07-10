@@ -1,11 +1,11 @@
-export async function sendWelcomeEmail(idToken, { email, name }) {
+export async function sendWelcomeEmail(idToken, { email, name, line = 'paletas' }) {
   const res = await fetch('/api/send-welcome', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${idToken}`,
     },
-    body: JSON.stringify({ email, name }),
+    body: JSON.stringify({ email, name, line }),
   });
 
   const data = await res.json().catch(() => ({}));
