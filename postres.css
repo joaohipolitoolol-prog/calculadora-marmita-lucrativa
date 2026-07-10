@@ -1,7 +1,7 @@
 @import './src/styles/tokens.css';
 @import './styles.css';
 
-/* Postres — só cores e botão, igual Paletas */
+/* Postres: so cores e botao, igual Paletas */
 :root {
   --pink: #EC3F7A;
   --pink-light: #FFF0F6;
@@ -50,4 +50,18 @@
   color: #fff;
   box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
   margin-top: 16px;
+}
+
+.postres-theme .product-kit-strip {
+  margin: 8px auto 22px;
+  max-width: 560px;
+}
+
+.postres-theme .hero-product-mock {
+  max-width: 420px;
+}
+
+.postres-theme .hero-product-mock__img {
+  aspect-ratio: 1;
+  object-fit: cover;
 }
