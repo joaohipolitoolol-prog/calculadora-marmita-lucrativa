@@ -140,6 +140,14 @@ import {
   renderMensajesList,
 } from './kit-sections.js';
 import { canUseMenusCloud } from '../lib/menus.js';
+import {
+  initRecipeNarration,
+  recipeStableKey,
+  setRecipeNarrationContext,
+  setupRecipeNarration,
+  stopRecipeNarration,
+  syncRecipeNarrationUi,
+} from '../lib/recipe-narration.js';
 
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
@@ -189,6 +197,14 @@ let ownedLines = [PRODUCT_LINE_BY_ID.paletas];
 let activeLine = PRODUCT_LINE_BY_ID.paletas;
 let userIsAdmin = false;
 let deferredInstallPrompt = null;
+const recipeLookup = new Map();
+
+function indexRecipeCatalog(recipes, { lineId, premium = false } = {}) {
+  for (const item of recipes || []) {
+    const key = recipeStableKey(item, { lineId, premium });
+    recipeLookup.set(key, { ...item, __lineId: lineId, __premium: premium });
+  }
+}
 
 function lineBrand() {
   return activeLine || PRODUCT_LINE_BY_ID.paletas;
@@ -1759,6 +1775,7 @@ function render() {
 
   document.body.classList.toggle('drawer-minimized', drawerMinimized);
   bindEvents();
+  syncRecipeNarrationUi(root);
 }
 
 function fieldGroup(title, desc, fieldsHtml) {
@@ -2228,10 +2245,11 @@ function recipeMeta(item) {
   };
 }
 
-function renderRecipeItem(item, label, { premium = false } = {}) {
+function renderRecipeItem(item, label, { premium = false, lineId } = {}) {
   const meta = recipeMeta(item);
+  const recipeKey = recipeStableKey(item, { lineId, premium });
   return `
-    <details class="menu-item ${premium ? 'menu-item--premium' : ''}" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}">
+    <details class="menu-item ${premium ? 'menu-item--premium' : ''}" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}" data-recipe-key="${escapeHtml(recipeKey)}">
       <summary class="menu-item-summary">
         <div class="menu-item-summary-main">
           <div class="menu-item-head">
@@ -2242,6 +2260,11 @@ function renderRecipeItem(item, label, { premium = false } = {}) {
           <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
           <span class="menu-item-preview">${escapeHtml(item.ingredientes?.[0] || '')}${item.ingredientes?.length > 1 ? ' · +' + (item.ingredientes.length - 1) + ' más' : ''}</span>
         </div>
+        <button type="button" class="menu-item-play" data-recipe-play="${escapeHtml(recipeKey)}" aria-label="Escuchar receta en modo audio guiado" aria-pressed="false">
+          <span class="menu-item-play-icon menu-item-play-icon--play" aria-hidden="true">${ICONS.play}</span>
+          <span class="menu-item-play-icon menu-item-play-icon--pause" aria-hidden="true">${ICONS.pause}</span>
+          <span class="menu-item-play-icon menu-item-play-icon--load" aria-hidden="true">${ICONS.loader}</span>
+        </button>
         <span class="menu-item-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
       </summary>
       <div class="menu-item-body">
@@ -2252,13 +2275,13 @@ function renderRecipeItem(item, label, { premium = false } = {}) {
           <span>${escapeHtml(item.dificultad || '')}</span>
         </div>
         ${item.descripcion ? `<p class="menu-item-desc">${escapeHtml(item.descripcion)}</p>` : ''}
-        <h4 class="menu-item-section-title">Ingredientes</h4>
+        <h4 class="menu-item-section-title" data-recipe-section="ingredients">Ingredientes</h4>
         <ul class="menu-item-ingredients">
           ${(item.ingredientes || []).map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
         </ul>
         <h4 class="menu-item-section-title">Preparación</h4>
         <ol class="menu-item-steps">
-          ${(item.pasos || []).map((step) => `<li>${escapeHtml(step)}</li>`).join('')}
+          ${(item.pasos || []).map((step, index) => `<li data-recipe-step="${index}">${escapeHtml(step)}</li>`).join('')}
         </ol>
         <p class="menu-item-tip"><strong>Tip de venta:</strong> ${escapeHtml(meta.tip)}</p>
       </div>
@@ -2266,7 +2289,7 @@ function renderRecipeItem(item, label, { premium = false } = {}) {
   `;
 }
 
-function renderMenuByWeek(recipes, { premium = false } = {}) {
+function renderMenuByWeek(recipes, { premium = false, lineId } = {}) {
   const weeks = [];
   for (let i = 0; i < recipes.length; i += 7) {
     weeks.push(recipes.slice(i, i + 7));
@@ -2295,7 +2318,7 @@ function renderMenuByWeek(recipes, { premium = false } = {}) {
                 renderRecipeItem(
                   item,
                   item.dia ? `Día ${item.dia}` : `Premium #${item.num}`,
-                  { premium }
+                  { premium, lineId }
                 )
               )
               .join('')}
@@ -2309,10 +2332,30 @@ function renderMenuByWeek(recipes, { premium = false } = {}) {
 function renderRecipeListTools(recipeCount, { premium = false } = {}) {
   return `
     <div class="menu-list-tools">
-      <p class="menu-list-count" id="menu-list-count">${recipeCount} recetas${premium ? ' premium' : ''}</p>
+      <div class="menu-list-tools-main">
+        <p class="menu-list-count" id="menu-list-count">${recipeCount} recetas${premium ? ' premium' : ''}</p>
+        <p class="menu-list-audio-hint">${ICONS.volume} Modo audio guiado — toca play en una receta</p>
+      </div>
       <div class="menu-list-actions">
         <button type="button" class="menu-list-action" id="menu-expand-all">Abrir</button>
         <button type="button" class="menu-list-action" id="menu-collapse-all">Cerrar</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRecipeAudioBar() {
+  return `
+    <div class="recipe-audio-bar" id="recipe-audio-bar" hidden>
+      <div class="recipe-audio-bar-inner">
+        <span class="recipe-audio-bar-icon" aria-hidden="true">${ICONS.volume}</span>
+        <div class="recipe-audio-bar-copy">
+          <strong data-audio-recipe-name>Receta</strong>
+          <span data-audio-step-label>Reproduciendo…</span>
+        </div>
+        <button type="button" class="recipe-audio-stop" id="recipe-audio-stop" aria-label="Detener audio guiado">
+          ${ICONS.pause}
+        </button>
       </div>
     </div>
   `;
@@ -2398,10 +2441,14 @@ function renderBonus() {
     `;
   } else {
     const recipes = isPremium ? kit.recipesPremium : kit.recipes;
+    const lineId = lineBrand().id;
+    recipeLookup.clear();
+    indexRecipeCatalog(kit.recipes, { lineId, premium: false });
+    indexRecipeCatalog(kit.recipesPremium, { lineId, premium: true });
     listHtml = `
       ${renderCatalogLead(isPremium, recipes)}
       ${renderRecipeListTools(recipes.length, { premium: isPremium })}
-      <div class="menu-list ${isPremium ? 'menu-list--premium' : ''}" id="menu-list">${renderMenuByWeek(recipes, { premium: isPremium })}</div>
+      <div class="menu-list ${isPremium ? 'menu-list--premium' : ''}" id="menu-list">${renderMenuByWeek(recipes, { premium: isPremium, lineId })}</div>
       <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada.</p>`;
   }
 
@@ -2422,6 +2469,7 @@ function renderBonus() {
         }
       </div>
       ${listHtml}
+      ${renderRecipeAudioBar()}
     </div>
   `;
 }
@@ -2947,6 +2995,7 @@ function showSaveModal(onSave) {
 function navigateTo(view) {
   if (view !== activeView) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    stopRecipeNarration();
   }
   if (view !== 'document') activeDocId = null;
   if (view === 'kit' && !['recetas', 'archivos', 'vender'].includes(kitHubTab)) {
@@ -3272,6 +3321,11 @@ function bindEvents() {
     });
   });
 
+  setRecipeNarrationContext({
+    getRecipeContext: (key) => recipeLookup.get(key),
+    root,
+  });
+
   enableHorizontalDragScroll(document.getElementById('recipe-filters'));
   enableHorizontalDragScroll(document.getElementById('kit-section-nav'));
 
@@ -3292,6 +3346,7 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       recipeCatalog = btn.dataset.recipeCatalog;
       recipeFilter = 'all';
+      stopRecipeNarration();
       render();
     });
   });
@@ -3483,3 +3538,12 @@ function updateFromForm(form) {
   currentResults = calculate(currentInputs);
   persistState();
 }
+
+initRecipeNarration({
+  onChange: () => syncRecipeNarrationUi(document.getElementById('app-root') || document),
+});
+
+setupRecipeNarration({
+  getRecipeContext: (key) => recipeLookup.get(key),
+  root: document.getElementById('app-root'),
+});

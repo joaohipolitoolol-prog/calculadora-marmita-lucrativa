@@ -666,6 +666,11 @@ body.drawer-open { overflow: hidden; }
   overflow: visible;
 }
 
+.drawer-link-icon .tab-strawberry {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
 .drawer-badge {
   position: absolute;
   right: 14px;
@@ -2400,8 +2405,185 @@ body.drawer-open { overflow: hidden; }
   align-items: center;
   gap: 10px;
   padding: 14px;
+  cursor: pointer;
+  list-style: none;
   background: var(--cream);
   border-left: 3px solid var(--orange);
+}
+
+.menu-item-play {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--gray-border);
+  background: var(--pink-light);
+  color: var(--pink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-item-play:hover,
+.menu-item-play:focus-visible {
+  background: var(--pink);
+  color: #fff;
+  outline: none;
+}
+
+.menu-item-play.is-playing {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+}
+
+.menu-item-play.is-loading {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.menu-item-play-icon {
+  display: none;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-item-play-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.menu-item-play-icon--play {
+  display: flex;
+}
+
+.menu-item-play.is-playing .menu-item-play-icon--play,
+.menu-item-play.is-playing .menu-item-play-icon--load {
+  display: none;
+}
+
+.menu-item-play.is-playing .menu-item-play-icon--pause {
+  display: flex;
+}
+
+.menu-item-play.is-loading .menu-item-play-icon--play,
+.menu-item-play.is-loading .menu-item-play-icon--pause {
+  display: none;
+}
+
+.menu-item-play.is-loading .menu-item-play-icon--load {
+  display: flex;
+  animation: recipe-audio-spin 0.9s linear infinite;
+}
+
+@keyframes recipe-audio-spin {
+  to { transform: rotate(360deg); }
+}
+
+.menu-item-step--active {
+  background: var(--pink-light);
+  border-radius: var(--radius-xs);
+  padding: 6px 8px 6px 4px !important;
+  margin-left: -4px;
+  color: var(--brown) !important;
+  font-weight: 700;
+}
+
+.menu-item-section--active {
+  color: var(--pink-dark);
+}
+
+.menu-list-tools-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.menu-list-audio-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--pink);
+}
+
+.menu-list-audio-hint svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.recipe-audio-bar {
+  position: sticky;
+  bottom: calc(64px + env(safe-area-inset-bottom));
+  z-index: 20;
+  margin-top: 16px;
+  padding: 0 2px;
+}
+
+.recipe-audio-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.recipe-audio-bar-icon svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.recipe-audio-bar-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.recipe-audio-bar-copy strong {
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recipe-audio-bar-copy span {
+  font-size: 0.72rem;
+  opacity: 0.92;
+}
+
+.recipe-audio-stop {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.recipe-audio-stop svg {
+  width: 16px;
+  height: 16px;
 }
 
 .menu-item-summary-main {
@@ -3071,7 +3253,7 @@ body.onboarding-open {
 }
 
 .tab-strawberry {
-  font-size: 1.15rem;
+  font-size: 1.28rem;
   line-height: 1;
   display: block;
 }
@@ -3825,6 +4007,7 @@ body.onboarding-open {
 
   .app-drawer.is-minimized .drawer-brand-name,
   .app-drawer.is-minimized .drawer-brand-tagline,
+  .app-drawer.is-minimized .drawer-brand-copy,
   .app-drawer.is-minimized .drawer-summary span,
   .app-drawer.is-minimized .drawer-summary em,
   .app-drawer.is-minimized .drawer-link-text,
@@ -3835,7 +4018,7 @@ body.onboarding-open {
 
   .app-drawer.is-minimized .drawer-head {
     justify-content: center;
-    padding: 12px 8px;
+    padding: 10px 8px;
   }
 
   .app-drawer.is-minimized .drawer-head-actions {
@@ -3845,16 +4028,30 @@ body.onboarding-open {
   .app-drawer.is-minimized .drawer-brand-toggle {
     width: 100%;
     justify-content: center;
+    align-items: center;
+  }
+
+  .app-drawer.is-minimized .drawer-brand-mark {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
   }
 
   .app-drawer.is-minimized .drawer-brand-emoji {
     opacity: 1;
     transform: scale(1);
+    font-size: 1.45rem;
   }
 
   .app-drawer.is-minimized .drawer-brand-action {
     opacity: 0;
     transform: scale(0.86);
+  }
+
+  .app-drawer.is-minimized .drawer-brand-action svg {
+    width: 22px;
+    height: 22px;
+    display: block;
   }
 
   .app-drawer.is-minimized .drawer-brand-toggle:hover .drawer-brand-emoji,
@@ -3874,28 +4071,45 @@ body.onboarding-open {
   }
 
   .app-drawer.is-minimized .drawer-nav {
-    padding: 8px 10px;
-    align-items: stretch;
+    padding: 6px 8px;
+    align-items: center;
   }
 
   .app-drawer.is-minimized .drawer-link {
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 48px;
+    min-width: 48px;
+    max-width: 48px;
     min-height: 44px;
-    padding: 10px 0;
+    margin: 0 auto;
+    padding: 0;
     gap: 0;
     box-shadow: none;
+    border-radius: 12px;
   }
 
   .app-drawer.is-minimized .drawer-link.active {
+    background: rgba(232, 67, 122, 0.12);
     box-shadow: none;
   }
 
   .app-drawer.is-minimized .drawer-link-icon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     margin: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-drawer.is-minimized .drawer-link-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .app-drawer.is-minimized .drawer-link-icon .tab-strawberry {
+    font-size: 1.42rem;
   }
 
   .app-drawer.is-minimized .drawer-badge {
