@@ -1584,7 +1584,7 @@ function renderProfile() {
           hasKitContentAccess()
             ? `<button type="button" class="profile-link-row" data-view="menuWeb">
           <span class="profile-link-icon">${ICONS.list}</span>
-          <span class="profile-link-text">Menú web${!hasMenuWebAccess() ? ' · 🔒' : ''}</span>
+          <span class="profile-link-text">Menú web${!hasMenuWebAccess() ? ' 🔒' : ''}</span>
           <span class="profile-link-chevron">${ICONS.chevronRight}</span>
         </button>`
             : ''
@@ -2780,7 +2780,7 @@ function renderKitSectionNav() {
         .map(
           (s) => `
             <button type="button" class="kit-nav-btn ${kitSection === s.id ? 'active' : ''}" data-kit-section="${s.id}" role="tab" aria-selected="${kitSection === s.id}">
-              ${escapeHtml(s.label)}${s.premium && !hasPremiumAccess() ? ' · 🔒' : ''}
+              ${escapeHtml(s.label)}${s.premium && !hasPremiumAccess() ? ' 🔒' : ''}
             </button>
           `
         )

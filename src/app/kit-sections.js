@@ -120,18 +120,20 @@ export function renderKitExtras(extras, { exportHref } = {}) {
           <h2>Técnicas básicas</h2>
           ${renderSectionExportBtn({ href: exportHref })}
         </div>
-        ${(extras.tecnicas || [])
-          .map(
-            (t) => `
-          <details class="faq-item">
-            <summary>${escapeHtml(t.titulo)}</summary>
-            <ol>
-              ${(t.pasos || []).map((p) => `<li>${escapeHtml(p)}</li>`).join('')}
-            </ol>
-          </details>
-        `
-          )
-          .join('')}
+        <div class="tecnicas-list">
+          ${(extras.tecnicas || [])
+            .map(
+              (t) => `
+            <article class="tecnica-block">
+              <h3>${escapeHtml(t.titulo)}</h3>
+              <ol class="tecnica-pasos">
+                ${(t.pasos || []).map((p) => `<li>${escapeHtml(p)}</li>`).join('')}
+              </ol>
+            </article>
+          `
+            )
+            .join('')}
+        </div>
       </div>
       <div class="section-card">
         <h2>Errores comunes</h2>
