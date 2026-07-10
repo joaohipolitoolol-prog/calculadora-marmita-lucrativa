@@ -1,0 +1,50 @@
+{
+  "tecnicas": [
+    {
+      "titulo": "Cómo insertar los palitos sin que se caigan",
+      "pasos": [
+        "Vierte la mezcla en los moldes y congela 1 a 2 horas hasta que esté semi-firme (como gelatina).",
+        "Haz un pequeño corte con cuchillo en la superficie y coloca el palito.",
+        "Cubre con un poco más de mezcla si hace falta y vuelve a congelar 4 horas o toda la noche."
+      ]
+    },
+    {
+      "titulo": "Cómo desmoldar sin romper",
+      "pasos": [
+        "Sumerge el molde 10–15 segundos en agua tibia (no caliente).",
+        "Tira suavemente del palito con movimiento de balanceo.",
+        "Si no sale, repite el baño de agua unos segundos más."
+      ]
+    },
+    {
+      "titulo": "Si la paleta queda muy dura o con hielo",
+      "pasos": [
+        "Frutales: agrega un poco más de azúcar o miel — ayuda a la textura.",
+        "Cremosas: sube la proporción de crema o leche condensada.",
+        "Licúa bien y cuela para evitar cristales de hielo."
+      ]
+    }
+  ],
+  "errores": [
+    "Cobrar sin calcular los costos reales",
+    "Empezar con demasiados sabores a la vez",
+    "No anotar pedidos y olvidar detalles",
+    "Usar fotos oscuras o desordenadas",
+    "No informar sabores claramente en el menú",
+    "Olvidar incluir empaque y palito en el costo",
+    "Producir mucho antes de probar la receta",
+    "No avisar sobre leche, maní, nueces u otros alérgenos",
+    "Mezclar el dinero de ventas con el de ingredientes",
+    "No pedir opinión a los primeros clientes"
+  ],
+  "fotosTips": [
+    "Usa luz natural cerca de una ventana",
+    "Fondo limpio: mesa clara o tabla de madera",
+    "Muestra la textura: paleta mordida o cortada",
+    "Incluye el empaque si lo usas",
+    "Toma la foto en vertical (formato celular)",
+    "Evita fotos oscuras o con flash fuerte",
+    "No escondas el producto con demasiados elementos",
+    "Una paleta bien iluminada vende más que diez fotos malas"
+  ]
+}

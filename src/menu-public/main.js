@@ -26,6 +26,22 @@ function isDemoRequest() {
   return readSlug() === 'demo';
 }
 
+function isPreviewRequest() {
+  return new URLSearchParams(window.location.search).get('preview') === '1';
+}
+
+function readPreviewMenu() {
+  try {
+    const raw = sessionStorage.getItem('mw-menu-preview');
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== 'object') return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 function waOrderUrl(whatsapp, businessName, itemName = '') {
   const phone = String(whatsapp || '').replace(/\D/g, '');
   const base = businessName
@@ -117,8 +133,10 @@ function renderItem(item, menu) {
   `;
 }
 
-function renderMenu(menu) {
-  document.title = `${menu.businessName} | Menú`;
+function renderMenu(menu, { preview = false } = {}) {
+  document.title = preview
+    ? `Vista previa · ${menu.businessName || 'Menú'}`
+    : `${menu.businessName} | Menú`;
   const sections = groupByCategory(menu);
   const cta = waOrderUrl(menu.whatsapp, menu.businessName);
   const phoneDigits = String(menu.phone || '').replace(/\D/g, '');
@@ -144,6 +162,11 @@ function renderMenu(menu) {
 
   root.innerHTML = `
     <main class="mp">
+      ${
+        preview
+          ? `<div class="mp-preview-banner">Vista previa · aún no publicado</div>`
+          : ''
+      }
       <header class="mp-hero">
         <div class="mp-cover ${menu.coverImage ? 'has-img' : ''}">
           ${menu.coverImage ? `<img src="${escapeHtml(menu.coverImage)}" alt="" decoding="async">` : ''}
@@ -159,7 +182,7 @@ function renderMenu(menu) {
           </div>
           <div class="mp-titles">
             <p class="mp-kicker">Menú</p>
-            <h1>${escapeHtml(menu.businessName)}</h1>
+            <h1>${escapeHtml(menu.businessName || 'Tu negocio')}</h1>
             ${menu.tagline ? `<p class="mp-tagline">${escapeHtml(menu.tagline)}</p>` : ''}
           </div>
         </div>
@@ -200,6 +223,16 @@ function renderMenu(menu) {
 async function boot() {
   if (isDemoRequest()) {
     renderMenu(DEMO_MENU);
+    return;
+  }
+
+  if (isPreviewRequest()) {
+    const preview = readPreviewMenu();
+    if (!preview) {
+      renderMissing('Abre la vista previa desde el editor del menú.');
+      return;
+    }
+    renderMenu(preview, { preview: true });
     return;
   }
 

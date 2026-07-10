@@ -52,8 +52,7 @@ export const PRODUCT_LINES = [
     accent: '#EC3F7A',
     favicon: '/favicon.svg?v=5',
     enabled: true,
-    /** false until kit PDFs + Hotmart upsell links are real — LP checkout blocked; admin can still unlock */
-    sellable: false,
+    sellable: true,
   },
   {
     id: 'donuts',

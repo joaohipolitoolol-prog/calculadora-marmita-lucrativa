@@ -92,7 +92,7 @@ RECETAS = [
         "prep": "15 min", "congelacion": "4-6 horas", "rendimiento": "8 paletas",
         "ingredientes": ["1/2 taza de pulpa de maracuyá", "1 taza de agua", "1/3 taza de azúcar", "1 cucharada de miel"],
         "pasos": ["Mezcla pulpa, agua, azúcar y miel.", "Cuela para quitar semillas si prefieres textura suave.", "Vierte en moldes y congela 1–2 horas.", "Inserta palitos y congela hasta que estén firmes."],
-        "consejo": "Sabor intenso = puedes posicionarla como opción premium en tu menú.",
+        "consejo": "Sabor intenso = puedes posicionarla como opción premium en tu menú."
     },
     {
         "num": 6, "nombre": "Paleta de frutos rojos", "tipo": "Frutal", "dificultad": "Fácil",
@@ -116,11 +116,11 @@ RECETAS = [
         "consejo": "Clásica que todos entienden. Buena para combos familiares."
     },
     {
-        "num": 9, "nombre": "Paleta de chocolate cremoso", "tipo": "Cremosa", "dificultad": "Fácil",
+        "num": 9, "nombre": "Paleta de chocolate bañada", "tipo": "Bañada", "dificultad": "Media",
         "prep": "15 min", "congelacion": "5-7 horas", "rendimiento": "8 a 10 paletas",
-        "ingredientes": ["1 taza de leche", "1/2 taza de crema", "3 cucharadas de cacao en polvo", "1/3 taza de azúcar", "1 cucharadita de vainilla"],
-        "pasos": ["Licúa leche, crema, cacao, azúcar y vainilla.", "Cuela si queda grumos de cacao.", "Vierte en moldes y congela."],
-        "consejo": "Agrega chispas de chocolate encima antes de congelar para más valor visual."
+        "ingredientes": ["1 taza de leche", "1/2 taza de crema", "3 cucharadas de cacao en polvo", "1/3 taza de azúcar", "1 cucharadita de vainilla", "150 g de chocolate semiamargo para bañar"],
+        "pasos": ["Prepara la base cremosa de chocolate (leche, cacao, azúcar) y cocina hasta espesar. Enfría.", "Vierte en moldes, congela 2 h, inserta palitos y congela hasta firmar (4–6 h).", "Derrite el chocolate para bañar a baño maría. Deja enfriar un poco (tibio, no caliente).", "Desmolda, sumerge cada paleta hasta la mitad o completa, deja escurrir sobre papel encerado.", "Vuelve a congelar 20–30 min para fijar el baño antes de empacar."],
+        "consejo": "Esta es la “chocolate bañada” del kit: úsala en fotos del menú. El baño debe estar tibio o se agrieta."
     },
     {
         "num": 10, "nombre": "Paleta de coco", "tipo": "Cremosa", "dificultad": "Fácil",
@@ -151,23 +151,17 @@ RECETAS = [
         "consejo": "Una de las más pedidas. Ponla destacada en tu menú semanal."
     },
     {
-        "num": 14, "nombre": "Paleta de dulce de leche", "tipo": "Cremosa", "dificultad": "Media",
+        "num": 14, "nombre": "Paleta de dulce de leche bañada", "tipo": "Bañada", "dificultad": "Media",
         "prep": "15 min", "congelacion": "6-8 horas", "rendimiento": "8 paletas",
-        "ingredientes": ["1/2 taza de dulce de leche", "1 taza de leche", "1/2 taza de crema", "1 cucharadita de vainilla"],
-        "pasos": ["Mezcla dulce de leche con leche tibia para integrar.", "Agrega crema y vainilla.", "Licúa hasta quedar homogéneo.", "Vierte y congela."],
-        "consejo": "Sabor nostálgico muy popular en LATAM. Posiciónala como especial."
+        "ingredientes": ["1/2 taza de dulce de leche", "1 taza de leche", "1/2 taza de crema", "1 cucharadita de vainilla", "120 g de chocolate con leche para bañar"],
+        "pasos": ["Mezcla dulce de leche con leche tibia para integrar.", "Agrega crema y vainilla.", "Vierte en moldes, congela 2 h, inserta palitos y congela hasta firmar.", "Derrite chocolate con leche. Baña la mitad inferior de cada paleta.", "Deja escurrir y congela 20 min para fijar el baño."],
+        "consejo": "El contraste dulce de leche + baño de chocolate sube el ticket. Foto con corte lateral."
     },
     {
         "num": 15, "nombre": "Paleta rellena de chocolate", "tipo": "Rellena", "dificultad": "Media",
         "prep": "25 min", "congelacion": "6-8 horas", "rendimiento": "6 a 8 paletas",
         "ingredientes": ["1 taza de leche", "1/2 taza de crema", "1/4 taza de azúcar", "1/2 taza de chocolate derretido", "Base de paleta: 1 taza de leche + 2 cdas azúcar"],
-        "pasos": [
-            "Prepara base: mezcla 1 taza de leche con 2 cucharadas de azúcar y vierte en moldes.",
-            "Congela 1 hora hasta que esté semi-firme.",
-            "Prepara relleno: mezcla crema, chocolate derretido y azúcar.",
-            "Con cuchara, haz un hueco en el centro de cada paleta y agrega 1 cucharadita de relleno.",
-            "Cubre con más base de leche y congela 4–6 horas. Inserta palitos si aún no lo hiciste.",
-        ],
+        "pasos": ["Prepara base: mezcla 1 taza de leche con 2 cucharadas de azúcar y vierte en moldes.", "Congela 1 hora hasta que esté semi-firme.", "Prepara relleno: mezcla crema, chocolate derretido y azúcar.", "Con cuchara, haz un hueco en el centro de cada paleta y agrega 1 cucharadita de relleno.", "Cubre con más base de leche y congela 4–6 horas. Inserta palitos si aún no lo hiciste."],
         "consejo": "Corta una paleta para la foto y muestra el relleno. Aumenta valor percibido."
     },
     {
@@ -185,11 +179,11 @@ RECETAS = [
         "consejo": "Fácil de armar con mermelada comprada. Buen margen si compras al por mayor."
     },
     {
-        "num": 18, "nombre": "Paleta rellena de crema de avellana", "tipo": "Rellena", "dificultad": "Media",
+        "num": 18, "nombre": "Paleta de avellana bañada", "tipo": "Bañada", "dificultad": "Media",
         "prep": "20 min", "congelacion": "6-8 horas", "rendimiento": "6 a 8 paletas",
-        "ingredientes": ["1 taza de leche", "1/2 taza de crema", "1/4 taza de azúcar", "3 cucharadas de crema de avellanas o maní"],
-        "pasos": ["Prepara base cremosa y congela parcialmente.", "Coloca 1 cucharadita de crema de avellanas en el centro.", "Cubre y congela.", "Opcional: baño de chocolate al final."],
-        "consejo": "Sabor premium. Puedes cobrar un poco más que las frutales básicas."
+        "ingredientes": ["1 taza de leche", "1/2 taza de crema", "1/4 taza de azúcar", "3 cucharadas de crema de avellanas o maní", "150 g de chocolate semiamargo para bañar"],
+        "pasos": ["Prepara base cremosa y congela parcialmente.", "Coloca 1 cucharadita de crema de avellanas en el centro.", "Cubre y congela.", "Baña completa o a la mitad con chocolate derretido y deja escurrir."],
+        "consejo": "Sabor premium del kit base. Cobra más que las frutales. Avisa alérgeno (avellana)."
     },
     {
         "num": 19, "nombre": "Paleta rellena de caramelo", "tipo": "Rellena", "dificultad": "Media",
@@ -248,11 +242,11 @@ RECETAS = [
         "consejo": "Sabor nostálgico. Menciona 'receta de la abuela' en tu mensaje."
     },
     {
-        "num": 27, "nombre": "Paleta de chocolate con maní", "tipo": "Estilo postre", "dificultad": "Fácil",
+        "num": 27, "nombre": "Paleta de maní bañada en chocolate", "tipo": "Bañada", "dificultad": "Media",
         "prep": "15 min", "congelacion": "5-7 horas", "rendimiento": "8 paletas",
-        "ingredientes": ["1 taza de leche", "1/2 taza de crema", "3 cucharadas de cacao", "1/4 taza de azúcar", "3 cucharadas de maní triturado"],
-        "pasos": ["Licúa leche, crema, cacao y azúcar.", "Agrega maní triturado.", "Vierte en moldes.", "Congela. Advierte sobre alérgenos."],
-        "consejo": "IMPORTANTE: informa que contiene maní. Textura crujiente vende bien."
+        "ingredientes": ["1 taza de leche", "1/2 taza de crema", "3 cucharadas de cacao", "1/4 taza de azúcar", "3 cucharadas de maní triturado", "150 g de chocolate semiamargo para bañar"],
+        "pasos": ["Licúa leche, crema, cacao y azúcar.", "Agrega maní triturado.", "Vierte en moldes.", "Derrite chocolate. Sumerge cada paleta y espolvorea maní picado antes de que seque.", "Congela 20 min. Advierte sobre alérgenos (maní)."],
+        "consejo": "IMPORTANTE: informa que contiene maní. El baño + crunch vende muy bien en foto."
     },
     {
         "num": 28, "nombre": "Paleta de limón pie", "tipo": "Estilo postre", "dificultad": "Media",
@@ -269,12 +263,12 @@ RECETAS = [
         "consejo": "Opción 'más ligera' para clientes que lo piden. Buena para historias de WhatsApp."
     },
     {
-        "num": 30, "nombre": "Paleta tropical premium", "tipo": "Estilo postre", "dificultad": "Media",
+        "num": 30, "nombre": "Paleta tropical bañada", "tipo": "Bañada", "dificultad": "Media",
         "prep": "30 min", "congelacion": "6-8 horas", "rendimiento": "6 a 8 paletas",
-        "ingredientes": ["1/2 taza de mango", "1/2 taza de piña", "1/2 taza de maracuyá", "1/2 taza de crema", "1/4 taza de azúcar", "1 cucharada de coco rallado"],
-        "pasos": ["Licúa cada fruta por separado.", "Vierte capas de mango, piña y maracuyá en el molde.", "Agrega crema con coco entre capas.", "Congela. El efecto de capas es muy visual."],
-        "consejo": "Tu producto estrella visual. Cobra más y úsala como imagen principal del menú."
-    },
+        "ingredientes": ["1/2 taza de mango", "1/2 taza de piña", "1/2 taza de maracuyá", "1/2 taza de crema", "1/4 taza de azúcar", "1 cucharada de coco rallado", "120 g de chocolate blanco para bañar", "Coco rallado o chispas para decorar el baño"],
+        "pasos": ["Licúa cada fruta por separado.", "Vierte capas de mango, piña y maracuyá en el molde.", "Agrega crema con coco entre capas.", "Congela. El efecto de capas es muy visual.", "Derrite chocolate blanco. Baña la punta o la mitad de cada paleta.", "Espolvorea coco o chispas y congela 20 min para fijar."],
+        "consejo": "Tu producto estrella visual del kit: capas + baño. Úsala como imagen principal del menú."
+    }
 ]
 
 COMBINACIONES = [
@@ -306,7 +300,7 @@ MENSAJES = {
         "Paletas caseras para este fin de semana. Menú: [sabores]. Puedes apartar las tuyas con anticipación.",
         "Si buscas un dulce fresco, tengo paletas artesanales. Te paso el menú con precios por unidad y combos.",
         "Hoy hornée... digo, congelé paletas 😊 Disponibles: [sabores]. ¿Te aparto alguna?",
-        "Menú dulce de la semana: paletas caseras en sabores [sabores]. Entrega en [zona] o recogida.",
+        "Menú dulce de la semana: paletas caseras en sabores [sabores]. Entrega en [zona] o recogida."
     ],
     "status": [
         "🍓 Paletas listas. Escríbeme si quieres el menú.",
@@ -318,7 +312,7 @@ MENSAJES = {
         "Dulce, fresco y hecho en casa",
         "Menú de paletas en mi estado anterior 👆",
         "Pregunta por combos familiares",
-        "Ideal para el calor ☀️🍓",
+        "Ideal para el calor ☀️🍓"
     ],
     "promo": [
         "Promo fin de semana: 3 paletas surtidas por [precio]. Válido sábado y domingo.",
@@ -330,7 +324,7 @@ MENSAJES = {
         "Combo dulce: 1 cremosa + 1 frutal + 1 rellena por [precio].",
         "Promo de fin de semana: si apartas hoy, te guardo las paletas para mañana sin costo extra.",
         "Fin de semana dulce 🍓 Pedidos con anticipación tienen prioridad.",
-        "Si te animas este fin de semana, tengo combo surtido. Escríbeme y te paso opciones.",
+        "Si te animas este fin de semana, tengo combo surtido. Escríbeme y te paso opciones."
     ],
     "clientes": [
         "¡Hola de nuevo! 😊 Esta semana tengo sabores nuevos. ¿Te mando el menú actualizado?",
@@ -342,21 +336,21 @@ MENSAJES = {
         "Pedido especial para ti: puedo preparar tu sabor favorito si me avisas con 24h.",
         "Gracias por recomendarme. Si traes un amigo, ambos tienen descuento en combo.",
         "Tu sabor [favorito] está en el menú de esta semana. ¿Te aparto?",
-        "Clientes de siempre: escríbeme 'cliente' y te mando precios especiales.",
+        "Clientes de siempre: escríbeme 'cliente' y te mando precios especiales."
     ],
     "ultimas": [
         "Quedan pocas paletas de [sabor]. Si quieres, aparto las tuyas ahora.",
         "Últimas 5 unidades del día. Escríbeme antes de que se acaben.",
         "Casi agotado el stock de hoy. ¿Te guardo alguna?",
         "Solo me quedan paletas de [sabores]. Mañana preparo nueva tanda.",
-        "Stock limitado — lo que ves es lo que hay. Pregunta por disponibilidad.",
+        "Stock limitado — lo que ves es lo que hay. Pregunta por disponibilidad."
     ],
     "pedidos": [
         "Perfecto, tu pedido: [sabores] x [cantidad] — Total: [precio]. ¿Confirmo?",
         "Listo, aparté tus paletas. Te aviso cuando estén listas para entrega.",
         "Tu pedido está confirmado ✅ Te escribo cuando salga para [dirección/zona].",
         "Recibido. Prepararé [cantidad] paletas de [sabores]. ¿Pagas al recoger o transferencia?",
-        "Pedido anotado. Hora estimada de entrega: [hora]. Cualquier cambio, avísame.",
+        "Pedido anotado. Hora estimada de entrega: [hora]. Cualquier cambio, avísame."
     ],
     "faq": [
         "¡Hola! Sí, tengo paletas disponibles hoy. Te comparto el menú con sabores y precios 👇",
@@ -368,7 +362,7 @@ MENSAJES = {
         "Las paletas se conservan en congelador. Te recomiendo consumirlas el mismo día o al día siguiente.",
         "El combo de 3 paletas sale en [precio]. Puedes elegir los sabores disponibles.",
         "Por ahora manejo pedidos pequeños desde casa. Si necesitas cantidad para evento, escríbeme y vemos.",
-        "¡Gracias por tu interés! Si quieres, te mando foto del menú de hoy.",
+        "¡Gracias por tu interés! Si quieres, te mando foto del menú de hoy."
     ],
 }
 

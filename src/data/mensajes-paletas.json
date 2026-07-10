@@ -1,0 +1,242 @@
+[
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "🍓 ¡Hola! Esta semana tengo paletas caseras listas. Sabores disponibles: [sabores]. Si quieres reservar, escríbeme por aquí."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Menú de paletas de la semana 👇 Cremosas, frutales y rellenas. Pregunta por precios y disponibilidad."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Preparé paletas frescas hoy. Te comparto el menú con sabores y precios. ¿Cuál te llama la atención?"
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Paletas hechas en casa, con ingredientes que puedes conocer. Menú actualizado: [sabores]. Pedidos por WhatsApp."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "¿Antojo de algo fresco? Tengo paletas disponibles para entrega hoy. Escríbeme y te mando el menú completo."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Nueva tanda de paletas lista 🍦 Sabores: [sabores]. Cantidad limitada según lo que preparé hoy."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Paletas caseras para este fin de semana. Menú: [sabores]. Puedes apartar las tuyas con anticipación."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Si buscas un dulce fresco, tengo paletas artesanales. Te paso el menú con precios por unidad y combos."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Hoy hornée... digo, congelé paletas 😊 Disponibles: [sabores]. ¿Te aparto alguna?"
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Menú dulce de la semana: paletas caseras en sabores [sabores]. Entrega en [zona] o recogida."
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "🍓 Paletas listas. Escríbeme si quieres el menú."
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Algo fresco para hoy 🍦"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Nuevos sabores esta semana"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Paletas caseras — pregunta por disponibilidad"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "¿Paleta de qué sabor te provoca?"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Hechas hoy, disponibles hasta agotar stock"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Dulce, fresco y hecho en casa"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Menú de paletas en mi estado anterior 👆"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Pregunta por combos familiares"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Ideal para el calor ☀️🍓"
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Promo fin de semana: 3 paletas surtidas por [precio]. Válido sábado y domingo."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Combo familiar: 6 paletas a elegir por [precio]. Perfecto para compartir."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Este sábado: lleva 2 paletas y la tercera con descuento. Pregunta por sabores."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Pack refrescante: 4 paletas frutales por [precio]. Solo este fin de semana."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Promo para vecinos: 10% de descuento en tu primer pedido. Escríbeme."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Últimas paletas del día con precio especial. Disponibles hasta agotar."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Combo dulce: 1 cremosa + 1 frutal + 1 rellena por [precio]."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Promo de fin de semana: si apartas hoy, te guardo las paletas para mañana sin costo extra."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Fin de semana dulce 🍓 Pedidos con anticipación tienen prioridad."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Si te animas este fin de semana, tengo combo surtido. Escríbeme y te paso opciones."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "¡Hola de nuevo! 😊 Esta semana tengo sabores nuevos. ¿Te mando el menú actualizado?"
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Hace tiempo que no pides. Tengo tus sabores favoritos disponibles hoy."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Gracias por tu pedido anterior. Esta semana preparé [sabor nuevo] — ¿quieres probarlo?"
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Para clientes frecuentes: aviso anticipado de la tanda del fin de semana."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "¿Te gustó la última paleta? Esta semana repetí ese sabor y agregué uno nuevo."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Hola, ¿cómo estás? Tengo paletas listas y pensé en ti. ¿Te interesa el menú?"
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Pedido especial para ti: puedo preparar tu sabor favorito si me avisas con 24h."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Gracias por recomendarme. Si traes un amigo, ambos tienen descuento en combo."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Tu sabor [favorito] está en el menú de esta semana. ¿Te aparto?"
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Clientes de siempre: escríbeme 'cliente' y te mando precios especiales."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Quedan pocas paletas de [sabor]. Si quieres, aparto las tuyas ahora."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Últimas 5 unidades del día. Escríbeme antes de que se acaben."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Casi agotado el stock de hoy. ¿Te guardo alguna?"
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Solo me quedan paletas de [sabores]. Mañana preparo nueva tanda."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Stock limitado — lo que ves es lo que hay. Pregunta por disponibilidad."
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Perfecto, tu pedido: [sabores] x [cantidad] — Total: [precio]. ¿Confirmo?"
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Listo, aparté tus paletas. Te aviso cuando estén listas para entrega."
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Tu pedido está confirmado ✅ Te escribo cuando salga para [dirección/zona]."
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Recibido. Prepararé [cantidad] paletas de [sabores]. ¿Pagas al recoger o transferencia?"
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Pedido anotado. Hora estimada de entrega: [hora]. Cualquier cambio, avísame."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "¡Hola! Sí, tengo paletas disponibles hoy. Te comparto el menú con sabores y precios 👇"
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "El precio por paleta es [precio]. También tengo combos si quieres llevar varias."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Entrego en [zona] o puedes recoger en [punto]. ¿Qué te queda mejor?"
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Puedes pagar por transferencia o en efectivo al recoger. ¿Cómo prefieres?"
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Sí, acepto pedidos con 24 horas de anticipación. ¿Para qué día lo necesitas?"
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Esta paleta contiene [leche/maní/gluten]. ¿Tienes alguna alergia que deba saber?"
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Las paletas se conservan en congelador. Te recomiendo consumirlas el mismo día o al día siguiente."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "El combo de 3 paletas sale en [precio]. Puedes elegir los sabores disponibles."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Por ahora manejo pedidos pequeños desde casa. Si necesitas cantidad para evento, escríbeme y vemos."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "¡Gracias por tu interés! Si quieres, te mando foto del menú de hoy."
+  }
+]

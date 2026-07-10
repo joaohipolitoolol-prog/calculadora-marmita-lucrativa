@@ -1,0 +1,77 @@
+[
+  {
+    "fecha": "San Valentín",
+    "ideas": [
+      "Combo Pareja",
+      "Red velvet",
+      "Fresa bañada en chocolate",
+      "Mensaje romántico en el empaque"
+    ],
+    "promo": "Pedidos hasta el 12 de febrero. Aparta con anticipación."
+  },
+  {
+    "fecha": "Día de la Madre",
+    "ideas": [
+      "Caja premium x6",
+      "Tres leches",
+      "Tarjeta impresa simple",
+      "Entrega coordinada"
+    ],
+    "promo": "Regalo dulce para mamá — caja surtida premium."
+  },
+  {
+    "fecha": "Día del Niño",
+    "ideas": [
+      "Combo Infantil",
+      "Oreo",
+      "Colores vivos",
+      "Stickers en el empaque"
+    ],
+    "promo": "Pack infantil con sabores favoritos."
+  },
+  {
+    "fecha": "Fines de semana",
+    "ideas": [
+      "Combo Fin de Semana",
+      "Brownie",
+      "Publicar viernes por la tarde"
+    ],
+    "promo": "Caja lista sábado y domingo — cantidad limitada."
+  },
+  {
+    "fecha": "Verano / vacaciones",
+    "ideas": [
+      "Combo Verano",
+      "Frutales tropicales",
+      "Descuento en packs grandes"
+    ],
+    "promo": "Calor = paletas. Promo en combos de 6 o más."
+  },
+  {
+    "fecha": "Navidad y fin de año",
+    "ideas": [
+      "Sabores especiales (canela, dulce de leche)",
+      "Cajas regalo",
+      "Pedidos con 1 semana de anticipación"
+    ],
+    "promo": "Caja regalo premium para compartir en fiestas."
+  },
+  {
+    "fecha": "Cumpleaños",
+    "ideas": [
+      "Combo Encargo",
+      "Velita en la paleta (foto)",
+      "Sabores favoritos del cumpleañero"
+    ],
+    "promo": "¿Cumpleaños? Armo la caja con los sabores que elijas."
+  },
+  {
+    "fecha": "Fechas locales",
+    "ideas": [
+      "Adapta a feriados de tu país",
+      "Sabores con bandera o color temático",
+      "Historia en WhatsApp"
+    ],
+    "promo": "Edición especial [nombre del feriado] — solo esta semana."
+  }
+]

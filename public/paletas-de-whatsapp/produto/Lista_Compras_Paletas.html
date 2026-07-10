@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lista de compras · Paletas</title><style>@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+:root{--rosa:#FF4F8B;--crema:#FFF4E6;--chocolate:#5C2E1F;--blanco:#fff;--gris:#6B5E57;--gris-claro:#F3EDE8;}
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4;margin:14mm}
+body{font-family:Nunito,system-ui,sans-serif;color:var(--chocolate);background:#fff;font-size:11pt;line-height:1.5}
+.page{max-width:210mm;margin:0 auto;padding:12mm 14mm}
+.cover{min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(160deg,#FFF4E6,#FFE8F0 45%,#CFF7E2);border-radius:18px;padding:40px 28px;margin-bottom:28px}
+.badge{background:var(--rosa);color:#fff;font-size:9pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.cover h1{font-size:28pt;font-weight:800;line-height:1.1;margin:8px 0}
+.toolbar{display:flex;gap:8px;justify-content:flex-end;margin:0 0 16px;position:sticky;top:0;background:#fff;padding:8px 0;z-index:2}
+.btn{border:none;border-radius:10px;padding:10px 14px;font:inherit;font-weight:800;cursor:pointer}
+.btn-print{background:var(--rosa);color:#fff}
+.btn-back{background:var(--gris-claro);color:var(--chocolate);text-decoration:none}
+h2{font-size:16pt;margin:22px 0 10px;color:var(--rosa)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f0e8e2}
+.check input{margin-top:4px}
+@media print{.toolbar{display:none}.cover{min-height:auto;page-break-after:always}}</style></head><body>
+<div class="page">
+  <div class="toolbar"><a class="btn btn-back" href="/app?line=paletas">Volver a la app</a><button class="btn btn-print" onclick="window.print()">Imprimir / PDF</button></div>
+  <div class="cover"><div class="badge">Compras</div><h1>Lista de compras</h1></div>
+  <h2>Ingredientes base</h2>
+  <label class="check"><input type="checkbox"><span>Leche entera o evaporada</span></label>
+  <label class="check"><input type="checkbox"><span>Crema de leche o media crema</span></label>
+  <label class="check"><input type="checkbox"><span>Leche condensada</span></label>
+  <label class="check"><input type="checkbox"><span>Azúcar o miel</span></label>
+  <label class="check"><input type="checkbox"><span>Frutas frescas o congeladas (fresa, mango, limón, etc.)</span></label>
+  <label class="check"><input type="checkbox"><span>Cacao en polvo o chocolate para derretir</span></label>
+  <label class="check"><input type="checkbox"><span>Yogur natural</span></label>
+  <label class="check"><input type="checkbox"><span>Mermelada o dulce de leche (para rellenos)</span></label>
+  <label class="check"><input type="checkbox"><span>Extracto de vainilla</span></label>
+  <label class="check"><input type="checkbox"><span>Agua o jugo natural</span></label>
+  <h2>Materiales</h2>
+  <label class="check"><input type="checkbox"><span>Moldes para paletas (reutilizables o desechables)</span></label>
+  <label class="check"><input type="checkbox"><span>Palitos de paleta</span></label>
+  <label class="check"><input type="checkbox"><span>Bolsas o empaques individuales</span></label>
+  <label class="check"><input type="checkbox"><span>Etiquetas o stickers (opcional)</span></label>
+  <label class="check"><input type="checkbox"><span>Bandejas para transporte</span></label>
+  <h2>Utensilios recomendados</h2>
+  <label class="check"><input type="checkbox"><span>Licuadora o batidora</span></label>
+  <label class="check"><input type="checkbox"><span>Ollas y cucharones</span></label>
+  <label class="check"><input type="checkbox"><span>Embudos pequeños</span></label>
+  <label class="check"><input type="checkbox"><span>Congelador con espacio</span></label>
+  <label class="check"><input type="checkbox"><span>Termómetro (opcional, para baño de chocolate)</span></label>
+</div></body></html>

@@ -1,0 +1,82 @@
+[
+  {
+    "categoria": "Combos",
+    "texto": "🍓 Nuevo en el menú: combos premium listos para apartar. Combo familiar x6 por [precio]. Escríbeme los sabores."
+  },
+  {
+    "categoria": "Combos",
+    "texto": "¿Primera vez? Prueba el Combo Antojo: 3 paletas surtidas por [precio]. Incluye un sabor premium."
+  },
+  {
+    "categoria": "Combos",
+    "texto": "Caja fin de semana disponible — 6 paletas cremosas y rellenas. Aparta la tuya hoy."
+  },
+  {
+    "categoria": "Combos",
+    "texto": "Combo Premium: cheesecake, brownie y chocolate belga. Para quien busca algo especial."
+  },
+  {
+    "categoria": "Combos",
+    "texto": "Pack infantil con sabores coloridos — ideal para cumpleaños pequeños."
+  },
+  {
+    "categoria": "Especiales",
+    "texto": "✨ Edición especial esta semana: [sabor premium]. Cantidad limitada."
+  },
+  {
+    "categoria": "Especiales",
+    "texto": "Nuevo sabor en el menú: [nombre]. Hecho con [ingrediente destacado]. ¿Te aparto?"
+  },
+  {
+    "categoria": "Especiales",
+    "texto": "Paleta bañada en chocolate — disponible solo viernes y sábado."
+  },
+  {
+    "categoria": "Especiales",
+    "texto": "Pedidos por encargo: elige tus sabores premium y te armo la caja."
+  },
+  {
+    "categoria": "Especiales",
+    "texto": "¿Te gustó la última? Esta semana repetí [sabor] y agregué [nuevo]."
+  },
+  {
+    "categoria": "Fechas",
+    "texto": "💝 San Valentín: Combo Pareja con paletas premium. Pedidos hasta [fecha]."
+  },
+  {
+    "categoria": "Fechas",
+    "texto": "Regalo para mamá: caja premium x6 con sabores a elegir. Día de la Madre."
+  },
+  {
+    "categoria": "Fechas",
+    "texto": "Fin de semana dulce: caja surtida lista sábado. Aparta con anticipación."
+  },
+  {
+    "categoria": "Fechas",
+    "texto": "Edición [feriado local]: sabores especiales solo esta semana."
+  },
+  {
+    "categoria": "Fechas",
+    "texto": "¿Cumpleaños? Armo tu caja con los sabores favoritos del festejado."
+  },
+  {
+    "categoria": "Valor",
+    "texto": "Paletas artesanales con sabores premium — hechas en casa con ingredientes que puedes conocer."
+  },
+  {
+    "categoria": "Valor",
+    "texto": "No es paleta de tienda: es receta casera con presentación cuidada."
+  },
+  {
+    "categoria": "Valor",
+    "texto": "Menú actualizado con opciones cremosas, rellenas y bañadas."
+  },
+  {
+    "categoria": "Valor",
+    "texto": "Si buscas algo más que lo básico, pregunta por la línea premium."
+  },
+  {
+    "categoria": "Valor",
+    "texto": "Foto del menú premium en mi estado anterior 👆"
+  }
+]

@@ -43,6 +43,19 @@ img {
   color: var(--pink);
 }
 
+.mp-preview-banner {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 8px 14px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  background: var(--yellow-soft, #ffe8a3);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
 .mp-hero {
   position: relative;
 }

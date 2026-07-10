@@ -1,46 +1,47 @@
-import { BRAND_KIT } from '../site/brand.js';
 import { ICONS } from './icons.js';
 
-export const ONBOARDING_KEY = 'paletas_onboarding_v1';
+/** Bumped when flow/copy changes so users see the updated tutorial once. */
+export const ONBOARDING_KEY = 'kit_onboarding_v2';
 
-const SLIDES = [
-  {
-    icon: 'logo',
-    title: `Tu ${BRAND_KIT}`,
-    body: 'Recetas, calculadora de precios, menú y mensajes listos para empezar a vender desde casa.',
-    highlight: null,
-  },
-  {
-    icon: 'zap',
-    title: 'Empieza en modo rápido',
-    body: 'Coloca el precio de venta y los costos <strong>de cada paleta</strong>: ingredientes, empaque, extras, entrega y desperdicio.',
-    highlight: 'Completa los campos en Precios. Toma unos 2 minutos.',
-  },
-  {
-    icon: 'chart',
-    title: 'Ganancia en vivo',
-    body: 'Mientras escribes, el resumen muestra costo, ganancia y margen. El valor arriba también cambia al instante.',
-    highlight: 'Mira el card de resumen debajo del modo Rápido/Completo.',
-  },
-  {
-    icon: 'dollar',
-    title: 'Mira el precio sugerido',
-    body: 'Toca <strong>Ver mi ganancia</strong> y revisa el precio recomendado para alcanzar tu margen meta.',
-    highlight: 'Usa "Aplicar este precio" para usar el valor sugerido.',
-  },
-  {
-    icon: 'book',
-    title: '30 recetas de paletas',
-    body: 'Abre <strong>Recetas</strong> en el menú de abajo — cremosas, frutales, rellenas y estilo postre.',
-    highlight: 'Busca por nombre o tipo de paleta.',
-  },
-  {
-    icon: 'message',
-    title: 'Mensajes y plan de 7 días',
-    body: 'En <strong>Vender</strong> encuentras mensajes, combos premium, plan semanal, PDFs y checklist de producción.',
-    highlight: 'Copia los mensajes y publícalos en tu estado.',
-  },
-];
+function buildSlides(brand) {
+  const unit = brand?.unitSingular || 'unidad';
+  const units = brand?.unitPlural || 'unidades';
+  const kitName = brand?.kitName || brand?.short || 'tu kit';
+  const emoji = brand?.emoji || '🍓';
+
+  return [
+    {
+      icon: 'logo',
+      title: kitName,
+      body: `Recetas, precios y mensajes para vender ${units} desde casa — todo en la app.`,
+      highlight: 'Usa la barra de abajo: Inicio, Precios, Kit y Perfil.',
+    },
+    {
+      icon: 'calc',
+      title: 'Calcula en Precios',
+      body: `En <strong>Precios</strong>, modo <strong>Rápido</strong>: pon el precio de venta y los costos de cada ${unit}.`,
+      highlight: 'Toma unos 2 minutos. El modo Completo es opcional.',
+    },
+    {
+      icon: 'chart',
+      title: 'Mira tu ganancia',
+      body: 'Toca <strong>Ver mi ganancia</strong>. Verás la ganancia por unidad, el margen y el <strong>precio sugerido</strong>.',
+      highlight: 'Usa “Aplicar este precio” si quieres el valor recomendado.',
+    },
+    {
+      icon: 'strawberry',
+      title: 'Abre el Kit',
+      body: 'En la pestaña <strong>Kit</strong> están las <strong>Recetas</strong>, los <strong>Archivos</strong> y <strong>Vender</strong> (menú, mensajes, plan).',
+      highlight: 'Toca un archivo para abrirlo dentro de la app.',
+    },
+    {
+      icon: 'message',
+      title: 'Vende por WhatsApp',
+      body: 'En <strong>Kit → Vender → Menú</strong> armas tu carta y copias el texto. También hay mensajes, plan de 7 días y checklist.',
+      highlight: 'Copia el menú y publícalo en tu estado.',
+    },
+  ];
+}
 
 export function hasSeenOnboarding() {
   return localStorage.getItem(ONBOARDING_KEY) === '1';
@@ -54,9 +55,10 @@ export function clearOnboardingSeen() {
   localStorage.removeItem(ONBOARDING_KEY);
 }
 
-export function showOnboarding({ onFinish } = {}) {
+export function showOnboarding({ onFinish, brand } = {}) {
   if (document.getElementById('onboarding-root')) return;
 
+  const slides = buildSlides(brand);
   let index = 0;
   const root = document.createElement('div');
   root.id = 'onboarding-root';
@@ -76,25 +78,28 @@ export function showOnboarding({ onFinish } = {}) {
   }
 
   function renderSlide() {
-    const slide = SLIDES[index];
-    const iconHtml = slide.icon === 'logo' ? ICONS.logo : ICONS[slide.icon] || ICONS.info;
+    const slide = slides[index];
+    const iconHtml =
+      slide.icon === 'logo'
+        ? `<span class="app-logo-emoji" aria-hidden="true">${brand?.emoji || '🍓'}</span>`
+        : ICONS[slide.icon] || ICONS.info;
     const isFirst = index === 0;
-    const isLast = index === SLIDES.length - 1;
+    const isLast = index === slides.length - 1;
 
     root.innerHTML = `
       <div class="onboarding-shell">
         <div class="onboarding-card">
           <button type="button" class="onboarding-skip" id="onboarding-skip">Saltar</button>
 
-          <div class="onboarding-visual ${slide.icon === 'logo' ? 'is-logo' : ''}">
+          <div class="onboarding-visual ${slide.icon === 'logo' || slide.icon === 'strawberry' ? 'is-logo' : ''}">
             ${iconHtml}
           </div>
 
           <div class="onboarding-progress" aria-hidden="true">
-            ${SLIDES.map((_, i) => `<span class="onboarding-dot ${i === index ? 'active' : i < index ? 'done' : ''}"></span>`).join('')}
+            ${slides.map((_, i) => `<span class="onboarding-dot ${i === index ? 'active' : i < index ? 'done' : ''}"></span>`).join('')}
           </div>
 
-          <p class="onboarding-step-label">Paso ${index + 1} de ${SLIDES.length}</p>
+          <p class="onboarding-step-label">Paso ${index + 1} de ${slides.length}</p>
           <h2 class="onboarding-title">${slide.title}</h2>
           <p class="onboarding-body">${slide.body}</p>
           ${slide.highlight ? `<div class="onboarding-tip">${ICONS.info}<span>${slide.highlight}</span></div>` : ''}

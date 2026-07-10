@@ -151,16 +151,6 @@ function ensureAutoSlug() {
   return '';
 }
 
-function statusPill(published, cloudAvailable) {
-  if (!cloudAvailable) {
-    return `<span class="mw-status mw-status-local">Local</span>`;
-  }
-  if (published) {
-    return `<span class="mw-status mw-status-live">En vivo</span>`;
-  }
-  return `<span class="mw-status mw-status-draft">Borrador</span>`;
-}
-
 function seedDemoProducts() {
   const cats = [
     { id: 'cat_frutales', name: 'Frutales' },
@@ -266,6 +256,7 @@ function renderMenuScreen({ cloudAvailable }) {
   const empty = !d.items.length;
   const name = d.businessName || 'Tu negocio';
   const catCount = d.categories.length;
+  ensureAutoSlug();
 
   const listHtml = empty
     ? `
@@ -275,24 +266,27 @@ function renderMenuScreen({ cloudAvailable }) {
         <p>Crea categorías y agrega sabores con foto y precio.</p>
         <button type="button" class="btn btn-primary" data-add-item>${ICONS.plus}<span>Agregar producto</span></button>
         <button type="button" class="btn btn-ghost" data-open-categories>${ICONS.list}<span>Categorías</span></button>
-        <button type="button" class="btn btn-ghost" data-seed-demo>Cargar menú demo</button>
       </div>
     `
     : renderGroupedProducts();
+
+  const openMenuBtn = `<button type="button" class="mw-profile-tool" data-open-menu-link title="Abrir menú" aria-label="Abrir menú">${ICONS.externalLink}</button>`;
 
   return `
     <div class="mw-page">
       <header class="mw-profile">
         <div class="mw-profile-cover ${d.coverImage ? 'has-img' : ''}">
           ${d.coverImage ? `<img src="${escapeHtml(d.coverImage)}" alt="" decoding="async">` : ''}
-          <button type="button" class="mw-profile-settings" data-open-settings title="Negocio y WhatsApp" aria-label="Ajustes">${ICONS.settings}</button>
+          <div class="mw-profile-tools">
+            ${openMenuBtn}
+            <button type="button" class="mw-profile-tool" data-open-settings title="Negocio y WhatsApp" aria-label="Ajustes">${ICONS.settings}</button>
+          </div>
         </div>
         <div class="mw-profile-row">
           <div class="mw-profile-avatar">${renderThumb(d.logoImage, name)}</div>
           <div class="mw-profile-meta">
             <div class="mw-profile-name">
               <strong>${escapeHtml(name)}</strong>
-              ${statusPill(d.published, cloudAvailable)}
             </div>
             ${d.tagline ? `<span class="mw-profile-bio">${escapeHtml(d.tagline)}</span>` : ''}
           </div>
@@ -302,6 +296,12 @@ function renderMenuScreen({ cloudAvailable }) {
       ${
         !cloudAvailable
           ? `<p class="mw-banner-warn">Modo local: el link público necesita Firebase.</p>`
+          : ''
+      }
+
+      ${
+        empty
+          ? `<button type="button" class="mw-demo-link" data-seed-demo>Cargar menú demo</button>`
           : ''
       }
 
@@ -357,7 +357,6 @@ function renderSettingsScreen() {
   const d = draft;
   ensureAutoSlug();
   const link = d.slug && isValidSlug(d.slug) ? publicMenuUrl(d.slug) : '';
-  const previewHref = d.slug && isValidSlug(d.slug) ? publicMenuPreviewPath(d.slug) : '';
 
   return `
     <div class="mw-page mw-settings">
@@ -423,7 +422,7 @@ function renderSettingsScreen() {
                 <code class="mw-link-url">${escapeHtml(link)}</code>
                 <div class="mw-link-actions">
                   <button type="button" class="btn btn-secondary btn-sm" data-copy-link>${ICONS.copy}<span>Copiar</span></button>
-                  <a class="btn btn-ghost btn-sm" href="${escapeHtml(previewHref)}" target="_blank" rel="noopener">Ver menú</a>
+                  <button type="button" class="btn btn-ghost btn-sm" data-open-menu-link>${ICONS.externalLink}<span>Ver menú</span></button>
                 </div>
               </div>`
             : ''
@@ -606,6 +605,22 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
     btn.addEventListener('click', () => {
       screen = 'settings';
       rerender();
+    });
+  });
+
+  root.querySelectorAll('[data-open-menu-link]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      ensureAutoSlug();
+      try {
+        sessionStorage.setItem('mw-menu-preview', JSON.stringify(draft));
+      } catch {
+        /* ignore quota */
+      }
+      if (draft.published && draft.slug && isValidSlug(draft.slug)) {
+        window.open(publicMenuPreviewPath(draft.slug), '_blank', 'noopener,noreferrer');
+        return;
+      }
+      window.open('/m.html?preview=1', '_blank', 'noopener,noreferrer');
     });
   });
 

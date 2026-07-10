@@ -1,7 +1,12 @@
 import {
   CHECKLIST_PRODUCCION,
+  CHECKLIST_VENTA,
   LISTA_COMPRAS,
   MENSAJES_WHATSAPP,
+  MENSAJES_PREMIUM,
+  FECHAS_PREMIUM,
+  GUIA_PREMIUM,
+  KIT_EXTRAS,
   PLAN_7_DIAS,
   RECETAS_PALETAS,
   RECETAS_PREMIUM,
@@ -11,6 +16,9 @@ import {
   CHECKLIST_POSTRES,
   LISTA_COMPRAS_POSTRES,
   MENSAJES_POSTRES,
+  MENSAJES_POSTRES_PREMIUM,
+  FECHAS_POSTRES_PREMIUM,
+  GUIA_POSTRES_PREMIUM,
   PLAN_7_DIAS_POSTRES,
   RECETAS_POSTRES,
   RECETAS_POSTRES_PREMIUM,
@@ -107,13 +115,31 @@ import {
   isViewableDoc,
   isNativeDoc,
   hasPdfDownload,
-  kindLabel,
 } from './documents.js';
 import {
   bindMenuWebEvents,
   ensureMenuDraftLoaded,
   renderMenuWebView,
 } from './menu-editor.js';
+import {
+  bindMenuWhatsAppEvents,
+  loadMenuWaDraft,
+  menuWaExportHref,
+  renderMenuWhatsAppView,
+} from './menu-whatsapp.js';
+import {
+  bindMenuPremiumEvents,
+  loadMenuPremiumDraft,
+  menuPremiumExportHref,
+  renderMenuPremiumView,
+} from './menu-premium.js';
+import {
+  renderFechasEspeciales,
+  renderGuiaPresentacion,
+  renderKitExtras,
+  renderMensajesList,
+  renderPremiumLocked,
+} from './kit-sections.js';
 import { canUseMenusCloud } from '../lib/menus.js';
 
 const root = document.getElementById('app-root');
@@ -128,6 +154,8 @@ let scenarios = [];
 let activeView = 'home';
 let kitHubTab = 'recetas';
 let kitSection = 'mensajes';
+let menuWaDraft = null;
+let menuPremiumDraft = null;
 let activeDocId = null;
 let openStep = 1;
 let drawerOpen = false;
@@ -165,6 +193,10 @@ function kitContentForLine() {
       plan: PLAN_7_DIAS_POSTRES,
       lista: LISTA_COMPRAS_POSTRES,
       checklist: CHECKLIST_POSTRES,
+      mensajesPremium: MENSAJES_POSTRES_PREMIUM,
+      fechasPremium: FECHAS_POSTRES_PREMIUM,
+      guiaPremium: GUIA_POSTRES_PREMIUM,
+      kitExtras: null,
       downloads: POSTRES_DOWNLOADS,
       premiumDownloads: POSTRES_PREMIUM_DOWNLOADS,
       upsellCheckout: POSTRES_UPSELL_CHECKOUT,
@@ -183,6 +215,11 @@ function kitContentForLine() {
     plan: PLAN_7_DIAS,
     lista: LISTA_COMPRAS,
     checklist: CHECKLIST_PRODUCCION,
+    checklistVenta: CHECKLIST_VENTA,
+    mensajesPremium: MENSAJES_PREMIUM,
+    fechasPremium: FECHAS_PREMIUM,
+    guiaPremium: GUIA_PREMIUM,
+    kitExtras: KIT_EXTRAS,
     downloads: KIT_DOWNLOADS,
     premiumDownloads: PREMIUM_DOWNLOADS,
     upsellCheckout: UPSELL_CHECKOUT_URL,
@@ -279,6 +316,14 @@ function getCalcSteps() {
 
 function checklistKey(uid) {
   return `kit_checklist_${lineBrand().id}_${uid}`;
+}
+
+function checklistVentaKey(uid) {
+  return `kit_checklist_venta_${lineBrand().id}_${uid}`;
+}
+
+function listaComprasKey(uid) {
+  return `kit_lista_${lineBrand().id}_${uid}`;
 }
 
 function readPremiumFlag(lineId) {
@@ -458,9 +503,70 @@ function loadChecklistState() {
   }
 }
 
+function loadChecklistVentaState() {
+  try {
+    return JSON.parse(localStorage.getItem(checklistVentaKey(currentUser.uid)) || '[]');
+  } catch {
+    return [];
+  }
+}
+
 function saveChecklistState(checkedIndexes) {
   localStorage.setItem(checklistKey(currentUser.uid), JSON.stringify(checkedIndexes));
   saveChecklistToCloud(currentUser.uid);
+}
+
+function saveChecklistVentaState(checkedIndexes) {
+  localStorage.setItem(checklistVentaKey(currentUser.uid), JSON.stringify(checkedIndexes));
+}
+
+function loadListaComprasState() {
+  try {
+    return JSON.parse(localStorage.getItem(listaComprasKey(currentUser.uid)) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveListaComprasState(checkedKeys) {
+  localStorage.setItem(listaComprasKey(currentUser.uid), JSON.stringify(checkedKeys));
+}
+
+function listaExportHref() {
+  const lineId = lineBrand().id;
+  if (lineId === 'postres') return '/postres/produto/Lista_Compras_Postres.html';
+  return '/paletas-de-whatsapp/produto/Lista_Compras_Paletas.html';
+}
+
+function planExportHref() {
+  const lineId = lineBrand().id;
+  if (lineId === 'postres') return '/postres/produto/Plan_7_Dias_Postres.html';
+  return '/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf';
+}
+
+function checklistExportHref() {
+  const lineId = lineBrand().id;
+  if (lineId === 'postres') return '/postres/produto/Checklist_Postres.html';
+  return '/paletas-de-whatsapp/produto/Checklist_Paletas.pdf';
+}
+
+function premiumExportHref(nativeKey) {
+  const lineId = lineBrand().id;
+  const kit = kitContentForLine();
+  const doc = kit.premiumDownloads.find((d) => d.native === nativeKey);
+  return doc?.downloadHref || doc?.href || '#';
+}
+
+function kitExtrasExportHref() {
+  return '/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.pdf';
+}
+
+function renderSectionPdfBtn({ href, id }) {
+  if (href) {
+    const download = href.endsWith('.pdf') ? ' download' : '';
+    return `<a class="lista-pdf-btn" href="${href}"${download} target="_blank" rel="noopener" title="PDF" aria-label="PDF">${ICONS.download}</a>`;
+  }
+  return `<button type="button" class="lista-pdf-btn" id="${id}" title="PDF" aria-label="PDF">${ICONS.download}</button>`;
 }
 
 function whatsAppShareUrl(text) {
@@ -668,7 +774,7 @@ watchAuth(async (user) => {
 
 function maybeShowOnboarding() {
   if (hasSeenOnboarding()) return;
-  showOnboarding();
+  showOnboarding({ brand: lineBrand() });
 }
 
 function showToast(message) {
@@ -870,7 +976,7 @@ async function signOutToLanding() {
 
 function renderDrawer() {
   // menuWeb is demo-only — hidden from drawer; open via secret control on Perfil
-  const drawerOrder = ['home', 'calc', 'kit', 'results', 'profile'];
+  const drawerOrder = ['home', 'calc', 'kit', 'results'];
   const navItems = drawerOrder
     .map((id) => {
       const meta = VIEW_META[id];
@@ -889,15 +995,6 @@ function renderDrawer() {
     })
     .join('');
 
-  const adminLink = userIsAdmin
-    ? `
-      <a href="/admin" class="drawer-link drawer-link-admin" title="Panel admin">
-        <span class="drawer-link-icon">${ICONS.settings}</span>
-        <span class="drawer-link-text">Admin</span>
-      </a>
-    `
-    : '';
-
   const minimizeLabel = drawerMinimized ? 'Expandir menú' : 'Minimizar menú';
   const minimizeIcon = drawerMinimized ? ICONS.panelRight : ICONS.panelLeft;
 
@@ -910,7 +1007,10 @@ function renderDrawer() {
             <span class="drawer-brand-emoji">${lineBrand().emoji}</span>
             <span class="drawer-brand-action">${minimizeIcon}</span>
           </span>
-          <strong class="drawer-brand-name">${escapeHtml(lineBrand().short)}</strong>
+          <span class="drawer-brand-copy">
+            <strong class="drawer-brand-name">${escapeHtml(lineBrand().short)}</strong>
+            <span class="drawer-brand-tagline">${escapeHtml(lineBrand().name)}</span>
+          </span>
         </button>
         <div class="drawer-head-actions">
           <button type="button" class="icon-btn drawer-close-btn" data-drawer-close aria-label="Cerrar menú">${ICONS.close}</button>
@@ -921,14 +1021,9 @@ function renderDrawer() {
         <strong>${money(currentResults.profitPerUnit)}</strong>
         <em>${percent(currentResults.margin)} margen</em>
       </div>
-      <nav class="drawer-nav">${navItems}${adminLink}</nav>
+      <nav class="drawer-nav">${navItems}</nav>
       <div class="drawer-foot">
         <div class="drawer-tools">
-          ${
-            shouldShowInstallButton()
-              ? `<button type="button" class="drawer-tool-btn" id="drawer-install" title="Instalar app" aria-label="Instalar app">${ICONS.download}</button>`
-              : ''
-          }
           <button type="button" class="drawer-tool-btn" id="drawer-theme" title="${getTheme() === 'dark' ? 'Modo claro' : 'Modo oscuro'}" aria-label="${getTheme() === 'dark' ? 'Modo claro' : 'Modo oscuro'}">
             ${getTheme() === 'dark' ? ICONS.sun : ICONS.moon}
           </button>
@@ -1013,10 +1108,10 @@ function renderModeToggle() {
   return `
     <div class="mode-toggle" role="tablist">
       <button type="button" class="mode-btn ${inputMode === 'simple' ? 'active' : ''}" data-mode="simple">
-        ${ICONS.zap}<span>Rápido</span>
+        <span>Rápido</span>
       </button>
       <button type="button" class="mode-btn ${inputMode === 'full' ? 'active' : ''}" data-mode="full">
-        ${ICONS.list}<span>Completo</span>
+        <span>Completo</span>
       </button>
     </div>
   `;
@@ -1205,49 +1300,77 @@ function renderProfile() {
     (c) =>
       `<option value="${c.code}" ${c.code === getCurrencyCode() ? 'selected' : ''}>${escapeHtml(c.label)} (${c.symbol})</option>`
   ).join('');
+  const kitsHtml = ownedLines
+    .map(
+      (line) =>
+        `<span class="profile-kit-chip">${line.emoji} ${escapeHtml(line.short)}</span>`
+    )
+    .join('');
 
   return `
     <div class="profile-page">
       <div class="profile-hero">
         <div class="profile-avatar" aria-hidden="true">${escapeHtml(initial)}</div>
+        <h2 class="profile-name">${escapeHtml(displayName || 'Tu perfil')}</h2>
         <p class="profile-email">${escapeHtml(currentUser.email || '')}</p>
-        ${
-          kitUnlocked
-            ? '<span class="profile-badge">Kit activo</span>'
-            : '<span class="profile-badge pending">Acceso pendiente</span>'
-        }
+        <div class="profile-kits">
+          ${
+            kitsHtml ||
+            (kitUnlocked
+              ? `<span class="profile-kit-chip">${lineBrand().emoji} ${escapeHtml(lineBrand().short)}</span>`
+              : '<span class="profile-badge pending">Acceso pendiente</span>')
+          }
+        </div>
       </div>
 
       <form id="profile-form" class="profile-form section-card">
+        <h3 class="profile-card-title">Cuenta</h3>
         <div class="field">
-          <label for="profile-name">Tu nombre</label>
+          <label for="profile-name">Nombre</label>
           <input id="profile-name" name="name" type="text" value="${escapeHtml(displayName)}" placeholder="Ej: María" autocomplete="name">
         </div>
         <div class="field">
           <label for="profile-currency">Moneda</label>
           <select id="profile-currency" name="currency">${currencyOptions}</select>
-          <span class="field-hint">Afecta calculadora y resultados</span>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">${ICONS.check}<span>Guardar cambios</span></button>
+        <button type="submit" class="btn btn-primary btn-block">${ICONS.check}<span>Guardar</span></button>
       </form>
 
-      <div class="profile-actions section-card">
-        ${
-          userIsAdmin
-            ? `<a href="/admin" class="btn btn-secondary btn-block admin-link">${ICONS.settings}<span>Panel admin</span></a>
-        <button type="button" class="btn btn-secondary btn-block" data-view="menuWeb">${ICONS.list}<span>Menú web (demo)</span></button>`
-            : ''
-        }
+      <div class="profile-links section-card">
+        <button type="button" class="profile-link-row" id="replay-onboarding-profile">
+          <span class="profile-link-icon">${ICONS.help}</span>
+          <span class="profile-link-text">Ver tutorial</span>
+          <span class="profile-link-chevron">${ICONS.chevronRight}</span>
+        </button>
         ${
           shouldShowInstallButton()
-            ? `<button type="button" id="install-pwa" class="btn btn-secondary btn-block">
-          ${ICONS.plus}<span>Añadir a pantalla de inicio</span>
+            ? `<button type="button" class="profile-link-row" id="install-pwa">
+          <span class="profile-link-icon">${ICONS.download}</span>
+          <span class="profile-link-text">Instalar app</span>
+          <span class="profile-link-chevron">${ICONS.chevronRight}</span>
         </button>`
             : ''
         }
-        <button type="button" id="profile-logout" class="btn btn-ghost btn-block btn-danger-text">
+        ${
+          hasKitContentAccess()
+            ? `<button type="button" class="profile-link-row" data-view="menuWeb">
+          <span class="profile-link-icon">${ICONS.list}</span>
+          <span class="profile-link-text">Menú web</span>
+          <span class="profile-link-chevron">${ICONS.chevronRight}</span>
+        </button>`
+            : ''
+        }
+      </div>
+
+      <div class="profile-foot">
+        <button type="button" id="profile-logout" class="btn btn-ghost btn-sm btn-danger-text profile-logout-btn">
           ${ICONS.logOut}<span>Cerrar sesión</span>
         </button>
+        ${
+          userIsAdmin
+            ? `<a href="/admin" class="profile-admin-btn" title="Panel admin">${ICONS.settings}<span>Admin</span></a>`
+            : ''
+        }
       </div>
     </div>
   `;
@@ -1279,7 +1402,9 @@ function openDocument(id) {
         activeDocId = null;
         break;
       case 'menu':
-        activeView = 'menuWeb';
+        kitHubTab = 'vender';
+        kitSection = 'menu';
+        activeView = 'kit';
         activeDocId = null;
         break;
       case 'mensajes':
@@ -1309,6 +1434,36 @@ function openDocument(id) {
       case 'combos':
         kitHubTab = 'vender';
         kitSection = 'combos';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'menu-premium':
+        kitHubTab = 'vender';
+        kitSection = 'menu-premium';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'mensajes-premium':
+        kitHubTab = 'vender';
+        kitSection = 'mensajes-premium';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'fechas':
+        kitHubTab = 'vender';
+        kitSection = 'fechas';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'guia':
+        kitHubTab = 'vender';
+        kitSection = 'guia';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'tecnicas':
+        kitHubTab = 'vender';
+        kitSection = 'tecnicas';
         activeView = 'kit';
         activeDocId = null;
         break;
@@ -1422,47 +1577,19 @@ function renderActiveView() {
   }
 }
 
-function fileOpenLabel(file) {
-  if (file.kind === 'xlsx') return 'Bajar';
-  if (file.kind === 'app-link') return 'Abrir';
-  if (file.kind === 'native') return 'Abrir';
-  return 'Abrir';
-}
-
-function renderFileDownloadBtn(file) {
-  if (!file.downloadHref || file.downloadHref === '#' || file.downloadHref === file.href) {
-    if (file.kind === 'html' || (file.href && file.href.endsWith('.html'))) {
-      return '';
-    }
-    if (!hasPdfDownload(file) && file.kind !== 'xlsx') return '';
-  }
-  if (hasPdfDownload(file)) {
-    return `<a class="file-btn file-btn-download" href="${file.downloadHref}" download title="Descargar PDF">${ICONS.download}<span>PDF</span></a>`;
-  }
-  if (file.kind === 'xlsx' || (file.downloadHref && file.downloadHref.endsWith('.xlsx'))) {
-    return `<a class="file-btn file-btn-download" href="${file.downloadHref || file.href}" download title="Descargar Excel">${ICONS.download}<span>Excel</span></a>`;
-  }
-  if (file.kind === 'app-link' && file.downloadHref && file.downloadHref !== '#') {
-    return `<a class="file-btn file-btn-download" href="${file.downloadHref}" download title="Descargar">${ICONS.download}<span>Excel</span></a>`;
-  }
-  return '';
-}
-
 function renderFileRow(file, locked) {
-  const kind = kindLabel(file.kind);
-  const kindBadge = kind ? `<span class="file-kind">${kind}</span>` : '';
-  const tag = file.tag ? `<span class="file-tag">${escapeHtml(file.tag)}</span>` : '';
   const featured = file.featured ? ' featured' : '';
+  const desc = file.desc ? `<em>${escapeHtml(file.desc)}</em>` : '';
 
   if (file.kind === 'coming-soon') {
     return `
       <div class="file-row coming-soon${featured}" style="--file-accent:${file.accent}" aria-disabled="true">
         <span class="file-icon">${file.icon}</span>
         <span class="file-info">
-          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
-          <em>${escapeHtml(file.desc)}</em>
+          <strong>${escapeHtml(file.title)}</strong>
+          ${desc}
         </span>
-        <span class="file-actions"><span class="file-btn file-btn-muted">Pronto</span></span>
+        <span class="file-chevron" aria-hidden="true">Pronto</span>
       </div>
     `;
   }
@@ -1472,10 +1599,10 @@ function renderFileRow(file, locked) {
       <div class="file-row locked${featured}" style="--file-accent:${file.accent}" aria-disabled="true">
         <span class="file-icon">${file.icon}</span>
         <span class="file-info">
-          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
-          <em>${escapeHtml(file.desc)}</em>
+          <strong>${escapeHtml(file.title)}</strong>
+          ${desc}
         </span>
-        <span class="file-actions"><span class="file-btn file-btn-muted">🔒</span></span>
+        <span class="file-chevron" aria-hidden="true">🔒</span>
       </div>
     `;
   }
@@ -1484,48 +1611,40 @@ function renderFileRow(file, locked) {
     const hubAttr = file.appHub ? ` data-kit-hub="${file.appHub}"` : '';
     const catalogAttr = file.appCatalog ? ` data-recipe-catalog="${file.appCatalog}"` : '';
     return `
-      <div class="file-row${featured}" style="--file-accent:${file.accent}">
+      <button type="button" class="file-row${featured}" style="--file-accent:${file.accent}" data-view="${file.appView || 'kit'}"${hubAttr}${catalogAttr}>
         <span class="file-icon">${file.icon}</span>
         <span class="file-info">
-          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
-          <em>${escapeHtml(file.desc)}</em>
+          <strong>${escapeHtml(file.title)}</strong>
+          ${desc}
         </span>
-        <span class="file-actions">
-          ${renderFileDownloadBtn(file)}
-          <button type="button" class="file-btn file-btn-open" data-view="${file.appView || 'kit'}"${hubAttr}${catalogAttr}>${fileOpenLabel(file)}</button>
-        </span>
-      </div>
+        <span class="file-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
+      </button>
     `;
   }
 
   if (file.kind === 'xlsx') {
     return `
-      <div class="file-row${featured}" style="--file-accent:${file.accent}">
+      <a class="file-row${featured}" style="--file-accent:${file.accent}" href="${file.href}" download>
         <span class="file-icon">${file.icon}</span>
         <span class="file-info">
-          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
-          <em>${escapeHtml(file.desc)}</em>
+          <strong>${escapeHtml(file.title)}</strong>
+          ${desc}
         </span>
-        <span class="file-actions">
-          <a class="file-btn file-btn-open" href="${file.href}" download>${ICONS.download}<span>Bajar</span></a>
-        </span>
-      </div>
+        <span class="file-chevron" aria-hidden="true">${ICONS.download}</span>
+      </a>
     `;
   }
 
-  // native | html | pdf
+  // native | html | pdf → abre dentro da app
   return `
-    <div class="file-row${featured}" style="--file-accent:${file.accent}">
+    <button type="button" class="file-row${featured}" style="--file-accent:${file.accent}" data-doc="${file.id}">
       <span class="file-icon">${file.icon}</span>
       <span class="file-info">
-        <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
-        <em>${escapeHtml(file.desc)}</em>
+        <strong>${escapeHtml(file.title)}</strong>
+        ${desc}
       </span>
-      <span class="file-actions">
-        ${renderFileDownloadBtn(file)}
-        <button type="button" class="file-btn file-btn-open" data-doc="${file.id}">${fileOpenLabel(file)}</button>
-      </span>
-    </div>
+      <span class="file-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
+    </button>
   `;
 }
 
@@ -1536,7 +1655,7 @@ function renderFiles() {
   return `
     <div class="files-page">
       ${renderKitPendingBanner()}
-      <p class="kit-section-lead">Ábrelo en la app. Si quieres, baja el PDF.</p>
+      <p class="kit-section-lead">Toca para abrir. Dentro puedes imprimir o bajar el PDF.</p>
       <div class="files-list">${kit.downloads.map((f) => renderFileRow(f, locked)).join('')}</div>
       ${
         hasPremiumAccess()
@@ -1865,11 +1984,22 @@ function renderBreakdownBars() {
   `;
 }
 
+function isResultsEmpty(r) {
+  return (
+    Math.abs(r.sellingPrice) < 0.005 &&
+    Math.abs(r.realCostPerUnit) < 0.005 &&
+    Math.abs(r.profitPerUnit) < 0.005
+  );
+}
+
 function renderInsight() {
-  const insight = INSIGHTS[currentResults.status];
+  const status = currentResults.status;
+  if (status === 'lucro') return '';
+  const insight = INSIGHTS[status];
+  if (!insight) return '';
   return `
-    <div class="insight-card ${currentResults.status}">
-      <div class="insight-icon">${currentResults.status === 'lucro' ? ICONS.trendUp : currentResults.status === 'prejuizo' ? ICONS.trendDown : ICONS.info}</div>
+    <div class="insight-card ${status}">
+      <div class="insight-icon">${status === 'prejuizo' ? ICONS.trendDown : ICONS.info}</div>
       <div>
         <strong>${insight.title}</strong>
         <p>${insight.text}</p>
@@ -1953,18 +2083,32 @@ function renderResultsDetails() {
 
 function renderResults() {
   const r = currentResults;
+  const brand = lineBrand();
   const target = parseNumber(currentInputs.targetMarginPercent);
+
+  if (isResultsEmpty(r)) {
+    return `
+      <div class="results-page">
+        <div class="results-hero empty">
+          <small>Aún no hay números</small>
+          <h2>${money(0)}</h2>
+          <p>Completa tus costos y precio en Precios para ver la ganancia real.</p>
+        </div>
+        <button type="button" class="btn btn-primary btn-block" data-view="calc">${ICONS.calc}<span>Ir a Precios</span></button>
+      </div>
+    `;
+  }
 
   const statusText =
     r.status === 'prejuizo'
       ? 'Estás perdiendo dinero'
       : r.status === 'alerta'
         ? 'Ganancia baja — se puede mejorar'
-        : `¡Tus ${lineBrand().unitPlural} están dando ganancia!`;
+        : `¡Tus ${brand.unitPlural} están dando ganancia!`;
 
   const statusDetail =
     r.status === 'prejuizo'
-      ? `Pérdida de ${money(Math.abs(r.profitPerUnit))} por ${lineBrand().unitSingular}`
+      ? `Pérdida de ${money(Math.abs(r.profitPerUnit))} por ${brand.unitSingular}`
       : `${money(r.dailyProfit)}/día · ${money(r.monthlyProfit)}/mes`;
 
   return `
@@ -1972,7 +2116,7 @@ function renderResults() {
       <div class="results-hero ${r.status}">
         <small>${statusText}</small>
         <h2>${money(r.profitPerUnit)}</h2>
-        <p>Ganancia por ${lineBrand().unitSingular} · ${statusDetail}</p>
+        <p>Por ${brand.unitSingular} · ${statusDetail}</p>
         <span class="results-hero-badge">${percent(r.margin)} de margen</span>
       </div>
 
@@ -1980,15 +2124,19 @@ function renderResults() {
 
       <div class="price-action">
         <div class="price-action-card ideal">
-          <span class="card-label">Precio sugerido</span>
-          <strong>${money(r.idealPrice)}</strong>
-          <em>Meta ${percent(Math.min(target, 80))} de margen</em>
-          <button type="button" class="btn btn-sm btn-ideal" id="apply-ideal-price">${ICONS.check}<span>Aplicar este precio</span></button>
+          <div class="price-action-ideal-top">
+            <span class="card-label">Precio sugerido</span>
+            <strong>${money(r.idealPrice)}</strong>
+            <em>Meta ${percent(Math.min(target, 80))} de margen</em>
+          </div>
+          <button type="button" class="btn btn-ideal" id="apply-ideal-price">${ICONS.check}<span>Aplicar este precio</span></button>
         </div>
-        <div class="price-action-card">
-          <span class="card-label">Precio mínimo</span>
+        <div class="price-min-row">
+          <div class="price-min-copy">
+            <span class="card-label">Precio mínimo</span>
+            <em>Debajo de esto = pérdida</em>
+          </div>
           <strong>${money(r.minPrice)}</strong>
-          <em>Debajo de esto = pérdida</em>
         </div>
       </div>
 
@@ -2241,17 +2389,20 @@ function renderBonus() {
   if (!hasKitContentAccess()) {
     listHtml = `<div class="premium-locked-card">${renderKitLockedCard(title)}</div>`;
   } else if (isPremium && !hasPremiumAccess()) {
+    const premiumTeaser =
+      lineBrand().id === 'postres'
+        ? 'Recetas premium, combos rentables y mensajes para fechas especiales'
+        : 'Bañadas, rellenas y estilo postre de ticket alto';
     listHtml = `
       <div class="premium-locked-card">
         <h3>Complemento premium</h3>
-        <p>Bañadas, rellenas y estilo postre de ticket alto — incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
+        <p>${premiumTeaser} — incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
         ${renderPremiumUpsell()}
       </div>
     `;
   } else {
     const recipes = isPremium ? kit.recipesPremium : kit.recipes;
     listHtml = `
-      ${renderNativeExportBar(isPremium ? 'recetas-premium' : 'recetas')}
       ${renderCatalogLead(isPremium, recipes)}
       ${renderRecipeListTools(recipes.length, { premium: isPremium })}
       <div class="menu-list ${isPremium ? 'menu-list--premium' : ''}" id="menu-list">${renderMenuByWeek(recipes, { premium: isPremium })}</div>
@@ -2279,13 +2430,32 @@ function renderBonus() {
   `;
 }
 
+function renderMenuWhatsApp() {
+  const brand = lineBrand();
+  const recipes = kitContentForLine().recipes || [];
+  const lineId = brand.id;
+  menuWaDraft = loadMenuWaDraft(currentUser.uid, lineId, brand, recipes);
+  return renderMenuWhatsAppView({
+    draft: menuWaDraft,
+    exportHref: menuWaExportHref(lineId),
+    lineId,
+  });
+}
+
 function renderKitSectionNav() {
+  const lineId = lineBrand().id;
   const sections = [
+    { id: 'menu', label: 'Menú' },
     { id: 'mensajes', label: 'Mensajes' },
     { id: 'combos', label: 'Combos', premium: true },
-    { id: 'plan', label: 'Plan 7 días' },
+    { id: 'menu-premium', label: 'Menú ✨', premium: true },
+    { id: 'mensajes-premium', label: 'Msgs ✨', premium: true },
+    { id: 'fechas', label: 'Fechas', premium: true },
+    { id: 'guia', label: 'Guía', premium: true },
+    { id: 'plan', label: 'Plan' },
     { id: 'lista', label: 'Compras' },
-    { id: 'checklist', label: 'Producción' },
+    { id: 'checklist', label: 'Checklist' },
+    ...(lineId === 'paletas' ? [{ id: 'tecnicas', label: 'Tips' }] : []),
     { id: 'ayuda', label: 'Ayuda' },
   ];
 
@@ -2316,7 +2486,6 @@ function renderCombosPremium() {
   }
 
   return `
-    ${renderNativeExportBar('combos')}
     <div class="combos-page">
       <div class="section-card">
         <h2>10 Combos Rentables</h2>
@@ -2355,79 +2524,80 @@ function renderCombosPremium() {
   `;
 }
 
-function findDownloadByNative(nativeKey) {
-  const kit = kitContentForLine();
-  const all = [...(kit.downloads || []), ...(kit.premiumDownloads || [])];
-  return all.find((d) => d.native === nativeKey) || null;
-}
-
-function renderNativeExportBar(nativeKey) {
-  const doc = findDownloadByNative(nativeKey);
-  if (!doc) return '';
-  const pdf = hasPdfDownload(doc);
-  const printHtml = doc.href && doc.href.endsWith('.html');
-  if (!pdf && !printHtml) return '';
-  return `
-    <div class="native-export-bar">
-      <span>Contenido en la app</span>
-      <div class="native-export-actions">
-        ${
-          pdf
-            ? `<a class="btn btn-secondary btn-sm" href="${doc.downloadHref}" download>${ICONS.download}<span>Bajar PDF</span></a>`
-            : `<a class="btn btn-secondary btn-sm" href="${doc.href}" target="_blank" rel="noopener">${ICONS.download}<span>Imprimir / PDF</span></a>`
-        }
-      </div>
-    </div>
-  `;
-}
-
 function renderMensajesWhatsApp() {
-  const mensajes = kitContentForLine().mensajes;
-  const grouped = mensajes.reduce((acc, msg, idx) => {
-    if (!acc[msg.categoria]) acc[msg.categoria] = [];
-    acc[msg.categoria].push({ ...msg, idx });
-    return acc;
-  }, {});
+  const lineId = lineBrand().id;
+  const exportHref =
+    lineId === 'postres'
+      ? '/postres/produto/Mensajes_Postres.html'
+      : '/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.html';
+  return `<div data-mensajes-source="base">${renderMensajesList(kitContentForLine().mensajes, {
+    exportHref,
+    formatMessage: formatWhatsAppMessage,
+  })}</div>`;
+}
 
-  return `
-    ${renderNativeExportBar('mensajes')}
-    ${Object.entries(grouped)
-      .map(
-        ([cat, items]) => `
-        <div class="section-card">
-          <h2>${escapeHtml(cat)}</h2>
-          <ul class="message-list">
-            ${items
-              .map(
-                (msg) => `
-                  <li class="message-item">
-                    <p>${escapeHtml(formatWhatsAppMessage(msg.texto))}</p>
-                    <div class="message-actions">
-                      <button type="button" class="btn btn-sm btn-secondary copy-msg" data-copy-index="${msg.idx}">
-                        ${ICONS.copy}<span>Copiar</span>
-                      </button>
-                      <a href="${whatsAppShareUrl(formatWhatsAppMessage(msg.texto))}" class="btn btn-sm btn-wa share-msg" target="_blank" rel="noopener noreferrer" data-share-index="${msg.idx}">
-                        ${ICONS.message}<span>Publicar</span>
-                      </a>
-                    </div>
-                  </li>
-                `
-              )
-              .join('')}
-          </ul>
-        </div>
-      `
-      )
-      .join('')}
-  `;
+function renderMensajesPremium() {
+  if (!hasPremiumAccess()) {
+    return renderPremiumLocked('Mensajes premium', renderPremiumUpsell());
+  }
+  return `<div data-mensajes-source="premium">${renderMensajesList(kitContentForLine().mensajesPremium, {
+    exportHref: premiumExportHref('mensajes-premium'),
+    formatMessage: formatWhatsAppMessage,
+  })}</div>`;
+}
+
+function renderMenuPremium() {
+  if (!hasPremiumAccess()) {
+    return renderPremiumLocked('Menú premium', renderPremiumUpsell());
+  }
+  const brand = lineBrand();
+  const kit = kitContentForLine();
+  const lineId = brand.id;
+  menuPremiumDraft = loadMenuPremiumDraft(
+    currentUser.uid,
+    lineId,
+    brand,
+    kit.recipesPremium || [],
+    kit.combos || []
+  );
+  return renderMenuPremiumView({
+    draft: menuPremiumDraft,
+    exportHref: menuPremiumExportHref(lineId),
+  });
+}
+
+function renderFechasPremium() {
+  if (!hasPremiumAccess()) {
+    return renderPremiumLocked('Fechas especiales', renderPremiumUpsell());
+  }
+  return renderFechasEspeciales(kitContentForLine().fechasPremium, {
+    exportHref: premiumExportHref('fechas'),
+  });
+}
+
+function renderGuiaPremium() {
+  if (!hasPremiumAccess()) {
+    return renderPremiumLocked('Guía de presentación', renderPremiumUpsell());
+  }
+  return renderGuiaPresentacion(kitContentForLine().guiaPremium, {
+    exportHref: premiumExportHref('guia'),
+  });
+}
+
+function renderTecnicasKit() {
+  const extras = kitContentForLine().kitExtras;
+  if (!extras) return '';
+  return renderKitExtras(extras, { exportHref: kitExtrasExportHref() });
 }
 
 function renderPlan7Dias() {
   const plan = kitContentForLine().plan;
   return `
-    ${renderNativeExportBar('plan')}
     <div class="section-card">
-      <h2>Plan de 7 Días</h2>
+      <div class="lista-head">
+        <h2>Plan de 7 Días</h2>
+        ${renderSectionPdfBtn({ href: planExportHref() })}
+      </div>
       <p class="section-text">Sigue este paso a paso para organizar tu primera semana de ventas.</p>
       <ol class="plan-list">
         ${plan.map(
@@ -2451,22 +2621,47 @@ function renderPlan7Dias() {
 
 function renderListaCompras() {
   const lista = kitContentForLine().lista;
+  const checked = loadListaComprasState();
+  const exportHref = listaExportHref();
+
+  const renderGroup = (key, items) =>
+    items
+      .map((item, i) => {
+        const id = `${key}:${i}`;
+        return `
+          <li>
+            <label class="checklist-label">
+              <input type="checkbox" data-lista-item="${id}" ${checked.includes(id) ? 'checked' : ''}>
+              <span>${escapeHtml(item)}</span>
+            </label>
+          </li>
+        `;
+      })
+      .join('');
+
   return `
-    ${renderNativeExportBar('lista')}
     <div class="section-card">
-      <h2>Lista de Compras Inicial</h2>
+      <div class="lista-head">
+        <h2>Lista de Compras Inicial</h2>
+        ${
+          exportHref
+            ? renderSectionPdfBtn({ href: exportHref })
+            : renderSectionPdfBtn({ id: 'lista-print' })
+        }
+      </div>
       <h3>Ingredientes base</h3>
-      <ul class="kit-checklist">
-        ${lista.ingredientes.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
+      <ul class="kit-checklist interactive">
+        ${renderGroup('ingredientes', lista.ingredientes)}
       </ul>
       <h3>Materiales</h3>
-      <ul class="kit-checklist">
-        ${lista.materiales.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
+      <ul class="kit-checklist interactive">
+        ${renderGroup('materiales', lista.materiales)}
       </ul>
       <h3>Utensilios recomendados</h3>
-      <ul class="kit-checklist">
-        ${lista.utensilios.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
+      <ul class="kit-checklist interactive">
+        ${renderGroup('utensilios', lista.utensilios)}
       </ul>
+      <button type="button" class="btn btn-ghost btn-sm" id="reset-lista">Reiniciar lista</button>
     </div>
   `;
 }
@@ -2490,23 +2685,43 @@ function renderPremiumUpsell() {
 
 function renderChecklistProduccion() {
   const checked = loadChecklistState();
+  const checkedVenta = loadChecklistVentaState();
   const checklist = kitContentForLine().checklist;
-  return `
-    ${renderNativeExportBar('checklist')}
-    <div class="section-card">
-      <h2>Checklist de Producción</h2>
-      <p class="section-text">Usa esta lista antes de cada día de ventas. Se guarda en este dispositivo.</p>
-      <ul class="kit-checklist interactive">
-        ${checklist.map(
-          (item, i) => `
+  const checklistVenta = kitContentForLine().checklistVenta;
+  const renderItems = (items, prefix, checkedSet) =>
+    items
+      .map(
+        (item, i) => `
             <li>
               <label class="checklist-label">
-                <input type="checkbox" data-checklist="${i}" ${checked.includes(i) ? 'checked' : ''}>
+                <input type="checkbox" data-checklist="${prefix}:${i}" ${checkedSet.includes(i) ? 'checked' : ''}>
                 <span>${escapeHtml(item)}</span>
               </label>
             </li>
           `
-        ).join('')}
+      )
+      .join('');
+
+  return `
+    <div class="section-card">
+      <div class="lista-head">
+        <h2>Checklist</h2>
+        ${renderSectionPdfBtn({ href: checklistExportHref() })}
+      </div>
+      <p class="section-text">Compras, producción y venta. Se guarda en este dispositivo.</p>
+      ${
+        checklistVenta?.length
+          ? `
+        <h3>Antes de vender</h3>
+        <ul class="kit-checklist interactive">
+          ${renderItems(checklistVenta, 'venta', checkedVenta)}
+        </ul>
+      `
+          : ''
+      }
+      <h3>${checklistVenta?.length ? 'Día de producción' : 'Producción'}</h3>
+      <ul class="kit-checklist interactive">
+        ${renderItems(checklist, 'prod', checked)}
       </ul>
       <button type="button" class="btn btn-ghost btn-sm" id="reset-checklist">Reiniciar checklist</button>
     </div>
@@ -2518,7 +2733,7 @@ function renderKitAyuda() {
     <div class="quick-cards">
       <button type="button" class="quick-card" data-view="calc">${ICONS.calc}<span>Precios</span></button>
       <button type="button" class="quick-card" data-view="results">${ICONS.chart}<span>Resultados</span></button>
-      <button type="button" class="quick-card" data-view="bonus">${ICONS.book}<span>Recetas</span></button>
+      <button type="button" class="quick-card" data-view="bonus">${ICONS.strawberry}<span>Recetas</span></button>
     </div>
 
     <div class="section-card">
@@ -2541,11 +2756,8 @@ function renderKitAyuda() {
       </details>
     </div>
 
-    <div class="section-card">
-      <h2>Soporte por WhatsApp</h2>
-      <p class="section-text">¿Compraste el kit y tienes dudas de acceso? Escríbenos con tu correo de compra.</p>
-      <a href="${lineWhatsApp('support').href}" class="btn btn-primary btn-large" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">Confirmar mi compra por WhatsApp</a>
-      <p class="account-note">${lineWhatsApp('support').display}</p>
+    <div class="section-card support-card-compact">
+      <a href="${lineWhatsApp('support').href}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">${ICONS.whatsapp}<span>Soporte</span></a>
     </div>
 
     <div class="section-card">
@@ -2563,7 +2775,7 @@ function renderKitArchivos() {
   return `
     <div class="section-card">
       <h2>Archivos del kit</h2>
-      <p class="section-text">Ábrelos aquí dentro de la app o descárgalos. La calculadora interactiva está en Precios.</p>
+      <p class="section-text">Toca para abrir. Dentro puedes imprimir o bajar el PDF.</p>
       <div class="files-list kit-inline-files">${kit.downloads.map((f) => renderFileRow(f, locked)).join('')}</div>
     </div>
     ${
@@ -2581,11 +2793,17 @@ function renderKitArchivos() {
 
 function renderKitContent() {
   const lockedTitles = {
+    menu: 'Menú para WhatsApp',
     mensajes: 'Mensajes para WhatsApp',
     combos: 'Combos rentables',
+    'menu-premium': 'Menú premium',
+    'mensajes-premium': 'Mensajes premium',
+    fechas: 'Fechas especiales',
+    guia: 'Guía de presentación',
+    tecnicas: 'Técnicas y tips',
     plan: 'Plan de 7 días',
     lista: 'Lista de compras',
-    checklist: 'Checklist de producción',
+    checklist: 'Checklist',
     archivos: 'Archivos del kit',
   };
 
@@ -2596,10 +2814,22 @@ function renderKitContent() {
   }
 
   switch (kitSection) {
+    case 'menu':
+      return renderMenuWhatsApp();
     case 'mensajes':
       return renderMensajesWhatsApp();
     case 'combos':
       return renderCombosPremium();
+    case 'menu-premium':
+      return renderMenuPremium();
+    case 'mensajes-premium':
+      return renderMensajesPremium();
+    case 'fechas':
+      return renderFechasPremium();
+    case 'guia':
+      return renderGuiaPremium();
+    case 'tecnicas':
+      return renderTecnicasKit();
     case 'plan':
       return renderPlan7Dias();
     case 'lista':
@@ -2744,10 +2974,6 @@ function bindEvents() {
   document.getElementById('menu-toggle')?.addEventListener('click', openDrawer);
 
   document.getElementById('drawer-logout')?.addEventListener('click', signOutToLanding);
-  document.getElementById('drawer-install')?.addEventListener('click', () => {
-    closeDrawer();
-    triggerPwaInstall();
-  });
   document.getElementById('drawer-theme')?.addEventListener('click', toggleTheme);
 
   bindMenuWebEvents({
@@ -2757,6 +2983,36 @@ function bindEvents() {
     render,
     locked: !hasKitContentAccess(),
   });
+
+  if (kitSection === 'menu-premium' && hasPremiumAccess()) {
+    const kit = kitContentForLine();
+    bindMenuPremiumEvents({
+      root,
+      uid: currentUser.uid,
+      lineId: lineBrand().id,
+      recipes: kit.recipesPremium || [],
+      combos: kit.combos || [],
+      showToast,
+      onChange: (draft) => {
+        menuPremiumDraft = draft;
+      },
+      render,
+    });
+  }
+
+  if (kitSection === 'menu' && hasKitContentAccess()) {
+    bindMenuWhatsAppEvents({
+      root,
+      uid: currentUser.uid,
+      lineId: lineBrand().id,
+      recipes: kitContentForLine().recipes || [],
+      showToast,
+      onChange: (draft) => {
+        menuWaDraft = draft;
+      },
+      render,
+    });
+  }
 
   document.getElementById('profile-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -3066,7 +3322,11 @@ function bindEvents() {
   });
 
   document.getElementById('replay-onboarding')?.addEventListener('click', () => {
-    showOnboarding();
+    showOnboarding({ brand: lineBrand() });
+  });
+
+  document.getElementById('replay-onboarding-profile')?.addEventListener('click', () => {
+    showOnboarding({ brand: lineBrand() });
   });
 
   root.querySelectorAll('[data-kit-section]').forEach((btn) => {
@@ -3097,7 +3357,10 @@ function bindEvents() {
   root.querySelectorAll('.copy-msg').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = parseNumber(btn.dataset.copyIndex);
-      const text = formatWhatsAppMessage(kitContentForLine().mensajes[idx]?.texto);
+      const source = btn.closest('[data-mensajes-source]')?.dataset.mensajesSource;
+      const kit = kitContentForLine();
+      const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
+      const text = formatWhatsAppMessage(pool?.[idx]?.texto);
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);
@@ -3108,19 +3371,79 @@ function bindEvents() {
     });
   });
 
+  root.querySelectorAll('.share-msg').forEach((link) => {
+    const idx = parseNumber(link.dataset.shareIndex);
+    const source = link.closest('[data-mensajes-source]')?.dataset.mensajesSource;
+    const kit = kitContentForLine();
+    const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
+    const text = formatWhatsAppMessage(pool?.[idx]?.texto);
+    if (text) {
+      link.href = whatsAppShareUrl(text);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    }
+  });
+
   root.querySelectorAll('[data-checklist]').forEach((input) => {
     input.addEventListener('change', () => {
-      const checked = [...root.querySelectorAll('[data-checklist]:checked')].map((el) =>
-        parseNumber(el.dataset.checklist)
+      const venta = [...root.querySelectorAll('[data-checklist^="venta:"]:checked')].map((el) =>
+        parseNumber(el.dataset.checklist.split(':')[1])
       );
-      saveChecklistState(checked);
+      const prod = [...root.querySelectorAll('[data-checklist^="prod:"]:checked')].map((el) =>
+        parseNumber(el.dataset.checklist.split(':')[1])
+      );
+      saveChecklistVentaState(venta);
+      saveChecklistState(prod);
     });
   });
 
   document.getElementById('reset-checklist')?.addEventListener('click', () => {
     saveChecklistState([]);
+    saveChecklistVentaState([]);
     render();
     showToast('Checklist reiniciado.');
+  });
+
+  root.querySelectorAll('[data-lista-item]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const checked = [...root.querySelectorAll('[data-lista-item]:checked')].map(
+        (el) => el.dataset.listaItem
+      );
+      saveListaComprasState(checked);
+    });
+  });
+
+  document.getElementById('reset-lista')?.addEventListener('click', () => {
+    saveListaComprasState([]);
+    render();
+    showToast('Lista reiniciada.');
+  });
+
+  document.getElementById('lista-print')?.addEventListener('click', () => {
+    const lista = kitContentForLine().lista;
+    const section = (title, items) =>
+      `<h2>${title}</h2><ul>${items.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}</ul>`;
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Lista de compras</title>
+      <style>
+        body{font-family:system-ui,sans-serif;padding:24px;color:#3D2228;max-width:560px;margin:0 auto}
+        h1{font-size:1.25rem;margin:0 0 16px}
+        h2{font-size:0.95rem;margin:18px 0 8px}
+        ul{padding-left:1.1rem;margin:0}
+        li{margin:6px 0;line-height:1.4}
+      </style></head><body>
+      <h1>Lista de compras</h1>
+      ${section('Ingredientes base', lista.ingredientes)}
+      ${section('Materiales', lista.materiales)}
+      ${section('Utensilios recomendados', lista.utensilios)}
+      <script>window.onload=()=>{window.print()}<\/script>
+      </body></html>`;
+    const w = window.open('', '_blank', 'noopener,noreferrer');
+    if (!w) {
+      showToast('Permite ventanas emergentes para imprimir.');
+      return;
+    }
+    w.document.write(html);
+    w.document.close();
   });
 
   document.getElementById('reset-data')?.addEventListener('click', () => {

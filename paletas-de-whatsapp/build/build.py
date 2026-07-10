@@ -26,7 +26,7 @@ CHOCOLATE = "5C2E1F"
 
 
 def tipo_badge(tipo):
-    m = {"Frutal": "badge-frutal", "Cremosa": "badge-cremosa", "Rellena": "badge-rellena", "Estilo postre": "badge-postre"}
+    m = {"Frutal": "badge-frutal", "Cremosa": "badge-cremosa", "Rellena": "badge-rellena", "Estilo postre": "badge-postre", "Bañada": "badge-rellena"}
     return m.get(tipo, "badge-frutal")
 
 

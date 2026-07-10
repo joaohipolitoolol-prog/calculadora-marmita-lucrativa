@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/generate-icons.mjs && vite build",
+    "sync:paletas": "node scripts/sync-paletas-deliverables.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "preview": "vite preview"
   },

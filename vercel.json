@@ -16,6 +16,8 @@
     { "source": "/postres", "destination": "/postres.html" },
     { "source": "/postres/upsell", "destination": "/postres-upsell.html" },
     { "source": "/postresaviso", "destination": "/postres-aviso.html" },
+    { "source": "/postres/entrega", "destination": "/postres/entrega.html" },
+    { "source": "/postres-premium/entrega", "destination": "/postres-premium/entrega.html" },
     { "source": "/m/:slug", "destination": "/m.html" }
   ]
 }

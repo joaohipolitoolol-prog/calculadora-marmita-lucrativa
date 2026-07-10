@@ -1,9 +1,13 @@
 import recetasData from './recetas-paletas.json';
 import recetasPremiumData from './recetas-premium.json';
-
 import combosPremiumData from './combos-premium.json';
+import mensajesData from './mensajes-paletas.json';
+import mensajesPremiumData from './mensajes-paletas-premium.json';
+import fechasPremiumData from './fechas-paletas-premium.json';
+import guiaPremiumData from './guia-paletas-premium.json';
+import kitExtrasData from './kit-extras-paletas.json';
 
-/** 30 recetas completas — sincronizadas con el kit PDF */
+/** 30 recetas completas — sincronizadas con content.py / PDF */
 export const RECETAS_PALETAS = recetasData;
 
 /** 20 recetas premium — complemento digital */
@@ -12,28 +16,16 @@ export const RECETAS_PREMIUM = recetasPremiumData;
 /** 10 combos rentables — complemento premium */
 export const COMBOS_PREMIUM = combosPremiumData;
 
-export const MENSAJES_WHATSAPP = [
-  { categoria: 'Estado / Story', texto: '🍓 Paletas caseras disponibles hoy. Escríbeme para ver sabores y precios.' },
-  { categoria: 'Estado / Story', texto: '¿Antojo de algo fresco? Tengo paletas cremosas y frutales listas para entregar.' },
-  { categoria: 'Estado / Story', texto: 'Nuevos sabores esta semana 🍦 Pregunta por el menú completo.' },
-  { categoria: 'Estado / Story', texto: 'Hoy preparé paletas frescas. Quedan pocas unidades — escríbeme antes de que se acaben.' },
-  { categoria: 'Estado / Story', texto: 'Paletas hechas en casa, con ingredientes frescos. ¿Cuál te gustaría probar?' },
-  { categoria: 'Promoción', texto: 'Promo de fin de semana: 3 paletas por [PRECIO]. Válido hasta el domingo.' },
-  { categoria: 'Promoción', texto: 'Combo familiar: 6 paletas surtidas por [PRECIO]. Ideal para compartir.' },
-  { categoria: 'Promoción', texto: 'Primera compra: lleva 2 paletas y te regalo 1 de limón. Solo hoy.' },
-  { categoria: 'Promoción', texto: 'Pack para niños: 4 paletas frutales por [PRECIO]. Sabores suaves y coloridos.' },
-  { categoria: 'Promoción', texto: 'Últimas unidades del día. Si quieres, aparto las tuyas ahora mismo.' },
-  { categoria: 'Cliente nuevo', texto: 'Hola, gracias por escribir. Te comparto el menú con sabores y precios 👇' },
-  { categoria: 'Cliente nuevo', texto: 'Tenemos paletas cremosas, frutales y rellenas. ¿Qué tipo te gusta más?' },
-  { categoria: 'Cliente nuevo', texto: 'Entrego en [ZONA] o puedes recoger. ¿Cuántas paletas necesitas?' },
-  { categoria: 'Pedido', texto: 'Perfecto, tu pedido: [SABORES] — Total: [PRECIO]. ¿Confirmo?' },
-  { categoria: 'Pedido', texto: 'Listo, aparté tus paletas. Te aviso cuando estén en camino.' },
-  { categoria: 'Pedido', texto: 'Tu pedido está listo para recoger. Estoy en [DIRECCIÓN/LUGAR].' },
-  { categoria: 'Cliente antiguo', texto: 'Hola de nuevo 😊 Esta semana tengo sabores nuevos. ¿Te mando el menú?' },
-  { categoria: 'Cliente antiguo', texto: 'Hace tiempo que no pides. Tengo tus sabores favoritos disponibles hoy.' },
-  { categoria: 'Cliente antiguo', texto: 'Gracias por confiar en mis paletas. Esta semana hay promo especial para clientes frecuentes.' },
-  { categoria: 'Encomienda', texto: 'Acepto pedidos con 24h de anticipación. ¿Para qué día y cuántas paletas necesitas?' },
-];
+/** 60 mensajes — sincronizados con content.py / PDF */
+export const MENSAJES_WHATSAPP = mensajesData;
+
+/** Premium — complemento digital */
+export const MENSAJES_PREMIUM = mensajesPremiumData;
+export const FECHAS_PREMIUM = fechasPremiumData;
+export const GUIA_PREMIUM = guiaPremiumData;
+
+/** Técnicas, errores y tips — del kit PDF principal */
+export const KIT_EXTRAS = kitExtrasData;
 
 /** Sincronizado con paletas-de-whatsapp/build/content.py (fuente del PDF) */
 export const PLAN_7_DIAS = [
@@ -144,6 +136,22 @@ export const LISTA_COMPRAS = {
     'Termómetro (opcional, para baño de chocolate)',
   ],
 };
+
+/** Antes de vender — sincronizado con content.py / PDF */
+export const CHECKLIST_VENTA = [
+  'Elegir 3 a 5 sabores para empezar',
+  'Comprar ingredientes y materiales',
+  'Calcular costos con la calculadora',
+  'Definir precios con margen estimado',
+  'Armar mi menú para WhatsApp',
+  'Tomar fotos con buena luz',
+  'Publicar en estado o historia',
+  'Tener mensajes listos para responder',
+  'Anotar pedidos de forma organizada',
+  'Organizar entrega o recogida',
+  'Informar alérgenos cuando corresponde',
+  'Pedir feedback a quien prueba',
+];
 
 export const CHECKLIST_PRODUCCION = [
   'Revisar pedidos del día y cantidades por sabor',
