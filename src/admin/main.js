@@ -96,8 +96,19 @@ function paint() {
     user: state.currentAdminUser,
     sidebarOpen: state.sidebarOpen,
     lineFilter: state.lineFilter,
+    apiWarnings: state.apiWarnings,
   });
   bindEvents();
+}
+
+function isFirebaseAdminError(message) {
+  const text = String(message || '').toLowerCase();
+  return text.includes('firebase admin') || text.includes('no configurado');
+}
+
+function setApiWarning(id, message) {
+  state.apiWarnings = state.apiWarnings.filter((w) => w.id !== id);
+  if (message) state.apiWarnings.push({ id, message });
 }
 
 async function loadUsers() {
@@ -108,9 +119,14 @@ async function loadUsers() {
       ...u,
       id: u.id || u.uid,
     }));
+    setApiWarning('users', null);
   } catch (error) {
     console.warn('[admin] users API fallback:', error);
     state.usersCache = (await listUsers()).map((u) => ({ ...u, missingProfile: false }));
+    setApiWarning(
+      'users',
+      isFirebaseAdminError(error?.message) ? 'firebaseAdmin' : error?.message || 'usersApi'
+    );
   }
 }
 
@@ -118,7 +134,9 @@ async function loadAnalytics() {
   try {
     const token = await state.currentAdminUser.getIdToken();
     state.analyticsCache = await fetchAdminAnalytics(token, state.lineFilter);
-  } catch {
+    setApiWarning('analytics', null);
+  } catch (error) {
+    console.warn('[admin] analytics API:', error);
     state.analyticsCache = {
       pages: [],
       todayTotal: 0,
@@ -129,6 +147,10 @@ async function loadAnalytics() {
       whatsapp: [],
       events: [],
     };
+    setApiWarning(
+      'analytics',
+      isFirebaseAdminError(error?.message) ? 'firebaseAdmin' : error?.message || 'analyticsApi'
+    );
   }
 }
 

@@ -522,6 +522,12 @@ body {
   color: #92400e;
 }
 
+.admin-alert.error {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
 .admin-drawer-overlay {
   position: fixed;
   inset: 0;

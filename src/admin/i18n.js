@@ -293,6 +293,8 @@ const STRINGS = {
     'dashboard.trafficSub': 'Visitas e eventos por página.',
     'dashboard.noTraffic': 'Sem dados de tráfego ainda.',
     'dashboard.orphanWarn': 'Há {n} usuário(s) no Auth sem perfil completo. Use Sincronizar em Usuários para corrigir.',
+    'warn.firebaseAdmin':
+      'Firebase Admin não está configurado no servidor (FIREBASE_SERVICE_ACCOUNT na Vercel). Visitas não são salvas e a lista de usuários pode estar incompleta.',
     'dashboard.kpis': 'Hoje',
     'analytics.loading': 'Carregando métricas...',
     'analytics.landingPages': 'Páginas',
