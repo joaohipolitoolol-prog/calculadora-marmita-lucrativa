@@ -21,6 +21,13 @@ let onStateChange = null;
 
 const FETCH_TIMEOUT_MS = 12000;
 
+const NARRATION_UNAVAILABLE_ALERT =
+  'El narrador de recetas puede estar fuera de servicio en este momento.\n\nIntenta de nuevo más tarde.';
+
+function showNarrationUnavailableAlert() {
+  window.alert?.(NARRATION_UNAVAILABLE_ALERT);
+}
+
 function emit() {
   onStateChange?.({ ...state });
 }
@@ -133,8 +140,8 @@ async function fetchAudioUrl(text, cacheKey) {
 
   const payload = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const detail = payload.detail ? ` (${payload.detail})` : '';
-    throw new Error((payload.error || 'No se pudo generar el audio') + detail);
+    console.warn('[recipe-narration] Google TTS API error:', payload.detail || payload.error || res.status);
+    throw new Error('NARRATION_UNAVAILABLE');
   }
 
   const blob = base64ToBlob(payload.audioContent);
@@ -510,7 +517,7 @@ async function handleRecipePlayClick(event) {
     });
   } catch (err) {
     console.error('[recipe-narration]', err);
-    window.alert?.(err.message || 'No se pudo reproducir el audio. Intenta de nuevo.');
+    showNarrationUnavailableAlert();
   }
 }
 
