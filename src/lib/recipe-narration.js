@@ -324,7 +324,7 @@ export function syncRecipeNarrationUi(root = getRoot()) {
     );
   });
 
-  const bar = root.getElementById('recipe-audio-bar');
+  const bar = root.querySelector('#recipe-audio-bar');
   if (bar) {
     const visible = status === 'loading' || status === 'playing';
     bar.hidden = !visible;
