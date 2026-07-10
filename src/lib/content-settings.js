@@ -8,6 +8,8 @@ export const DEFAULT_LINE_FLAGS = {
   kitOpen: true,
   premiumOpen: true,
   audioGuideOpen: true,
+  // Cerrado por defecto: se vende por fuera; admin puede abrir por línea o por usuario
+  menuWebOpen: false,
 };
 
 function defaultSettings() {
@@ -33,6 +35,7 @@ export function normalizeContentSettings(raw = {}) {
       kitOpen: entry.kitOpen !== false,
       premiumOpen: entry.premiumOpen !== false,
       audioGuideOpen: entry.audioGuideOpen !== false,
+      menuWebOpen: entry.menuWebOpen === true,
     };
   }
   base.updatedAt = Number(raw.updatedAt) || 0;
@@ -49,6 +52,10 @@ export function isLinePremiumOpen(lineId, settings = cache) {
 
 export function isLineAudioGuideOpen(lineId, settings = cache) {
   return settings.lines[lineId]?.audioGuideOpen !== false;
+}
+
+export function isLineMenuWebOpen(lineId, settings = cache) {
+  return settings.lines[lineId]?.menuWebOpen === true;
 }
 
 export async function loadContentSettings() {

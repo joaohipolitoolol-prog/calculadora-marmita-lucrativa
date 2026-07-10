@@ -257,6 +257,8 @@ export function renderUserDrawer(user) {
 
   const audioValue =
     user.audioGuideEnabled === true ? 'on' : user.audioGuideEnabled === false ? 'off' : 'inherit';
+  const menuWebValue =
+    user.menuWebEnabled === true ? 'on' : user.menuWebEnabled === false ? 'off' : 'inherit';
 
   const canResendPaletas = user.hasKit && user.email;
   const canResendPostres = user.hasPostres && user.email;
@@ -304,6 +306,18 @@ export function renderUserDrawer(user) {
             <option value="inherit" ${audioValue === 'inherit' ? 'selected' : ''}>${t('drawer.audioInherit')}</option>
             <option value="on" ${audioValue === 'on' ? 'selected' : ''}>${t('drawer.audioOn')}</option>
             <option value="off" ${audioValue === 'off' ? 'selected' : ''}>${t('drawer.audioOff')}</option>
+          </select>
+        </label>
+        <h3>${t('drawer.menuWebTitle')}</h3>
+        <label class="admin-toggle-row">
+          <div>
+            <strong>${t('drawer.menuWebTitle')}</strong>
+            <span class="admin-toggle-hint">${t('content.menuWebOpenHint')}</span>
+          </div>
+          <select class="admin-select-inline" data-drawer-menu-web="${user.id}">
+            <option value="inherit" ${menuWebValue === 'inherit' ? 'selected' : ''}>${t('drawer.menuWebInherit')}</option>
+            <option value="on" ${menuWebValue === 'on' ? 'selected' : ''}>${t('drawer.menuWebOn')}</option>
+            <option value="off" ${menuWebValue === 'off' ? 'selected' : ''}>${t('drawer.menuWebOff')}</option>
           </select>
         </label>
         <div class="admin-drawer-actions">
@@ -745,6 +759,13 @@ export function renderContentView() {
                   <span class="admin-toggle-hint">${t('content.audioGuideOpenHint')}</span>
                 </span>
                 <input type="checkbox" data-content-flag="audioGuideOpen" data-content-line="${line.id}" ${flags.audioGuideOpen !== false ? 'checked' : ''}>
+              </label>
+              <label class="admin-toggle-row">
+                <span>
+                  ${t('content.menuWebOpen')}
+                  <span class="admin-toggle-hint">${t('content.menuWebOpenHint')}</span>
+                </span>
+                <input type="checkbox" data-content-flag="menuWebOpen" data-content-line="${line.id}" ${flags.menuWebOpen === true ? 'checked' : ''}>
               </label>
             </div>
           `;

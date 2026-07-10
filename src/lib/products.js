@@ -59,6 +59,11 @@ export function normalizeProfile(profile = {}) {
   } else {
     normalized.audioGuideEnabled = null;
   }
+  if (profile.menuWebEnabled === true || profile.menuWebEnabled === false) {
+    normalized.menuWebEnabled = profile.menuWebEnabled;
+  } else {
+    normalized.menuWebEnabled = null;
+  }
   return normalized;
 }
 

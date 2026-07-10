@@ -81,6 +81,9 @@ export async function updateUserProfile(uid, data) {
   if (Object.prototype.hasOwnProperty.call(data, 'audioGuideEnabled') && data.audioGuideEnabled === null) {
     payload.audioGuideEnabled = deleteField();
   }
+  if (Object.prototype.hasOwnProperty.call(data, 'menuWebEnabled') && data.menuWebEnabled === null) {
+    payload.menuWebEnabled = deleteField();
+  }
   await setDoc(doc(db, 'users', uid), payload, { merge: true });
 }
 

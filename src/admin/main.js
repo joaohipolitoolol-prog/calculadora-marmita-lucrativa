@@ -563,6 +563,19 @@ function bindEvents() {
     });
   });
 
+  root.querySelectorAll('[data-drawer-menu-web]').forEach((select) => {
+    select.addEventListener('change', async () => {
+      const uid = select.dataset.drawerMenuWeb;
+      const value = select.value;
+      const menuWebEnabled = value === 'on' ? true : value === 'off' ? false : null;
+      await updateUserProfile(uid, { menuWebEnabled });
+      showToast(t('toast.accessUpdated'));
+      await refreshAll();
+      state.detailUserId = uid;
+      paint();
+    });
+  });
+
   root.querySelectorAll('[data-clear-pending]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const uid = btn.dataset.clearPending;

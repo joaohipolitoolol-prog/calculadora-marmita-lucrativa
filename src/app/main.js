@@ -106,9 +106,16 @@ import {
   getContentSettings,
   isLineAudioGuideOpen,
   isLineKitOpen,
+  isLineMenuWebOpen,
   isLinePremiumOpen,
   loadContentSettings,
 } from '../lib/content-settings.js';
+import {
+  MENU_WEB_BLURB,
+  MENU_WEB_CHECKOUT_URL,
+  MENU_WEB_NAME,
+  MENU_WEB_PRICE_LABEL,
+} from '../lib/menu-web-config.js';
 import {
   isPwaInstalled,
   openPwaGuide,
@@ -151,6 +158,7 @@ import {
   initRecipeNarration,
   recipeStableKey,
   setNarrationAccessCheck,
+  setRecipeNarrationContext,
   setupRecipeNarration,
   stopRecipeNarration,
   syncRecipeNarrationUi,
@@ -425,6 +433,15 @@ function isAudioGuidePausedByAdmin() {
   return ownsLine(lineBrand().id) && !isLineAudioGuideOpen(lineBrand().id, getContentSettings());
 }
 
+function hasMenuWebAccess() {
+  if (DEV_UNLOCK_ALL_CONTENT) return true;
+  if (!ownsLine(lineBrand().id)) return false;
+  const override = userProfile?.menuWebEnabled;
+  if (override === true) return true;
+  if (override === false) return false;
+  return isLineMenuWebOpen(lineBrand().id, getContentSettings());
+}
+
 const SIMULATION_VOLUMES = [10, 20, 30];
 
 const RECIPE_FILTERS_PALETAS = [
@@ -480,22 +497,27 @@ function enableHorizontalDragScroll(el) {
   let activeBtn = null;
 
   el.addEventListener('pointerdown', (event) => {
+    // Touch: native overflow scroll. Mouse/pen: drag-to-scroll.
     if (event.pointerType === 'touch') return;
     if (event.button !== 0) return;
     pointerId = event.pointerId;
     startX = event.clientX;
     startScroll = el.scrollLeft;
     dragged = false;
-    activeBtn = event.target.closest('[data-recipe-filter], [data-kit-section]');
+    activeBtn = event.target.closest('[data-recipe-filter], [data-kit-section], [data-premium-sub]');
   });
 
   el.addEventListener('pointermove', (event) => {
     if (pointerId == null || event.pointerId !== pointerId) return;
     const dx = event.clientX - startX;
-    if (!dragged && Math.abs(dx) > 6) {
+    if (!dragged && Math.abs(dx) > 4) {
       dragged = true;
       el.classList.add('is-dragging');
-      el.setPointerCapture?.(pointerId);
+      try {
+        el.setPointerCapture?.(pointerId);
+      } catch {
+        /* ignore */
+      }
     }
     if (!dragged) return;
     el.scrollLeft = startScroll - dx;
@@ -507,7 +529,7 @@ function enableHorizontalDragScroll(el) {
     if (dragged && activeBtn) {
       activeBtn.dataset.dragMoved = '1';
       window.setTimeout(() => {
-        delete activeBtn.dataset.dragMoved;
+        delete activeBtn?.dataset.dragMoved;
       }, 0);
     }
     el.classList.remove('is-dragging');
@@ -728,16 +750,6 @@ function maybeWelcome() {
   }
 }
 
-function renderAdminModeBanner() {
-  if (!userIsAdmin) return '';
-  return `
-    <div class="admin-mode-banner" role="status">
-      <strong>Modo admin</strong>
-      <span>Los bloqueos de Contenido en /admin también aplican aquí. Usa otra cuenta para probar como cliente.</span>
-    </div>
-  `;
-}
-
 function renderKitPendingBanner() {
   if (hasKitContentAccess()) return '';
   return `
@@ -929,17 +941,19 @@ function renderTopbarLineSwitcher() {
   const owned = ownedLines.filter(Boolean);
   const canSwitch = owned.length > 1;
   const brand = lineBrand();
-  const lines = getTopbarLines().filter((line) => !line.enabled || ownsLine(line.id));
+  const lines = getTopbarLines();
+  const hasMenuExtras = lines.some((line) => !ownsLine(line.id));
 
   const menuItems = lines
     .map((line) => {
       const ownedLine = ownsLine(line.id);
       const active = brand.id === line.id;
       const comingSoon = !line.enabled;
+      const offerable = line.enabled && line.sellable && !ownedLine;
 
       if (comingSoon) {
         return `
-          <div class="topbar-line-item locked" aria-disabled="true">
+          <div class="topbar-line-item locked" aria-disabled="true" role="menuitem">
             <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
             <span class="topbar-line-item-text">
               <strong>${escapeHtml(line.short)}</strong>
@@ -949,13 +963,34 @@ function renderTopbarLineSwitcher() {
         `;
       }
 
+      if (offerable) {
+        return `
+          <button type="button" class="topbar-line-item offer" data-line-offer="${line.id}" role="menuitem">
+            <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
+            <span class="topbar-line-item-text">
+              <strong>${escapeHtml(line.short)}</strong>
+              <em>Cerrado · Ver oferta</em>
+            </span>
+            <span class="topbar-line-lock" aria-hidden="true">🔒</span>
+          </button>
+        `;
+      }
+
       if (!ownedLine) {
-        return '';
+        return `
+          <div class="topbar-line-item locked" aria-disabled="true" role="menuitem">
+            <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
+            <span class="topbar-line-item-text">
+              <strong>${escapeHtml(line.short)}</strong>
+              <em>No disponible</em>
+            </span>
+          </div>
+        `;
       }
 
       if (!canSwitch) {
         return `
-          <div class="topbar-line-item ${active ? 'active' : ''}" aria-current="${active ? 'true' : 'false'}">
+          <div class="topbar-line-item ${active ? 'active' : ''}" aria-current="${active ? 'true' : 'false'}" role="menuitem">
             <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
             <span class="topbar-line-item-text">
               <strong>${escapeHtml(line.short)}</strong>
@@ -966,7 +1001,7 @@ function renderTopbarLineSwitcher() {
       }
 
       return `
-        <button type="button" class="topbar-line-item ${active ? 'active' : ''}" data-set-line="${line.id}" aria-pressed="${active}">
+        <button type="button" class="topbar-line-item ${active ? 'active' : ''}" data-set-line="${line.id}" aria-pressed="${active}" role="menuitem">
           <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
           <span class="topbar-line-item-text">
             <strong>${escapeHtml(line.short)}</strong>
@@ -978,7 +1013,7 @@ function renderTopbarLineSwitcher() {
     .join('');
 
   return `
-    <div class="topbar-line-switch ${canSwitch ? 'can-switch' : 'solo'}">
+    <div class="topbar-line-switch ${canSwitch || hasMenuExtras ? 'can-switch' : 'solo'}">
       <button type="button" class="topbar-line-trigger" data-topbar-line-toggle aria-expanded="false" aria-haspopup="menu" title="${escapeHtml(brand.short)}" aria-label="Producto: ${escapeHtml(brand.short)}">
         <span class="topbar-line-emoji" aria-hidden="true">${brand.emoji}</span>
       </button>
@@ -987,6 +1022,110 @@ function renderTopbarLineSwitcher() {
       </div>
     </div>
   `;
+}
+
+function showLineOfferModal(lineId) {
+  const line = PRODUCT_LINE_BY_ID[lineId];
+  if (!line?.sellable || !line.enabled) return;
+  if (ownsLine(line.id)) return;
+
+  document.querySelector('.line-offer-overlay')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay line-offer-overlay';
+  overlay.innerHTML = `
+    <div class="modal-sheet line-offer-sheet" role="dialog" aria-modal="true" aria-labelledby="line-offer-title">
+      <span class="line-offer-emoji" aria-hidden="true">${line.emoji}</span>
+      <p class="line-offer-badge">También puedes vender</p>
+      <h3 id="line-offer-title">${escapeHtml(line.kitName)}</h3>
+      <p>Mismo método 3P, otro producto: recetas, menú y mensajes listos para WhatsApp.</p>
+      <div class="modal-actions line-offer-actions">
+        <button type="button" class="btn btn-secondary" data-line-offer-close>Ahora no</button>
+        <a class="btn btn-primary" href="${escapeHtml(line.checkoutUrl)}" target="_blank" rel="noopener noreferrer" data-checkout="cross-sell" data-track="topbar-line-offer" data-line="${escapeHtml(line.id)}">Agregar por ${escapeHtml(line.priceLabel)}</a>
+      </div>
+      <a class="line-offer-details" href="${escapeHtml(line.landingPath)}" data-line-offer-close>Ver detalles</a>
+      <p class="line-offer-note">Si ya compraste, escríbenos por WhatsApp con tu correo y lo liberamos en tu cuenta.</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const close = () => overlay.remove();
+  overlay.querySelectorAll('[data-line-offer-close]').forEach((el) => {
+    el.addEventListener('click', close);
+  });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+}
+
+function showPremiumOfferModal() {
+  if (hasPremiumAccess()) return;
+  if (isPremiumPausedByAdmin()) {
+    showToast('El complemento premium está en mantenimiento.');
+    return;
+  }
+
+  const kit = kitContentForLine();
+  const brand = lineBrand();
+  document.querySelector('.premium-offer-overlay')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay line-offer-overlay premium-offer-overlay';
+  overlay.innerHTML = `
+    <div class="modal-sheet line-offer-sheet" role="dialog" aria-modal="true" aria-labelledby="premium-offer-title">
+      <span class="line-offer-emoji" aria-hidden="true">✨</span>
+      <p class="line-offer-badge">Complemento premium</p>
+      <h3 id="premium-offer-title">${escapeHtml(kit.upsellName)}</h3>
+      <p>Desbloquea recetas premium, combos rentables, menú editable y mensajes para fechas especiales en ${escapeHtml(brand.short)}.</p>
+      <div class="modal-actions line-offer-actions">
+        <button type="button" class="btn btn-secondary" data-premium-offer-close>Ahora no</button>
+        <a class="btn btn-primary" href="${escapeHtml(kit.upsellCheckout)}" target="_blank" rel="noopener noreferrer" data-checkout="upsell" data-track="premium-offer-popup" data-line="${escapeHtml(brand.id)}">Agregar por ${escapeHtml(kit.upsellPrice)}</a>
+      </div>
+      <a class="line-offer-details" href="${escapeHtml(kit.upsellPath)}" data-premium-offer-close>Ver detalles</a>
+      <p class="line-offer-note">Si ya compraste, escríbenos por WhatsApp con tu correo y lo liberamos en tu cuenta.</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  const close = () => overlay.remove();
+  overlay.querySelectorAll('[data-premium-offer-close]').forEach((el) => {
+    el.addEventListener('click', close);
+  });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+}
+
+function mensajesEditsKey(source = 'base') {
+  const uid = currentUser?.uid || 'local';
+  return `mensajes_edits_${lineBrand().id}_${source}_${uid}_v1`;
+}
+
+function loadMensajesEdits(source = 'base') {
+  try {
+    const raw = localStorage.getItem(mensajesEditsKey(source));
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveMensajesEdits(source, edits) {
+  try {
+    localStorage.setItem(mensajesEditsKey(source), JSON.stringify(edits || {}));
+  } catch {
+    /* ignore */
+  }
+}
+
+function resolveMensajeText(msg, source = 'base') {
+  const edits = loadMensajesEdits(source);
+  const key = String(msg.idx);
+  if (Object.prototype.hasOwnProperty.call(edits, key) && String(edits[key]).trim()) {
+    return { text: String(edits[key]), customized: true };
+  }
+  return { text: formatWhatsAppMessage(msg.texto), customized: false };
 }
 
 function renderTopbarActions() {
@@ -1445,7 +1584,7 @@ function renderProfile() {
           hasKitContentAccess()
             ? `<button type="button" class="profile-link-row" data-view="menuWeb">
           <span class="profile-link-icon">${ICONS.list}</span>
-          <span class="profile-link-text">Menú web</span>
+          <span class="profile-link-text">Menú web${!hasMenuWebAccess() ? ' · 🔒' : ''}</span>
           <span class="profile-link-chevron">${ICONS.chevronRight}</span>
         </button>`
             : ''
@@ -1613,10 +1752,33 @@ function renderDocumentView() {
   `;
 }
 
+function renderMenuWebPurchaseCard() {
+  if (!hasKitContentAccess()) {
+    return `<p class="section-text">Activa tu kit para desbloquear este complemento.</p>`;
+  }
+
+  const checkout = String(MENU_WEB_CHECKOUT_URL || '').trim();
+  const cta = checkout
+    ? `<a href="${escapeHtml(checkout)}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer" data-checkout="menu-web" data-track="menu-web-checkout">Comprar · ${escapeHtml(MENU_WEB_PRICE_LABEL)}</a>`
+    : `<button type="button" class="btn btn-primary btn-sm" disabled title="Checkout pendiente de configurar">Comprar · ${escapeHtml(MENU_WEB_PRICE_LABEL)}</button>`;
+
+  return `
+    <div class="premium-upsell-card mw-upsell-card">
+      <span class="premium-upsell-badge">Complemento</span>
+      <h3>${escapeHtml(MENU_WEB_NAME)}</h3>
+      <p>${escapeHtml(MENU_WEB_BLURB)}</p>
+      <div class="premium-upsell-actions">${cta}</div>
+      ${checkout ? '' : '<p class="mw-upsell-note">El link de pago se activa pronto.</p>'}
+    </div>
+  `;
+}
+
 function renderMenuWeb() {
+  const unlocked = hasMenuWebAccess();
   return renderMenuWebView({
-    locked: !hasKitContentAccess(),
+    locked: !unlocked,
     cloudAvailable: canUseMenusCloud(),
+    purchaseHtml: unlocked ? '' : renderMenuWebPurchaseCard(),
   });
 }
 
@@ -1742,11 +1904,34 @@ function renderFiles() {
       }
       ${renderCrossSellOffer()}
       <div class="section-card files-support support-card-compact">
-        <p class="section-text">¿Dudas con tu acceso?</p>
-        <a href="${lineWhatsApp('support').href}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support" title="Soporte por WhatsApp" aria-label="Soporte por WhatsApp">${ICONS.whatsapp}<span>Soporte</span></a>
+        <div class="files-support-copy">
+          <strong>¿Dudas con tu acceso?</strong>
+          <span>Te ayudamos por WhatsApp</span>
+        </div>
+        <a href="${lineWhatsApp('support').href}" class="btn btn-secondary btn-sm files-support-btn" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support" title="Soporte por WhatsApp" aria-label="Soporte por WhatsApp">${ICONS.whatsapp}<span>Soporte</span></a>
       </div>
     </div>
   `;
+}
+
+function crossSellMinimizedKey(lineId) {
+  return `cross_sell_min_${lineId}_v1`;
+}
+
+function isCrossSellMinimized(lineId) {
+  try {
+    return localStorage.getItem(crossSellMinimizedKey(lineId)) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function setCrossSellMinimized(lineId, minimized) {
+  try {
+    localStorage.setItem(crossSellMinimizedKey(lineId), minimized ? '1' : '0');
+  } catch {
+    /* ignore */
+  }
 }
 
 function renderCrossSellOffer() {
@@ -1758,39 +1943,58 @@ function renderCrossSellOffer() {
   if (!offers.length && !soon.length) return '';
 
   const offerCards = offers
-    .map(
-      (line) => `
-      <div class="section-card cross-sell-card cross-sell-${escapeHtml(line.id)}">
-        <span class="cross-sell-badge">También puedes vender</span>
+    .map((line) => {
+      const minimized = isCrossSellMinimized(line.id);
+      return `
+      <div class="section-card cross-sell-card cross-sell-${escapeHtml(line.id)}${minimized ? ' is-minimized' : ''}" data-cross-sell="${escapeHtml(line.id)}">
+        <div class="cross-sell-top">
+          <span class="cross-sell-badge">También puedes vender</span>
+          <button type="button" class="cross-sell-toggle" data-cross-sell-toggle="${escapeHtml(line.id)}" aria-expanded="${minimized ? 'false' : 'true'}" aria-label="${minimized ? 'Expandir oferta' : 'Minimizar oferta'}">
+            <span class="cross-sell-toggle-icon" aria-hidden="true">${ICONS.chevronRight}</span>
+            <span>${minimized ? 'Ver' : 'Minimizar'}</span>
+          </button>
+        </div>
         <div class="cross-sell-head">
           <span class="cross-sell-emoji" aria-hidden="true">${line.emoji}</span>
           <h3>${escapeHtml(line.kitName)}</h3>
         </div>
-        <p>Mismo método 3P, otro producto: recetas, menú y mensajes listos para WhatsApp.</p>
-        <div class="cross-sell-actions">
-          <a href="${line.checkoutUrl}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Agregar por ${escapeHtml(line.priceLabel)}</a>
-          <a href="${line.landingPath}" class="btn btn-ghost btn-sm">Ver detalles</a>
+        <div class="cross-sell-body">
+          <p>Mismo método 3P, otro producto: recetas, menú y mensajes listos para WhatsApp.</p>
+          <div class="cross-sell-actions">
+            <a href="${line.checkoutUrl}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Agregar por ${escapeHtml(line.priceLabel)}</a>
+            <a href="${line.landingPath}" class="btn btn-ghost btn-sm">Ver detalles</a>
+          </div>
+          <p class="cross-sell-note">Si ya compraste, escríbenos por WhatsApp con tu correo y lo liberamos en tu cuenta.</p>
         </div>
-        <p class="cross-sell-note">Si ya compraste, escríbenos por WhatsApp con tu correo y lo liberamos en tu cuenta.</p>
       </div>
-    `
-    )
+    `;
+    })
     .join('');
 
   const soonCards = soon
-    .map(
-      (line) => `
-      <div class="section-card cross-sell-card cross-sell-soon cross-sell-${escapeHtml(line.id)}">
-        <span class="cross-sell-badge">Próximamente</span>
+    .map((line) => {
+      const key = `soon_${line.id}`;
+      const minimized = isCrossSellMinimized(key);
+      return `
+      <div class="section-card cross-sell-card cross-sell-soon cross-sell-${escapeHtml(line.id)}${minimized ? ' is-minimized' : ''}" data-cross-sell="${escapeHtml(key)}">
+        <div class="cross-sell-top">
+          <span class="cross-sell-badge">Próximamente</span>
+          <button type="button" class="cross-sell-toggle" data-cross-sell-toggle="${escapeHtml(key)}" aria-expanded="${minimized ? 'false' : 'true'}" aria-label="${minimized ? 'Expandir' : 'Minimizar'}">
+            <span class="cross-sell-toggle-icon" aria-hidden="true">${ICONS.chevronRight}</span>
+            <span>${minimized ? 'Ver' : 'Minimizar'}</span>
+          </button>
+        </div>
         <div class="cross-sell-head">
           <span class="cross-sell-emoji" aria-hidden="true">${line.emoji}</span>
           <h3>${escapeHtml(line.kitName)}</h3>
         </div>
-        <p>Estamos preparando este kit. Cuando esté listo, lo verás aquí para agregar a tu cuenta.</p>
-        <a href="${line.landingPath}" class="btn btn-ghost btn-sm">Ver adelanto</a>
+        <div class="cross-sell-body">
+          <p>Estamos preparando este kit. Cuando esté listo, lo verás aquí para agregar a tu cuenta.</p>
+          <a href="${line.landingPath}" class="btn btn-ghost btn-sm">Ver adelanto</a>
+        </div>
       </div>
-    `
-    )
+    `;
+    })
     .join('');
 
   return offerCards + soonCards;
@@ -1823,7 +2027,6 @@ function render() {
       </header>
 
       <main class="app-content${activeView === 'document' ? ' app-content-doc' : ''}">
-        ${renderAdminModeBanner()}
         ${renderActiveView()}
       </main>
 
@@ -2669,21 +2872,26 @@ function renderCombosPremium() {
 }
 
 function renderMensajesWhatsApp() {
-  const lineId = lineBrand().id;
-  const exportHref =
-    lineId === 'postres'
-      ? '/postres/produto/Mensajes_Postres.html'
-      : '/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.html';
-  return `<div data-mensajes-source="base">${renderMensajesList(kitContentForLine().mensajes, {
-    exportHref,
-    formatMessage: formatWhatsAppMessage,
+  const source = 'base';
+  const mensajes = kitContentForLine().mensajes || [];
+  return `<div data-mensajes-source="${source}">${renderMensajesList(mensajes, {
+    resolveText: (msg) => {
+      const resolved = resolveMensajeText(msg, source);
+      msg.customized = resolved.customized;
+      return resolved.text;
+    },
   })}</div>`;
 }
 
 function renderMensajesPremium() {
-  return `<div data-mensajes-source="premium">${renderMensajesList(kitContentForLine().mensajesPremium, {
-    exportHref: premiumExportHref('mensajes-premium'),
-    formatMessage: formatWhatsAppMessage,
+  const source = 'premium';
+  const mensajes = kitContentForLine().mensajesPremium || [];
+  return `<div data-mensajes-source="${source}">${renderMensajesList(mensajes, {
+    resolveText: (msg) => {
+      const resolved = resolveMensajeText(msg, source);
+      msg.customized = resolved.customized;
+      return resolved.text;
+    },
   })}</div>`;
 }
 
@@ -3099,12 +3307,21 @@ function bindEvents() {
   document.getElementById('drawer-logout')?.addEventListener('click', signOutToLanding);
   document.getElementById('drawer-theme')?.addEventListener('click', toggleTheme);
 
+  root.querySelectorAll('[data-cross-sell-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.crossSellToggle;
+      if (!id) return;
+      setCrossSellMinimized(id, !isCrossSellMinimized(id));
+      render();
+    });
+  });
+
   bindMenuWebEvents({
     uid: currentUser.uid,
     root,
     showToast,
     render,
-    locked: !hasKitContentAccess(),
+    locked: !hasMenuWebAccess(),
   });
 
   if (kitSection === 'premium' && premiumSubSection === 'menu-premium' && hasPremiumAccess()) {
@@ -3227,6 +3444,15 @@ function bindEvents() {
       recipeFilter = 'all';
       showToast(`${next.emoji} ${next.short}`);
       render();
+    });
+  });
+
+  root.querySelectorAll('[data-line-offer]').forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      root.querySelectorAll('.topbar-line-menu').forEach((el) => el.setAttribute('hidden', ''));
+      root.querySelectorAll('[data-topbar-line-toggle]').forEach((el) => el.setAttribute('aria-expanded', 'false'));
+      showLineOfferModal(btn.dataset.lineOffer);
     });
   });
 
@@ -3403,6 +3629,12 @@ function bindEvents() {
 
   enableHorizontalDragScroll(document.getElementById('recipe-filters'));
   enableHorizontalDragScroll(document.getElementById('kit-section-nav'));
+  enableHorizontalDragScroll(document.querySelector('.kit-premium-nav'));
+  document.querySelector('#kit-section-nav .kit-nav-btn.active')?.scrollIntoView({
+    inline: 'center',
+    block: 'nearest',
+    behavior: 'smooth',
+  });
 
   root.querySelectorAll('[data-recipe-filter]').forEach((btn) => {
     btn.addEventListener('click', (event) => {
@@ -3419,7 +3651,12 @@ function bindEvents() {
 
   root.querySelectorAll('[data-recipe-catalog]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      recipeCatalog = btn.dataset.recipeCatalog;
+      const next = btn.dataset.recipeCatalog;
+      if (next === 'premium' && !hasPremiumAccess()) {
+        showPremiumOfferModal();
+        return;
+      }
+      recipeCatalog = next;
       recipeFilter = 'all';
       stopRecipeNarration();
       render();
@@ -3459,14 +3696,31 @@ function bindEvents() {
   });
 
   root.querySelectorAll('[data-kit-section]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      setKitSection(btn.dataset.kitSection);
+    btn.addEventListener('click', (event) => {
+      if (btn.dataset.dragMoved) {
+        event.preventDefault();
+        event.stopPropagation();
+        delete btn.dataset.dragMoved;
+        return;
+      }
+      const section = btn.dataset.kitSection;
+      if (section === 'premium' && !hasPremiumAccess()) {
+        showPremiumOfferModal();
+        return;
+      }
+      setKitSection(section);
       render();
     });
   });
 
   root.querySelectorAll('[data-premium-sub]').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (event) => {
+      if (btn.dataset.dragMoved) {
+        event.preventDefault();
+        event.stopPropagation();
+        delete btn.dataset.dragMoved;
+        return;
+      }
       premiumSubSection = btn.dataset.premiumSub;
       render();
     });
@@ -3493,10 +3747,14 @@ function bindEvents() {
   root.querySelectorAll('.copy-msg').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = parseNumber(btn.dataset.copyIndex);
-      const source = btn.closest('[data-mensajes-source]')?.dataset.mensajesSource;
-      const kit = kitContentForLine();
-      const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
-      const text = formatWhatsAppMessage(pool?.[idx]?.texto);
+      const item = btn.closest('.message-item');
+      const text = item?.querySelector('[data-msg-edit]')?.value?.trim()
+        || (() => {
+            const source = btn.closest('[data-mensajes-source]')?.dataset.mensajesSource;
+            const kit = kitContentForLine();
+            const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
+            return formatWhatsAppMessage(pool?.[idx]?.texto);
+          })();
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);
@@ -3507,17 +3765,42 @@ function bindEvents() {
     });
   });
 
-  root.querySelectorAll('.share-msg').forEach((link) => {
-    const idx = parseNumber(link.dataset.shareIndex);
-    const source = link.closest('[data-mensajes-source]')?.dataset.mensajesSource;
-    const kit = kitContentForLine();
-    const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
-    const text = formatWhatsAppMessage(pool?.[idx]?.texto);
-    if (text) {
-      link.href = whatsAppShareUrl(text);
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-    }
+  root.querySelectorAll('.save-msg').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseNumber(btn.dataset.saveIndex);
+      const source = btn.closest('[data-mensajes-source]')?.dataset.mensajesSource || 'base';
+      const item = btn.closest('.message-item');
+      const textarea = item?.querySelector('[data-msg-edit]');
+      const text = textarea?.value?.trim() || '';
+      if (!text) {
+        showToast('Escribe un mensaje antes de guardar.');
+        return;
+      }
+      const kit = kitContentForLine();
+      const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
+      const original = formatWhatsAppMessage(pool?.[idx]?.texto || '');
+      const edits = loadMensajesEdits(source);
+      if (text === original) {
+        delete edits[String(idx)];
+      } else {
+        edits[String(idx)] = text;
+      }
+      saveMensajesEdits(source, edits);
+      showToast('Mensaje guardado en este celular.');
+      render();
+    });
+  });
+
+  root.querySelectorAll('.reset-msg').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseNumber(btn.dataset.resetIndex);
+      const source = btn.closest('[data-mensajes-source]')?.dataset.mensajesSource || 'base';
+      const edits = loadMensajesEdits(source);
+      delete edits[String(idx)];
+      saveMensajesEdits(source, edits);
+      showToast('Mensaje restablecido.');
+      render();
+    });
   });
 
   root.querySelectorAll('[data-checklist]').forEach((input) => {

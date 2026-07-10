@@ -6,7 +6,7 @@ export function renderSectionExportBtn({ href }) {
   return `<a class="lista-pdf-btn" href="${href}" target="_blank" rel="noopener" title="Ver HTML" aria-label="Ver HTML">${ICONS.download}</a>`;
 }
 
-export function renderMensajesList(mensajes, { exportHref, formatMessage } = {}) {
+export function renderMensajesList(mensajes, { formatMessage, resolveText } = {}) {
   const grouped = mensajes.reduce((acc, msg, idx) => {
     if (!acc[msg.categoria]) acc[msg.categoria] = [];
     acc[msg.categoria].push({ ...msg, idx });
@@ -14,14 +14,13 @@ export function renderMensajesList(mensajes, { exportHref, formatMessage } = {})
   }, {});
 
   const fmt = formatMessage || ((t) => t);
+  const resolve =
+    resolveText ||
+    ((msg) => fmt(msg.texto));
 
   return `
     <div class="kit-mensajes-page">
-      ${
-        exportHref
-          ? `<div class="lista-head mensajes-export-head"><span></span>${renderSectionExportBtn({ href: exportHref })}</div>`
-          : ''
-      }
+      <p class="mensajes-hint">Edita el texto, guarda tu versión y cópialo cuando quieras pegarlo en WhatsApp.</p>
       ${Object.entries(grouped)
         .map(
           ([cat, items]) => `
@@ -29,21 +28,29 @@ export function renderMensajesList(mensajes, { exportHref, formatMessage } = {})
           <h2>${escapeHtml(cat)}</h2>
           <ul class="message-list">
             ${items
-              .map(
-                (msg) => `
-                  <li class="message-item">
-                    <p>${escapeHtml(fmt(msg.texto))}</p>
+              .map((msg) => {
+                const text = resolve(msg);
+                const customized = Boolean(msg.customized);
+                return `
+                  <li class="message-item${customized ? ' is-custom' : ''}" data-msg-index="${msg.idx}">
+                    <label class="message-edit-label" for="msg-edit-${msg.idx}">Tu mensaje</label>
+                    <textarea class="message-edit" id="msg-edit-${msg.idx}" rows="4" data-msg-edit="${msg.idx}">${escapeHtml(text)}</textarea>
                     <div class="message-actions">
                       <button type="button" class="btn btn-sm btn-secondary copy-msg" data-copy-index="${msg.idx}">
                         ${ICONS.copy}<span>Copiar</span>
                       </button>
-                      <a href="#" class="btn btn-sm btn-wa share-msg" data-share-index="${msg.idx}">
-                        ${ICONS.message}<span>Publicar</span>
-                      </a>
+                      <button type="button" class="btn btn-sm btn-primary save-msg" data-save-index="${msg.idx}">
+                        ${ICONS.save}<span>Guardar</span>
+                      </button>
+                      ${
+                        customized
+                          ? `<button type="button" class="btn btn-sm btn-ghost reset-msg" data-reset-index="${msg.idx}">Restablecer</button>`
+                          : ''
+                      }
                     </div>
                   </li>
-                `
-              )
+                `;
+              })
               .join('')}
           </ul>
         </div>

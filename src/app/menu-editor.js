@@ -192,12 +192,13 @@ function renderThumb(src, alt = '') {
   return `<span class="mw-thumb-placeholder" aria-hidden="true">${ICONS.plus}</span>`;
 }
 
-function renderLocked() {
+function renderLocked(purchaseHtml = '') {
   return `
     <div class="mw-page">
       <div class="mw-locked section-card">
         <h2>Menú web</h2>
-        <p class="section-text">Activa tu kit para armar un menú con fotos y link para tus clientes.</p>
+        <p class="section-text">Publica un menú con fotos y un link para tus clientes. Este complemento se vende por separado del kit.</p>
+        ${purchaseHtml}
       </div>
     </div>
   `;
@@ -518,8 +519,8 @@ function renderItemScreen() {
   `;
 }
 
-export function renderMenuWebView({ locked, cloudAvailable }) {
-  if (locked) return renderLocked();
+export function renderMenuWebView({ locked, cloudAvailable, purchaseHtml = '' }) {
+  if (locked) return renderLocked(purchaseHtml);
   if (screen === 'settings') return renderSettingsScreen();
   if (screen === 'categories') return renderCategoriesScreen();
   if (screen === 'item') return renderItemScreen();
