@@ -1,4 +1,4 @@
-import { verifyAdminRequest, getFirebaseAdmin, FieldValue } from '../lib/firebase-admin.js';
+import { verifyAdminRequest, getFirebaseAdmin, FieldValue } from '../../server/lib/firebase-admin.js';
 
 const PRODUCT_FIELDS = ['hasKit', 'hasPremium', 'hasPostres', 'hasPostresPremium'];
 

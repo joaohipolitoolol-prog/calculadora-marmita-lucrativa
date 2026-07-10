@@ -1,4 +1,4 @@
-import { verifyAdminRequest, getFirebaseAdmin } from '../lib/firebase-admin.js';
+import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
 
 async function deleteCollection(firestore, collectionRef, batchSize = 100) {
   const snap = await collectionRef.limit(batchSize).get();

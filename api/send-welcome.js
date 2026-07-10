@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
-import { verifyAdminRequest } from './lib/firebase-admin.js';
-import { buildWelcomeEmailHtml } from './lib/welcome-email.js';
+import { verifyAdminRequest } from '../server/lib/firebase-admin.js';
+import { buildWelcomeEmailHtml } from '../server/lib/welcome-email.js';
 import { BRAND_KIT, BRAND_NAME } from '../src/site/brand.js';
 
 export default async function handler(req, res) {

@@ -8,8 +8,8 @@ import {
   findUserUidByEmail,
   grantEntitlements,
   mapPurchaseProduct,
-} from '../lib/grant-entitlements.js';
-import { getFirebaseAdmin, FieldValue } from '../lib/firebase-admin.js';
+} from '../../server/lib/grant-entitlements.js';
+import { getFirebaseAdmin, FieldValue } from '../../server/lib/firebase-admin.js';
 
 function unauthorized(res) {
   return res.status(401).json({ error: 'Unauthorized' });

@@ -1,5 +1,5 @@
-import { verifyAdminRequest, getFirebaseAdmin } from '../lib/firebase-admin.js';
-import { PAGE_META } from '../lib/analytics-schema.js';
+import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
+import { PAGE_META } from '../../server/lib/analytics-schema.js';
 
 function mapCounterObject(obj = {}) {
   return Object.entries(obj).map(([key, data]) => {

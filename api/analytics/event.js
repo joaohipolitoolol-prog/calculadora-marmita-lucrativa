@@ -1,11 +1,11 @@
-import { getFirebaseAdmin, FieldValue } from '../lib/firebase-admin.js';
+import { getFirebaseAdmin, FieldValue } from '../../server/lib/firebase-admin.js';
 import {
   EVENT_TYPES,
   LINES,
   PAGE_META,
   sanitizeKey,
   todayKey,
-} from '../lib/analytics-schema.js';
+} from '../../server/lib/analytics-schema.js';
 
 function bump(map, key, n = 1) {
   if (!key) return;

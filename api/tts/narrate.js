@@ -1,4 +1,4 @@
-import { TTS_AUDIO_CONFIG, TTS_VOICE_CANDIDATES } from '../lib/tts-voices.js';
+import { TTS_AUDIO_CONFIG, TTS_VOICE_CANDIDATES } from '../../server/lib/tts-voices.js';
 
 const MAX_TEXT_LENGTH = 4800;
 
