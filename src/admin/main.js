@@ -31,6 +31,11 @@ import {
 } from '../kiwify/email-templates.js';
 import { DEV_ADMIN_ACCESS } from '../site/dev.js';
 import {
+  ADMIN_PROFILE_GRANTS,
+  loadAdminAllowlist,
+  saveAdminEmails,
+} from '../lib/admin-access.js';
+import {
   loadContentSettings,
   saveContentSettings,
 } from '../lib/content-settings.js';
@@ -165,6 +170,7 @@ async function refreshAll() {
   }
   if (state.activeTab === 'content') {
     await loadContentSettings();
+    await loadAdminAllowlist();
   }
   if (
     state.activeTab === 'dashboard' ||
@@ -234,6 +240,7 @@ function bindEvents() {
       }
       if (state.activeTab === 'content') {
         await loadContentSettings();
+        await loadAdminAllowlist();
       }
       if (
         state.activeTab === 'dashboard' ||
@@ -276,6 +283,22 @@ function bindEvents() {
       input.checked = !checked;
       showToast('No se pudo guardar');
     });
+  });
+
+  document.getElementById('admin-emails-form')?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const raw = document.getElementById('admin-emails-input')?.value || '';
+    const emails = raw
+      .split(/[\n,;]+/)
+      .map((entry) => entry.trim().toLowerCase())
+      .filter(Boolean);
+    const result = await saveAdminEmails(emails);
+    if (result.ok) {
+      showToast(t('content.adminsSaved'));
+      paint();
+      return;
+    }
+    showToast('No se pudo guardar los accesos admin');
   });
 
   root.querySelectorAll('[data-user-filter]').forEach((btn) => {
@@ -589,8 +612,10 @@ function renderLoading() {
   root.innerHTML = `<div class="admin-loading-screen"><div class="admin-spinner"></div><p>${escapeHtml(t('loading'))}</p></div>`;
 }
 
-function renderDenied(message) {
-  root.innerHTML = `<div class="admin-error"><div class="admin-error-card"><h1>${escapeHtml(t('denied.title'))}</h1><p>${escapeHtml(message)}</p><a href="/login" class="admin-btn primary">${escapeHtml(t('denied.login'))}</a></div></div>`;
+function renderDenied(message, user = null) {
+  const email = user?.email ? `<p class="admin-denied-email">Sesión: <strong>${escapeHtml(user.email)}</strong></p>` : '';
+  const hint = `<p class="admin-hint">Si eres el dueño del proyecto, agrega tu correo en Vercel → <code>VITE_ADMIN_EMAILS</code> y vuelve a desplegar, o marca <code>isAdmin: true</code> en Firestore (<code>users/tu-uid</code>).</p>`;
+  root.innerHTML = `<div class="admin-error"><div class="admin-error-card"><h1>${escapeHtml(t('denied.title'))}</h1><p>${escapeHtml(message)}</p>${email}${hint}<a href="/login?next=/admin" class="admin-btn primary">${escapeHtml(t('denied.login'))}</a></div></div>`;
 }
 
 renderLoading();
@@ -607,9 +632,10 @@ watchAuth(async (user) => {
     }
 
     let profile = await getUserProfile(user.uid);
+    await loadAdminAllowlist();
     const admin = (await isUserAdmin(user, profile)) || DEV_ADMIN_ACCESS;
     if (!admin) {
-      renderDenied(t('denied.noAdmin'));
+      renderDenied(t('denied.noAdmin'), user);
       return;
     }
 
@@ -617,18 +643,18 @@ watchAuth(async (user) => {
       await updateUserProfile(user.uid, {
         email: user.email?.trim().toLowerCase() || '',
         displayName: user.displayName || '',
-        isAdmin: true,
-        hasKit: true,
+        ...ADMIN_PROFILE_GRANTS,
       });
     }
 
     state.currentAdminUser = user;
+    await loadAdminAllowlist();
     await loadUsers();
     await loadContentSettings();
     await loadAnalytics();
     paint();
   } catch (error) {
     console.error('[admin]', error);
-    renderDenied(error.message || t('denied.loadError'));
+    renderDenied(error.message || t('denied.loadError'), user);
   }
 });

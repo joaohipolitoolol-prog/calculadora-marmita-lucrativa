@@ -1,6 +1,11 @@
 import { db, isFirebaseConfigured } from './firebase.js';
 import { normalizeProfile } from './products.js';
 import {
+  ADMIN_PROFILE_GRANTS,
+  isAdminEmail,
+  loadAdminAllowlist,
+} from './admin-access.js';
+import {
   collection,
   doc,
   getDoc,
@@ -9,14 +14,8 @@ import {
   setDoc,
 } from 'firebase/firestore';
 
-const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || '')
-  .split(',')
-  .map((e) => e.trim().toLowerCase())
-  .filter(Boolean);
 
-export function isAdminEmail(email) {
-  return ADMIN_EMAILS.includes(String(email || '').trim().toLowerCase());
-}
+export { isAdminEmail } from './admin-access.js';
 
 export async function getUserProfile(uid) {
   if (!isFirebaseConfigured || !db || !uid) return null;
@@ -86,6 +85,7 @@ export async function updateUserProfile(uid, data) {
 
 export async function isUserAdmin(user, profile) {
   if (!user) return false;
+  await loadAdminAllowlist();
   if (profile?.isAdmin) return true;
   if (isAdminEmail(user.email)) return true;
   return false;
@@ -100,8 +100,9 @@ export async function listUsers() {
 }
 
 export async function syncAdminFlag(uid, email) {
+  await loadAdminAllowlist();
   if (!isAdminEmail(email)) return;
-  await updateUserProfile(uid, { isAdmin: true, hasKit: true });
+  await updateUserProfile(uid, { ...ADMIN_PROFILE_GRANTS });
 }
 
 export async function ensureUserProfile(user, extra = {}) {

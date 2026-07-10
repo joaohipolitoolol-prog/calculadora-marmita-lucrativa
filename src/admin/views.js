@@ -1,6 +1,7 @@
 import { PRODUCTS, isPendingStatus, profileStatus } from '../lib/products.js';
 import { getEnabledLines } from '../lib/product-lines.js';
 import { getContentSettings } from '../lib/content-settings.js';
+import { getAdminAllowlist } from '../lib/admin-access.js';
 import { WHATSAPP_NUMBERS } from '../lib/whatsapp-numbers.js';
 import { ICONS } from './icons.js';
 import { escapeHtml, formatDate, formatDateTime, getUserInitial } from './helpers.js';
@@ -567,8 +568,27 @@ export function renderCodesView(codes) {
 export function renderContentView() {
   const settings = getContentSettings();
   const lines = getEnabledLines().filter((line) => line.sellable);
+  const adminEmails = getAdminAllowlist();
 
   return `
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <div>
+          <h2>${t('content.adminsTitle')}</h2>
+          <p class="admin-hint">${t('content.adminsHint')}</p>
+        </div>
+      </div>
+      <div class="admin-card-body">
+        <form id="admin-emails-form" class="admin-emails-form">
+          <label class="admin-field">
+            <span>${t('content.adminEmails')}</span>
+            <textarea id="admin-emails-input" rows="4" placeholder="tu@correo.com">${escapeHtml(adminEmails.join('\n'))}</textarea>
+          </label>
+          <button type="submit" class="admin-btn primary">${t('content.saveAdmins')}</button>
+        </form>
+      </div>
+    </div>
+
     <div class="admin-card">
       <div class="admin-card-head">
         <div>

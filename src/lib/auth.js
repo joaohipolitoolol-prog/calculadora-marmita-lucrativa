@@ -1,5 +1,6 @@
 import { auth, isFirebaseConfigured } from './firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
+import { loadAdminAllowlist } from './admin-access.js';
 import { createUserProfile, isAdminEmail, syncAdminFlag, touchUserActivity, updateUserProfile } from './user-profile.js';
 import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
 import { purchaseFlagsFromSearch, resolveProductFlags } from './purchase-flags.js';
@@ -201,6 +202,8 @@ export async function login(email, password, options = {}) {
   const auth = requireFirebase();
   await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
   const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+  await loadAdminAllowlist();
+  await syncAdminFlag(result.user.uid, result.user.email);
   await applyPurchaseGrantsFromUrl(result.user.uid, search);
   const line = resolveLineFromSearch(search);
   await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
