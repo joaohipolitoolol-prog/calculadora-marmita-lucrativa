@@ -24,17 +24,28 @@ export async function getUserProfile(uid) {
   return snap.exists() ? normalizeProfile({ id: snap.id, ...snap.data() }) : null;
 }
 
-export async function createUserProfile(uid, { email, displayName, hasPremium = false, registeredFrom = null }) {
+export async function createUserProfile(
+  uid,
+  {
+    email,
+    displayName,
+    hasKit = true,
+    hasPremium = false,
+    hasPostres = false,
+    hasPostresPremium = false,
+    registeredFrom = null,
+  }
+) {
   if (!isFirebaseConfigured || !db) return null;
 
   const admin = isAdminEmail(email);
   const profile = normalizeProfile({
     email: email.trim().toLowerCase(),
     displayName: displayName.trim(),
-    hasKit: true,
+    hasKit: Boolean(hasKit) || admin,
     hasPremium: Boolean(hasPremium),
-    hasPostres: true,
-    hasPostresPremium: false,
+    hasPostres: Boolean(hasPostres),
+    hasPostresPremium: Boolean(hasPostresPremium),
     isAdmin: admin,
     registeredFrom,
     createdAt: serverTimestamp(),
@@ -115,8 +126,19 @@ export async function resolveUserProfile(user) {
 
 export function hasKitAccess(profile, user) {
   if (!user) return false;
-  // Main kit open for all registered users; premium stays gated separately.
-  return true;
+  // Any owned product (or legacy profiles) can enter the app shell.
+  if (!profile) return true;
+  return Boolean(profile.hasKit || profile.hasPostres || profile.hasPremium || profile.hasPostresPremium || profile.isAdmin);
+}
+
+export function hasPaletasAccess(profile) {
+  if (!profile) return false;
+  return Boolean(profile.hasKit || profile.hasPremium || profile.isAdmin);
+}
+
+export function hasPostresAccess(profile) {
+  if (!profile) return false;
+  return Boolean(profile.hasPostres || profile.hasPostresPremium || profile.isAdmin);
 }
 
 export function hasPremiumAccess(profile) {

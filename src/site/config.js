@@ -14,5 +14,5 @@ export const APP_URL = `${SITE_URL}${APP_PATH}`;
 export const POST_PURCHASE_UPSELL_URL = `${SITE_URL}${UPSELL_PATH}`;
 export const ACCESS_SHORT_PATH = '/acesso';
 export const ACCESS_SHORT_URL = `${SITE_URL}${ACCESS_SHORT_PATH}`;
-export const POST_PURCHASE_LOGIN_URL = `${REGISTER_URL}?compra=1`;
-export const POST_PURCHASE_APP_URL = `${APP_URL}?compra=1`;
+export const POST_PURCHASE_LOGIN_URL = `${REGISTER_URL}?compra=1&line=paletas`;
+export const POST_PURCHASE_APP_URL = `${APP_URL}?compra=1&line=paletas`;

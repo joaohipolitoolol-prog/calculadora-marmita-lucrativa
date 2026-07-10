@@ -17,8 +17,8 @@ export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E';
 export const DOWNSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E?off=16xak8rd';
 
 /** Rutas relativas — siempre en el dominio actual */
-export const ACCESS_URL = '/cadastrar?compra=1';
-export const UPSELL_POST_PURCHASE_URL = '/cadastrar?compra=1&premium=1';
+export const ACCESS_URL = '/cadastrar?compra=1&line=paletas';
+export const UPSELL_POST_PURCHASE_URL = '/cadastrar?compra=1&premium=1&line=paletas';
 
 export const UPSELL_CURRENCY = 'USD';
 export const UPSELL_PRICE_USD = 12;

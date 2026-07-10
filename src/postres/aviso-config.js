@@ -2,6 +2,11 @@
 
 export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
 
+/** Preferir upsell; aviso fica como fallback / suporte */
+export const ACCESS_URL = '/cadastrar?compra=1&postres=1&line=postres';
+export const UPSELL_URL = '/postres/upsell';
+export const LOGIN_URL = '/login?line=postres';
+
 export const WHATSAPP_NUMBER = '447402867442';
 
 export const WHATSAPP_DISPLAY = '+44 7402 867442';

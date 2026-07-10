@@ -64,6 +64,17 @@ body.auth-resolved .auth-footer {
   box-shadow: var(--shadow-sm);
 }
 
+.auth-logo-emoji {
+  flex-shrink: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
 .auth-main {
   flex: 1;
   display: flex;

@@ -128,7 +128,75 @@ export const PREMIUM_DOWNLOADS = [
   },
 ];
 
-const ALL_DOCS = [...KIT_DOWNLOADS, ...PREMIUM_DOWNLOADS];
+/** Postres kit — placeholders até os PDFs finais entrarem em /public/postres/produto/ */
+export const POSTRES_DOWNLOADS = [
+  {
+    id: 'postres-kit-principal',
+    kind: 'coming-soon',
+    href: '#',
+    downloadHref: '#',
+    title: 'Kit Postres en Vaso',
+    desc: 'Recetas + método para vender por WhatsApp',
+    tag: 'En breve',
+    icon: '🍮',
+    accent: '#EC3F7A',
+    featured: true,
+  },
+  {
+    id: 'postres-calculadora',
+    kind: 'coming-soon',
+    href: '#',
+    downloadHref: '#',
+    title: 'Calculadora Postres',
+    desc: 'Costos y precio sugerido por vaso',
+    tag: 'En breve',
+    icon: '📊',
+    accent: '#ff7a1a',
+  },
+  {
+    id: 'postres-menu',
+    kind: 'coming-soon',
+    href: '#',
+    downloadHref: '#',
+    title: 'Menú editable',
+    desc: 'Copia y pega en WhatsApp',
+    tag: 'En breve',
+    icon: '📋',
+    accent: '#5ecf9a',
+  },
+  {
+    id: 'postres-mensajes',
+    kind: 'coming-soon',
+    href: '#',
+    downloadHref: '#',
+    title: 'Mensajes WhatsApp',
+    desc: 'Textos listos para vender postres',
+    tag: 'En breve',
+    icon: '💬',
+    accent: '#a78bfa',
+  },
+];
+
+export const POSTRES_PREMIUM_DOWNLOADS = [
+  {
+    id: 'postres-premium-kit',
+    kind: 'coming-soon',
+    href: '#',
+    downloadHref: '#',
+    title: 'Postres Premium',
+    desc: 'Recetas y combos avanzados',
+    tag: 'En breve',
+    icon: '✨',
+    accent: '#ffc94a',
+  },
+];
+
+const ALL_DOCS = [
+  ...KIT_DOWNLOADS,
+  ...PREMIUM_DOWNLOADS,
+  ...POSTRES_DOWNLOADS,
+  ...POSTRES_PREMIUM_DOWNLOADS,
+];
 
 export function getDocById(id) {
   if (!id) return null;
@@ -143,5 +211,6 @@ export function kindLabel(kind) {
   if (kind === 'pdf') return 'PDF';
   if (kind === 'html') return 'HTML';
   if (kind === 'xlsx') return 'Excel';
+  if (kind === 'coming-soon') return 'Pronto';
   return '';
 }

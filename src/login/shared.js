@@ -1,4 +1,12 @@
 import { isFirebaseConfigured } from '../lib/firebase.js';
+import {
+  resolveLineFromSearch,
+  rememberActiveLine,
+  readRememberedLineId,
+  authHomeHref,
+  withLineQuery,
+  PRODUCT_LINE_BY_ID,
+} from '../lib/product-lines.js';
 
 export function showAlert(el, message, type = 'error') {
   if (!el) return;
@@ -38,15 +46,85 @@ export function initConfigAlert() {
   );
 }
 
-export function getAfterLoginUrl() {
+/** Resolve + remember product line for auth pages. */
+export function getAuthProductLine() {
+  const fromUrl = resolveLineFromSearch(window.location.search);
+  if (fromUrl) {
+    rememberActiveLine(fromUrl.id);
+    return fromUrl;
+  }
+
+  // Keep brand if user already came from a product LP this session.
+  const rememberedId = readRememberedLineId();
+  if (rememberedId && PRODUCT_LINE_BY_ID[rememberedId]?.enabled) {
+    return PRODUCT_LINE_BY_ID[rememberedId];
+  }
+
+  return PRODUCT_LINE_BY_ID.paletas;
+}
+
+/** Apply product brand to login/register chrome. */
+export function applyAuthBrand(line = getAuthProductLine()) {
+  if (!line) return line;
+
+  document.title = document.title.replace(/\|.+$/, `| ${line.name}`);
+  const theme = document.querySelector('meta[name="theme-color"]');
+  if (theme) theme.setAttribute('content', line.accent);
+
+  const logo = document.querySelector('.auth-logo');
+  if (logo) {
+    logo.setAttribute('href', authHomeHref(line));
+    const icon = logo.querySelector('.auth-logo-icon, .auth-logo-emoji');
+    if (icon) {
+      const emoji = document.createElement('span');
+      emoji.className = 'auth-logo-emoji';
+      emoji.setAttribute('aria-hidden', 'true');
+      emoji.textContent = line.emoji;
+      icon.replaceWith(emoji);
+    }
+    const label = logo.querySelector('span:not(.auth-logo-emoji)');
+    if (label) label.textContent = line.name;
+  }
+
+  const cardIcon = document.querySelector('.auth-card-icon');
+  if (cardIcon) cardIcon.textContent = line.emoji;
+
+  document.querySelectorAll('.auth-switch a, .auth-footer a').forEach((a) => {
+    const href = a.getAttribute('href') || '';
+    if (href.startsWith('/login') || href.startsWith('/cadastrar')) {
+      a.setAttribute('href', withLineQuery(href.split('?')[0], line.id));
+    } else if (href === '/' || href.startsWith('/#')) {
+      a.setAttribute('href', authHomeHref(line));
+      if (a.closest('.auth-footer')) {
+        a.textContent = `Ver kit · ${line.priceLabel}`;
+      }
+    }
+  });
+
+  document.documentElement.style.setProperty('--auth-accent', line.accent);
+  document.body.dataset.productLine = line.id;
+
+  return line;
+}
+
+export function getAfterLoginUrl(line = getAuthProductLine()) {
   const params = new URLSearchParams(window.location.search);
   if (params.get('compra') === '1') {
-    const premium = params.get('premium') === '1' ? '&premium=1' : '';
-    return `/app?compra=1${premium}`;
+    const next = new URLSearchParams();
+    next.set('compra', '1');
+    if (params.get('premium') === '1') next.set('premium', '1');
+    if (params.get('postres') === '1') next.set('postres', '1');
+    if (params.get('postres_premium') === '1') next.set('postres_premium', '1');
+    if (params.get('paletas') === '1') next.set('paletas', '1');
+    if (params.get('donuts') === '1') next.set('donuts', '1');
+    if (line?.id) next.set('line', line.id);
+    return `/app?${next.toString()}`;
   }
   const next = params.get('next');
-  if (next && next.startsWith('/')) return next;
-  return '/app';
+  if (next && next.startsWith('/')) {
+    return withLineQuery(next, line?.id);
+  }
+  return withLineQuery('/app', line?.id);
 }
 
 export function translateAuthError(error) {

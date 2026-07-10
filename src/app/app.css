@@ -3148,6 +3148,104 @@ body.onboarding-open {
   background: linear-gradient(145deg, rgba(255, 201, 74, 0.14), rgba(255, 79, 139, 0.08));
 }
 
+.line-switcher {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--gray-border);
+}
+
+.line-switcher-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--brown-mid);
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.line-switcher-btn.active {
+  background: #fff;
+  color: var(--brown);
+  box-shadow: var(--shadow-sm);
+}
+
+.topbar-brand-emoji,
+.drawer-brand-emoji {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.drawer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cross-sell-card {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  text-align: left;
+}
+
+.cross-sell-postres {
+  border: 1px solid rgba(236, 63, 122, 0.35);
+  background: linear-gradient(145deg, rgba(236, 63, 122, 0.1), rgba(255, 122, 26, 0.06));
+}
+
+.cross-sell-paletas {
+  border: 1px solid rgba(255, 79, 139, 0.35);
+  background: linear-gradient(145deg, rgba(255, 79, 139, 0.1), rgba(255, 201, 74, 0.08));
+}
+
+.cross-sell-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brown);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
+.cross-sell-card h3 {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.cross-sell-card p {
+  font-size: 0.86rem;
+  color: var(--brown-mid);
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+
+.cross-sell-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.file-row.coming-soon {
+  opacity: 0.78;
+  cursor: default;
+  pointer-events: none;
+}
+
 .premium-upsell-badge {
   display: inline-block;
   font-size: 0.65rem;

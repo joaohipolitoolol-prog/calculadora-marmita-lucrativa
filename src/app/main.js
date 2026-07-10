@@ -8,6 +8,15 @@ import {
   COMBOS_PREMIUM,
 } from '../data/kit-paletas.js';
 import {
+  CHECKLIST_POSTRES,
+  LISTA_COMPRAS_POSTRES,
+  MENSAJES_POSTRES,
+  PLAN_7_DIAS_POSTRES,
+  RECETAS_POSTRES,
+  RECETAS_POSTRES_PREMIUM,
+  COMBOS_POSTRES_PREMIUM,
+} from '../data/kit-postres.js';
+import {
   calculate,
   cloneInputs,
   readInputsFromForm,
@@ -19,6 +28,11 @@ import { hasKitAccess, isUserAdmin, resolveUserProfile } from '../lib/user-profi
 import { saveDisplayName, getLocalDisplayName } from '../lib/user-settings.js';
 import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
 import { UPSELL_CHECKOUT_URL, UPSELL_PRICE_LABEL, UPSELL_NAME } from '../upsell/config.js';
+import {
+  UPSELL_CHECKOUT_URL as POSTRES_UPSELL_CHECKOUT,
+  UPSELL_PRICE_LABEL as POSTRES_UPSELL_PRICE,
+  UPSELL_NAME as POSTRES_UPSELL_NAME,
+} from '../postres-upsell/config.js';
 import { money, percent, parseNumber, escapeHtml } from '../lib/format.js';
 import {
   fullToSimple,
@@ -36,8 +50,16 @@ import {
   saveScenario,
   saveChecklistToCloud,
 } from '../lib/storage.js';
-import { BRAND_KIT, BRAND_NAME } from '../site/brand.js';
-import { ICONS, VIEW_META, BRAND_LOGO, TAB_VIEWS } from './icons.js';
+import {
+  crossSellLines,
+  ownedLinesFromProfile,
+  PRODUCT_LINE_BY_ID,
+  rememberActiveLine,
+  resolveActiveLine,
+  premiumStorageKey,
+  LEGACY_PREMIUM_STORAGE_KEY,
+} from '../lib/product-lines.js';
+import { ICONS, VIEW_META, TAB_VIEWS } from './icons.js';
 import { BRAND_EMOJI } from '../brand/logo-mark.js';
 import {
   clearOnboardingSeen,
@@ -54,6 +76,8 @@ import {
 import {
   KIT_DOWNLOADS,
   PREMIUM_DOWNLOADS,
+  POSTRES_DOWNLOADS,
+  POSTRES_PREMIUM_DOWNLOADS,
   getDocById,
   isViewableDoc,
   kindLabel,
@@ -77,8 +101,59 @@ let drawerOpen = false;
 let recipeCatalog = 'base';
 let recipeFilter = 'all';
 let kitUnlocked = true;
+let userProfile = null;
+let ownedLines = [PRODUCT_LINE_BY_ID.paletas];
+let activeLine = PRODUCT_LINE_BY_ID.paletas;
 let userIsAdmin = false;
 let deferredInstallPrompt = null;
+
+function lineBrand() {
+  return activeLine || PRODUCT_LINE_BY_ID.paletas;
+}
+
+function ownsLine(lineId) {
+  return ownedLines.some((l) => l.id === lineId);
+}
+
+function kitContentForLine() {
+  const id = lineBrand().id;
+  if (id === 'postres') {
+    return {
+      recipes: RECETAS_POSTRES,
+      recipesPremium: RECETAS_POSTRES_PREMIUM,
+      combos: COMBOS_POSTRES_PREMIUM,
+      mensajes: MENSAJES_POSTRES,
+      plan: PLAN_7_DIAS_POSTRES,
+      lista: LISTA_COMPRAS_POSTRES,
+      checklist: CHECKLIST_POSTRES,
+      downloads: POSTRES_DOWNLOADS,
+      premiumDownloads: POSTRES_PREMIUM_DOWNLOADS,
+      upsellCheckout: POSTRES_UPSELL_CHECKOUT,
+      upsellPrice: POSTRES_UPSELL_PRICE,
+      upsellName: POSTRES_UPSELL_NAME,
+      upsellPath: '/postres/upsell',
+      recipeTitle: 'Recetas de postres en vaso',
+      premiumRecipeTitle: 'Recetas premium · Postres',
+    };
+  }
+  return {
+    recipes: RECETAS_PALETAS,
+    recipesPremium: RECETAS_PREMIUM,
+    combos: COMBOS_PREMIUM,
+    mensajes: MENSAJES_WHATSAPP,
+    plan: PLAN_7_DIAS,
+    lista: LISTA_COMPRAS,
+    checklist: CHECKLIST_PRODUCCION,
+    downloads: KIT_DOWNLOADS,
+    premiumDownloads: PREMIUM_DOWNLOADS,
+    upsellCheckout: UPSELL_CHECKOUT_URL,
+    upsellPrice: UPSELL_PRICE_LABEL,
+    upsellName: UPSELL_NAME,
+    upsellPath: '/upsell-paletas-premium',
+    recipeTitle: '30 Recetas de Paletas',
+    premiumRecipeTitle: '20 Recetas Premium',
+  };
+}
 
 function shouldShowInstallButton() {
   return !isPwaInstalled();
@@ -125,16 +200,53 @@ function registerPwa() {
     .catch(() => {});
 }
 
-const STEPS = [
-  { id: 1, label: 'Producción', desc: '¿Cuántas paletas preparas por día?' },
-  { id: 2, label: 'Ingredientes', desc: 'Costo de cada preparo ÷ porciones' },
-  { id: 3, label: 'Extras', desc: 'Empaque, hielo, entrega, desperdicio' },
-  { id: 4, label: 'Tiempo', desc: 'Cuánto vale tu hora de trabajo' },
-  { id: 5, label: 'Precio', desc: 'Cuánto cobras y qué margen quieres' },
-];
+function getCalcSteps() {
+  const unit = lineBrand().unitPlural;
+  return [
+    { id: 1, label: 'Producción', desc: `¿Cuántos ${unit} preparas por día?` },
+    { id: 2, label: 'Ingredientes', desc: 'Costo de cada preparo ÷ porciones' },
+    { id: 3, label: 'Extras', desc: 'Empaque, hielo, entrega, desperdicio' },
+    { id: 4, label: 'Tiempo', desc: 'Cuánto vale tu hora de trabajo' },
+    { id: 5, label: 'Precio', desc: 'Cuánto cobras y qué margen quieres' },
+  ];
+}
 
-const CHECKLIST_STORAGE_KEY = 'paletas_checklist';
-const PREMIUM_STORAGE_KEY = 'paletas_premium';
+function checklistKey(uid) {
+  return `kit_checklist_${lineBrand().id}_${uid}`;
+}
+
+function readPremiumFlag(lineId) {
+  if (localStorage.getItem(premiumStorageKey(lineId)) === '1') return true;
+  // Migrate legacy Paletas-only key once.
+  if (lineId === 'paletas' && localStorage.getItem(LEGACY_PREMIUM_STORAGE_KEY) === '1') {
+    localStorage.setItem(premiumStorageKey('paletas'), '1');
+    return true;
+  }
+  return false;
+}
+
+function writePremiumFlag(lineId, on) {
+  const key = premiumStorageKey(lineId);
+  if (on) localStorage.setItem(key, '1');
+  else localStorage.removeItem(key);
+  if (lineId === 'paletas') {
+    if (on) localStorage.setItem(LEGACY_PREMIUM_STORAGE_KEY, '1');
+    else localStorage.removeItem(LEGACY_PREMIUM_STORAGE_KEY);
+  }
+}
+
+function hasPremiumAccess() {
+  if (DEV_UNLOCK_ALL_CONTENT) return true;
+  if (userProfile) {
+    return Boolean(userProfile[lineBrand().premiumField] || userProfile.isAdmin);
+  }
+  return readPremiumFlag(lineBrand().id);
+}
+
+function hasKitContentAccess() {
+  if (DEV_UNLOCK_ALL_CONTENT) return true;
+  return kitUnlocked;
+}
 
 const SIMULATION_VOLUMES = [10, 20, 30];
 
@@ -146,20 +258,6 @@ const RECIPE_FILTERS = [
   { id: 'postre', label: 'Postre' },
   { id: 'banada', label: 'Bañadas' },
 ];
-
-function checklistKey(uid) {
-  return `${CHECKLIST_STORAGE_KEY}_${uid}`;
-}
-
-function hasPremiumAccess() {
-  if (DEV_UNLOCK_ALL_CONTENT) return true;
-  return localStorage.getItem(PREMIUM_STORAGE_KEY) === '1';
-}
-
-function hasKitContentAccess() {
-  if (DEV_UNLOCK_ALL_CONTENT) return true;
-  return kitUnlocked;
-}
 
 function loadChecklistState() {
   try {
@@ -215,12 +313,25 @@ async function bootstrap() {
 
 function unlockPremiumFromQuery() {
   const params = new URLSearchParams(window.location.search);
-  if (params.get('premium') === '1') {
-    localStorage.setItem(PREMIUM_STORAGE_KEY, '1');
-  }
-  if (params.get('compra') === '1' || params.get('premium') === '1') {
+  if (params.get('premium') === '1') writePremiumFlag('paletas', true);
+  if (params.get('postres_premium') === '1') writePremiumFlag('postres', true);
+  if (
+    params.get('compra') === '1' ||
+    params.get('premium') === '1' ||
+    params.get('postres') === '1' ||
+    params.get('postres_premium') === '1' ||
+    params.get('line')
+  ) {
+    // Keep line in session; strip one-shot purchase params from URL.
+    const line = params.get('line');
     params.delete('compra');
     params.delete('premium');
+    params.delete('postres');
+    params.delete('postres_premium');
+    params.delete('paletas');
+    params.delete('donuts');
+    if (line) params.set('line', line);
+    else params.delete('line');
     const qs = params.toString();
     window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
   }
@@ -260,11 +371,12 @@ function renderKitLockedCard(title = 'Contenido del kit') {
 
 function renderPostPurchaseBanner() {
   if (sessionStorage.getItem('paletas_post_purchase') !== '1') return '';
+  const brand = lineBrand();
 
   return `
     <div class="welcome-banner" id="welcome-banner">
       <div class="welcome-banner-body">
-        <strong>¡Bienvenida a tu ${escapeHtml(BRAND_KIT)}!</strong>
+        <strong>¡Bienvenida a tu ${escapeHtml(brand.kitName)}!</strong>
         <ol class="welcome-banner-steps">
           <li>Calcula tus precios en modo rápido</li>
           <li>Toca <em>Ver mi ganancia</em></li>
@@ -289,10 +401,26 @@ watchAuth(async (user) => {
   }
 
   const profile = await resolveUserProfile(user);
+  userProfile = profile;
   kitUnlocked = hasKitAccess(profile, user);
+  ownedLines = ownedLinesFromProfile(profile);
+  if (DEV_UNLOCK_ALL_CONTENT && ownedLines.length === 0) {
+    ownedLines = [PRODUCT_LINE_BY_ID.paletas, PRODUCT_LINE_BY_ID.postres];
+  }
+  if (ownedLines.length === 0) {
+    ownedLines = [PRODUCT_LINE_BY_ID.paletas];
+  }
+  activeLine = resolveActiveLine({
+    search: window.location.search,
+    profile,
+  });
+  if (!ownsLine(activeLine.id) && ownedLines[0]) {
+    activeLine = ownedLines[0];
+    rememberActiveLine(activeLine.id);
+  }
   userIsAdmin = (await isUserAdmin(user, profile)) || DEV_ADMIN_ACCESS;
-  if (profile?.hasPremium) localStorage.setItem(PREMIUM_STORAGE_KEY, '1');
-  else localStorage.removeItem(PREMIUM_STORAGE_KEY);
+  writePremiumFlag('paletas', Boolean(profile?.hasPremium));
+  writePremiumFlag('postres', Boolean(profile?.hasPostresPremium));
 
   currentUser = {
     uid: user.uid,
@@ -450,7 +578,7 @@ function renderDrawer() {
     <div class="drawer-overlay ${drawerOpen ? 'open' : ''}" data-drawer-close aria-hidden="true"></div>
     <aside class="app-drawer ${drawerOpen ? 'open' : ''}" aria-label="Menu principal">
       <div class="drawer-head">
-        <div class="drawer-brand">${BRAND_LOGO}<strong>${escapeHtml(BRAND_NAME)}</strong></div>
+        <div class="drawer-brand"><span class="drawer-brand-emoji" aria-hidden="true">${lineBrand().emoji}</span><strong>${escapeHtml(lineBrand().name)}</strong></div>
         <button type="button" class="icon-btn" data-drawer-close aria-label="Cerrar menú">${ICONS.close}</button>
       </div>
       <div class="drawer-summary ${currentResults.status}">
@@ -502,8 +630,30 @@ const KIT_HUB_TABS = [
   { id: 'vender', label: 'Vender', icon: 'message' },
 ];
 
-function renderKitHubNav() {
+function renderLineSwitcher() {
+  if (ownedLines.length < 2) return '';
   return `
+    <div class="line-switcher" role="tablist" aria-label="Tu kit activo">
+      ${ownedLines
+        .map(
+          (line) => `
+        <button type="button" role="tab" class="line-switcher-btn ${activeLine.id === line.id ? 'active' : ''}" data-set-line="${line.id}" aria-selected="${activeLine.id === line.id}">
+          <span aria-hidden="true">${line.emoji}</span>
+          <span>${escapeHtml(line.short)}</span>
+        </button>
+      `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderKitHubNav() {
+  if (!KIT_HUB_TABS.some((t) => t.id === kitHubTab) || kitHubTab === 'postres') {
+    kitHubTab = 'recetas';
+  }
+  return `
+    ${renderLineSwitcher()}
     <div class="kit-hub-nav" role="tablist" aria-label="Secciones del kit">
       ${KIT_HUB_TABS.map(
         (tab) => `
@@ -578,6 +728,7 @@ function renderLiveSummary() {
 }
 
 function renderStepBar() {
+  const STEPS = getCalcSteps();
   const step = STEPS[openStep - 1];
   const pills = STEPS.map(
     (s) => `
@@ -610,6 +761,7 @@ function renderCalcFooter() {
     `;
   }
 
+  const STEPS = getCalcSteps();
   const isLast = openStep >= STEPS.length;
   return `
     <div class="calc-footer-bar">
@@ -627,17 +779,18 @@ function renderCalcFooter() {
 
 function renderHome() {
   const r = currentResults;
+  const brand = lineBrand();
   const name = escapeHtml(currentUser.displayName || getLocalDisplayName(currentUser.uid) || 'emprendedor/a');
   const statusLabel =
     r.status === 'prejuizo'
       ? 'Revisa tu precio — estás perdiendo'
       : r.status === 'alerta'
         ? 'Puedes mejorar tu margen'
-        : '¡Tus paletas están dando ganancia!';
+        : `¡Tus ${brand.unitPlural} están dando ganancia!`;
 
   const quickLinks = [
     { id: 'calc', icon: 'calc', label: 'Calcular precio', desc: 'Modo rápido o completo' },
-    { id: 'results', icon: 'chart', label: 'Ver ganancia', desc: `${money(r.profitPerUnit)} por paleta` },
+    { id: 'results', icon: 'chart', label: 'Ver ganancia', desc: `${money(r.profitPerUnit)} por ${brand.unitSingular}` },
     { id: 'kit', kitHub: 'recetas', icon: 'book', label: 'Recetas', desc: 'Sabores y combos' },
     { id: 'kit', kitHub: 'archivos', icon: 'folder', label: 'Archivos', desc: 'PDFs y plantillas' },
     { id: 'kit', kitHub: 'vender', icon: 'message', label: 'Vender', desc: 'Mensajes WhatsApp' },
@@ -648,6 +801,7 @@ function renderHome() {
       ${renderKitPendingBanner()}
       ${renderPostPurchaseBanner()}
       ${renderPwaHintBanner(Boolean(deferredInstallPrompt))}
+      ${renderLineSwitcher()}
 
       <div class="home-hero ${r.status}">
         <p class="home-greeting">Hola, <strong>${name}</strong></p>
@@ -694,6 +848,8 @@ function renderHome() {
       `
           : ''
       }
+
+      ${renderCrossSellOffer()}
     </div>
   `;
 }
@@ -845,8 +1001,22 @@ function renderFileRow(file, locked) {
   const kind = kindLabel(file.kind);
   const kindBadge = kind ? `<span class="file-kind">${kind}</span>` : '';
   const tag = file.tag ? `<span class="file-tag">${escapeHtml(file.tag)}</span>` : '';
-  const action = locked ? '🔒' : file.kind === 'xlsx' ? '↓' : '↗';
   const featured = file.featured ? ' featured' : '';
+
+  if (file.kind === 'coming-soon') {
+    return `
+      <div class="file-row coming-soon${featured}" style="--file-accent:${file.accent}" aria-disabled="true">
+        <span class="file-icon">${file.icon}</span>
+        <span class="file-info">
+          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
+          <em>${escapeHtml(file.desc)}</em>
+        </span>
+        <span class="file-action">⏳</span>
+      </div>
+    `;
+  }
+
+  const action = locked ? '🔒' : file.kind === 'xlsx' ? '↓' : '↗';
 
   if (locked) {
     return `
@@ -888,15 +1058,17 @@ function renderFileRow(file, locked) {
 
 function renderFiles() {
   const locked = !hasKitContentAccess();
+  const kit = kitContentForLine();
+  const brand = lineBrand();
 
   return `
     <div class="files-page">
       ${renderKitPendingBanner()}
       <div class="section-card files-head">
-        <h2>Archivos del kit</h2>
+        <h2>Archivos · ${escapeHtml(brand.short)}</h2>
         <p class="section-text">Ábrelos aquí o descárgalos a tu celular.</p>
       </div>
-      <div class="files-list">${KIT_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
+      <div class="files-list">${kit.downloads.map((f) => renderFileRow(f, locked)).join('')}</div>
       ${
         hasPremiumAccess()
           ? `
@@ -904,15 +1076,16 @@ function renderFiles() {
           <h2>Complemento premium</h2>
           <p class="section-text">Recetas y combos avanzados.</p>
         </div>
-        <div class="files-list">${PREMIUM_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
+        <div class="files-list">${kit.premiumDownloads.map((f) => renderFileRow(f, locked)).join('')}</div>
       `
           : `
         <div class="section-card files-upsell">
-          <p class="section-text">¿Quieres 20 recetas premium y combos rentables?</p>
+          <p class="section-text">¿Quieres el complemento premium?</p>
           ${renderPremiumUpsell()}
         </div>
       `
       }
+      ${renderCrossSellOffer()}
       <div class="section-card files-support">
         <p class="section-text">¿Dudas con tu acceso?</p>
         <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">WhatsApp · ${WHATSAPP_DISPLAY}</a>
@@ -921,16 +1094,38 @@ function renderFiles() {
   `;
 }
 
+function renderCrossSellOffer() {
+  const offers = crossSellLines(userProfile || {});
+  if (!offers.length) return '';
+
+  return offers
+    .map(
+      (line) => `
+      <div class="section-card cross-sell-card cross-sell-${escapeHtml(line.id)}">
+        <span class="cross-sell-badge">También puedes vender</span>
+        <h3>${escapeHtml(line.kitName)}</h3>
+        <p>Mismo método, otro ángulo: recetas, menú y mensajes listos para WhatsApp.</p>
+        <div class="cross-sell-actions">
+          <a href="${line.checkoutUrl}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Agregar por ${escapeHtml(line.priceLabel)}</a>
+          <a href="${line.landingPath}" class="btn btn-ghost btn-sm">Ver detalles</a>
+        </div>
+      </div>
+    `
+    )
+    .join('');
+}
+
 function formatWhatsAppMessage(text) {
   return String(text || '').replace(/🍭/g, BRAND_EMOJI);
 }
 
 function renderTopbarCenter() {
+  const brand = lineBrand();
   return `
     <button type="button" class="topbar-center" data-view="home" aria-label="Ir al inicio">
       <span class="topbar-brand">
-        <img src="/favicon.svg?v=5" width="22" height="22" alt="" class="topbar-brand-icon" decoding="async">
-        <span class="topbar-brand-text">${escapeHtml(BRAND_NAME)}</span>
+        <span class="topbar-brand-emoji" aria-hidden="true">${brand.emoji}</span>
+        <span class="topbar-brand-text">${escapeHtml(brand.name)}</span>
       </span>
     </button>
   `;
@@ -1000,9 +1195,9 @@ function renderSimpleForm() {
       ${renderModeToggle()}
       ${renderLiveSummary()}
       <div class="form-card">
-        ${fieldGroup('Precio de venta', 'Cuánto cobras hoy por paleta.', moneyField('simple_sellingPrice', 'simple_sellingPrice', 'Precio de venta', s.sellingPrice))}
+        ${fieldGroup('Precio de venta', `Cuánto cobras hoy por ${lineBrand().unitSingular}.`, moneyField('simple_sellingPrice', 'simple_sellingPrice', 'Precio de venta', s.sellingPrice))}
         ${fieldGroup(
-          'Costos por paleta',
+          `Costos por ${lineBrand().unitSingular}`,
           'Suma todo lo que entra en cada unidad vendida.',
           `
             ${moneyField('simple_foodCostPerUnit', 'simple_foodCostPerUnit', 'Ingredientes', s.foodCostPerUnit, 'Fruta, crema, chocolate...')}
@@ -1017,7 +1212,7 @@ function renderSimpleForm() {
           null,
           `
             <div class="field">
-              <label for="simple_marmitasPerDay">Paletas por día</label>
+              <label for="simple_marmitasPerDay">${escapeHtml(lineBrand().unitLabel)}</label>
               <input id="simple_marmitasPerDay" name="simple_marmitasPerDay" inputmode="numeric" value="${s.marmitasPerDay}">
             </div>
             <div class="field">
@@ -1050,7 +1245,7 @@ function renderIngredientsStep() {
               </div>
             </div>
             <div>
-              <label>Rinde (paletas)</label>
+              <label>Rinde (${escapeHtml(lineBrand().unitPlural)})</label>
               <input data-ingredient-portions="${index}" inputmode="numeric" value="${item.portions}">
             </div>
           </div>
@@ -1067,7 +1262,7 @@ function renderStepPanel(stepId) {
         <div class="form-card step-panel">
           <div class="field-stack">
             <div class="field">
-              <label for="marmitasPerDay">Paletas por día</label>
+              <label for="marmitasPerDay">${escapeHtml(lineBrand().unitLabel)}</label>
               <input id="marmitasPerDay" name="marmitasPerDay" inputmode="numeric" value="${currentInputs.marmitasPerDay}">
             </div>
             <div class="field">
@@ -1094,10 +1289,10 @@ function renderStepPanel(stepId) {
             <li>Desperdicio del preparo</li>
           </ul>
           <div class="field-stack">
-            ${moneyField('packagingPerUnit', 'packagingPerUnit', 'Empaque por paleta', currentInputs.packagingPerUnit, 'Bolsa, palito, etiqueta')}
+            ${moneyField('packagingPerUnit', 'packagingPerUnit', `Empaque por ${lineBrand().unitSingular}`, currentInputs.packagingPerUnit, 'Bolsa, palito, etiqueta')}
             ${moneyField('gasMonthly', 'gasMonthly', 'Gas / energía por mes', currentInputs.gasMonthly)}
             ${moneyField('spicesMonthly', 'spicesMonthly', 'Extras por mes', currentInputs.spicesMonthly)}
-            ${moneyField('deliveryPerUnit', 'deliveryPerUnit', 'Entrega por paleta', currentInputs.deliveryPerUnit)}
+            ${moneyField('deliveryPerUnit', 'deliveryPerUnit', `Entrega por ${lineBrand().unitSingular}`, currentInputs.deliveryPerUnit)}
             <div class="field">
               <label for="platformFeePercent">Comisión de app (%)</label>
               <input id="platformFeePercent" name="platformFeePercent" inputmode="decimal" value="${currentInputs.platformFeePercent}">
@@ -1281,11 +1476,11 @@ function renderResults() {
       ? 'Estás perdiendo dinero'
       : r.status === 'alerta'
         ? 'Ganancia baja — se puede mejorar'
-        : '¡Tus paletas están dando ganancia!';
+        : `¡Tus ${lineBrand().unitPlural} están dando ganancia!`;
 
   const statusDetail =
     r.status === 'prejuizo'
-      ? `Pérdida de ${money(Math.abs(r.profitPerUnit))} por paleta`
+      ? `Pérdida de ${money(Math.abs(r.profitPerUnit))} por ${lineBrand().unitSingular}`
       : `${money(r.dailyProfit)}/día · ${money(r.monthlyProfit)}/mes`;
 
   return `
@@ -1293,7 +1488,7 @@ function renderResults() {
       <div class="results-hero ${r.status}">
         <small>${statusText}</small>
         <h2>${money(r.profitPerUnit)}</h2>
-        <p>Ganancia por paleta · ${statusDetail}</p>
+        <p>Ganancia por ${lineBrand().unitSingular} · ${statusDetail}</p>
         <span class="results-hero-badge">${percent(r.margin)} de margen</span>
       </div>
 
@@ -1424,7 +1619,8 @@ function renderRecipeItem(item, label) {
   `;
 }
 
-function renderMenuByWeek(recipes = RECETAS_PALETAS) {
+function renderMenuByWeek(recipes) {
+  const list = recipes || kitContentForLine().recipes;
   const weeks = [];
   for (let i = 0; i < recipes.length; i += 7) {
     weeks.push(recipes.slice(i, i + 7));
@@ -1495,11 +1691,12 @@ function renderRecipeFilterBar() {
 }
 
 function renderBonus() {
+  const kit = kitContentForLine();
   const isPremium = recipeCatalog === 'premium';
-  const title = isPremium ? '20 Recetas Premium' : '30 Recetas de Paletas';
+  const title = isPremium ? kit.premiumRecipeTitle : kit.recipeTitle;
   const desc = isPremium
-    ? 'Bañadas, rellenas y estilo postre — para elevar tu menú y ticket medio.'
-    : 'Cremosas, frutales, rellenas y estilo postre — con ingredientes, pasos y tips de venta.';
+    ? 'Recetas avanzadas para elevar tu menú y ticket medio.'
+    : 'Recetas con ingredientes, pasos y tips de venta.';
 
   let listHtml = '';
   if (!hasKitContentAccess()) {
@@ -1508,14 +1705,14 @@ function renderBonus() {
     listHtml = `
       <div class="premium-locked-card">
         <h3>Complemento premium</h3>
-        <p>Las 20 recetas premium están incluidas en <strong>${escapeHtml(UPSELL_NAME)}</strong>.</p>
+        <p>Las recetas premium están incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
         ${renderPremiumUpsell()}
       </div>
     `;
   } else {
-    const recipes = isPremium ? RECETAS_PREMIUM : RECETAS_PALETAS;
+    const recipes = isPremium ? kit.recipesPremium : kit.recipes;
     listHtml = `
-      ${!isPremium ? `
+      ${!isPremium && lineBrand().id === 'paletas' ? `
         <div class="recipe-plan-tip">
           <strong>Plan de 30 días</strong>
           <p>Una receta por día, organizada por semana. Abre solo la semana en la que estás produciendo.</p>
@@ -1589,7 +1786,7 @@ function renderCombosPremium() {
         <p class="section-text">Usa la calculadora en Precios para fijar tu precio real. Los valores guía son orientativos.</p>
       </div>
       <div class="combo-list-app">
-        ${COMBOS_PREMIUM.map(
+        ${kitContentForLine().combos.map(
           (combo, idx) => `
             <article class="combo-card-app">
               <div class="combo-card-head">
@@ -1622,7 +1819,8 @@ function renderCombosPremium() {
 }
 
 function renderMensajesWhatsApp() {
-  const grouped = MENSAJES_WHATSAPP.reduce((acc, msg, idx) => {
+  const mensajes = kitContentForLine().mensajes;
+  const grouped = mensajes.reduce((acc, msg, idx) => {
     if (!acc[msg.categoria]) acc[msg.categoria] = [];
     acc[msg.categoria].push({ ...msg, idx });
     return acc;
@@ -1659,12 +1857,13 @@ function renderMensajesWhatsApp() {
 }
 
 function renderPlan7Dias() {
+  const plan = kitContentForLine().plan;
   return `
     <div class="section-card">
       <h2>Plan de 7 Días</h2>
       <p class="section-text">Sigue este paso a paso para organizar tu primera semana de ventas.</p>
       <ol class="plan-list">
-        ${PLAN_7_DIAS.map(
+        ${plan.map(
           (day) => `
             <li class="plan-day">
               <div class="plan-day-head">
@@ -1684,20 +1883,21 @@ function renderPlan7Dias() {
 }
 
 function renderListaCompras() {
+  const lista = kitContentForLine().lista;
   return `
     <div class="section-card">
       <h2>Lista de Compras Inicial</h2>
       <h3>Ingredientes base</h3>
       <ul class="kit-checklist">
-        ${LISTA_COMPRAS.ingredientes.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
+        ${lista.ingredientes.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
       </ul>
       <h3>Materiales</h3>
       <ul class="kit-checklist">
-        ${LISTA_COMPRAS.materiales.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
+        ${lista.materiales.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
       </ul>
       <h3>Utensilios recomendados</h3>
       <ul class="kit-checklist">
-        ${LISTA_COMPRAS.utensilios.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
+        ${lista.utensilios.map((i) => `<li>${escapeHtml(i)}</li>`).join('')}
       </ul>
     </div>
   `;
@@ -1705,20 +1905,16 @@ function renderListaCompras() {
 
 function renderPremiumUpsell() {
   if (hasPremiumAccess()) return '';
+  const kit = kitContentForLine();
 
   return `
     <div class="premium-upsell-card">
       <span class="premium-upsell-badge">Complemento opcional</span>
-      <h3>${escapeHtml(UPSELL_NAME)}</h3>
-      <p>20 recetas premium, 10 combos rentables, menú editable y mensajes para fechas especiales. Ideal cuando ya dominas lo básico.</p>
-      <ul class="premium-upsell-list">
-        <li>Cheesecake, brownie, bañadas y rellenas</li>
-        <li>Combos familiar, fin de semana y encargo</li>
-        <li>Guía de fotos y presentación</li>
-      </ul>
+      <h3>${escapeHtml(kit.upsellName)}</h3>
+      <p>Recetas premium, combos rentables, menú editable y mensajes para fechas especiales. Ideal cuando ya dominas lo básico.</p>
       <div class="premium-upsell-actions">
-        <a href="${UPSELL_CHECKOUT_URL}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Agregar por ${UPSELL_PRICE_LABEL}</a>
-        <a href="/upsell-paletas-premium" class="btn btn-ghost btn-sm">Ver detalles</a>
+        <a href="${kit.upsellCheckout}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Agregar por ${kit.upsellPrice}</a>
+        <a href="${kit.upsellPath}" class="btn btn-ghost btn-sm">Ver detalles</a>
       </div>
     </div>
   `;
@@ -1726,12 +1922,13 @@ function renderPremiumUpsell() {
 
 function renderChecklistProduccion() {
   const checked = loadChecklistState();
+  const checklist = kitContentForLine().checklist;
   return `
     <div class="section-card">
       <h2>Checklist de Producción</h2>
       <p class="section-text">Usa esta lista antes de cada día de ventas. Se guarda en este dispositivo.</p>
       <ul class="kit-checklist interactive">
-        ${CHECKLIST_PRODUCCION.map(
+        ${checklist.map(
           (item, i) => `
             <li>
               <label class="checklist-label">
@@ -1759,11 +1956,11 @@ function renderKitAyuda() {
       <h2>Preguntas frecuentes</h2>
       <details class="faq-item" open>
         <summary>¿Cómo empiezo?</summary>
-        <p>Usa el <strong>modo rápido</strong>, coloca el costo de cada paleta y toca <strong>Ver mi ganancia</strong>. El valor aparece arriba mientras escribes.</p>
+        <p>Usa el <strong>modo rápido</strong>, coloca el costo de cada ${lineBrand().unitSingular} y toca <strong>Ver mi ganancia</strong>. El valor aparece arriba mientras escribes.</p>
       </details>
       <details class="faq-item">
         <summary>¿Modo rápido vs completo?</summary>
-        <p>El rápido es directo por paleta. El completo divide producción, ingredientes, extras y tiempo — ideal cuando quieres precisión total.</p>
+        <p>El rápido es directo por ${lineBrand().unitSingular}. El completo divide producción, ingredientes, extras y tiempo — ideal cuando quieres precisión total.</p>
       </details>
       <details class="faq-item">
         <summary>¿La calculadora garantiza ganancias?</summary>
@@ -1793,18 +1990,19 @@ function renderKitAyuda() {
 
 function renderKitArchivos() {
   const locked = !hasKitContentAccess();
+  const kit = kitContentForLine();
   return `
     <div class="section-card">
       <h2>Archivos del kit</h2>
       <p class="section-text">Ábrelos aquí dentro de la app o descárgalos. La calculadora interactiva está en Precios.</p>
-      <div class="files-list kit-inline-files">${KIT_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
+      <div class="files-list kit-inline-files">${kit.downloads.map((f) => renderFileRow(f, locked)).join('')}</div>
     </div>
     ${
       hasPremiumAccess()
         ? `
       <div class="section-card">
         <h2>Archivos premium</h2>
-        <div class="files-list kit-inline-files">${PREMIUM_DOWNLOADS.map((f) => renderFileRow(f, locked)).join('')}</div>
+        <div class="files-list kit-inline-files">${kit.premiumDownloads.map((f) => renderFileRow(f, locked)).join('')}</div>
       </div>
     `
         : ''
@@ -2009,6 +2207,20 @@ function bindEvents() {
     el.addEventListener('click', closeDrawer);
   });
 
+  root.querySelectorAll('[data-set-line]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = PRODUCT_LINE_BY_ID[btn.dataset.setLine];
+      if (!next || !ownsLine(next.id) || next.id === activeLine.id) return;
+      activeLine = next;
+      rememberActiveLine(next.id);
+      recipeCatalog = 'base';
+      recipeFilter = 'all';
+      kitHubTab = 'recetas';
+      showToast(`${next.emoji} ${next.short}`);
+      render();
+    });
+  });
+
   root.querySelectorAll('[data-view]').forEach((el) => {
     el.addEventListener('click', () => {
       if (el.dataset.kitHub) kitHubTab = el.dataset.kitHub;
@@ -2054,7 +2266,7 @@ function bindEvents() {
   document.getElementById('next-step')?.addEventListener('click', () => {
     const form = document.getElementById('calc-form');
     if (form) updateFromForm(form);
-    if (openStep < STEPS.length) {
+    if (openStep < getCalcSteps().length) {
       openStep += 1;
       render();
     }
@@ -2220,7 +2432,7 @@ function bindEvents() {
   root.querySelectorAll('.copy-combo').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = parseNumber(btn.dataset.comboIndex);
-      const text = COMBOS_PREMIUM[idx]?.mensaje;
+      const text = kitContentForLine().combos[idx]?.mensaje;
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);
@@ -2238,7 +2450,7 @@ function bindEvents() {
   root.querySelectorAll('.copy-msg').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = parseNumber(btn.dataset.copyIndex);
-      const text = formatWhatsAppMessage(MENSAJES_WHATSAPP[idx]?.texto);
+      const text = formatWhatsAppMessage(kitContentForLine().mensajes[idx]?.texto);
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);

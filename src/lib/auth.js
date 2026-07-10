@@ -2,6 +2,18 @@ import { auth, isFirebaseConfigured } from './firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import { createUserProfile, isAdminEmail, syncAdminFlag, updateUserProfile } from './user-profile.js';
 import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
+import { purchaseFlagsFromSearch, resolveProductFlags } from './purchase-flags.js';
+import { rememberActiveLine, resolveLineFromSearch, premiumStorageKey, LEGACY_PREMIUM_STORAGE_KEY } from './product-lines.js';
+
+function setPremiumLocal(lineId, on) {
+  const key = premiumStorageKey(lineId);
+  if (on) localStorage.setItem(key, '1');
+  else localStorage.removeItem(key);
+  if (lineId === 'paletas') {
+    if (on) localStorage.setItem(LEGACY_PREMIUM_STORAGE_KEY, '1');
+    else localStorage.removeItem(LEGACY_PREMIUM_STORAGE_KEY);
+  }
+}
 
 const DEMO_USERS_KEY = 'marmita_demo_users';
 const DEMO_SESSION_KEY = 'marmita_demo_session';
@@ -14,15 +26,17 @@ function writeDemoUsers(users) {
   localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(users));
 }
 
-function createDemoUser(name, email, password) {
+function createDemoUser(name, email, password, flags = {}) {
   return {
     uid: `demo_${crypto.randomUUID()}`,
     email: email.trim().toLowerCase(),
     displayName: name.trim(),
     password,
     demo: true,
-    hasKit: true,
-    hasPremium: false,
+    hasKit: Boolean(flags.hasKit),
+    hasPremium: Boolean(flags.hasPremium),
+    hasPostres: Boolean(flags.hasPostres),
+    hasPostresPremium: Boolean(flags.hasPostresPremium),
     isAdmin: isAdminEmail(email),
   };
 }
@@ -109,12 +123,44 @@ async function applyAccessCodeToUser(uid, accessCode) {
   return grants;
 }
 
+/** OR-merge purchase flags onto an existing profile (2nd product buy). */
+export async function applyPurchaseGrantsFromUrl(uid, search) {
+  const flags = purchaseFlagsFromSearch(search);
+  if (!flags) return null;
+
+  const updates = {};
+  for (const [key, value] of Object.entries(flags)) {
+    if (value) updates[key] = true;
+  }
+  if (!Object.keys(updates).length) return null;
+
+  if (isDemoMode()) {
+    const users = readDemoUsers();
+    const idx = users.findIndex((u) => u.uid === uid);
+    if (idx >= 0) {
+      users[idx] = { ...users[idx], ...updates };
+      writeDemoUsers(users);
+    }
+    return updates;
+  }
+
+  await updateUserProfile(uid, updates);
+  return updates;
+}
+
+function rememberLineFromUrl(search) {
+  const line = resolveLineFromSearch(search);
+  if (line) rememberActiveLine(line.id);
+}
+
 export function isDemoMode() {
   return !isFirebaseConfigured;
 }
 
 export async function login(email, password, options = {}) {
   const rememberMe = options.rememberMe !== false;
+  const search = options.search ?? (typeof window !== 'undefined' ? window.location.search : '');
+  rememberLineFromUrl(search);
 
   if (isDemoMode()) {
     const users = readDemoUsers();
@@ -123,7 +169,12 @@ export async function login(email, password, options = {}) {
       throw new Error('Correo o contraseña incorrectos.');
     }
     setDemoSession(user, rememberMe);
-    return toPublicUser(user);
+    await applyPurchaseGrantsFromUrl(user.uid, search);
+    const refreshed = readDemoUsers().find((u) => u.uid === user.uid) || user;
+    setDemoSession(refreshed, rememberMe);
+    if (refreshed.hasPremium) setPremiumLocal('paletas', true);
+    if (refreshed.hasPostresPremium) setPremiumLocal('postres', true);
+    return toPublicUser(refreshed);
   }
 
   const { requireFirebase } = await import('./firebase.js');
@@ -136,12 +187,17 @@ export async function login(email, password, options = {}) {
   const auth = requireFirebase();
   await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
   const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+  await applyPurchaseGrantsFromUrl(result.user.uid, search);
+  const grants = purchaseFlagsFromSearch(search);
+  if (grants?.hasPremium) setPremiumLocal('paletas', true);
+  if (grants?.hasPostresPremium) setPremiumLocal('postres', true);
   return result.user;
 }
 
 export async function register(name, email, password, options = {}) {
-  const urlPremium = new URLSearchParams(window.location.search).get('premium') === '1';
-  const hasPremium = Boolean(options.hasPremium) || urlPremium;
+  const search = options.search ?? (typeof window !== 'undefined' ? window.location.search : '');
+  rememberLineFromUrl(search);
+  const flags = resolveProductFlags(options, search);
   const admin = isAdminEmail(email);
   const accessCode = getRegisterAccessCode(options);
 
@@ -151,8 +207,7 @@ export async function register(name, email, password, options = {}) {
     if (users.some((u) => u.email === normalizedEmail)) {
       throw new Error('Este correo ya está registrado.');
     }
-    const user = createDemoUser(name, normalizedEmail, password);
-    user.hasPremium = hasPremium;
+    const user = createDemoUser(name, normalizedEmail, password, flags);
     if (admin) {
       user.hasKit = true;
       user.isAdmin = true;
@@ -162,11 +217,14 @@ export async function register(name, email, password, options = {}) {
       const grants = grantsFromAccessCode(result);
       if (grants.hasKit) user.hasKit = true;
       if (grants.hasPremium) user.hasPremium = true;
+      if (grants.hasPostres) user.hasPostres = true;
+      if (grants.hasPostresPremium) user.hasPostresPremium = true;
     }
     users.push(user);
     writeDemoUsers(users);
     setDemoSession(user);
-    if (user.hasPremium) localStorage.setItem('paletas_premium', '1');
+    if (user.hasPremium) setPremiumLocal('paletas', true);
+    if (user.hasPostresPremium) setPremiumLocal('postres', true);
     return toPublicUser(user);
   }
 
@@ -179,12 +237,13 @@ export async function register(name, email, password, options = {}) {
   await createUserProfile(result.user.uid, {
     email: result.user.email,
     displayName: name.trim(),
-    hasPremium,
+    ...flags,
   });
   await syncAdminFlag(result.user.uid, result.user.email);
 
   const codeGrants = await applyAccessCodeToUser(result.user.uid, accessCode);
-  if (codeGrants?.hasPremium || hasPremium) localStorage.setItem('paletas_premium', '1');
+  if (codeGrants?.hasPremium || flags.hasPremium) setPremiumLocal('paletas', true);
+  if (codeGrants?.hasPostresPremium || flags.hasPostresPremium) setPremiumLocal('postres', true);
 
   return result.user;
 }
@@ -240,19 +299,41 @@ export function guardAuthPage() {
 export function redirectIfAuthenticated(user, target) {
   if (!user) return;
   const params = new URLSearchParams(window.location.search);
+  const line = resolveLineFromSearch(window.location.search);
+  if (line) rememberActiveLine(line.id);
+
   if (params.get('compra') === '1') {
-    const premium = params.get('premium') === '1';
-    window.location.replace(premium ? '/app?compra=1&premium=1' : '/app?compra=1');
+    // Existing session hitting purchase URL — merge grants then go to app.
+    applyPurchaseGrantsFromUrl(user.uid, window.location.search).finally(() => {
+      const next = new URLSearchParams();
+      next.set('compra', '1');
+      if (params.get('premium') === '1') next.set('premium', '1');
+      if (params.get('postres') === '1') next.set('postres', '1');
+      if (params.get('postres_premium') === '1') next.set('postres_premium', '1');
+      if (params.get('paletas') === '1') next.set('paletas', '1');
+      if (params.get('donuts') === '1') next.set('donuts', '1');
+      if (line?.id || params.get('line')) next.set('line', line?.id || params.get('line'));
+      window.location.replace(`/app?${next.toString()}`);
+    });
     return;
   }
   const next = params.get('next');
-  window.location.replace(next && next.startsWith('/') ? next : target || '/app');
+  const dest = next && next.startsWith('/') ? next : target || '/app';
+  const sep = dest.includes('?') ? '&' : '?';
+  window.location.replace(line?.id && !dest.includes('line=') ? `${dest}${sep}line=${line.id}` : dest);
 }
 
 export function redirectIfGuest(user, target = '/login') {
   if (!user) {
-    const next = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.href = `${target}?next=${next}`;
+    const current = window.location.pathname + window.location.search;
+    const params = new URLSearchParams();
+    params.set('next', current);
+    const line = resolveLineFromSearch(window.location.search);
+    if (line) {
+      rememberActiveLine(line.id);
+      params.set('line', line.id);
+    }
+    window.location.href = `${target}?${params.toString()}`;
   }
 }
 

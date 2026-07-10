@@ -1,6 +1,8 @@
 import { login, resetPassword, guardAuthPage } from '../lib/auth.js';
 import {
+  applyAuthBrand,
   getAfterLoginUrl,
+  getAuthProductLine,
   hideAlert,
   initConfigAlert,
   initPasswordToggles,
@@ -13,6 +15,7 @@ const loginForm = document.getElementById('login-form');
 const forgotBtn = document.getElementById('forgot-btn');
 
 const params = new URLSearchParams(window.location.search);
+const authLine = applyAuthBrand(getAuthProductLine());
 
 if (params.get('compra') === '1') {
   const qs = params.toString();
@@ -35,7 +38,7 @@ loginForm?.addEventListener('submit', async (event) => {
   try {
     const rememberMe = loginForm.querySelector('#login-remember')?.checked ?? true;
     await login(data.get('email'), data.get('password'), { rememberMe });
-    window.location.replace(getAfterLoginUrl());
+    window.location.replace(getAfterLoginUrl(authLine));
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');
   } finally {

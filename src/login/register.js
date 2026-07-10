@@ -1,7 +1,9 @@
 import { WHATSAPP_SUPPORT_LINK } from '../landing/config.js';
 import { register, guardAuthPage } from '../lib/auth.js';
 import {
+  applyAuthBrand,
   getAfterLoginUrl,
+  getAuthProductLine,
   hideAlert,
   initConfigAlert,
   initPasswordToggles,
@@ -15,6 +17,7 @@ const registerForm = document.getElementById('register-form');
 const registerWaSupport = document.getElementById('register-wa-support');
 
 const params = new URLSearchParams(window.location.search);
+const authLine = applyAuthBrand(getAuthProductLine());
 
 if (registerWaSupport) {
   registerWaSupport.href = WHATSAPP_SUPPORT_LINK;
@@ -26,10 +29,19 @@ guardAuthPage();
 
 if (params.get('compra') === '1' && purchaseBanner) {
   purchaseBanner.hidden = false;
+  purchaseBanner.textContent = `✓ Compra ${authLine.short} confirmada`;
+  const sub = document.querySelector('.auth-sub');
+  if (sub) {
+    sub.textContent = `Usa el mismo correo con el que compraste ${authLine.short}. Liberamos tu acceso en minutos.`;
+  }
 }
 
 if (params.get('premium') === '1') {
+  localStorage.setItem('kit_premium_paletas_v1', '1');
   localStorage.setItem('paletas_premium', '1');
+}
+if (params.get('postres_premium') === '1') {
+  localStorage.setItem('kit_premium_postres_v1', '1');
 }
 
 registerForm?.addEventListener('submit', async (event) => {
@@ -50,7 +62,7 @@ registerForm?.addEventListener('submit', async (event) => {
       'success'
     );
     setTimeout(() => {
-      window.location.replace(getAfterLoginUrl());
+      window.location.replace(getAfterLoginUrl(authLine));
     }, 700);
   } catch (error) {
     showAlert(formAlert, translateAuthError(error), 'error');

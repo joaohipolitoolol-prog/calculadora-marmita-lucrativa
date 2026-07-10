@@ -134,6 +134,9 @@ export function renderBulkBar(selectedCount) {
         <button type="button" class="admin-btn sm success" data-bulk-product="paletas_premium" data-value="1">${t('bulk.addPremium')}</button>
         <button type="button" class="admin-btn sm ghost" data-bulk-product="paletas_premium" data-value="0">${t('bulk.removePremium')}</button>
         <button type="button" class="admin-btn sm success" data-bulk-product="postres_kit" data-value="1">${t('bulk.addPostres')}</button>
+        <button type="button" class="admin-btn sm ghost" data-bulk-product="postres_kit" data-value="0">${t('bulk.removePostres')}</button>
+        <button type="button" class="admin-btn sm success" data-bulk-product="postres_premium" data-value="1">${t('bulk.addPostresPremium')}</button>
+        <button type="button" class="admin-btn sm ghost" data-bulk-product="postres_premium" data-value="0">${t('bulk.removePostresPremium')}</button>
         <button type="button" class="admin-btn sm danger" data-bulk-delete>${t('bulk.delete')}</button>
       </div>
     </div>
