@@ -59,14 +59,14 @@ export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
-export const HERO_CTA_LABEL = 'Quiero preparar, calcular y publicar';
+export const HERO_CTA_LABEL = 'Quiero preparar y vender mis paletas';
 
-export const CALC_CTA_LABEL = 'Quiero preparar, calcular y publicar';
+export const CALC_CTA_LABEL = 'Quiero vender paletas por WhatsApp';
 
-export const OFFER_CTA_LABEL = 'Quiero acceder al kit completo';
+export const OFFER_CTA_LABEL = 'Acceder al material ahora';
 
-export const TRUST_CTA_LABEL = 'Quiero empezar con claridad';
+export const TRUST_CTA_LABEL = 'Quiero empezar con más claridad';
 
-export const STICKY_CTA_LABEL = 'Acceder ahora';
+export const STICKY_CTA_LABEL = 'Acceder al material ahora';
 
 export const CTA_LABEL = HERO_CTA_LABEL;
