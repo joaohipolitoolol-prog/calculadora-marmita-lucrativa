@@ -3391,8 +3391,31 @@ h3 {
 }
 
 .hero-product-mock {
-  margin: 4px auto 16px;
-  max-width: 400px;
+  margin: 4px auto 12px;
+  max-width: 520px;
+}
+
+.hero-flavor-strip {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 8px;
+  max-width: 520px;
+  margin: 0 auto 18px;
+}
+
+.hero-flavor-strip img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid rgba(232, 67, 122, 0.12);
+  box-shadow: 0 8px 18px rgba(61, 34, 40, 0.08);
+}
+
+@media (min-width: 720px) {
+  .hero-flavor-strip img {
+    height: 140px;
+  }
 }
 
 .product-kit {
