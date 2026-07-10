@@ -304,6 +304,24 @@ h3 {
   line-height: 1.5;
 }
 
+.price-card-includes {
+  margin: 4px 0 8px;
+  max-width: 36ch;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--brown);
+  text-wrap: balance;
+}
+
+.price-card .btn {
+  margin-top: 4px;
+}
+
+.offer-price-box .price-card-includes {
+  margin: 10px auto 8px;
+}
+
 /* Triade strip */
 .triade-strip {
   background: var(--white);
