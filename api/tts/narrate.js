@@ -1,19 +1,34 @@
+import { TTS_AUDIO_CONFIG, TTS_VOICE_CANDIDATES } from '../lib/tts-voices.js';
+
 const MAX_TEXT_LENGTH = 4800;
-
-/** Voz feminina neural — es-US-Neural2-A (natural, latino) */
-const DEFAULT_VOICE = {
-  languageCode: 'es-US',
-  name: 'es-US-Neural2-A',
-};
-
-const DEFAULT_AUDIO_CONFIG = {
-  audioEncoding: 'MP3',
-  speakingRate: 0.92,
-  pitch: 0,
-};
 
 function getApiKey() {
   return process.env.GOOGLE_TTS_API_KEY || process.env.GOOGLE_CLOUD_API_KEY || '';
+}
+
+async function synthesizeOnce(apiKey, text, voice, audioConfig) {
+  const response = await fetch(
+    `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: { text },
+        voice: {
+          languageCode: voice.languageCode,
+          name: voice.name,
+        },
+        audioConfig,
+      }),
+    }
+  );
+
+  const payload = await response.json().catch(() => ({}));
+  return { response, payload, voice };
+}
+
+function isVoiceRetryable(message = '') {
+  return /voice|not found|invalid|does not exist|unsupported/i.test(message);
 }
 
 export default async function handler(req, res) {
@@ -38,42 +53,43 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'texto demasiado largo' });
     }
 
-    const voice = body.voice?.name ? body.voice : DEFAULT_VOICE;
-    const audioConfig = { ...DEFAULT_AUDIO_CONFIG, ...(body.audioConfig || {}) };
+    const audioConfig = { ...TTS_AUDIO_CONFIG, ...(body.audioConfig || {}) };
+    const preferred = body.voice?.name ? body.voice : null;
+    const candidates = preferred
+      ? [preferred, ...TTS_VOICE_CANDIDATES.filter((v) => v.name !== preferred.name)]
+      : TTS_VOICE_CANDIDATES;
 
-    const response = await fetch(
-      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${encodeURIComponent(apiKey)}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          input: { text },
-          voice: {
-            languageCode: voice.languageCode,
-            name: voice.name,
-          },
-          audioConfig,
-        }),
+    let lastError = 'Error al sintetizar audio';
+
+    for (const voice of candidates) {
+      const { response, payload } = await synthesizeOnce(apiKey, text, voice, audioConfig);
+
+      if (response.ok && payload.audioContent) {
+        res.setHeader('Cache-Control', 'private, max-age=86400');
+        return res.status(200).json({
+          audioContent: payload.audioContent,
+          voice: voice.name,
+          languageCode: voice.languageCode,
+          encoding: audioConfig.audioEncoding || 'MP3',
+        });
       }
-    );
 
-    const payload = await response.json().catch(() => ({}));
+      lastError = payload?.error?.message || lastError;
 
-    if (!response.ok) {
-      const message = payload?.error?.message || 'Error al sintetizar audio';
-      return res.status(response.status >= 400 ? response.status : 502).json({ error: message });
+      if (!isVoiceRetryable(lastError)) {
+        break;
+      }
     }
 
-    if (!payload.audioContent) {
-      return res.status(502).json({ error: 'Respuesta TTS inválida' });
+    if (/API_KEY|referer|permission|billing|enable/i.test(lastError)) {
+      return res.status(502).json({
+        error:
+          'Google TTS no disponible. Verifica que la API Text-to-Speech esté activa, con billing, y que la clave no esté restringida solo a navegador.',
+        detail: lastError,
+      });
     }
 
-    res.setHeader('Cache-Control', 'private, max-age=86400');
-    return res.status(200).json({
-      audioContent: payload.audioContent,
-      voice: voice.name,
-      encoding: audioConfig.audioEncoding || 'MP3',
-    });
+    return res.status(502).json({ error: lastError });
   } catch (err) {
     console.error('[tts/narrate]', err);
     return res.status(500).json({ error: 'Error interno TTS' });

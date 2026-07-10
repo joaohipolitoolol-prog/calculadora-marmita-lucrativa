@@ -1,4 +1,4 @@
-import { TTS_VOICE } from './tts-config.js';
+import { TTS_CACHE_VERSION, TTS_VOICE } from './tts-config.js';
 
 const audioCache = new Map();
 let currentAudio = null;
@@ -122,7 +122,7 @@ function fetchWithTimeout(url, options, timeoutMs = FETCH_TIMEOUT_MS) {
 }
 
 async function fetchAudioUrl(text, cacheKey) {
-  const key = `${cacheKey}::${hashText(text)}`;
+  const key = `${TTS_CACHE_VERSION}::${cacheKey}::${hashText(text)}`;
   if (audioCache.has(key)) return { url: audioCache.get(key), mode: 'api' };
 
   const res = await fetchWithTimeout('/api/tts/narrate', {
@@ -133,31 +133,69 @@ async function fetchAudioUrl(text, cacheKey) {
 
   const payload = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(payload.error || 'No se pudo generar el audio');
+    const detail = payload.detail ? ` (${payload.detail})` : '';
+    throw new Error((payload.error || 'No se pudo generar el audio') + detail);
   }
 
   const blob = base64ToBlob(payload.audioContent);
   const url = URL.createObjectURL(blob);
   audioCache.set(key, url);
-  return { url, mode: 'api' };
+  return { url, mode: 'api', voice: payload.voice };
+}
+
+let voicesReadyPromise = null;
+
+function loadSpeechVoices() {
+  if (!window.speechSynthesis) return Promise.resolve([]);
+
+  const cached = window.speechSynthesis.getVoices();
+  if (cached.length) return Promise.resolve(cached);
+
+  if (voicesReadyPromise) return voicesReadyPromise;
+
+  voicesReadyPromise = new Promise((resolve) => {
+    const finish = () => resolve(window.speechSynthesis.getVoices());
+    window.speechSynthesis.onvoiceschanged = finish;
+    setTimeout(finish, 800);
+  });
+
+  return voicesReadyPromise;
+}
+
+function isSpanishVoice(voice) {
+  const lang = (voice.lang || '').toLowerCase().replace('_', '-');
+  return lang === 'es' || lang.startsWith('es-');
+}
+
+function scoreSpanishVoice(voice) {
+  const name = voice.name.toLowerCase();
+  const lang = (voice.lang || '').toLowerCase();
+  let score = 0;
+
+  if (lang.startsWith('es-mx')) score += 40;
+  else if (lang.startsWith('es-us')) score += 36;
+  else if (lang.startsWith('es-419')) score += 34;
+  else if (lang.startsWith('es-es')) score += 30;
+  else if (lang.startsWith('es')) score += 20;
+
+  if (/google/i.test(name)) score += 18;
+  if (/neural|natural|online|wavenet/i.test(name)) score += 12;
+  if (/paulina|helena|lucia|monica|mónica|sabina|soledad|laura|español|spanish|mexico|méxico/i.test(name)) {
+    score += 14;
+  }
+  if (/english|inglés|united states english|uk english|zira|samantha/i.test(name)) score -= 100;
+
+  return score;
+}
+
+function pickSpanishVoice(voices) {
+  return [...voices]
+    .filter(isSpanishVoice)
+    .sort((a, b) => scoreSpanishVoice(b) - scoreSpanishVoice(a))[0];
 }
 
 function warmSpeechVoices() {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.getVoices();
-}
-
-function pickSpanishVoice() {
-  const voices = window.speechSynthesis?.getVoices() || [];
-  return (
-    voices.find(
-      (v) =>
-        v.lang.startsWith('es') &&
-        /Google español|Paulina|Helena|Lucia|Mónica|Monica|español de Estados Unidos|español de México/i.test(
-          v.name
-        )
-    ) || voices.find((v) => v.lang.startsWith('es'))
-  );
+  loadSpeechVoices();
 }
 
 function playUrl(url, token) {
@@ -188,26 +226,34 @@ function playUrl(url, token) {
   });
 }
 
-function speakWithWebSpeech(text, token) {
+async function speakWithWebSpeech(text, token) {
+  if (token !== playToken) return 'cancelled';
+
+  if (!window.speechSynthesis) {
+    throw new Error('Audio no disponible en este navegador');
+  }
+
+  const voices = await loadSpeechVoices();
+  const voice = pickSpanishVoice(voices);
+
+  if (!voice) {
+    throw new Error(
+      'No hay voz en español en este dispositivo. Usa Chrome en Android o espera el audio premium de Google.'
+    );
+  }
+
   return new Promise((resolve, reject) => {
     if (token !== playToken) {
       resolve('cancelled');
       return;
     }
 
-    if (!window.speechSynthesis) {
-      reject(new Error('Audio no disponible en este navegador'));
-      return;
-    }
-
     window.speechSynthesis.cancel();
-    warmSpeechVoices();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    const voice = pickSpanishVoice();
-    if (voice) utterance.voice = voice;
-    utterance.lang = voice?.lang || 'es-MX';
-    utterance.rate = 0.92;
+    utterance.voice = voice;
+    utterance.lang = voice.lang || 'es-MX';
+    utterance.rate = 0.94;
     utterance.pitch = 1;
 
     currentUtterance = utterance;
@@ -242,7 +288,13 @@ async function playChunk(text, cacheKey, token, preferSpeech) {
     state = { ...state, mode: 'api' };
     return playUrl(url, token);
   } catch (apiErr) {
-    console.warn('[recipe-narration] API TTS no disponible, usando voz del dispositivo', apiErr);
+    console.warn('[recipe-narration] Google TTS falló, intentando voz local en español', apiErr);
+
+    const voices = await loadSpeechVoices();
+    if (!pickSpanishVoice(voices)) {
+      throw apiErr;
+    }
+
     state = { ...state, mode: 'speech' };
     return speakWithWebSpeech(text, token);
   }

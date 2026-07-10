@@ -1,18 +1,16 @@
-/** Google Cloud Text-to-Speech — español latino, voz femenina neural */
+/** Voces femeninas en español — de más natural a fallback */
 export const TTS_VOICE_CANDIDATES = [
   { languageCode: 'es-MX', name: 'es-MX-Neural2-A' },
   { languageCode: 'es-US', name: 'es-US-Neural2-A' },
   { languageCode: 'es-ES', name: 'es-ES-Neural2-F' },
+  { languageCode: 'es-MX', name: 'es-MX-Wavenet-A' },
+  { languageCode: 'es-US', name: 'es-US-Wavenet-A' },
+  { languageCode: 'es-ES', name: 'es-ES-Wavenet-C' },
 ];
-
-/** Preferida — el servidor prueba otras si falla */
-export const TTS_VOICE = TTS_VOICE_CANDIDATES[0];
 
 export const TTS_AUDIO_CONFIG = {
   audioEncoding: 'MP3',
   speakingRate: 0.94,
   pitch: 0,
+  volumeGainDb: 0,
 };
-
-/** Versión de caché — subir al cambiar voz */
-export const TTS_CACHE_VERSION = 'v3';
