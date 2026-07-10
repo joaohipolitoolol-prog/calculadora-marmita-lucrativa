@@ -14,6 +14,10 @@ import {
   UPSELL_TIMER_MS,
   UPSELL_TIMER_STORAGE_KEY,
 } from './config.js';
+import { bindTrackClicks, trackCheckout, trackCurrentPage } from '../lib/track.js';
+
+trackCurrentPage({ line: 'paletas' });
+bindTrackClicks({ page: 'upsell-paletas', line: 'paletas' });
 
 const isPlaceholder = (url) =>
   !url || url.includes('COLOCAR_LINK') || url === '#';
@@ -46,12 +50,20 @@ document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
   }
   link.href = UPSELL_CHECKOUT_URL;
   link.setAttribute('rel', 'noopener');
+  link.dataset.checkout = 'upsell';
+  link.dataset.track = link.dataset.track || 'upsell_checkout';
   link.addEventListener('click', (e) => {
     if (document.body.classList.contains('upsell-expired')) {
       e.preventDefault();
       return;
     }
     trackInitiateCheckout();
+    trackCheckout('upsell', { page: 'upsell-paletas', line: 'paletas' });
+    try {
+      localStorage.setItem('premium_pending_paletas', '1');
+    } catch {
+      /* ignore */
+    }
   });
 });
 

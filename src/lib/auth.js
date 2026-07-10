@@ -1,9 +1,21 @@
 import { auth, isFirebaseConfigured } from './firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
-import { createUserProfile, isAdminEmail, syncAdminFlag, updateUserProfile } from './user-profile.js';
+import { createUserProfile, isAdminEmail, syncAdminFlag, touchUserActivity, updateUserProfile } from './user-profile.js';
 import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
 import { purchaseFlagsFromSearch, resolveProductFlags } from './purchase-flags.js';
 import { rememberActiveLine, resolveLineFromSearch, premiumStorageKey, LEGACY_PREMIUM_STORAGE_KEY } from './product-lines.js';
+import { trackEvent } from './track.js';
+
+function resolveRegisteredFrom(search, accessCode) {
+  if (accessCode) return 'code';
+  const params = new URLSearchParams(search || '');
+  if (params.get('compra') === '1' || params.get('postres') === '1' || params.get('paletas') === '1') {
+    const line = resolveLineFromSearch(search);
+    if (line?.id === 'postres') return 'postres_lp';
+    return 'paletas_lp';
+  }
+  return 'organic';
+}
 
 function setPremiumLocal(lineId, on) {
   const key = premiumStorageKey(lineId);
@@ -174,6 +186,8 @@ export async function login(email, password, options = {}) {
     setDemoSession(refreshed, rememberMe);
     if (refreshed.hasPremium) setPremiumLocal('paletas', true);
     if (refreshed.hasPostresPremium) setPremiumLocal('postres', true);
+    const line = resolveLineFromSearch(search);
+    trackEvent('login', { page: 'login', line: line?.id || undefined, uid: refreshed.uid });
     return toPublicUser(refreshed);
   }
 
@@ -188,6 +202,9 @@ export async function login(email, password, options = {}) {
   await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
   const result = await signInWithEmailAndPassword(auth, email.trim(), password);
   await applyPurchaseGrantsFromUrl(result.user.uid, search);
+  const line = resolveLineFromSearch(search);
+  await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
+  trackEvent('login', { page: 'login', line: line?.id || undefined, uid: result.user.uid });
   const grants = purchaseFlagsFromSearch(search);
   if (grants?.hasPremium) setPremiumLocal('paletas', true);
   if (grants?.hasPostresPremium) setPremiumLocal('postres', true);
@@ -225,6 +242,8 @@ export async function register(name, email, password, options = {}) {
     setDemoSession(user);
     if (user.hasPremium) setPremiumLocal('paletas', true);
     if (user.hasPostresPremium) setPremiumLocal('postres', true);
+    const line = resolveLineFromSearch(search);
+    trackEvent('register', { page: 'cadastrar', line: line?.id || undefined, uid: user.uid });
     return toPublicUser(user);
   }
 
@@ -234,16 +253,28 @@ export async function register(name, email, password, options = {}) {
   const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
   await updateProfile(result.user, { displayName: name.trim() });
 
+  const line = resolveLineFromSearch(search);
+  const registeredFrom = resolveRegisteredFrom(search, accessCode);
+
   await createUserProfile(result.user.uid, {
     email: result.user.email,
     displayName: name.trim(),
     ...flags,
+    registeredFrom,
+    registeredLine: line?.id || null,
   });
   await syncAdminFlag(result.user.uid, result.user.email);
 
   const codeGrants = await applyAccessCodeToUser(result.user.uid, accessCode);
   if (codeGrants?.hasPremium || flags.hasPremium) setPremiumLocal('paletas', true);
   if (codeGrants?.hasPostresPremium || flags.hasPostresPremium) setPremiumLocal('postres', true);
+
+  await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
+  trackEvent('register', {
+    page: 'cadastrar',
+    line: line?.id || undefined,
+    uid: result.user.uid,
+  });
 
   return result.user;
 }

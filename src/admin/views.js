@@ -1,10 +1,12 @@
-import { PRODUCTS, profileStatus } from '../lib/products.js';
+import { PRODUCTS, isPendingStatus, profileStatus } from '../lib/products.js';
+import { WHATSAPP_NUMBERS } from '../lib/whatsapp-numbers.js';
 import { ICONS } from './icons.js';
 import { escapeHtml, formatDate, formatDateTime, getUserInitial } from './helpers.js';
 import {
   ADMIN_LANGS,
   getAdminLang,
   getCodeTypes,
+  getLineFilters,
   getNavItems,
   getUserFilters,
   getViewMeta,
@@ -13,9 +15,13 @@ import {
 } from './i18n.js';
 
 export function getStats(users) {
+  const pendingKit = users.filter((u) => profileStatus(u) === 'pending_kit').length;
+  const pendingUpsell = users.filter((u) => profileStatus(u) === 'pending_upsell').length;
   return {
     total: users.length,
-    pending: users.filter((u) => profileStatus(u) === 'pending').length,
+    pending: pendingKit + pendingUpsell,
+    pendingKit,
+    pendingUpsell,
     active: users.filter((u) => profileStatus(u) === 'active' || u.isAdmin).length,
     premium: users.filter((u) => u.hasPremium || u.hasPostresPremium).length,
     orphans: users.filter((u) => u.missingProfile).length,
@@ -26,13 +32,25 @@ export function filterUsers(users, userFilter, userSearch) {
   let list = users;
   switch (userFilter) {
     case 'pending':
-      list = list.filter((u) => profileStatus(u) === 'pending');
+      list = list.filter((u) => isPendingStatus(profileStatus(u)));
+      break;
+    case 'pending_kit':
+      list = list.filter((u) => profileStatus(u) === 'pending_kit');
+      break;
+    case 'pending_upsell':
+      list = list.filter((u) => profileStatus(u) === 'pending_upsell');
       break;
     case 'active':
       list = list.filter((u) => profileStatus(u) === 'active' || u.isAdmin);
       break;
     case 'premium':
       list = list.filter((u) => u.hasPremium || u.hasPostresPremium);
+      break;
+    case 'paletas':
+      list = list.filter((u) => u.hasKit || u.hasPremium);
+      break;
+    case 'postres':
+      list = list.filter((u) => u.hasPostres || u.hasPostresPremium);
       break;
     case 'orphan':
       list = list.filter((u) => u.missingProfile);
@@ -65,10 +83,32 @@ function renderStatusBadge(user) {
   if (status === 'admin') return `<span class="admin-badge admin">${t('status.admin')}</span>`;
   if (status === 'orphan') return `<span class="admin-badge warn">${t('status.orphan')}</span>`;
   if (status === 'active') return `<span class="admin-badge active">${t('status.active')}</span>`;
+  if (status === 'pending_upsell') {
+    return `<span class="admin-badge pending">${t('status.pending_upsell')}</span>`;
+  }
+  if (status === 'pending_kit') {
+    return `<span class="admin-badge pending">${t('status.pending_kit')}</span>`;
+  }
   return `<span class="admin-badge pending">${t('status.pending')}</span>`;
 }
 
+function renderLineFilter(activeLine) {
+  return `
+    <div class="admin-line-filter" role="group" aria-label="Line">
+      ${getLineFilters()
+        .map(
+          (f) => `
+        <button type="button" class="admin-line-chip ${activeLine === f.id ? 'active' : ''}" data-line-filter="${f.id}">
+          ${escapeHtml(f.label)}
+        </button>`
+        )
+        .join('')}
+    </div>
+  `;
+}
+
 export function renderStatsGrid(stats, analytics) {
+  const kpis = analytics?.kpis || {};
   return `
     <div class="admin-stats">
       <div class="admin-stat">
@@ -80,26 +120,29 @@ export function renderStatsGrid(stats, analytics) {
         <span class="admin-stat-value">${stats.active}</span>
       </div>
       <div class="admin-stat accent-warn">
-        <span class="admin-stat-label">${t('stat.pending')}</span>
-        <span class="admin-stat-value">${stats.pending}</span>
+        <span class="admin-stat-label">${t('stat.pendingKit')}</span>
+        <span class="admin-stat-value">${stats.pendingKit}</span>
       </div>
       <div class="admin-stat accent-gold">
-        <span class="admin-stat-label">${t('stat.upsell')}</span>
-        <span class="admin-stat-value">${stats.premium}</span>
+        <span class="admin-stat-label">${t('stat.pendingUpsell')}</span>
+        <span class="admin-stat-value">${stats.pendingUpsell}</span>
       </div>
-      ${
-        analytics
-          ? `
       <div class="admin-stat accent-blue">
         <span class="admin-stat-label">${t('stat.visitsToday')}</span>
-        <span class="admin-stat-value">${analytics.todayTotal || 0}</span>
+        <span class="admin-stat-value">${analytics?.todayTotal ?? kpis.pageViewsToday ?? 0}</span>
+      </div>
+      <div class="admin-stat accent-pink">
+        <span class="admin-stat-label">${t('stat.waToday')}</span>
+        <span class="admin-stat-value">${kpis.whatsappToday || 0}</span>
       </div>
       <div class="admin-stat accent-purple">
-        <span class="admin-stat-label">${t('stat.visitsTotal')}</span>
-        <span class="admin-stat-value">${analytics.allTimeTotal || 0}</span>
-      </div>`
-          : ''
-      }
+        <span class="admin-stat-label">${t('stat.checkoutToday')}</span>
+        <span class="admin-stat-value">${kpis.checkoutToday || 0}</span>
+      </div>
+      <div class="admin-stat">
+        <span class="admin-stat-label">${t('stat.appOpenToday')}</span>
+        <span class="admin-stat-value">${kpis.appOpenToday || 0}</span>
+      </div>
     </div>
   `;
 }
@@ -206,6 +249,9 @@ export function renderUserDrawer(user) {
     </label>`
   ).join('');
 
+  const hasPending =
+    user.premiumPending?.paletas || user.premiumPending?.postres;
+
   return `
     <div class="admin-drawer-overlay visible" data-close-drawer></div>
     <aside class="admin-drawer open" aria-label="${t('drawer.title')}">
@@ -224,12 +270,18 @@ export function renderUserDrawer(user) {
         <div class="admin-detail-grid">
           <div><span>UID</span><code>${escapeHtml(user.id)}</code></div>
           <div><span>${t('drawer.origin')}</span><strong>${escapeHtml(user.registeredFrom || '—')}</strong></div>
+          <div><span>${t('drawer.line')}</span><strong>${escapeHtml(user.registeredLine || user.lastActiveLine || '—')}</strong></div>
           <div><span>${t('drawer.registered')}</span><strong>${formatDateTime(user.createdAt)}</strong></div>
           <div><span>${t('drawer.lastLogin')}</span><strong>${formatDateTime(user.lastLoginAt)}</strong></div>
         </div>
         <h3>${t('drawer.products')}</h3>
         <div class="admin-toggle-list">${productToggles}</div>
         <div class="admin-drawer-actions">
+          ${
+            hasPending
+              ? `<button type="button" class="admin-btn ghost" data-clear-pending="${user.id}">${t('drawer.clearPending')}</button>`
+              : ''
+          }
           ${
             user.hasKit && user.email
               ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}">${ICONS.mailSend} ${t('drawer.resendEmail')}</button>`
@@ -251,16 +303,72 @@ export function renderUserDrawer(user) {
   `;
 }
 
-export function renderAnalyticsView(analytics) {
+function renderHistoryBars(history) {
+  if (!history?.length) return '';
+  const max = Math.max(...history.map((d) => d.total || 0), 1);
+  return `
+    <div class="admin-card">
+      <div class="admin-card-head"><h2>${t('analytics.last14')}</h2></div>
+      <div class="admin-card-body">
+        <div class="admin-history-bars">
+          ${history
+            .slice()
+            .reverse()
+            .map((day) => {
+              const height = Math.round(((day.total || 0) / max) * 100);
+              return `
+              <div class="admin-history-bar" title="${day.date}: ${day.total || 0} ${t('analytics.visits')}">
+                <div class="admin-history-fill" style="height:${height}%"></div>
+                <span>${String(day.date).slice(5)}</span>
+              </div>`;
+            })
+            .join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+export function renderAnalyticsView(analytics, lineFilter = 'all') {
   if (!analytics) {
     return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">${t('analytics.loading')}</p></div></div>`;
   }
 
   const pages = analytics.pages || [];
   const history = analytics.history || [];
+  const ctas = analytics.ctas || [];
+  const whatsapp = analytics.whatsapp || [];
+  const kpis = analytics.kpis || {};
 
   return `
-    ${renderStatsGrid({ total: 0, pending: 0, active: 0, premium: 0 }, analytics)}
+    ${renderLineFilter(lineFilter)}
+    ${renderStatsGrid({ total: 0, pending: 0, pendingKit: 0, pendingUpsell: 0, active: 0, premium: 0 }, analytics)}
+    <div class="admin-grid-2">
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>${t('analytics.events')}</h2></div>
+        <div class="admin-card-body">
+          <div class="admin-kpi-list">
+            <div><span>Page views</span><strong>${kpis.pageViewsToday || 0}</strong></div>
+            <div><span>CTA</span><strong>${kpis.ctaToday || 0}</strong></div>
+            <div><span>WhatsApp</span><strong>${kpis.whatsappToday || 0}</strong></div>
+            <div><span>Checkout</span><strong>${kpis.checkoutToday || 0}</strong></div>
+            <div><span>Register</span><strong>${kpis.registerToday || 0}</strong></div>
+            <div><span>Login</span><strong>${kpis.loginToday || 0}</strong></div>
+            <div><span>App open</span><strong>${kpis.appOpenToday || 0}</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>${t('analytics.funnel')}</h2></div>
+        <div class="admin-card-body">
+          <div class="admin-funnel">
+            <div class="admin-funnel-step"><span>LP</span><strong>${pages.filter((p) => p.key === 'home' || p.key === 'postres').reduce((s, p) => s + (p.today || 0), 0)}</strong></div>
+            <div class="admin-funnel-step"><span>Upsell</span><strong>${pages.filter((p) => String(p.key).startsWith('upsell')).reduce((s, p) => s + (p.today || 0), 0)}</strong></div>
+            <div class="admin-funnel-step"><span>Registro</span><strong>${kpis.registerToday || 0}</strong></div>
+            <div class="admin-funnel-step"><span>App</span><strong>${kpis.appOpenToday || 0}</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="admin-card">
       <div class="admin-card-head"><h2>${t('analytics.landingPages')}</h2></div>
       <div class="admin-card-body flush">
@@ -275,7 +383,7 @@ export function renderAnalyticsView(analytics) {
                         (p) => `
                 <tr>
                   <td><strong>${escapeHtml(p.label)}</strong></td>
-                  <td><code>${escapeHtml(p.path)}</code></td>
+                  <td><code>${escapeHtml(p.path || '—')}</code></td>
                   <td><span class="admin-metric today">${p.today || 0}</span></td>
                   <td><span class="admin-metric">${p.total || 0}</span></td>
                 </tr>`
@@ -288,39 +396,56 @@ export function renderAnalyticsView(analytics) {
         </div>
       </div>
     </div>
-    ${
-      history.length
-        ? `
-    <div class="admin-card">
-      <div class="admin-card-head"><h2>${t('analytics.last14')}</h2></div>
-      <div class="admin-card-body">
-        <div class="admin-history-bars">
-          ${history
-            .slice()
-            .reverse()
-            .map((day) => {
-              const max = Math.max(...history.map((d) => d.total || 0), 1);
-              const height = Math.round(((day.total || 0) / max) * 100);
-              return `
-              <div class="admin-history-bar" title="${day.date}: ${day.total || 0} ${t('analytics.visits')}">
-                <div class="admin-history-fill" style="height:${height}%"></div>
-                <span>${String(day.date).slice(5)}</span>
-              </div>`;
-            })
-            .join('')}
+    <div class="admin-grid-2">
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>${t('analytics.ctas')}</h2></div>
+        <div class="admin-card-body">
+          ${
+            ctas.length
+              ? ctas
+                  .slice(0, 8)
+                  .map(
+                    (c) => `
+            <div class="admin-traffic-row">
+              <div><strong>${escapeHtml(c.key)}</strong><span>${escapeHtml(c.line || '—')}</span></div>
+              <span class="admin-metric today">${c.today || 0}</span>
+            </div>`
+                  )
+                  .join('')
+              : `<p class="admin-table-empty">—</p>`
+          }
         </div>
       </div>
-    </div>`
-        : ''
-    }
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>${t('analytics.whatsapp')}</h2></div>
+        <div class="admin-card-body">
+          ${
+            whatsapp.length
+              ? whatsapp
+                  .map(
+                    (w) => `
+            <div class="admin-traffic-row">
+              <div><strong>${escapeHtml(w.key)}</strong><span>${escapeHtml(w.purpose || w.line || '—')}</span></div>
+              <span class="admin-metric today">${w.today || 0}</span>
+            </div>`
+                  )
+                  .join('')
+              : `<p class="admin-table-empty">—</p>`
+          }
+        </div>
+      </div>
+    </div>
+    ${renderHistoryBars(history)}
   `;
 }
 
-export function renderDashboardView(users, analytics) {
+export function renderDashboardView(users, analytics, lineFilter = 'all') {
   const stats = getStats(users);
-  const pending = users.filter((u) => profileStatus(u) === 'pending').slice(0, 8);
+  const pendingKit = users.filter((u) => profileStatus(u) === 'pending_kit').slice(0, 6);
+  const pendingUpsell = users.filter((u) => profileStatus(u) === 'pending_upsell').slice(0, 6);
 
   return `
+    ${renderLineFilter(lineFilter)}
     ${renderStatsGrid(stats, analytics)}
     ${
       stats.orphans
@@ -330,28 +455,35 @@ export function renderDashboardView(users, analytics) {
     <div class="admin-grid-2">
       <div class="admin-card">
         <div class="admin-card-head">
-          <div><h2>${t('dashboard.pendingTitle')}</h2><p>${t('dashboard.pendingSub')}</p></div>
-          <button type="button" class="admin-btn ghost" data-tab="users">${t('dashboard.viewAll')}</button>
+          <div><h2>${t('dashboard.pendingKitTitle')}</h2><p>${t('dashboard.pendingKitSub')}</p></div>
+          <button type="button" class="admin-btn ghost" data-tab="users" data-set-filter="pending_kit">${t('dashboard.viewAll')}</button>
         </div>
-        <div class="admin-card-body flush">${renderUsersTable(pending, new Set(), false)}</div>
+        <div class="admin-card-body flush">${renderUsersTable(pendingKit, new Set(), false)}</div>
       </div>
       <div class="admin-card">
-        <div class="admin-card-head"><div><h2>${t('dashboard.trafficTitle')}</h2><p>${t('dashboard.trafficSub')}</p></div></div>
-        <div class="admin-card-body">
-          ${
-            analytics?.pages?.length
-              ? analytics.pages
-                  .map(
-                    (p) => `
-              <div class="admin-traffic-row">
-                <div><strong>${escapeHtml(p.label)}</strong><span>${escapeHtml(p.path)}</span></div>
-                <span class="admin-metric today">${p.today || 0}</span>
-              </div>`
-                  )
-                  .join('')
-              : `<p class="admin-table-empty">${t('dashboard.noTraffic')}</p>`
-          }
+        <div class="admin-card-head">
+          <div><h2>${t('dashboard.pendingUpsellTitle')}</h2><p>${t('dashboard.pendingUpsellSub')}</p></div>
+          <button type="button" class="admin-btn ghost" data-tab="users" data-set-filter="pending_upsell">${t('dashboard.viewAll')}</button>
         </div>
+        <div class="admin-card-body flush">${renderUsersTable(pendingUpsell, new Set(), false)}</div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card-head"><div><h2>${t('dashboard.trafficTitle')}</h2><p>${t('dashboard.trafficSub')}</p></div></div>
+      <div class="admin-card-body">
+        ${
+          analytics?.pages?.length
+            ? analytics.pages
+                .map(
+                  (p) => `
+            <div class="admin-traffic-row">
+              <div><strong>${escapeHtml(p.label)}</strong><span>${escapeHtml(p.path || '')}</span></div>
+              <span class="admin-metric today">${p.today || 0}</span>
+            </div>`
+                )
+                .join('')
+            : `<p class="admin-table-empty">${t('dashboard.noTraffic')}</p>`
+        }
       </div>
     </div>
   `;
@@ -430,9 +562,44 @@ export function renderCodesView(codes) {
   `;
 }
 
-export function renderKiwifyView(kiwifySubTab, kiwifyContent) {
+export function renderChannelsView(kiwifySubTab, kiwifyContent, analytics) {
+  const waClicks = Object.fromEntries((analytics?.whatsapp || []).map((w) => [w.key, w.today || 0]));
+
   return `
     <div class="admin-card">
+      <div class="admin-card-head">
+        <div><h2>${t('channels.whatsapp')}</h2><p>${t('channels.whatsappSub')}</p></div>
+      </div>
+      <div class="admin-card-body flush">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>${t('channels.id')}</th>
+                <th>${t('channels.number')}</th>
+                <th>${t('channels.line')}</th>
+                <th>${t('channels.purpose')}</th>
+                <th>${t('channels.clicksToday')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${WHATSAPP_NUMBERS.map(
+                (n) => `
+                <tr>
+                  <td><code>${escapeHtml(n.id)}</code></td>
+                  <td><strong>${escapeHtml(n.display)}</strong></td>
+                  <td>${escapeHtml(n.line)}</td>
+                  <td>${escapeHtml(n.purpose)}</td>
+                  <td><span class="admin-metric today">${waClicks[n.id] || 0}</span></td>
+                </tr>`
+              ).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card-head"><h2>${t('channels.kiwify')}</h2></div>
       <div class="admin-tabs">
         <button type="button" class="admin-tab ${kiwifySubTab === 'urls' ? 'active' : ''}" data-kiwify-tab="urls">${t('kiwify.urls')}</button>
         <button type="button" class="admin-tab ${kiwifySubTab === 'kit' ? 'active' : ''}" data-kiwify-tab="kit">${t('kiwify.emailKit')}</button>
@@ -455,7 +622,7 @@ function renderLangSwitcher() {
           data-admin-lang="${lang.id}"
           title="${escapeHtml(lang.title)}"
           aria-label="${escapeHtml(lang.title)}"
-        ><span class="admin-lang-flag" aria-hidden="true">${lang.flag}</span></button>`
+        >${escapeHtml(lang.short)}</button>`
       ).join('')}
     </div>
   `;
@@ -471,7 +638,7 @@ export function renderSidebar(activeTab, users, user, sidebarOpen) {
     <aside class="admin-sidebar ${sidebarOpen ? 'open' : ''}" aria-label="Admin navigation">
       <div class="admin-sidebar-top">
         <div class="admin-brand">
-          <div class="admin-brand-mark">🍓</div>
+          <div class="admin-brand-mark">P</div>
           <div class="admin-brand-text"><strong>${t('sidebar.brand')}</strong><span>${t('sidebar.sub')}</span></div>
         </div>
         <button type="button" class="admin-sidebar-close" data-close-sidebar aria-label="${t('sidebar.close')}">${ICONS.close}</button>
@@ -489,13 +656,18 @@ export function renderSidebar(activeTab, users, user, sidebarOpen) {
           .join('')}
       </nav>
       <div class="admin-sidebar-foot">
-        ${renderLangSwitcher()}
-        <div class="admin-user-chip">
+        <div class="admin-foot-user">
           <span class="admin-user-avatar">${escapeHtml(getUserInitial(user))}</span>
-          <div class="admin-user-meta"><strong>${escapeHtml(user.displayName || 'Admin')}</strong><span>${escapeHtml(user.email || '')}</span></div>
+          <div class="admin-user-meta">
+            <strong>${escapeHtml(user.displayName || 'Admin')}</strong>
+            <span>${escapeHtml(user.email || '')}</span>
+          </div>
         </div>
-        <a href="/app" class="admin-foot-link">${ICONS.app} ${t('sidebar.members')}</a>
-        <button type="button" class="admin-foot-logout" id="admin-logout">${ICONS.logout} ${t('sidebar.logout')}</button>
+        <div class="admin-foot-actions">
+          ${renderLangSwitcher()}
+          <a href="/app" class="admin-foot-link" title="${t('sidebar.app')}">${ICONS.app}<span>${t('sidebar.app')}</span></a>
+          <button type="button" class="admin-foot-logout" id="admin-logout" title="${t('sidebar.logout')}">${ICONS.logout}<span>${t('sidebar.logout')}</span></button>
+        </div>
       </div>
     </aside>
   `;
@@ -515,6 +687,7 @@ export function renderShell(props) {
     kiwifyContent,
     user,
     sidebarOpen,
+    lineFilter = 'all',
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -524,16 +697,16 @@ export function renderShell(props) {
       content = renderUsersView(users, selectedIds, userFilter, userSearch);
       break;
     case 'analytics':
-      content = renderAnalyticsView(analytics);
+      content = renderAnalyticsView(analytics, lineFilter);
       break;
     case 'codes':
       content = renderCodesView(codes);
       break;
-    case 'kiwify':
-      content = renderKiwifyView(kiwifySubTab, kiwifyContent);
+    case 'channels':
+      content = renderChannelsView(kiwifySubTab, kiwifyContent, analytics);
       break;
     default:
-      content = renderDashboardView(users, analytics);
+      content = renderDashboardView(users, analytics, lineFilter);
   }
 
   document.body.classList.toggle('admin-sidebar-open', Boolean(sidebarOpen));
@@ -547,9 +720,9 @@ export function renderShell(props) {
           <button type="button" class="admin-menu-btn" id="admin-menu-toggle" aria-label="Menu">${ICONS.menu}</button>
           <div class="admin-header-titles"><h1>${meta.title}</h1><p>${meta.subtitle}</p></div>
         </header>
-        <main class="admin-content"><div class="admin-content-inner">${content}</div></main>
+        <main class="admin-content">${content}</main>
       </div>
-      ${detailUser ? renderUserDrawer(detailUser) : ''}
+      ${renderUserDrawer(detailUser)}
     </div>
   `;
 }

@@ -5,6 +5,11 @@ import {
   POST_PURCHASE_UPSELL_URL,
   SITE_URL,
 } from '../site/config.js';
+import {
+  getWhatsAppDisplay,
+  getWhatsAppNumber,
+  getWhatsAppUrl,
+} from '../lib/whatsapp-numbers.js';
 
 /** Link de checkout — Hotmart */
 export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y?checkoutMode=10';
@@ -12,10 +17,10 @@ export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y?checkoutMode=10
 /** Página pós-compra — upsell (antes da área de membros) */
 export const POST_PURCHASE_URL = POST_PURCHASE_UPSELL_URL;
 
-/** WhatsApp suporte pós-compra — +44 7402 867442 */
-export const WHATSAPP_NUMBER = '447402867442';
-
-export const WHATSAPP_DISPLAY = '+44 7402 867442';
+/** WhatsApp suporte pós-compra — registry id: paletas_support */
+export const WHATSAPP_NUMBER_ID = 'paletas_support';
+export const WHATSAPP_NUMBER = getWhatsAppNumber(WHATSAPP_NUMBER_ID).e164;
+export const WHATSAPP_DISPLAY = getWhatsAppDisplay(WHATSAPP_NUMBER_ID);
 
 export const WHATSAPP_PURCHASE_MESSAGE = `¡Hola! 👋 Acabo de comprar el ${BRAND_KIT}.
 
@@ -28,7 +33,7 @@ Quiero confirmar mi acceso y empezar con recetas, calculadora y menú.
 Gracias 🍓`;
 
 export function getWhatsAppLink(message = WHATSAPP_PURCHASE_MESSAGE) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  return getWhatsAppUrl(WHATSAPP_NUMBER_ID, message);
 }
 
 export const WHATSAPP_PURCHASE_LINK = getWhatsAppLink();

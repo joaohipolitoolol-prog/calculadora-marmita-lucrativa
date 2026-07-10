@@ -1,0 +1,82 @@
+[
+  {
+    "categoria": "Estado / Story",
+    "texto": "🍨 Postres en vaso disponibles hoy. Escríbeme para ver sabores y precios."
+  },
+  {
+    "categoria": "Estado / Story",
+    "texto": "¿Antojo dulce? Tengo fresa, Oreo, chocolate y maracuyá listos para entregar."
+  },
+  {
+    "categoria": "Estado / Story",
+    "texto": "Hoy preparé postres en vaso frescos. Quedan pocas unidades — escríbeme antes de que se acaben."
+  },
+  {
+    "categoria": "Estado / Story",
+    "texto": "Postres en vaso hechos en casa, con capas que se ven en la foto. ¿Cuál te gustaría probar?"
+  },
+  {
+    "categoria": "Estado / Story",
+    "texto": "Nuevos sabores esta semana 🍓 Pregunta por el menú completo de postres en vaso."
+  },
+  {
+    "categoria": "Promoción",
+    "texto": "Promo de fin de semana: 3 postres en vaso por [PRECIO]. Válido hasta el domingo."
+  },
+  {
+    "categoria": "Promoción",
+    "texto": "Combo familiar: 6 vasos surtidos por [PRECIO]. Ideal para compartir."
+  },
+  {
+    "categoria": "Promoción",
+    "texto": "Primera compra: lleva 2 vasos y te regalo 1 de fresa. Solo hoy."
+  },
+  {
+    "categoria": "Promoción",
+    "texto": "Pack para peques: 4 vasos coloridos por [PRECIO]. Sabores suaves y divertidos."
+  },
+  {
+    "categoria": "Promoción",
+    "texto": "Últimas unidades del día. Si quieres, aparto las tuyas ahora mismo."
+  },
+  {
+    "categoria": "Cliente nuevo",
+    "texto": "Hola, gracias por escribir. Te comparto el menú de postres en vaso con sabores y precios 👇"
+  },
+  {
+    "categoria": "Cliente nuevo",
+    "texto": "Tenemos cremosos y frutales. ¿Qué tipo te gusta más?"
+  },
+  {
+    "categoria": "Cliente nuevo",
+    "texto": "Entrego en [ZONA] o puedes recoger. ¿Cuántos vasos necesitas?"
+  },
+  {
+    "categoria": "Pedido",
+    "texto": "Perfecto, tu pedido: [SABORES] — Total: [PRECIO]. ¿Confirmo?"
+  },
+  {
+    "categoria": "Pedido",
+    "texto": "Listo, aparté tus postres. Te aviso cuando estén listos para entregar."
+  },
+  {
+    "categoria": "Pedido",
+    "texto": "Tu pedido está listo para recoger. Estoy en [DIRECCIÓN/LUGAR]."
+  },
+  {
+    "categoria": "Cliente antiguo",
+    "texto": "Hola de nuevo 😊 Esta semana tengo sabores nuevos. ¿Te mando el menú?"
+  },
+  {
+    "categoria": "Cliente antiguo",
+    "texto": "Hace tiempo que no pides. Tengo tu sabor favorito disponible hoy."
+  },
+  {
+    "categoria": "Cliente antiguo",
+    "texto": "Gracias por confiar en mis postres. Esta semana hay promo especial para clientes frecuentes."
+  },
+  {
+    "categoria": "Encomienda",
+    "texto": "Acepto pedidos con 24h de anticipación. ¿Para qué día y cuántos vasos necesitas?"
+  }
+]

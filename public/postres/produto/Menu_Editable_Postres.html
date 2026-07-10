@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Menú editable · Postres</title><style>@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+:root{--rosa:#EC3F7A;--crema:#FFF4E6;--chocolate:#5C2E1F;--blanco:#fff;--gris:#6B5E57;--gris-claro:#F3EDE8;}
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4;margin:14mm}
+body{font-family:Nunito,system-ui,sans-serif;color:var(--chocolate);background:#fff;font-size:11pt;line-height:1.5}
+.page{max-width:210mm;margin:0 auto;padding:12mm 14mm}
+.cover{min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(160deg,#FFF4E6,#FFE8F0 45%,#CFF7E2);border-radius:18px;padding:40px 28px;margin-bottom:28px}
+.badge{background:var(--rosa);color:#fff;font-size:9pt;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:999px;margin-bottom:16px}
+.cover h1{font-size:28pt;font-weight:800;line-height:1.1;margin:8px 0}
+.cover p{color:var(--gris);max-width:420px}
+.toolbar{display:flex;gap:8px;justify-content:flex-end;margin:0 0 16px;position:sticky;top:0;background:#fff;padding:8px 0;z-index:2}
+.btn{border:none;border-radius:10px;padding:10px 14px;font:inherit;font-weight:800;cursor:pointer}
+.btn-print{background:var(--rosa);color:#fff}
+.btn-back{background:var(--gris-claro);color:var(--chocolate);text-decoration:none}
+h2{font-size:16pt;margin:22px 0 10px;color:var(--rosa)}
+h4{margin:10px 0 4px;font-size:11pt}
+.card{border:1px solid #eadfd6;border-radius:14px;padding:14px 16px;margin:0 0 12px;background:#fff;break-inside:avoid}
+.card h3{font-size:13pt;margin:0 0 6px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;font-size:9pt;color:var(--gris);margin-bottom:8px}
+.meta span{background:var(--gris-claro);padding:3px 8px;border-radius:999px}
+ul,ol{padding-left:18px;margin:6px 0}
+li{margin:3px 0}
+.tip{margin-top:8px;padding:8px 10px;background:#fff7fb;border-left:3px solid var(--rosa);border-radius:8px;font-size:10pt}
+.msg{padding:10px 12px;border-radius:12px;background:var(--gris-claro);margin:0 0 8px}
+.cat{font-size:9pt;font-weight:800;color:var(--rosa);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 8px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #f0e8e2}
+.check input{margin-top:4px}
+@media print{.toolbar{display:none}.cover{min-height:auto;page-break-after:always}}</style></head><body>
+<div class="page">
+  <div class="toolbar"><a class="btn btn-back" href="/app">Volver a la app</a><button class="btn btn-print" onclick="window.print()">Imprimir / PDF</button></div>
+  
+<div class="cover"><div class="badge">Menú</div><h1>Menú para WhatsApp</h1><p>Edita precios y copia el bloque.</p></div>
+<article class="card" contenteditable="true">
+<strong>🍨 POSTRES EN VASO</strong><br><br>
+• Fresa con crema — $[PRECIO]<br>• Oreo cremoso — $[PRECIO]<br>• Chocolate intenso — $[PRECIO]<br>• Maracuyá — $[PRECIO]<br>• Dulce de leche — $[PRECIO]<br>• Cheesecake en vaso — $[PRECIO]<br>• Limón cremoso — $[PRECIO]<br>• Mango cremoso — $[PRECIO]<br>• Banano con caramelo — $[PRECIO]<br>• Coco rayado — $[PRECIO]<br>• Café latte — $[PRECIO]<br>• Piña colada — $[PRECIO]<br>• Red velvet en vaso — $[PRECIO]<br>• Guanábana — $[PRECIO]<br>• Nutella / avellana — $[PRECIO]<br>• Arándanos con yogur — $[PRECIO]<br>• Tiramisú en vaso — $[PRECIO]<br>• Guayaba con queso — $[PRECIO]<br>• Pistacho cremoso — $[PRECIO]<br>• Mora silvestre — $[PRECIO]<br>• Vainilla con chispas — $[PRECIO]<br>• Manzana y canela — $[PRECIO]<br>• Chocolate menta — $[PRECIO]<br>• Durazno en almíbar — $[PRECIO]<br>• Flan napolitano en vaso — $[PRECIO]<br>• Key lime / limón pay — $[PRECIO]<br>• Churro con dulce de leche — $[PRECIO]<br>• Sandía refrescante — $[PRECIO]<br>• Cookie dough — $[PRECIO]<br>• Frutos rojos mix — $[PRECIO]<br>
+<br>Combos y encargos disponibles.<br>Escríbeme para apartar 💬
+</article>
+<p class="tip">Toca el menú para editar precios, luego selecciona y copia.</p>
+
+</div></body></html>

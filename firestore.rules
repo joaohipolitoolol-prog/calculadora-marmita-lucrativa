@@ -37,6 +37,34 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    match /menus/{slug} {
+      allow read: if resource.data.published == true
+        || (signedIn() && resource.data.ownerUid == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'ownerUid', 'published', 'businessName', 'whatsapp', 'items', 'note', 'updatedAt', 'createdAt'
+        ])
+        && request.resource.data.businessName is string
+        && request.resource.data.whatsapp is string
+        && request.resource.data.items is list
+        && request.resource.data.note is string
+        && request.resource.data.published is bool
+        && (!('categories' in request.resource.data) || request.resource.data.categories is list)
+        && (!('tagline' in request.resource.data) || request.resource.data.tagline is string)
+        && (!('phone' in request.resource.data) || request.resource.data.phone is string)
+        && (!('coverImage' in request.resource.data) || request.resource.data.coverImage is string)
+        && (!('logoImage' in request.resource.data) || request.resource.data.logoImage is string);
+
+      allow update: if signedIn()
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+
+      allow delete: if signedIn()
+        && resource.data.ownerUid == request.auth.uid;
+    }
+
     match /analytics/{document=**} {
       allow read: if isAdmin();
       allow write: if false;

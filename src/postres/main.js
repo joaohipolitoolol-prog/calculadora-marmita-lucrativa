@@ -3,13 +3,15 @@ import {
   MAIN_PRICE,
   PRICE_ACCESS_LABEL,
   PRODUCT_NAME,
+  WHATSAPP_NUMBER_ID,
   WHATSAPP_URL,
 } from './config.js';
 import { initDemo } from './demo.js';
-import { trackCurrentPage } from '../lib/page-analytics.js';
+import { bindTrackClicks, trackCheckout, trackCurrentPage } from '../lib/track.js';
 import { PRODUCT_LINE_BY_ID } from '../lib/product-lines.js';
 
-trackCurrentPage();
+trackCurrentPage({ line: 'postres' });
+bindTrackClicks({ page: 'postres', line: 'postres', numberId: WHATSAPP_NUMBER_ID });
 
 const POSTRES_SELLABLE = PRODUCT_LINE_BY_ID.postres?.sellable === true;
 
@@ -60,8 +62,11 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
   }
   link.href = CHECKOUT_URL;
   link.setAttribute('rel', 'noopener');
+  link.dataset.checkout = 'kit';
+  if (!link.dataset.track) link.dataset.track = 'checkout_kit';
   link.addEventListener('click', (e) => {
     e.preventDefault();
+    trackCheckout('kit', { page: 'postres', line: 'postres', ctaId: link.dataset.track });
     handleCheckoutClick();
   });
 });
@@ -74,6 +79,8 @@ document.querySelectorAll('[data-whatsapp]').forEach((link) => {
     return;
   }
   link.href = WHATSAPP_URL;
+  link.dataset.waId = WHATSAPP_NUMBER_ID;
+  link.dataset.waPurpose = 'sales';
   link.setAttribute('rel', 'noopener noreferrer');
   link.setAttribute('target', '_blank');
 });

@@ -1,9 +1,11 @@
 /** Configuración de la landing Postres en Vaso — editar aquí */
 
+import { getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
+
 export const CHECKOUT_URL = 'https://pay.hotmart.com/I106646611G';
 
-/** Preferir WhatsApp de suporte Paletas até ter número dedicado */
-export const WHATSAPP_URL = 'https://wa.me/447402867442';
+export const WHATSAPP_NUMBER_ID = 'postres_sales';
+export const WHATSAPP_URL = getWhatsAppUrl(WHATSAPP_NUMBER_ID);
 
 export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
 export const META_PIXEL_ID = '1369803401885896';

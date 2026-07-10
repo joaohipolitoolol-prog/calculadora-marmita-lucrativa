@@ -1,10 +1,9 @@
-/* Design tokens — Paletas para WhatsApp (rosa morango) */
+/* Design tokens — Paletas / Postres */
 :root {
   --pink: #E8437A;
   --pink-light: #FFECF3;
   --pink-dark: #C72E62;
   --pink-soft: #FFF5F9;
-  /* Secundário: rosa vivo (substitui laranja/amarelo na UI) */
   --orange: #F04D82;
   --orange-dark: #D93A6F;
   --orange-light: #FFE8F0;
@@ -22,6 +21,10 @@
   --red-light: #FEF3F2;
   --cream: #FFF6F9;
   --white: #FFFFFF;
+  --surface: #FFFFFF;
+  --on-accent: #FFFFFF;
+  --ink: #3D2228;
+  --elevated: rgba(255, 255, 255, 0.96);
   --gray: #6B5560;
   --gray-light: #FAF2F6;
   --gray-border: #F0E4EA;
@@ -39,6 +42,43 @@
   --font: 'Nunito', system-ui, sans-serif;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --focus-ring: 0 0 0 3px rgba(232, 67, 122, 0.28);
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  --pink: #F06A9A;
+  --pink-light: #3A2430;
+  --pink-dark: #FF8FB5;
+  --pink-soft: #2A1A22;
+  --orange: #F06A9A;
+  --orange-dark: #FF8FB5;
+  --orange-light: #3A2430;
+  --yellow: #F06896;
+  --yellow-soft: #3A2430;
+  --berry: #E06A88;
+  --chocolate: #F3E6EC;
+  --brown: #F4E8EE;
+  --brown-mid: #D4BFC9;
+  --brown-light: #A98F9B;
+  --green: #3DCF7A;
+  --green-bright: #34C76E;
+  --green-light: #163224;
+  --red: #F07167;
+  --red-light: #3A2220;
+  --cream: #141014;
+  --white: #FFFFFF;
+  --surface: #1E181C;
+  --on-accent: #FFFFFF;
+  --ink: #3D2228;
+  --elevated: rgba(30, 24, 28, 0.96);
+  --gray: #B09AA5;
+  --gray-light: #261F24;
+  --gray-border: #3A3036;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --focus-ring: 0 0 0 3px rgba(240, 106, 154, 0.35);
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {

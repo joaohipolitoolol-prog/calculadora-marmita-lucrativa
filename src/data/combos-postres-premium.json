@@ -1,0 +1,72 @@
+[
+  {
+    "nombre": "Combo degustación",
+    "contenido": "4 vasos surtidos (fresa, Oreo, maracuyá, chocolate)",
+    "precio_guia": "US$ 6–8",
+    "publico": "Primera compra / regalo",
+    "mensaje": "Combo degustación: 4 postres en vaso surtidos por [PRECIO]. Ideal para probar sabores. ¿Te aparto uno?"
+  },
+  {
+    "nombre": "Pack familiar",
+    "contenido": "8 vasos (elige hasta 3 sabores)",
+    "precio_guia": "US$ 12–15",
+    "publico": "Familias / fin de semana",
+    "mensaje": "Pack familiar: 8 postres en vaso por [PRECIO]. Eliges hasta 3 sabores. Entrega [DÍA]. ¿Confirmamos?"
+  },
+  {
+    "nombre": "Mini pedido oficina",
+    "contenido": "12 vasos mismo sabor o mix",
+    "precio_guia": "US$ 18–22",
+    "publico": "Oficinas / encargos",
+    "mensaje": "Hola, armo pedidos de 12 postres en vaso para oficina. Precio [PRECIO]. ¿Qué sabor prefieren?"
+  },
+  {
+    "nombre": "Combo pareja",
+    "contenido": "2 vasos premium + 1 frutal para compartir",
+    "precio_guia": "US$ 5–7",
+    "publico": "Parejas / aniversarios",
+    "mensaje": "Combo dulce para dos: 3 postres en vaso por [PRECIO]. ¿Lo aparto para [FECHA]?"
+  },
+  {
+    "nombre": "Combo infantil",
+    "contenido": "4 vasos coloridos (vainilla chispas, Oreo, fresa, mango)",
+    "precio_guia": "US$ 6–9",
+    "publico": "Niños / cumpleaños pequeños",
+    "mensaje": "Pack infantil: 4 postres en vaso de colores por [PRECIO]. Ideal para peques."
+  },
+  {
+    "nombre": "Combo premium",
+    "contenido": "3 vasos premium (tres leches, brownie, cheesecake Lotus)",
+    "precio_guia": "US$ 9–12",
+    "publico": "Clientes que buscan algo especial",
+    "mensaje": "Selección premium: tres leches, brownie y Lotus por [PRECIO]. ¿Te lo armo?"
+  },
+  {
+    "nombre": "Combo fin de semana",
+    "contenido": "6 vasos (4 clásicos + 2 premium)",
+    "precio_guia": "US$ 10–14",
+    "publico": "Pedidos viernes–domingo",
+    "mensaje": "Caja fin de semana: 6 postres en vaso por [PRECIO]. Aparta la tuya hoy."
+  },
+  {
+    "nombre": "Combo tropical",
+    "contenido": "4 vasos frutales (mango, maracuyá, piña colada, guanábana)",
+    "precio_guia": "US$ 7–10",
+    "publico": "Días calurosos / verano",
+    "mensaje": "Pack tropical: 4 postres frutales en vaso por [PRECIO]. Lo más fresco del menú."
+  },
+  {
+    "nombre": "Bandeja fiesta",
+    "contenido": "16 vasos surtidos (hasta 4 sabores)",
+    "precio_guia": "US$ 28–36",
+    "publico": "Fiestas / reuniones",
+    "mensaje": "Bandeja fiesta: 16 postres en vaso surtidos por [PRECIO]. Pedidos con 48 h. ¿Para qué día?"
+  },
+  {
+    "nombre": "Combo encargo",
+    "contenido": "Cantidad y sabores a medida del menú",
+    "precio_guia": "Cotiza con calculadora + recargo por encargo",
+    "publico": "Eventos y cumpleaños",
+    "mensaje": "¿Evento especial? Armo tu pedido de postres en vaso con los sabores que elijas."
+  }
+]

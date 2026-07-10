@@ -146,7 +146,7 @@ export function bindPwaHint({ onInstall }) {
   });
 }
 
-export function openPwaGuide({ deferredInstallPrompt, showToast }) {
+export function openPwaGuide({ deferredInstallPrompt, showToast, onAccepted } = {}) {
   const existing = document.getElementById('pwa-guide-overlay');
   existing?.remove();
 
@@ -161,7 +161,10 @@ export function openPwaGuide({ deferredInstallPrompt, showToast }) {
       deferredInstallPrompt.prompt();
       const { outcome } = await deferredInstallPrompt.userChoice;
       overlay?.remove();
-      if (outcome === 'accepted') showToast?.('¡App instalada!');
+      if (outcome === 'accepted') {
+        showToast?.('¡App instalada!');
+        onAccepted?.();
+      }
     });
   }
 

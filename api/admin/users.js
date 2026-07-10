@@ -9,6 +9,14 @@ function serializeTimestamp(value) {
   return value;
 }
 
+function normalizePremiumPending(raw) {
+  const pending = raw && typeof raw === 'object' ? raw : {};
+  return {
+    paletas: Boolean(pending.paletas),
+    postres: Boolean(pending.postres),
+  };
+}
+
 function mergeUser(authUser, profile) {
   const base = profile
     ? {
@@ -17,6 +25,7 @@ function mergeUser(authUser, profile) {
         createdAt: serializeTimestamp(profile.createdAt),
         updatedAt: serializeTimestamp(profile.updatedAt),
         lastLoginAt: serializeTimestamp(profile.lastLoginAt),
+        premiumPending: normalizePremiumPending(profile.premiumPending),
       }
     : null;
 
@@ -31,6 +40,9 @@ function mergeUser(authUser, profile) {
       hasPostresPremium: Boolean(base?.hasPostresPremium),
       isAdmin: Boolean(base?.isAdmin),
       registeredFrom: base?.registeredFrom || null,
+      registeredLine: base?.registeredLine || null,
+      lastActiveLine: base?.lastActiveLine || null,
+      premiumPending: base?.premiumPending || { paletas: false, postres: false },
       createdAt: base?.createdAt || authUser.metadata?.creationTime || null,
       updatedAt: base?.updatedAt || null,
       lastLoginAt: base?.lastLoginAt || authUser.metadata?.lastSignInTime || null,
@@ -43,6 +55,7 @@ function mergeUser(authUser, profile) {
 
   return {
     ...base,
+    premiumPending: base?.premiumPending || { paletas: false, postres: false },
     missingProfile: false,
     authOnly: false,
   };
@@ -110,6 +123,7 @@ async function createUser(firebaseAdmin, body) {
     hasPremium: Boolean(products.paletas_premium),
     hasPostres: Boolean(products.postres_kit),
     hasPostresPremium: Boolean(products.postres_premium),
+    premiumPending: { paletas: false, postres: false },
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   };
@@ -136,10 +150,11 @@ async function syncMissingProfiles(firebaseAdmin) {
         {
           email: (authUser.email || '').toLowerCase(),
           displayName: authUser.displayName || '',
-          hasKit: true,
+          hasKit: false,
           hasPremium: false,
           hasPostres: false,
           hasPostresPremium: false,
+          premiumPending: { paletas: false, postres: false },
           isAdmin: false,
           registeredFrom: 'sync',
           createdAt: FieldValue.serverTimestamp(),

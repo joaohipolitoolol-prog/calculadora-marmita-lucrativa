@@ -1,5 +1,7 @@
-import { WHATSAPP_SUPPORT_LINK } from '../landing/config.js';
+import { WHATSAPP_NUMBER_ID, WHATSAPP_SUPPORT_LINK } from '../landing/config.js';
 import { register, guardAuthPage } from '../lib/auth.js';
+import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
+import { defaultNumberIdForLine, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
 import {
   applyAuthBrand,
   getAfterLoginUrl,
@@ -19,8 +21,19 @@ const registerWaSupport = document.getElementById('register-wa-support');
 const params = new URLSearchParams(window.location.search);
 const authLine = applyAuthBrand(getAuthProductLine());
 
+trackCurrentPage({ line: authLine?.id });
+bindTrackClicks({
+  page: 'cadastrar',
+  line: authLine?.id,
+  numberId: defaultNumberIdForLine(authLine?.id || 'paletas', 'support'),
+});
+
 if (registerWaSupport) {
-  registerWaSupport.href = WHATSAPP_SUPPORT_LINK;
+  const waId = defaultNumberIdForLine(authLine?.id || 'paletas', 'support');
+  registerWaSupport.href =
+    authLine?.id === 'postres' ? getWhatsAppUrl(waId) : WHATSAPP_SUPPORT_LINK;
+  registerWaSupport.dataset.waId = waId || WHATSAPP_NUMBER_ID;
+  registerWaSupport.dataset.waPurpose = 'support';
 }
 
 initPasswordToggles();
@@ -56,9 +69,12 @@ registerForm?.addEventListener('submit', async (event) => {
 
   try {
     await register(data.get('name'), data.get('email'), data.get('password'), { accessCode });
+    const bought = params.get('compra') === '1' || Boolean(accessCode);
     showAlert(
       formAlert,
-      '¡Cuenta creada! Tu kit ya está activo — entra y empieza a usar.',
+      bought
+        ? '¡Cuenta creada! Tu kit ya está activo — entra y empieza a usar.'
+        : '¡Cuenta creada! Entra a la app; el acceso se libera con tu compra.',
       'success'
     );
     setTimeout(() => {

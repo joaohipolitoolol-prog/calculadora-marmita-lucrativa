@@ -16,6 +16,7 @@ export default defineConfig({
         postresAviso: resolve(__dirname, 'postres-aviso.html'),
         admin: resolve(__dirname, 'admin.html'),
         acesso: resolve(__dirname, 'acesso.html'),
+        menuPublic: resolve(__dirname, 'm.html'),
       },
     },
   },

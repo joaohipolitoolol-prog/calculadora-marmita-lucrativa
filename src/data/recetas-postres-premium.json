@@ -1,0 +1,523 @@
+[
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-tres-leches",
+    "nombre": "Tres leches en vaso",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Bizcocho remojado en tres leches, montado en vaso. Complemento premium.",
+    "ingredientes": [
+      "Bizcocho o panqués sin relleno (aprox. 300 g)",
+      "200 ml leche evaporada",
+      "200 ml leche condensada",
+      "100 ml crema de leche",
+      "Crema batida para cubrir",
+      "Canela o fruta para decorar"
+    ],
+    "pasos": [
+      "Corta el bizcocho en cubos. Coloca una capa en cada vaso.",
+      "Mezcla las tres leches. Remoja el bizcocho poco a poco (que absorba, no nade).",
+      "Capa de crema batida. Repite si cabe.",
+      "Decora y refrigera mínimo 4 horas."
+    ],
+    "premium": true,
+    "num": 1,
+    "prep": "40 min",
+    "consejo": "Remoja en 2–3 tandas. Si echas todo de golpe, se desarma."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-brownie",
+    "nombre": "Brownie + crema",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Cubos de brownie con crema y salsa de chocolate. Ticket alto.",
+    "ingredientes": [
+      "Brownie casero o comprado (aprox. 400 g)",
+      "250 ml crema batida",
+      "100 g chocolate para salsa",
+      "50 ml crema para la salsa",
+      "Nueces (opcional)"
+    ],
+    "pasos": [
+      "Corta brownie en cubos. Coloca base en el vaso.",
+      "Agrega crema batida y más brownie.",
+      "Calienta chocolate + crema para salsa. Deja enfriar un poco.",
+      "Termina con salsa y nuez. Sirve fresco."
+    ],
+    "premium": true,
+    "num": 2,
+    "prep": "45 min",
+    "consejo": "Brownie un poco seco funciona mejor en vaso que uno muy húmedo."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-banoffee",
+    "nombre": "Banoffee en vaso",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Banano, dulce de leche y crema sobre base crocante. Clásico premium británico adaptado.",
+    "ingredientes": [
+      "3 bananos",
+      "300 g dulce de leche",
+      "250 ml crema de leche",
+      "150 g galletas + 60 g mantequilla",
+      "Chocolate rallado"
+    ],
+    "pasos": [
+      "Base de galleta + mantequilla. Frío 10 min.",
+      "Capa generosa de dulce de leche.",
+      "Rodajas de banano + crema batida.",
+      "Chocolate rallado arriba. Frío 1 hora. Vende el mismo día."
+    ],
+    "premium": true,
+    "num": 3,
+    "prep": "30 min",
+    "consejo": "No armes con mucha anticipación: el banano oscurece."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-mousse-maracuya-blanco",
+    "nombre": "Mousse maracuyá y chocolate blanco",
+    "tipo": "Frutal",
+    "dificultad": "Media",
+    "descripcion": "Contraste ácido-dulce con chocolate blanco. Se ve y se vende como premium.",
+    "ingredientes": [
+      "200 ml pulpa de maracuyá",
+      "200 g chocolate blanco",
+      "250 ml crema de leche",
+      "80 g azúcar",
+      "Base de galleta (opcional)",
+      "Semillas de maracuyá para decorar"
+    ],
+    "pasos": [
+      "Derrite chocolate blanco. Enfría a tibio.",
+      "Bate crema + azúcar. Mezcla con chocolate y pulpa (reserva semillas para arriba).",
+      "Vierte en vasos. Decora con semillas. Frío 3 horas."
+    ],
+    "premium": true,
+    "num": 4,
+    "prep": "35 min",
+    "consejo": "Si la pulpa está muy ácida, sube un poco el azúcar antes de montar."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-cheesecake-lotus",
+    "nombre": "Cheesecake Lotus / Biscoff",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Base y swirl de galleta caramelizada. Uno de los más pedidos en redes.",
+    "ingredientes": [
+      "200 g galletas Lotus/Biscoff + 70 g mantequilla",
+      "80 g crema de Biscoff",
+      "250 g queso crema",
+      "200 ml crema de leche",
+      "100 g azúcar glass",
+      "1 cucharadita vainilla"
+    ],
+    "pasos": [
+      "Base de galleta + mantequilla. Frío 10 min.",
+      "Bate queso + azúcar + vainilla + crema.",
+      "Llena vasos, deja un hueco y agrega hilos de crema Biscoff; marmolea suave.",
+      "Migajas arriba. Frío 3 horas."
+    ],
+    "premium": true,
+    "num": 5,
+    "prep": "30 min",
+    "consejo": "No mezcles demasiado el swirl o pierde el efecto visual."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-ferrero",
+    "nombre": "Ferrero estilo vaso",
+    "tipo": "Cremoso",
+    "dificultad": "Difícil",
+    "descripcion": "Avellana, chocolate y crocante. Ticket alto; ideal para fechas especiales.",
+    "ingredientes": [
+      "200 g crema de avellana",
+      "150 g chocolate semiamargo",
+      "250 ml crema de leche",
+      "80 g avellanas tostadas picadas",
+      "100 g galletas de chocolate",
+      "Nueces Ferrero o similares para decorar (opcional)"
+    ],
+    "pasos": [
+      "Derrite chocolate e incorpora a la crema de avellana. Enfría.",
+      "Incorpora crema batida y la mitad de las avellanas.",
+      "Alterna galleta y crema. Decora con avellana y bombón.",
+      "Frío 2–3 horas."
+    ],
+    "premium": true,
+    "num": 6,
+    "prep": "40 min",
+    "consejo": "Tuesta las avellanas: el aroma justifica el precio premium."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "4 horas",
+    "id": "postre-panna-cotta-frutos",
+    "nombre": "Panna cotta de frutos rojos",
+    "tipo": "Frutal",
+    "dificultad": "Media",
+    "descripcion": "Panna cotta suave con coulis de frutos. Textura elegante en vaso.",
+    "ingredientes": [
+      "400 ml crema de leche",
+      "80 g azúcar",
+      "1 cucharadita vainilla",
+      "7 g gelatina sin sabor hidratada",
+      "200 g frutos rojos + 40 g azúcar (coulis)"
+    ],
+    "pasos": [
+      "Calienta crema + azúcar + vainilla sin hervir. Disuelve gelatina. Enfría un poco.",
+      "Vierte en vasos. Refrigera 4 horas hasta firmar.",
+      "Cocina frutos + azúcar, tritura y cuela. Enfría.",
+      "Cubre cada vaso con coulis al servir."
+    ],
+    "premium": true,
+    "num": 7,
+    "prep": "30 min",
+    "consejo": "No hiervas la crema con la gelatina o puede quedar granulada."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-oreo-premium",
+    "nombre": "Oreo extreme",
+    "tipo": "Cremoso",
+    "dificultad": "Fácil",
+    "descripcion": "Versión XXL del Oreo: más capas, ganache y galleta entera. Upsell fácil.",
+    "ingredientes": [
+      "24 galletas Oreo",
+      "250 g queso crema",
+      "250 ml crema de leche",
+      "100 g azúcar glass",
+      "100 g chocolate para ganache",
+      "50 ml crema para ganache"
+    ],
+    "pasos": [
+      "Prepara crema de queso + crema batida + azúcar.",
+      "Alterna migas, crema y trozos grandes de Oreo.",
+      "Cubre con ganache tibio. Media Oreo arriba.",
+      "Frío 2 horas."
+    ],
+    "premium": true,
+    "num": 8,
+    "prep": "30 min",
+    "consejo": "Cobra 20–30% más que el Oreo básico: el ganache se ve y se nota."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-lemon-meringue",
+    "nombre": "Lemon meringue en vaso",
+    "tipo": "Frutal",
+    "dificultad": "Difícil",
+    "descripcion": "Crema de limón + merengue tostado. Wow visual para Instagram y encargos.",
+    "ingredientes": [
+      "200 ml jugo de limón + ralladura",
+      "4 yemas + 100 g azúcar (cuajada)",
+      "40 g mantequilla",
+      "3 claras + 120 g azúcar (merengue)",
+      "Base de galleta"
+    ],
+    "pasos": [
+      "Cocina yemas + azúcar + jugo a baño María hasta espesar. Agrega mantequilla. Enfría.",
+      "Base de galleta → cuajada de limón en vasos.",
+      "Bate merengue a punto firme. Cubre y tuesta con soplete o 1–2 min al grill.",
+      "Sirve el mismo día."
+    ],
+    "premium": true,
+    "num": 9,
+    "prep": "50 min",
+    "consejo": "Si no tienes soplete, sirve merengue italiano sin tostar: igual luce."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-choco-lavado",
+    "nombre": "Volcán de chocolate frío",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Mousse intensa con corazón de ganache líquido. Experiencia premium al primer cucharazo.",
+    "ingredientes": [
+      "200 g chocolate semiamargo",
+      "250 ml crema",
+      "100 g chocolate + 80 ml crema (corazón)",
+      "Base de brownie o galleta",
+      "Cacao"
+    ],
+    "pasos": [
+      "Prepara ganache del corazón y refrigera en bolitas 30 min.",
+      "Haz mousse con chocolate derretido + crema batida.",
+      "Capa base → mousse → bolita de ganache → más mousse.",
+      "Frío 2 horas. Espolvorea cacao."
+    ],
+    "premium": true,
+    "num": 10,
+    "prep": "45 min",
+    "consejo": "Las bolitas de ganache deben estar firmes al armar o se mezclan."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "4 horas",
+    "id": "postre-coco-quemado",
+    "nombre": "Coco quemado / crème brûlée coco",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Crema de coco con costra de azúcar tostado. Toque restaurante en vaso.",
+    "ingredientes": [
+      "300 ml crema de coco",
+      "200 ml crema de leche",
+      "80 g azúcar",
+      "1 cucharadita vainilla",
+      "6 g gelatina sin sabor",
+      "Azúcar para quemar arriba"
+    ],
+    "pasos": [
+      "Calienta cremas + azúcar + vainilla. Disuelve gelatina. Vierte en vasos.",
+      "Frío 4 horas.",
+      "Espolvorea azúcar y tuesta con soplete justo antes de entregar."
+    ],
+    "premium": true,
+    "num": 11,
+    "prep": "25 min",
+    "consejo": "Quema al momento: si lo haces antes, la costra se ablanda."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-mango-sticky",
+    "nombre": "Mango sticky cream",
+    "tipo": "Frutal",
+    "dificultad": "Media",
+    "descripcion": "Inspirado en mango sticky rice: mango, crema de coco y toque de arroz crocante.",
+    "ingredientes": [
+      "400 g mango maduro",
+      "200 ml crema de coco",
+      "1/2 lata leche condensada",
+      "150 ml crema de leche",
+      "40 g arroz inflado o granola de coco",
+      "Semilla de sésamo tostada (opcional)"
+    ],
+    "pasos": [
+      "Licúa parte del mango con coco y leche condensada. Incorpora crema.",
+      "Capa de arroz inflado → crema → cubos de mango.",
+      "Sésamo arriba. Frío 2 horas."
+    ],
+    "premium": true,
+    "num": 12,
+    "prep": "30 min",
+    "consejo": "El arroz inflado se agrega al armar para que no se ponga chicloso."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "4 horas",
+    "id": "postre-tarta-queso-fresa",
+    "nombre": "Cheesecake bake-free fresa premium",
+    "tipo": "Frutal",
+    "dificultad": "Media",
+    "descripcion": "Cheesecake alto con gelatina de fresa espejo. Presentación de pastelería.",
+    "ingredientes": [
+      "250 g queso crema",
+      "200 ml crema",
+      "100 g azúcar glass",
+      "Base galleta + mantequilla",
+      "200 g fresas + 50 g azúcar + 5 g gelatina (capa superior)"
+    ],
+    "pasos": [
+      "Monta base y crema de cheesecake. Frío 2 horas.",
+      "Cocina fresas + azúcar, tritura, disuelve gelatina. Enfría a tibio.",
+      "Vierte capa fina sobre el cheesecake. Frío 2 horas más."
+    ],
+    "premium": true,
+    "num": 13,
+    "prep": "40 min",
+    "consejo": "La gelatina debe estar tibia, no caliente, o derrite la crema."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-rolon-chocolate",
+    "nombre": "Rollo de chocolate y avellana",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Capas de crema de chocolate, avellana y crocante tipo chocolatina.",
+    "ingredientes": [
+      "180 g chocolate",
+      "200 g crema de avellana",
+      "250 ml crema",
+      "80 g avellanas + galleta triturada (crocante)",
+      "Leche condensada al gusto"
+    ],
+    "pasos": [
+      "Prepara mousse de chocolate con crema batida.",
+      "Alterna mousse, crema de avellana y crocante.",
+      "Termina con rizo de crema y avellana. Frío 2 horas."
+    ],
+    "premium": true,
+    "num": 14,
+    "prep": "35 min",
+    "consejo": "Empaca con tapa: el crocante se ablanda si queda abierto en refrigerador húmedo."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-passion-cheesecake",
+    "nombre": "Cheesecake de maracuyá",
+    "tipo": "Frutal",
+    "dificultad": "Media",
+    "descripcion": "Cheesecake con topping de curd de maracuyá. Ácido-elegante.",
+    "ingredientes": [
+      "250 g queso crema",
+      "200 ml crema",
+      "100 g azúcar glass",
+      "Base de galleta",
+      "150 ml pulpa maracuyá + 60 g azúcar + 1 yema + 20 g mantequilla (curd)"
+    ],
+    "pasos": [
+      "Monta cheesecake en vasos. Frío 2 horas.",
+      "Cocina curd de maracuyá a fuego bajo hasta espesar. Enfría.",
+      "Cubre cada vaso. Frío 1 hora más."
+    ],
+    "premium": true,
+    "num": 15,
+    "prep": "40 min",
+    "consejo": "Cuela el curd si quieres brillo de pastelería sin semillas."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-snickers",
+    "nombre": "Snickers en vaso",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Chocolate, maní, caramelo y crema. Sabor golosina con margen alto.",
+    "ingredientes": [
+      "150 g chocolate",
+      "200 g dulce de leche o caramelo",
+      "100 g maní tostado salado",
+      "250 ml crema",
+      "100 g queso crema",
+      "Galletas de chocolate"
+    ],
+    "pasos": [
+      "Base de galleta. Capa de caramelo + maní.",
+      "Crema de queso + crema batida.",
+      "Ganache de chocolate arriba y más maní.",
+      "Frío 2 horas."
+    ],
+    "premium": true,
+    "num": 16,
+    "prep": "35 min",
+    "consejo": "El toque de sal del maní equilibra el dulce y justifica precio premium."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "4 horas",
+    "id": "postre-tres-chocolates",
+    "nombre": "Tres chocolates",
+    "tipo": "Cremoso",
+    "dificultad": "Difícil",
+    "descripcion": "Capas de chocolate negro, con leche y blanco. Showpiece del menú premium.",
+    "ingredientes": [
+      "100 g chocolate negro",
+      "100 g chocolate con leche",
+      "100 g chocolate blanco",
+      "450 ml crema (150 ml por capa)",
+      "Base de galleta oscura"
+    ],
+    "pasos": [
+      "Prepara tres mousses por separado (chocolate derretido + crema batida).",
+      "Vierte capa negra, frío 40 min; luego leche; luego blanca.",
+      "Frío total mínimo 4 horas."
+    ],
+    "premium": true,
+    "num": 17,
+    "prep": "55 min",
+    "consejo": "Cada capa debe estar semi-firme antes de la siguiente o se mezclan."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-pistacho-frambuesa",
+    "nombre": "Pistacho y frambuesa",
+    "tipo": "Frutal",
+    "dificultad": "Media",
+    "descripcion": "Combinación pastelería fina: verde + rojo. Ideal para San Valentín y Madre.",
+    "ingredientes": [
+      "120 g pasta de pistacho",
+      "250 g queso crema",
+      "200 ml crema",
+      "100 g azúcar glass",
+      "150 g frambuesas",
+      "Base de galleta"
+    ],
+    "pasos": [
+      "Crema de pistacho con queso + azúcar + crema batida.",
+      "Base → crema → frambuesas. Repite.",
+      "Decora con pistacho picado. Frío 2–3 horas."
+    ],
+    "premium": true,
+    "num": 18,
+    "prep": "35 min",
+    "consejo": "Usa frambuesas enteras arriba: el color vende el vaso en foto."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-cafe-baileys",
+    "nombre": "Café crema especial",
+    "tipo": "Cremoso",
+    "dificultad": "Media",
+    "descripcion": "Café, chocolate y crema irlandesa (o jarabe de café). Para público adulto.",
+    "ingredientes": [
+      "100 ml café espresso frío",
+      "40 ml crema tipo Baileys o jarabe de café",
+      "200 g chocolate",
+      "250 ml crema",
+      "Galletas de chocolate",
+      "Granos de café"
+    ],
+    "pasos": [
+      "Derrite chocolate. Mezcla con café y Baileys/jarabe.",
+      "Incorpora crema batida.",
+      "Monta con base de galleta. Frío 2–3 horas."
+    ],
+    "premium": true,
+    "num": 19,
+    "prep": "35 min",
+    "consejo": "Si usas alcohol, etiquétalo: no todos los clientes lo esperan."
+  },
+  {
+    "rendimiento": "8 vasos",
+    "congelacion": "1–2 horas",
+    "id": "postre-tropical-premium",
+    "nombre": "Tropical premium (mango-maracuyá-coco)",
+    "tipo": "Frutal",
+    "dificultad": "Media",
+    "descripcion": "Tres capas tropicales en un solo vaso. Estrella de verano y combos premium.",
+    "ingredientes": [
+      "150 g pulpa de mango",
+      "100 ml pulpa de maracuyá",
+      "150 ml crema de coco",
+      "1 lata leche condensada (repartida)",
+      "200 ml crema batida",
+      "Base de galleta"
+    ],
+    "pasos": [
+      "Prepara tres cremas: mango, maracuyá y coco (cada una con un poco de condensada + crema).",
+      "Capa base → coco → mango → maracuyá (o al revés según densidad).",
+      "Frío 3 horas. Decora con coco y semilla de maracuyá."
+    ],
+    "premium": true,
+    "num": 20,
+    "prep": "40 min",
+    "consejo": "Enfría cada capa 20–30 min si quieres líneas muy definidas."
+  }
+]

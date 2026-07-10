@@ -23,10 +23,34 @@ import {
 } from '../lib/calculator.js';
 import { LOCAL_USER, getUserLabel } from '../lib/local-user.js';
 import { logout, redirectIfGuest, watchAuth } from '../lib/auth.js';
-import { CURRENCIES, getCurrencyCode, getCurrencySymbol, setCurrencyCode } from '../lib/currency.js';
-import { hasKitAccess, isUserAdmin, resolveUserProfile } from '../lib/user-profile.js';
+import { CURRENCIES, getCurrency, getCurrencyCode, getCurrencySymbol, setCurrencyCode } from '../lib/currency.js';
+import {
+  hasKitAccess,
+  isUserAdmin,
+  markPremiumPending,
+  resolveUserProfile,
+  touchUserActivity,
+} from '../lib/user-profile.js';
 import { saveDisplayName, getLocalDisplayName } from '../lib/user-settings.js';
-import { WHATSAPP_PURCHASE_LINK, WHATSAPP_DISPLAY } from '../landing/config.js';
+import { bindTrackClicks, trackEvent } from '../lib/track.js';
+import { defaultNumberIdForLine, getWhatsAppDisplay, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
+import { WHATSAPP_PURCHASE_MESSAGE, WHATSAPP_SUPPORT_MESSAGE } from '../landing/config.js';
+
+function lineWhatsApp(purpose = 'support') {
+  const lineId = activeLine?.id || 'paletas';
+  const id = defaultNumberIdForLine(lineId, purpose);
+  const message =
+    purpose === 'support'
+      ? lineId === 'postres'
+        ? '¡Hola! Necesito ayuda con Postres en Vaso.'
+        : WHATSAPP_SUPPORT_MESSAGE
+      : WHATSAPP_PURCHASE_MESSAGE;
+  return {
+    id,
+    href: getWhatsAppUrl(id, message),
+    display: getWhatsAppDisplay(id),
+  };
+}
 import { UPSELL_CHECKOUT_URL, UPSELL_PRICE_LABEL, UPSELL_NAME } from '../upsell/config.js';
 import {
   UPSELL_CHECKOUT_URL as POSTRES_UPSELL_CHECKOUT,
@@ -44,14 +68,17 @@ import {
   clearDraft,
   clearScenarios,
   deleteScenario,
+  getDraftStoreSync,
   listScenarios,
-  loadDraft,
+  loadDraftStore,
   saveDraft,
   saveScenario,
   saveChecklistToCloud,
 } from '../lib/storage.js';
 import {
   crossSellLines,
+  getEnabledLines,
+  getTopbarLines,
   ownedLinesFromProfile,
   PRODUCT_LINE_BY_ID,
   rememberActiveLine,
@@ -68,10 +95,8 @@ import {
 } from './onboarding.js';
 import { DEV_ADMIN_ACCESS, DEV_UNLOCK_ALL_CONTENT } from '../site/dev.js';
 import {
-  bindPwaHint,
   isPwaInstalled,
   openPwaGuide,
-  renderPwaHintBanner,
 } from './pwa-install.js';
 import {
   KIT_DOWNLOADS,
@@ -80,8 +105,16 @@ import {
   POSTRES_PREMIUM_DOWNLOADS,
   getDocById,
   isViewableDoc,
+  isNativeDoc,
+  hasPdfDownload,
   kindLabel,
 } from './documents.js';
+import {
+  bindMenuWebEvents,
+  ensureMenuDraftLoaded,
+  renderMenuWebView,
+} from './menu-editor.js';
+import { canUseMenusCloud } from '../lib/menus.js';
 
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
@@ -98,6 +131,12 @@ let kitSection = 'mensajes';
 let activeDocId = null;
 let openStep = 1;
 let drawerOpen = false;
+let drawerMinimized = false;
+try {
+  drawerMinimized = localStorage.getItem('app_drawer_minimized_v1') === '1';
+} catch {
+  drawerMinimized = false;
+}
 let recipeCatalog = 'base';
 let recipeFilter = 'all';
 let kitUnlocked = true;
@@ -155,23 +194,50 @@ function kitContentForLine() {
   };
 }
 
+const THEME_STORAGE_KEY = 'app_theme_v1';
+
+function getTheme() {
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
+  if (saved === 'dark' || saved === 'light') return saved;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme(theme) {
+  const next = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', next === 'dark' ? '#141014' : '#FFF6F9');
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, next);
+  } catch {
+    /* ignore */
+  }
+}
+
+function toggleTheme() {
+  applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  render();
+}
+
+applyTheme(getTheme());
+
 function shouldShowInstallButton() {
   return !isPwaInstalled();
 }
 
-async function triggerPwaInstall() {
-  if (isPwaInstalled()) return;
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    if (outcome === 'accepted') {
-      showToast('¡App instalada!');
-      render();
-    }
+function triggerPwaInstall() {
+  if (isPwaInstalled()) {
+    showToast('Ya está en tu pantalla de inicio');
     return;
   }
-  openPwaGuide({ deferredInstallPrompt: null, showToast });
+  openPwaGuide({
+    deferredInstallPrompt,
+    showToast,
+    onAccepted: () => {
+      deferredInstallPrompt = null;
+      render();
+    },
+  });
 }
 
 if (typeof window !== 'undefined') {
@@ -245,12 +311,13 @@ function hasPremiumAccess() {
 
 function hasKitContentAccess() {
   if (DEV_UNLOCK_ALL_CONTENT) return true;
-  return kitUnlocked;
+  // Active chip = owned line → content unlocked (admin can revoke the flag anytime).
+  return ownsLine(lineBrand().id);
 }
 
 const SIMULATION_VOLUMES = [10, 20, 30];
 
-const RECIPE_FILTERS = [
+const RECIPE_FILTERS_PALETAS = [
   { id: 'all', label: 'Todas' },
   { id: 'frutal', label: 'Frutales' },
   { id: 'cremosa', label: 'Cremosas' },
@@ -258,6 +325,130 @@ const RECIPE_FILTERS = [
   { id: 'postre', label: 'Postre' },
   { id: 'banada', label: 'Bañadas' },
 ];
+
+const RECIPE_FILTERS_POSTRES = [
+  { id: 'all', label: 'Todas' },
+  { id: 'cremoso', label: 'Cremosos' },
+  { id: 'frutal', label: 'Frutales' },
+];
+
+function recipeFiltersForLine(catalog = recipeCatalog) {
+  const all = lineBrand().id === 'postres' ? RECIPE_FILTERS_POSTRES : RECIPE_FILTERS_PALETAS;
+  const kit = kitContentForLine();
+  const recipes =
+    catalog === 'premium' ? kit.recipesPremium || [] : kit.recipes || [];
+  if (!recipes.length) return all;
+  const present = new Set(recipes.map((r) => recipeTipoSlug(r.tipo)));
+  return all.filter((f) => f.id === 'all' || present.has(f.id));
+}
+
+function ensureValidRecipeFilter() {
+  const ids = recipeFiltersForLine().map((f) => f.id);
+  if (!ids.includes(recipeFilter)) recipeFilter = 'all';
+}
+
+function catalogTypeSummary(recipes) {
+  const counts = {};
+  for (const r of recipes || []) {
+    const label = r.tipo || 'Otros';
+    counts[label] = (counts[label] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([label, n]) => `${n} ${label}`)
+    .join(' · ');
+}
+
+function enableHorizontalDragScroll(el) {
+  if (!el || el.dataset.dragScrollBound === '1') return;
+  el.dataset.dragScrollBound = '1';
+
+  let pointerId = null;
+  let startX = 0;
+  let startScroll = 0;
+  let dragged = false;
+  let activeBtn = null;
+
+  el.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'touch') return;
+    if (event.button !== 0) return;
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startScroll = el.scrollLeft;
+    dragged = false;
+    activeBtn = event.target.closest('[data-recipe-filter], [data-kit-section]');
+  });
+
+  el.addEventListener('pointermove', (event) => {
+    if (pointerId == null || event.pointerId !== pointerId) return;
+    const dx = event.clientX - startX;
+    if (!dragged && Math.abs(dx) > 6) {
+      dragged = true;
+      el.classList.add('is-dragging');
+      el.setPointerCapture?.(pointerId);
+    }
+    if (!dragged) return;
+    el.scrollLeft = startScroll - dx;
+    event.preventDefault();
+  });
+
+  const endDrag = (event) => {
+    if (pointerId == null || (event && event.pointerId !== pointerId)) return;
+    if (dragged && activeBtn) {
+      activeBtn.dataset.dragMoved = '1';
+      window.setTimeout(() => {
+        delete activeBtn.dataset.dragMoved;
+      }, 0);
+    }
+    el.classList.remove('is-dragging');
+    pointerId = null;
+    dragged = false;
+    activeBtn = null;
+  };
+
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
+  el.addEventListener('lostpointercapture', endDrag);
+}
+
+function applyRecipeListFilters() {
+  const searchEl = document.getElementById('bonus-search');
+  const q = (searchEl?.value || '').trim().toLowerCase();
+  const isFiltering = Boolean(q) || recipeFilter !== 'all';
+  let visible = 0;
+
+  document.querySelectorAll('#menu-list .menu-item').forEach((item) => {
+    const tipoOk = recipeFilter === 'all' || item.dataset.tipo === recipeFilter;
+    const searchOk = !q || (item.dataset.search || '').includes(q);
+    const show = tipoOk && searchOk;
+    item.style.display = show ? '' : 'none';
+    if (show) visible += 1;
+  });
+
+  document.querySelectorAll('#menu-list .menu-week').forEach((week) => {
+    const visibleItems = [...week.querySelectorAll('.menu-item')].filter(
+      (i) => i.style.display !== 'none'
+    );
+    const hasVisible = visibleItems.length > 0;
+    week.style.display = hasVisible ? '' : 'none';
+    if (isFiltering && hasVisible) week.open = true;
+    else if (!isFiltering) week.open = false;
+  });
+
+  const countEl = document.getElementById('menu-list-count');
+  if (countEl) {
+    countEl.textContent = isFiltering
+      ? `${visible} receta${visible === 1 ? '' : 's'} encontrada${visible === 1 ? '' : 's'}`
+      : `${document.querySelectorAll('#menu-list .menu-item').length} recetas · toca una semana para ver`;
+  }
+  document.getElementById('menu-empty')?.classList.toggle('hidden', visible > 0);
+
+  document.querySelectorAll('[data-recipe-filter]').forEach((btn) => {
+    const active = btn.dataset.recipeFilter === recipeFilter;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+}
 
 function loadChecklistState() {
   try {
@@ -291,21 +482,38 @@ const INSIGHTS = {
   },
 };
 
+function applyDraftPayload(draft) {
+  if (draft?.inputs) {
+    inputMode = draft.inputMode || 'simple';
+    currentInputs = cloneInputs(draft.inputs);
+    simpleValues = fullToSimple(currentInputs);
+  } else {
+    inputMode = 'simple';
+    simpleValues = { ...SIMPLE_DEFAULTS };
+    currentInputs = simpleToFull(SIMPLE_DEFAULTS);
+  }
+  currentResults = calculate(currentInputs);
+}
+
+function loadCalculatorForLine(lineId) {
+  const store = getDraftStoreSync(currentUser.uid);
+  applyDraftPayload(store.byLine[lineId] || null);
+}
+
 async function bootstrap() {
   registerPwa();
   maybeWelcome();
   unlockPremiumFromQuery();
   readViewFromUrl();
 
-  const draft = await loadDraft(currentUser.uid);
-  if (draft?.inputs) {
-    inputMode = draft.inputMode || 'simple';
-    currentInputs = draft.inputs;
-    simpleValues = fullToSimple(currentInputs);
-  }
+  const store = await loadDraftStore(currentUser.uid);
+  const lineId = activeLine?.id || 'paletas';
+  applyDraftPayload(store.byLine[lineId] || store.byLine.paletas || null);
 
-  currentResults = calculate(currentInputs);
   scenarios = await listScenarios(currentUser.uid);
+  if (activeView === 'menuWeb') {
+    await ensureMenuDraftLoaded(currentUser.uid);
+  }
   render();
   maybeWelcome();
   maybeShowOnboarding();
@@ -364,7 +572,7 @@ function renderKitLockedCard(title = 'Contenido del kit') {
       <span class="kit-locked-badge" aria-hidden="true">🔒</span>
       <h2>${escapeHtml(title)}</h2>
       <p class="section-text">Estamos confirmando tu compra. Puedes usar la calculadora mientras tanto; te avisamos por correo cuando el kit esté listo.</p>
-      <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Ayuda por WhatsApp</a>
+      <a href="${lineWhatsApp('support').href}" class="btn btn-primary" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">Ayuda por WhatsApp</a>
     </div>
   `;
 }
@@ -382,7 +590,7 @@ function renderPostPurchaseBanner() {
           <li>Toca <em>Ver mi ganancia</em></li>
           <li>Abre <em>Kit</em> en el menú de abajo</li>
         </ol>
-        <a href="${WHATSAPP_PURCHASE_LINK}" class="welcome-banner-wa" target="_blank" rel="noopener noreferrer">¿Necesitas ayuda? Escríbenos por WhatsApp</a>
+        <a href="${lineWhatsApp('support').href}" class="welcome-banner-wa" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">¿Necesitas ayuda? Escríbenos por WhatsApp</a>
       </div>
       <button type="button" class="welcome-banner-close" id="welcome-banner-close" aria-label="Cerrar">×</button>
     </div>
@@ -407,20 +615,48 @@ watchAuth(async (user) => {
   if (DEV_UNLOCK_ALL_CONTENT && ownedLines.length === 0) {
     ownedLines = [PRODUCT_LINE_BY_ID.paletas, PRODUCT_LINE_BY_ID.postres];
   }
-  if (ownedLines.length === 0) {
-    ownedLines = [PRODUCT_LINE_BY_ID.paletas];
-  }
+  // Do not invent Paletas ownership — admin revoke must stick.
   activeLine = resolveActiveLine({
     search: window.location.search,
     profile,
   });
-  if (!ownsLine(activeLine.id) && ownedLines[0]) {
+  if (ownedLines.length > 0 && !ownsLine(activeLine.id)) {
     activeLine = ownedLines[0];
     rememberActiveLine(activeLine.id);
   }
   userIsAdmin = (await isUserAdmin(user, profile)) || DEV_ADMIN_ACCESS;
   writePremiumFlag('paletas', Boolean(profile?.hasPremium));
   writePremiumFlag('postres', Boolean(profile?.hasPostresPremium));
+
+  // Flush local upsell intent → Firestore pending (admin queue)
+  try {
+    if (localStorage.getItem('premium_pending_paletas') === '1' && profile?.hasKit && !profile?.hasPremium) {
+      await markPremiumPending(user.uid, 'paletas');
+      localStorage.removeItem('premium_pending_paletas');
+    }
+    if (
+      localStorage.getItem('premium_pending_postres') === '1' &&
+      profile?.hasPostres &&
+      !profile?.hasPostresPremium
+    ) {
+      await markPremiumPending(user.uid, 'postres');
+      localStorage.removeItem('premium_pending_postres');
+    }
+  } catch {
+    /* optional */
+  }
+
+  await touchUserActivity(user.uid, { lastActiveLine: activeLine?.id || null });
+  trackEvent('app_open', {
+    page: 'app',
+    line: activeLine?.id || undefined,
+    uid: user.uid,
+  });
+  bindTrackClicks({
+    page: 'app',
+    line: activeLine?.id,
+    numberId: defaultNumberIdForLine(activeLine?.id || 'paletas', 'support'),
+  });
 
   currentUser = {
     uid: user.uid,
@@ -442,7 +678,7 @@ function showToast(message) {
 }
 
 function persistState() {
-  saveDraft(currentUser.uid, { inputMode, inputs: currentInputs });
+  saveDraft(currentUser.uid, { inputMode, inputs: currentInputs }, activeLine?.id || 'paletas');
 }
 
 function closeDrawer() {
@@ -457,6 +693,16 @@ function openDrawer() {
   document.body.classList.add('drawer-open');
   root.querySelector('.app-drawer')?.classList.add('open');
   root.querySelector('.drawer-overlay')?.classList.add('open');
+}
+
+function setDrawerMinimized(minimized) {
+  drawerMinimized = Boolean(minimized);
+  try {
+    localStorage.setItem('app_drawer_minimized_v1', drawerMinimized ? '1' : '0');
+  } catch {
+    /* ignore */
+  }
+  render();
 }
 
 function renderTopbarBadge() {
@@ -475,10 +721,86 @@ function renderTopbarBadge() {
   return '';
 }
 
+function renderTopbarLineSwitcher() {
+  const owned = ownedLines.filter(Boolean);
+  const canSwitch = owned.length > 1;
+  const brand = lineBrand();
+  const lines = getTopbarLines();
+
+  const menuItems = lines
+    .map((line) => {
+      const ownedLine = ownsLine(line.id);
+      const active = brand.id === line.id;
+      const comingSoon = !line.enabled;
+
+      if (comingSoon) {
+        return `
+          <div class="topbar-line-item locked" aria-disabled="true">
+            <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
+            <span class="topbar-line-item-text">
+              <strong>${escapeHtml(line.short)}</strong>
+              <em>En breve</em>
+            </span>
+          </div>
+        `;
+      }
+
+      if (!ownedLine) {
+        return `
+          <div class="topbar-line-item locked" aria-disabled="true">
+            <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
+            <span class="topbar-line-item-text">
+              <strong>${escapeHtml(line.short)}</strong>
+              <em>Sin acceso</em>
+            </span>
+          </div>
+        `;
+      }
+
+      if (!canSwitch) {
+        return `
+          <div class="topbar-line-item ${active ? 'active' : ''}" aria-current="${active ? 'true' : 'false'}">
+            <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
+            <span class="topbar-line-item-text">
+              <strong>${escapeHtml(line.short)}</strong>
+              <em>${active ? 'Activo' : 'Tu kit'}</em>
+            </span>
+          </div>
+        `;
+      }
+
+      return `
+        <button type="button" class="topbar-line-item ${active ? 'active' : ''}" data-set-line="${line.id}" aria-pressed="${active}">
+          <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
+          <span class="topbar-line-item-text">
+            <strong>${escapeHtml(line.short)}</strong>
+            <em>${active ? 'Activo' : 'Cambiar'}</em>
+          </span>
+        </button>
+      `;
+    })
+    .join('');
+
+  return `
+    <div class="topbar-line-switch ${canSwitch ? 'can-switch' : 'solo'}">
+      <button type="button" class="topbar-line-trigger" data-topbar-line-toggle aria-expanded="false" aria-haspopup="menu" title="${escapeHtml(brand.short)}" aria-label="Producto: ${escapeHtml(brand.short)}">
+        <span class="topbar-line-emoji" aria-hidden="true">${brand.emoji}</span>
+      </button>
+      <div class="topbar-line-menu" role="menu" hidden>
+        ${menuItems}
+      </div>
+    </div>
+  `;
+}
+
 function renderTopbarActions() {
   const badge = renderTopbarBadge();
-  if (!badge) return '';
-  return `<div class="topbar-actions">${badge}</div>`;
+  return `
+    <div class="topbar-actions">
+      ${renderTopbarLineSwitcher()}
+      ${badge}
+    </div>
+  `;
 }
 
 function renderTopbarSub() {
@@ -489,6 +811,7 @@ function renderTopbarSub() {
   if (activeView === 'calc') return inputMode === 'simple' ? 'Modo rápido' : 'Modo completo';
   if (activeView === 'home') return 'Tu panel';
   if (activeView === 'profile') return 'Ajustes';
+  if (activeView === 'menuWeb') return 'Link para clientes';
   if (activeView === 'kit') {
     const labels = { recetas: 'Recetas', archivos: 'Archivos', vender: 'Vender' };
     return labels[kitHubTab] || '';
@@ -546,6 +869,7 @@ async function signOutToLanding() {
 }
 
 function renderDrawer() {
+  // menuWeb is demo-only — hidden from drawer; open via secret control on Perfil
   const drawerOrder = ['home', 'calc', 'kit', 'results', 'profile'];
   const navItems = drawerOrder
     .map((id) => {
@@ -556,7 +880,7 @@ function renderDrawer() {
           ? `<span class="drawer-badge ${currentResults.status}"></span>`
           : '';
       return `
-        <button type="button" class="drawer-link ${activeView === id || (id === 'kit' && activeView === 'document') ? 'active' : ''}" data-view="${id}">
+        <button type="button" class="drawer-link ${activeView === id || (id === 'kit' && activeView === 'document') ? 'active' : ''}" data-view="${id}" title="${meta.label}" aria-label="${meta.label}">
           <span class="drawer-link-icon">${ICONS[meta.icon]}</span>
           <span class="drawer-link-text">${meta.label}</span>
           ${badge}
@@ -574,12 +898,23 @@ function renderDrawer() {
     `
     : '';
 
+  const minimizeLabel = drawerMinimized ? 'Expandir menú' : 'Minimizar menú';
+  const minimizeIcon = drawerMinimized ? ICONS.panelRight : ICONS.panelLeft;
+
   return `
     <div class="drawer-overlay ${drawerOpen ? 'open' : ''}" data-drawer-close aria-hidden="true"></div>
-    <aside class="app-drawer ${drawerOpen ? 'open' : ''}" aria-label="Menu principal">
+    <aside class="app-drawer ${drawerOpen ? 'open' : ''} ${drawerMinimized ? 'is-minimized' : ''}" aria-label="Menu principal">
       <div class="drawer-head">
-        <div class="drawer-brand"><span class="drawer-brand-emoji" aria-hidden="true">${lineBrand().emoji}</span><strong>${escapeHtml(lineBrand().name)}</strong></div>
-        <button type="button" class="icon-btn" data-drawer-close aria-label="Cerrar menú">${ICONS.close}</button>
+        <button type="button" class="drawer-brand drawer-brand-toggle" data-drawer-minimize aria-pressed="${drawerMinimized}" aria-label="${minimizeLabel}" title="${minimizeLabel}">
+          <span class="drawer-brand-mark" aria-hidden="true">
+            <span class="drawer-brand-emoji">${lineBrand().emoji}</span>
+            <span class="drawer-brand-action">${minimizeIcon}</span>
+          </span>
+          <strong class="drawer-brand-name">${escapeHtml(lineBrand().short)}</strong>
+        </button>
+        <div class="drawer-head-actions">
+          <button type="button" class="icon-btn drawer-close-btn" data-drawer-close aria-label="Cerrar menú">${ICONS.close}</button>
+        </div>
       </div>
       <div class="drawer-summary ${currentResults.status}">
         <span>Ganancia/un</span>
@@ -588,17 +923,23 @@ function renderDrawer() {
       </div>
       <nav class="drawer-nav">${navItems}${adminLink}</nav>
       <div class="drawer-foot">
-        <div class="drawer-user">
-          <button type="button" class="drawer-user-profile" data-view="profile">
-            <span class="drawer-user-avatar" aria-hidden="true">${escapeHtml(getDrawerUserInitial())}</span>
-            <span class="drawer-user-meta">
-              <span class="drawer-user-name">${escapeHtml(getDrawerUserName())}</span>
-              <span class="drawer-user-email">${escapeHtml(currentUser.email || '')}</span>
-            </span>
-            <span class="drawer-user-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
+        <div class="drawer-tools">
+          ${
+            shouldShowInstallButton()
+              ? `<button type="button" class="drawer-tool-btn" id="drawer-install" title="Instalar app" aria-label="Instalar app">${ICONS.download}</button>`
+              : ''
+          }
+          <button type="button" class="drawer-tool-btn" id="drawer-theme" title="${getTheme() === 'dark' ? 'Modo claro' : 'Modo oscuro'}" aria-label="${getTheme() === 'dark' ? 'Modo claro' : 'Modo oscuro'}">
+            ${getTheme() === 'dark' ? ICONS.sun : ICONS.moon}
           </button>
-          <button type="button" class="drawer-user-exit" id="drawer-logout">
-            ${ICONS.logOut}<span>Salir</span>
+        </div>
+        <div class="drawer-user">
+          <button type="button" class="drawer-user-profile" data-view="profile" title="${escapeHtml(getDrawerUserName())}" aria-label="Perfil">
+            <span class="drawer-user-avatar" aria-hidden="true">${escapeHtml(getDrawerUserInitial())}</span>
+            <span class="drawer-user-name">${escapeHtml(getDrawerUserName())}</span>
+          </button>
+          <button type="button" class="drawer-user-exit" id="drawer-logout" title="Salir" aria-label="Salir">
+            ${ICONS.logOut}
           </button>
         </div>
       </div>
@@ -630,36 +971,16 @@ const KIT_HUB_TABS = [
   { id: 'vender', label: 'Vender', icon: 'message' },
 ];
 
-function renderLineSwitcher() {
-  if (ownedLines.length < 2) return '';
-  return `
-    <div class="line-switcher" role="tablist" aria-label="Tu kit activo">
-      ${ownedLines
-        .map(
-          (line) => `
-        <button type="button" role="tab" class="line-switcher-btn ${activeLine.id === line.id ? 'active' : ''}" data-set-line="${line.id}" aria-selected="${activeLine.id === line.id}">
-          <span aria-hidden="true">${line.emoji}</span>
-          <span>${escapeHtml(line.short)}</span>
-        </button>
-      `
-        )
-        .join('')}
-    </div>
-  `;
-}
-
 function renderKitHubNav() {
   if (!KIT_HUB_TABS.some((t) => t.id === kitHubTab) || kitHubTab === 'postres') {
     kitHubTab = 'recetas';
   }
   return `
-    ${renderLineSwitcher()}
     <div class="kit-hub-nav" role="tablist" aria-label="Secciones del kit">
       ${KIT_HUB_TABS.map(
         (tab) => `
         <button type="button" role="tab" class="kit-hub-btn ${kitHubTab === tab.id ? 'active' : ''}" data-kit-hub="${tab.id}" aria-selected="${kitHubTab === tab.id}">
-          <span class="kit-hub-icon">${ICONS[tab.icon]}</span>
-          <span>${tab.label}</span>
+          ${tab.label}
         </button>
       `
       ).join('')}
@@ -781,6 +1102,7 @@ function renderHome() {
   const r = currentResults;
   const brand = lineBrand();
   const name = escapeHtml(currentUser.displayName || getLocalDisplayName(currentUser.uid) || 'emprendedor/a');
+  const currency = getCurrency();
   const statusLabel =
     r.status === 'prejuizo'
       ? 'Revisa tu precio — estás perdiendo'
@@ -796,23 +1118,45 @@ function renderHome() {
     { id: 'kit', kitHub: 'vender', icon: 'message', label: 'Vender', desc: 'Mensajes WhatsApp' },
   ];
 
+  const currencyMenu = CURRENCIES.map(
+    (c) => `
+      <button type="button" class="home-currency-option ${c.code === currency.code ? 'active' : ''}" data-set-currency="${c.code}" role="menuitem">
+        <span class="home-currency-flag" aria-hidden="true">${c.icon}</span>
+        <strong>${escapeHtml(c.code)}</strong>
+        <em>${escapeHtml(c.label)}</em>
+      </button>
+    `
+  ).join('');
+
   return `
     <div class="home-page">
       ${renderKitPendingBanner()}
       ${renderPostPurchaseBanner()}
-      ${renderPwaHintBanner(Boolean(deferredInstallPrompt))}
-      ${renderLineSwitcher()}
 
       <div class="home-hero ${r.status}">
-        <p class="home-greeting">Hola, <strong>${name}</strong></p>
+        <div class="home-hero-top">
+          <p class="home-greeting">Hola, <strong>${name}</strong></p>
+          <div class="home-currency">
+            <button type="button" class="home-currency-btn" data-home-currency-toggle aria-expanded="false" aria-haspopup="menu" title="${escapeHtml(currency.code)} · Cambiar moneda" aria-label="Moneda: ${escapeHtml(currency.code)}">
+              <span class="home-currency-flag" aria-hidden="true">${currency.icon}</span>
+            </button>
+            <div class="home-currency-menu" role="menu" hidden>
+              ${currencyMenu}
+            </div>
+          </div>
+        </div>
         <div class="home-hero-stats">
           <div class="home-stat">
-            <span>Ganancia/un</span>
+            <span>Ganancia/${brand.unitSingular}</span>
             <strong>${money(r.profitPerUnit)}</strong>
           </div>
           <div class="home-stat">
             <span>Margen</span>
             <strong>${percent(r.margin)}</strong>
+          </div>
+          <div class="home-stat">
+            <span>Total / mes</span>
+            <strong>${money(r.monthlyProfit)}</strong>
           </div>
         </div>
         <p class="home-hero-status">${statusLabel}</p>
@@ -890,7 +1234,8 @@ function renderProfile() {
       <div class="profile-actions section-card">
         ${
           userIsAdmin
-            ? `<a href="/admin" class="btn btn-secondary btn-block admin-link">${ICONS.settings}<span>Panel admin</span></a>`
+            ? `<a href="/admin" class="btn btn-secondary btn-block admin-link">${ICONS.settings}<span>Panel admin</span></a>
+        <button type="button" class="btn btn-secondary btn-block" data-view="menuWeb">${ICONS.list}<span>Menú web (demo)</span></button>`
             : ''
         }
         ${
@@ -915,6 +1260,67 @@ function openDocument(id) {
     showToast('Archivo bloqueado — verificando tu compra.');
     return;
   }
+
+  // Native deliverables → in-app sections (no PDF iframe)
+  if (isNativeDoc(doc)) {
+    closeDrawer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    switch (doc.native) {
+      case 'recetas':
+        kitHubTab = 'recetas';
+        recipeCatalog = 'base';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'recetas-premium':
+        kitHubTab = 'recetas';
+        recipeCatalog = 'premium';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'menu':
+        activeView = 'menuWeb';
+        activeDocId = null;
+        break;
+      case 'mensajes':
+        kitHubTab = 'vender';
+        kitSection = 'mensajes';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'plan':
+        kitHubTab = 'vender';
+        kitSection = 'plan';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'checklist':
+        kitHubTab = 'vender';
+        kitSection = 'checklist';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'lista':
+        kitHubTab = 'vender';
+        kitSection = 'lista';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      case 'combos':
+        kitHubTab = 'vender';
+        kitSection = 'combos';
+        activeView = 'kit';
+        activeDocId = null;
+        break;
+      default:
+        activeDocId = id;
+        activeView = 'document';
+        kitHubTab = 'archivos';
+    }
+    render();
+    return;
+  }
+
   activeDocId = id;
   activeView = 'document';
   kitHubTab = 'archivos';
@@ -929,6 +1335,20 @@ function closeDocument() {
   kitHubTab = 'archivos';
   window.scrollTo({ top: 0, behavior: 'smooth' });
   render();
+}
+
+function renderDocumentDownloadAction(doc) {
+  const pdf = hasPdfDownload(doc);
+  if (pdf) {
+    return `<a class="btn btn-secondary btn-sm" href="${doc.downloadHref}" download>${ICONS.download}<span>PDF</span></a>`;
+  }
+  if (doc.kind === 'html' || doc.href?.endsWith('.html')) {
+    return `<button type="button" class="btn btn-secondary btn-sm" id="doc-print">${ICONS.download}<span>PDF</span></button>`;
+  }
+  if (doc.downloadHref && doc.downloadHref !== '#') {
+    return `<a class="btn btn-secondary btn-sm" href="${doc.downloadHref}" download>${ICONS.download}<span>Bajar</span></a>`;
+  }
+  return '';
 }
 
 function renderDocumentView() {
@@ -947,19 +1367,15 @@ function renderDocumentView() {
     `;
   }
 
-  const downloadLabel = doc.kind === 'html' && doc.downloadHref?.endsWith('.pdf') ? 'Descargar PDF' : 'Descargar';
-
   return `
     <div class="doc-viewer">
       <div class="doc-toolbar">
         <button type="button" class="btn btn-ghost btn-sm doc-back-btn" id="doc-back">${ICONS.chevronLeft}<span>Volver</span></button>
         <div class="doc-toolbar-title">
           <strong>${escapeHtml(doc.title)}</strong>
-          <span class="doc-kind-badge">${kindLabel(doc.kind)}</span>
         </div>
         <div class="doc-toolbar-actions">
-          <a class="btn btn-secondary btn-sm" href="${doc.downloadHref || doc.href}" download>${downloadLabel}</a>
-          <a class="btn btn-ghost btn-sm" href="${doc.href}" target="_blank" rel="noopener">Abrir</a>
+          ${renderDocumentDownloadAction(doc)}
         </div>
       </div>
       <iframe
@@ -970,6 +1386,13 @@ function renderDocumentView() {
       ></iframe>
     </div>
   `;
+}
+
+function renderMenuWeb() {
+  return renderMenuWebView({
+    locked: !hasKitContentAccess(),
+    cloudAvailable: canUseMenusCloud(),
+  });
 }
 
 function renderActiveView() {
@@ -992,9 +1415,37 @@ function renderActiveView() {
       return renderFiles();
     case 'profile':
       return renderProfile();
+    case 'menuWeb':
+      return renderMenuWeb();
     default:
       return renderHome();
   }
+}
+
+function fileOpenLabel(file) {
+  if (file.kind === 'xlsx') return 'Bajar';
+  if (file.kind === 'app-link') return 'Abrir';
+  if (file.kind === 'native') return 'Abrir';
+  return 'Abrir';
+}
+
+function renderFileDownloadBtn(file) {
+  if (!file.downloadHref || file.downloadHref === '#' || file.downloadHref === file.href) {
+    if (file.kind === 'html' || (file.href && file.href.endsWith('.html'))) {
+      return '';
+    }
+    if (!hasPdfDownload(file) && file.kind !== 'xlsx') return '';
+  }
+  if (hasPdfDownload(file)) {
+    return `<a class="file-btn file-btn-download" href="${file.downloadHref}" download title="Descargar PDF">${ICONS.download}<span>PDF</span></a>`;
+  }
+  if (file.kind === 'xlsx' || (file.downloadHref && file.downloadHref.endsWith('.xlsx'))) {
+    return `<a class="file-btn file-btn-download" href="${file.downloadHref || file.href}" download title="Descargar Excel">${ICONS.download}<span>Excel</span></a>`;
+  }
+  if (file.kind === 'app-link' && file.downloadHref && file.downloadHref !== '#') {
+    return `<a class="file-btn file-btn-download" href="${file.downloadHref}" download title="Descargar">${ICONS.download}<span>Excel</span></a>`;
+  }
+  return '';
 }
 
 function renderFileRow(file, locked) {
@@ -1011,71 +1462,86 @@ function renderFileRow(file, locked) {
           <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
           <em>${escapeHtml(file.desc)}</em>
         </span>
-        <span class="file-action">⏳</span>
+        <span class="file-actions"><span class="file-btn file-btn-muted">Pronto</span></span>
       </div>
     `;
   }
 
-  const action = locked ? '🔒' : file.kind === 'xlsx' ? '↓' : '↗';
-
   if (locked) {
     return `
-      <a href="#" class="file-row locked${featured}" style="--file-accent:${file.accent}" aria-disabled="true">
+      <div class="file-row locked${featured}" style="--file-accent:${file.accent}" aria-disabled="true">
         <span class="file-icon">${file.icon}</span>
         <span class="file-info">
           <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
           <em>${escapeHtml(file.desc)}</em>
         </span>
-        <span class="file-action">${action}</span>
-      </a>
+        <span class="file-actions"><span class="file-btn file-btn-muted">🔒</span></span>
+      </div>
+    `;
+  }
+
+  if (file.kind === 'app-link') {
+    const hubAttr = file.appHub ? ` data-kit-hub="${file.appHub}"` : '';
+    const catalogAttr = file.appCatalog ? ` data-recipe-catalog="${file.appCatalog}"` : '';
+    return `
+      <div class="file-row${featured}" style="--file-accent:${file.accent}">
+        <span class="file-icon">${file.icon}</span>
+        <span class="file-info">
+          <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
+          <em>${escapeHtml(file.desc)}</em>
+        </span>
+        <span class="file-actions">
+          ${renderFileDownloadBtn(file)}
+          <button type="button" class="file-btn file-btn-open" data-view="${file.appView || 'kit'}"${hubAttr}${catalogAttr}>${fileOpenLabel(file)}</button>
+        </span>
+      </div>
     `;
   }
 
   if (file.kind === 'xlsx') {
     return `
-      <a href="${file.href}" class="file-row${featured}" style="--file-accent:${file.accent}" download>
+      <div class="file-row${featured}" style="--file-accent:${file.accent}">
         <span class="file-icon">${file.icon}</span>
         <span class="file-info">
           <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
           <em>${escapeHtml(file.desc)}</em>
         </span>
-        <span class="file-action">${action}</span>
-      </a>
+        <span class="file-actions">
+          <a class="file-btn file-btn-open" href="${file.href}" download>${ICONS.download}<span>Bajar</span></a>
+        </span>
+      </div>
     `;
   }
 
+  // native | html | pdf
   return `
-    <button type="button" class="file-row${featured}" style="--file-accent:${file.accent}" data-doc="${file.id}">
+    <div class="file-row${featured}" style="--file-accent:${file.accent}">
       <span class="file-icon">${file.icon}</span>
       <span class="file-info">
         <strong>${escapeHtml(file.title)} ${tag}${kindBadge}</strong>
         <em>${escapeHtml(file.desc)}</em>
       </span>
-      <span class="file-action">${action}</span>
-    </button>
+      <span class="file-actions">
+        ${renderFileDownloadBtn(file)}
+        <button type="button" class="file-btn file-btn-open" data-doc="${file.id}">${fileOpenLabel(file)}</button>
+      </span>
+    </div>
   `;
 }
 
 function renderFiles() {
   const locked = !hasKitContentAccess();
   const kit = kitContentForLine();
-  const brand = lineBrand();
 
   return `
     <div class="files-page">
       ${renderKitPendingBanner()}
-      <div class="section-card files-head">
-        <h2>Archivos · ${escapeHtml(brand.short)}</h2>
-        <p class="section-text">Ábrelos aquí o descárgalos a tu celular.</p>
-      </div>
+      <p class="kit-section-lead">Ábrelo en la app. Si quieres, baja el PDF.</p>
       <div class="files-list">${kit.downloads.map((f) => renderFileRow(f, locked)).join('')}</div>
       ${
         hasPremiumAccess()
           ? `
-        <div class="section-card files-head files-head-premium">
-          <h2>Complemento premium</h2>
-          <p class="section-text">Recetas y combos avanzados.</p>
-        </div>
+        <h3 class="kit-section-sub">Complemento premium</h3>
         <div class="files-list">${kit.premiumDownloads.map((f) => renderFileRow(f, locked)).join('')}</div>
       `
           : `
@@ -1088,7 +1554,7 @@ function renderFiles() {
       ${renderCrossSellOffer()}
       <div class="section-card files-support">
         <p class="section-text">¿Dudas con tu acceso?</p>
-        <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">WhatsApp · ${WHATSAPP_DISPLAY}</a>
+        <a href="${lineWhatsApp('support').href}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">WhatsApp · ${lineWhatsApp('support').display}</a>
       </div>
     </div>
   `;
@@ -1096,39 +1562,56 @@ function renderFiles() {
 
 function renderCrossSellOffer() {
   const offers = crossSellLines(userProfile || {});
-  if (!offers.length) return '';
+  // Also show non-sellable lines as "coming soon" teaser when user only has one kit
+  const soon = getEnabledLines().filter(
+    (line) => !line.sellable && !ownsLine(line.id) && ownedLines.length >= 1
+  );
+  if (!offers.length && !soon.length) return '';
 
-  return offers
+  const offerCards = offers
     .map(
       (line) => `
       <div class="section-card cross-sell-card cross-sell-${escapeHtml(line.id)}">
         <span class="cross-sell-badge">También puedes vender</span>
-        <h3>${escapeHtml(line.kitName)}</h3>
-        <p>Mismo método, otro ángulo: recetas, menú y mensajes listos para WhatsApp.</p>
+        <div class="cross-sell-head">
+          <span class="cross-sell-emoji" aria-hidden="true">${line.emoji}</span>
+          <h3>${escapeHtml(line.kitName)}</h3>
+        </div>
+        <p>Mismo método 3P, otro producto: recetas, menú y mensajes listos para WhatsApp.</p>
         <div class="cross-sell-actions">
           <a href="${line.checkoutUrl}" class="btn btn-primary btn-sm" target="_blank" rel="noopener noreferrer">Agregar por ${escapeHtml(line.priceLabel)}</a>
           <a href="${line.landingPath}" class="btn btn-ghost btn-sm">Ver detalles</a>
         </div>
+        <p class="cross-sell-note">Si ya compraste, escríbenos por WhatsApp con tu correo y lo liberamos en tu cuenta.</p>
       </div>
     `
     )
     .join('');
+
+  const soonCards = soon
+    .map(
+      (line) => `
+      <div class="section-card cross-sell-card cross-sell-soon cross-sell-${escapeHtml(line.id)}">
+        <span class="cross-sell-badge">Próximamente</span>
+        <div class="cross-sell-head">
+          <span class="cross-sell-emoji" aria-hidden="true">${line.emoji}</span>
+          <h3>${escapeHtml(line.kitName)}</h3>
+        </div>
+        <p>Estamos preparando este kit. Cuando esté listo, lo verás aquí para agregar a tu cuenta.</p>
+        <a href="${line.landingPath}" class="btn btn-ghost btn-sm">Ver adelanto</a>
+      </div>
+    `
+    )
+    .join('');
+
+  return offerCards + soonCards;
 }
 
 function formatWhatsAppMessage(text) {
-  return String(text || '').replace(/🍭/g, BRAND_EMOJI);
-}
-
-function renderTopbarCenter() {
-  const brand = lineBrand();
-  return `
-    <button type="button" class="topbar-center" data-view="home" aria-label="Ir al inicio">
-      <span class="topbar-brand">
-        <span class="topbar-brand-emoji" aria-hidden="true">${brand.emoji}</span>
-        <span class="topbar-brand-text">${escapeHtml(brand.name)}</span>
-      </span>
-    </button>
-  `;
+  const emoji = lineBrand().emoji || BRAND_EMOJI;
+  return String(text || '')
+    .replace(/🍭/g, emoji)
+    .replace(/🍮/g, emoji);
 }
 
 function render() {
@@ -1137,6 +1620,7 @@ function render() {
     'has-tabbar',
     activeView === 'calc' ? 'has-calc-footer' : '',
     activeView === 'document' ? 'has-doc-viewer' : '',
+    drawerMinimized ? 'drawer-minimized' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -1146,7 +1630,6 @@ function render() {
       ${renderDrawer()}
       <header class="app-topbar">
         <button type="button" class="icon-btn menu-btn" id="menu-toggle" aria-label="Abrir menú">${ICONS.menu}</button>
-        ${renderTopbarCenter()}
         ${renderTopbarActions()}
       </header>
 
@@ -1159,6 +1642,7 @@ function render() {
     </div>
   `;
 
+  document.body.classList.toggle('drawer-minimized', drawerMinimized);
   bindEvents();
 }
 
@@ -1557,11 +2041,12 @@ function recipeTipoSlug(tipo) {
   const map = {
     Frutal: 'frutal',
     Cremosa: 'cremosa',
+    Cremoso: 'cremoso',
     Rellena: 'rellena',
     'Estilo postre': 'postre',
     Bañada: 'banada',
   };
-  return map[tipo] || 'default';
+  return map[tipo] || String(tipo || 'default').toLowerCase();
 }
 
 function recipeSearchBlob(item) {
@@ -1572,6 +2057,8 @@ function recipeSearchBlob(item) {
     item.tipo,
     item.dificultad,
     item.consejo,
+    item.tip,
+    item.descripcion,
     ...(item.ingredientes || []),
     ...(item.pasos || []),
   ]
@@ -1584,14 +2071,29 @@ function recipeMatchesFilter(item, filter) {
   return recipeTipoSlug(item.tipo) === filter;
 }
 
-function renderRecipeItem(item, label) {
+function recipeMeta(item) {
+  const tiempo = item.tiempo || '';
+  const [prepFromTime, coldFromTime] = String(tiempo)
+    .split('+')
+    .map((s) => s.trim());
+  return {
+    prep: item.prep || prepFromTime || '—',
+    cold: item.congelacion || coldFromTime || '—',
+    yield: item.rendimiento || item.porciones || '—',
+    tip: item.consejo || item.tip || '',
+  };
+}
+
+function renderRecipeItem(item, label, { premium = false } = {}) {
+  const meta = recipeMeta(item);
   return `
-    <details class="menu-item" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}">
+    <details class="menu-item ${premium ? 'menu-item--premium' : ''}" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}">
       <summary class="menu-item-summary">
         <div class="menu-item-summary-main">
           <div class="menu-item-head">
             <span class="menu-item-day">${escapeHtml(label)}</span>
             <span class="menu-item-type menu-item-type--${recipeTipoSlug(item.tipo)}">${escapeHtml(item.tipo)}</span>
+            ${premium ? '<span class="menu-item-premium-badge">Premium</span>' : ''}
           </div>
           <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
           <span class="menu-item-preview">${escapeHtml(item.ingredientes?.[0] || '')}${item.ingredientes?.length > 1 ? ' · +' + (item.ingredientes.length - 1) + ' más' : ''}</span>
@@ -1600,11 +2102,12 @@ function renderRecipeItem(item, label) {
       </summary>
       <div class="menu-item-body">
         <div class="menu-item-meta">
-          <span>${escapeHtml(item.prep)} prep</span>
-          <span>${escapeHtml(item.congelacion)} frío</span>
-          <span>Rinde ${escapeHtml(item.rendimiento)}</span>
-          <span>${escapeHtml(item.dificultad)}</span>
+          <span>${escapeHtml(meta.prep)} prep</span>
+          <span>${escapeHtml(meta.cold)} frío</span>
+          <span>Rinde ${escapeHtml(meta.yield)}</span>
+          <span>${escapeHtml(item.dificultad || '')}</span>
         </div>
+        ${item.descripcion ? `<p class="menu-item-desc">${escapeHtml(item.descripcion)}</p>` : ''}
         <h4 class="menu-item-section-title">Ingredientes</h4>
         <ul class="menu-item-ingredients">
           ${(item.ingredientes || []).map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
@@ -1613,14 +2116,13 @@ function renderRecipeItem(item, label) {
         <ol class="menu-item-steps">
           ${(item.pasos || []).map((step) => `<li>${escapeHtml(step)}</li>`).join('')}
         </ol>
-        <p class="menu-item-tip"><strong>Tip de venta:</strong> ${escapeHtml(item.consejo || '')}</p>
+        <p class="menu-item-tip"><strong>Tip de venta:</strong> ${escapeHtml(meta.tip)}</p>
       </div>
     </details>
   `;
 }
 
-function renderMenuByWeek(recipes) {
-  const list = recipes || kitContentForLine().recipes;
+function renderMenuByWeek(recipes, { premium = false } = {}) {
   const weeks = [];
   for (let i = 0; i < recipes.length; i += 7) {
     weeks.push(recipes.slice(i, i + 7));
@@ -1633,17 +2135,24 @@ function renderMenuByWeek(recipes) {
           ? ` · Días ${week[0].dia}–${week[week.length - 1].dia}`
           : '';
       const countLabel = `${week.length} receta${week.length === 1 ? '' : 's'}`;
+      const title = premium
+        ? `Grupo ${wi + 1}`
+        : `Semana ${wi + 1}${dayRange}`;
 
       return `
-        <details class="menu-week">
+        <details class="menu-week ${premium ? 'menu-week--premium' : ''}">
           <summary>
-            <span class="menu-week-title">Semana ${wi + 1}${dayRange}</span>
+            <span class="menu-week-title">${title}</span>
             <span class="menu-week-meta">${countLabel}</span>
           </summary>
           <div class="menu-week-body">
             ${week
               .map((item) =>
-                renderRecipeItem(item, item.dia ? `Receta ${item.dia}` : `Premium #${item.num}`)
+                renderRecipeItem(
+                  item,
+                  item.dia ? `Día ${item.dia}` : `Premium #${item.num}`,
+                  { premium }
+                )
               )
               .join('')}
           </div>
@@ -1653,12 +2162,12 @@ function renderMenuByWeek(recipes) {
     .join('');
 }
 
-function renderRecipeListTools(recipeCount) {
+function renderRecipeListTools(recipeCount, { premium = false } = {}) {
   return `
     <div class="menu-list-tools">
-      <p class="menu-list-count" id="menu-list-count">${recipeCount} recetas · toca una semana para ver</p>
+      <p class="menu-list-count" id="menu-list-count">${recipeCount} recetas${premium ? ' premium' : ''}</p>
       <div class="menu-list-actions">
-        <button type="button" class="menu-list-action" id="menu-expand-all">Abrir todo</button>
+        <button type="button" class="menu-list-action" id="menu-expand-all">Abrir</button>
         <button type="button" class="menu-list-action" id="menu-collapse-all">Cerrar</button>
       </div>
     </div>
@@ -1666,26 +2175,58 @@ function renderRecipeListTools(recipeCount) {
 }
 
 function renderRecipeCatalogToggle() {
+  const locked = !hasPremiumAccess();
+  const kit = kitContentForLine();
+  const baseCount = kit.recipes?.length || 0;
+  const premCount = kit.recipesPremium?.length || 0;
   return `
-    <div class="catalog-toggle" role="tablist">
-      <button type="button" class="catalog-btn ${recipeCatalog === 'base' ? 'active' : ''}" data-recipe-catalog="base">30 básicas</button>
-      <button type="button" class="catalog-btn ${recipeCatalog === 'premium' ? 'active' : ''}" data-recipe-catalog="premium">
-        20 premium ${hasPremiumAccess() ? '' : '🔒'}
+    <div class="catalog-toggle" role="tablist" aria-label="Catálogo">
+      <button type="button" class="catalog-btn ${recipeCatalog === 'base' ? 'active' : ''}" data-recipe-catalog="base" role="tab" aria-selected="${recipeCatalog === 'base'}">
+        <strong>Kit</strong>
+        <em>${baseCount} recetas</em>
+      </button>
+      <button type="button" class="catalog-btn catalog-btn--premium ${recipeCatalog === 'premium' ? 'active' : ''}" data-recipe-catalog="premium" role="tab" aria-selected="${recipeCatalog === 'premium'}">
+        <strong>Premium${locked ? ' 🔒' : ''}</strong>
+        <em>${premCount} extras</em>
       </button>
     </div>
   `;
 }
 
-function renderRecipeFilterBar() {
+function renderCatalogLead(isPremium, recipes) {
+  const brand = lineBrand();
+  const summary = catalogTypeSummary(recipes);
+  if (isPremium) {
+    return `
+      <div class="catalog-lead catalog-lead--premium">
+        <strong>Complemento premium</strong>
+        <p>Sabores de ticket alto para subir el precio. ${escapeHtml(summary)}.</p>
+      </div>
+    `;
+  }
   return `
-    <div class="recipe-filters" id="recipe-filters">
-      ${RECIPE_FILTERS.map(
-        (f) => `
-          <button type="button" class="recipe-filter-btn ${recipeFilter === f.id ? 'active' : ''}" data-recipe-filter="${f.id}">
-            ${f.label}
-          </button>
-        `
-      ).join('')}
+    <div class="catalog-lead">
+      <strong>Kit principal · ${escapeHtml(brand.short)}</strong>
+      <p>Plan de ${recipes.length} días para empezar a vender. ${escapeHtml(summary)}.</p>
+    </div>
+  `;
+}
+
+function renderRecipeFilterBar() {
+  ensureValidRecipeFilter();
+  const filters = recipeFiltersForLine();
+  if (filters.length <= 1) return '';
+  return `
+    <div class="recipe-filters" id="recipe-filters" role="listbox" aria-label="Filtrar por tipo">
+      ${filters
+        .map(
+          (f) => `
+        <button type="button" class="recipe-filter-btn ${recipeFilter === f.id ? 'active' : ''}" data-recipe-filter="${f.id}" role="option" aria-selected="${recipeFilter === f.id}">
+          ${f.label}
+        </button>
+      `
+        )
+        .join('')}
     </div>
   `;
 }
@@ -1694,9 +2235,7 @@ function renderBonus() {
   const kit = kitContentForLine();
   const isPremium = recipeCatalog === 'premium';
   const title = isPremium ? kit.premiumRecipeTitle : kit.recipeTitle;
-  const desc = isPremium
-    ? 'Recetas avanzadas para elevar tu menú y ticket medio.'
-    : 'Recetas con ingredientes, pasos y tips de venta.';
+  const showFilters = !isPremium || hasPremiumAccess();
 
   let listHtml = '';
   if (!hasKitContentAccess()) {
@@ -1705,36 +2244,35 @@ function renderBonus() {
     listHtml = `
       <div class="premium-locked-card">
         <h3>Complemento premium</h3>
-        <p>Las recetas premium están incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
+        <p>Bañadas, rellenas y estilo postre de ticket alto — incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
         ${renderPremiumUpsell()}
       </div>
     `;
   } else {
     const recipes = isPremium ? kit.recipesPremium : kit.recipes;
     listHtml = `
-      ${!isPremium && lineBrand().id === 'paletas' ? `
-        <div class="recipe-plan-tip">
-          <strong>Plan de 30 días</strong>
-          <p>Una receta por día, organizada por semana. Abre solo la semana en la que estás produciendo.</p>
-        </div>
-      ` : ''}
-      ${renderRecipeListTools(recipes.length)}
-      <div class="menu-list" id="menu-list">${renderMenuByWeek(recipes)}</div>
+      ${renderNativeExportBar(isPremium ? 'recetas-premium' : 'recetas')}
+      ${renderCatalogLead(isPremium, recipes)}
+      ${renderRecipeListTools(recipes.length, { premium: isPremium })}
+      <div class="menu-list ${isPremium ? 'menu-list--premium' : ''}" id="menu-list">${renderMenuByWeek(recipes, { premium: isPremium })}</div>
       <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada.</p>`;
   }
 
   return `
-    <div class="bonus-page">
-      <div class="section-card bonus-header-card">
-        <h2>${title}</h2>
-        <p>${desc}</p>
+    <div class="bonus-page ${isPremium ? 'bonus-page--premium' : ''}">
+      <div class="kit-toolbar">
         ${renderRecipeCatalogToggle()}
-        ${!isPremium || hasPremiumAccess() ? renderRecipeFilterBar() : ''}
-        <p class="bonus-hint">Busca por sabor o filtra por tipo. Toca una receta para ver ingredientes y pasos.</p>
-        <div class="search-wrap">
-          ${ICONS.search}
-          <input type="search" class="bonus-search" id="bonus-search" placeholder="Buscar receta o tipo..." autocomplete="off">
-        </div>
+        ${
+          showFilters
+            ? `
+          <div class="search-wrap">
+            ${ICONS.search}
+            <input type="search" class="bonus-search" id="bonus-search" placeholder="${isPremium ? 'Buscar premium...' : 'Buscar sabor...'}" autocomplete="off">
+          </div>
+          ${renderRecipeFilterBar()}
+        `
+            : ''
+        }
       </div>
       ${listHtml}
     </div>
@@ -1743,23 +2281,21 @@ function renderBonus() {
 
 function renderKitSectionNav() {
   const sections = [
-    { id: 'mensajes', label: 'Mensajes', icon: 'message' },
-    { id: 'combos', label: 'Combos', icon: 'dollar', premium: true },
-    { id: 'plan', label: 'Plan 7d', icon: 'calendar' },
-    { id: 'lista', label: 'Compras', icon: 'list' },
-    { id: 'checklist', label: 'Producción', icon: 'check' },
-    { id: 'archivos', label: 'PDFs', icon: 'book' },
-    { id: 'ayuda', label: 'Ayuda', icon: 'help' },
+    { id: 'mensajes', label: 'Mensajes' },
+    { id: 'combos', label: 'Combos', premium: true },
+    { id: 'plan', label: 'Plan 7 días' },
+    { id: 'lista', label: 'Compras' },
+    { id: 'checklist', label: 'Producción' },
+    { id: 'ayuda', label: 'Ayuda' },
   ];
 
   return `
-    <div class="kit-nav" role="tablist">
+    <div class="kit-nav" id="kit-section-nav" role="tablist" aria-label="Herramientas para vender">
       ${sections
         .map(
           (s) => `
-            <button type="button" class="kit-nav-btn ${kitSection === s.id ? 'active' : ''}" data-kit-section="${s.id}" role="tab">
-              <span class="kit-nav-icon">${ICONS[s.icon]}</span>
-              <span>${s.label}${s.premium && !hasPremiumAccess() ? ' 🔒' : ''}</span>
+            <button type="button" class="kit-nav-btn ${kitSection === s.id ? 'active' : ''}" data-kit-section="${s.id}" role="tab" aria-selected="${kitSection === s.id}">
+              ${escapeHtml(s.label)}${s.premium && !hasPremiumAccess() ? ' · 🔒' : ''}
             </button>
           `
         )
@@ -1780,6 +2316,7 @@ function renderCombosPremium() {
   }
 
   return `
+    ${renderNativeExportBar('combos')}
     <div class="combos-page">
       <div class="section-card">
         <h2>10 Combos Rentables</h2>
@@ -1818,6 +2355,32 @@ function renderCombosPremium() {
   `;
 }
 
+function findDownloadByNative(nativeKey) {
+  const kit = kitContentForLine();
+  const all = [...(kit.downloads || []), ...(kit.premiumDownloads || [])];
+  return all.find((d) => d.native === nativeKey) || null;
+}
+
+function renderNativeExportBar(nativeKey) {
+  const doc = findDownloadByNative(nativeKey);
+  if (!doc) return '';
+  const pdf = hasPdfDownload(doc);
+  const printHtml = doc.href && doc.href.endsWith('.html');
+  if (!pdf && !printHtml) return '';
+  return `
+    <div class="native-export-bar">
+      <span>Contenido en la app</span>
+      <div class="native-export-actions">
+        ${
+          pdf
+            ? `<a class="btn btn-secondary btn-sm" href="${doc.downloadHref}" download>${ICONS.download}<span>Bajar PDF</span></a>`
+            : `<a class="btn btn-secondary btn-sm" href="${doc.href}" target="_blank" rel="noopener">${ICONS.download}<span>Imprimir / PDF</span></a>`
+        }
+      </div>
+    </div>
+  `;
+}
+
 function renderMensajesWhatsApp() {
   const mensajes = kitContentForLine().mensajes;
   const grouped = mensajes.reduce((acc, msg, idx) => {
@@ -1826,9 +2389,11 @@ function renderMensajesWhatsApp() {
     return acc;
   }, {});
 
-  return Object.entries(grouped)
-    .map(
-      ([cat, items]) => `
+  return `
+    ${renderNativeExportBar('mensajes')}
+    ${Object.entries(grouped)
+      .map(
+        ([cat, items]) => `
         <div class="section-card">
           <h2>${escapeHtml(cat)}</h2>
           <ul class="message-list">
@@ -1852,13 +2417,15 @@ function renderMensajesWhatsApp() {
           </ul>
         </div>
       `
-    )
-    .join('');
+      )
+      .join('')}
+  `;
 }
 
 function renderPlan7Dias() {
   const plan = kitContentForLine().plan;
   return `
+    ${renderNativeExportBar('plan')}
     <div class="section-card">
       <h2>Plan de 7 Días</h2>
       <p class="section-text">Sigue este paso a paso para organizar tu primera semana de ventas.</p>
@@ -1885,6 +2452,7 @@ function renderPlan7Dias() {
 function renderListaCompras() {
   const lista = kitContentForLine().lista;
   return `
+    ${renderNativeExportBar('lista')}
     <div class="section-card">
       <h2>Lista de Compras Inicial</h2>
       <h3>Ingredientes base</h3>
@@ -1924,6 +2492,7 @@ function renderChecklistProduccion() {
   const checked = loadChecklistState();
   const checklist = kitContentForLine().checklist;
   return `
+    ${renderNativeExportBar('checklist')}
     <div class="section-card">
       <h2>Checklist de Producción</h2>
       <p class="section-text">Usa esta lista antes de cada día de ventas. Se guarda en este dispositivo.</p>
@@ -1975,8 +2544,8 @@ function renderKitAyuda() {
     <div class="section-card">
       <h2>Soporte por WhatsApp</h2>
       <p class="section-text">¿Compraste el kit y tienes dudas de acceso? Escríbenos con tu correo de compra.</p>
-      <a href="${WHATSAPP_PURCHASE_LINK}" class="btn btn-primary btn-large" target="_blank" rel="noopener noreferrer">Confirmar mi compra por WhatsApp</a>
-      <p class="account-note">${WHATSAPP_DISPLAY}</p>
+      <a href="${lineWhatsApp('support').href}" class="btn btn-primary btn-large" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">Confirmar mi compra por WhatsApp</a>
+      <p class="account-note">${lineWhatsApp('support').display}</p>
     </div>
 
     <div class="section-card">
@@ -2020,6 +2589,8 @@ function renderKitContent() {
     archivos: 'Archivos del kit',
   };
 
+  if (kitSection === 'archivos') kitSection = 'mensajes';
+
   if (!hasKitContentAccess() && kitSection !== 'ayuda') {
     return renderKitLockedCard(lockedTitles[kitSection] || 'Contenido del kit');
   }
@@ -2035,8 +2606,6 @@ function renderKitContent() {
       return renderListaCompras();
     case 'checklist':
       return renderChecklistProduccion();
-    case 'archivos':
-      return renderKitArchivos();
     default:
       return renderKitAyuda();
   }
@@ -2154,9 +2723,19 @@ function navigateTo(view) {
   if (view === 'kit' && !['recetas', 'archivos', 'vender'].includes(kitHubTab)) {
     kitHubTab = 'recetas';
   }
-  activeView = view;
-  closeDrawer();
-  render();
+
+  const go = () => {
+    activeView = view;
+    closeDrawer();
+    render();
+  };
+
+  if (view === 'menuWeb') {
+    ensureMenuDraftLoaded(currentUser.uid).then(go);
+    return;
+  }
+
+  go();
 }
 
 function bindEvents() {
@@ -2165,6 +2744,19 @@ function bindEvents() {
   document.getElementById('menu-toggle')?.addEventListener('click', openDrawer);
 
   document.getElementById('drawer-logout')?.addEventListener('click', signOutToLanding);
+  document.getElementById('drawer-install')?.addEventListener('click', () => {
+    closeDrawer();
+    triggerPwaInstall();
+  });
+  document.getElementById('drawer-theme')?.addEventListener('click', toggleTheme);
+
+  bindMenuWebEvents({
+    uid: currentUser.uid,
+    root,
+    showToast,
+    render,
+    locked: !hasKitContentAccess(),
+  });
 
   document.getElementById('profile-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -2177,17 +2769,21 @@ function bindEvents() {
     render();
   });
 
-  bindPwaHint({
-    onInstall: triggerPwaInstall,
-    showToast,
-  });
-
   document.getElementById('profile-logout')?.addEventListener('click', signOutToLanding);
 
   document.getElementById('install-pwa')?.addEventListener('click', triggerPwaInstall);
 
   document.getElementById('doc-back')?.addEventListener('click', closeDocument);
   document.getElementById('doc-back-alt')?.addEventListener('click', closeDocument);
+  document.getElementById('doc-print')?.addEventListener('click', () => {
+    const frame = root.querySelector('.doc-frame');
+    try {
+      frame?.contentWindow?.focus();
+      frame?.contentWindow?.print();
+    } catch {
+      window.open(frame?.getAttribute('src') || '#', '_blank', 'noopener');
+    }
+  });
 
   root.querySelectorAll('.file-row.locked').forEach((el) => {
     el.addEventListener('click', (event) => {
@@ -2207,16 +2803,89 @@ function bindEvents() {
     el.addEventListener('click', closeDrawer);
   });
 
+  root.querySelectorAll('[data-drawer-minimize]').forEach((el) => {
+    el.addEventListener('click', () => {
+      if (!window.matchMedia('(min-width: 768px)').matches) return;
+      setDrawerMinimized(!drawerMinimized);
+    });
+  });
+
+  root.querySelectorAll('[data-topbar-line-toggle]').forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const wrap = btn.closest('.topbar-line-switch');
+      const menu = wrap?.querySelector('.topbar-line-menu');
+      if (!menu) return;
+      const willOpen = menu.hasAttribute('hidden');
+      root.querySelectorAll('.topbar-line-menu').forEach((el) => el.setAttribute('hidden', ''));
+      root.querySelectorAll('[data-topbar-line-toggle]').forEach((el) => el.setAttribute('aria-expanded', 'false'));
+      if (!willOpen) return;
+      menu.removeAttribute('hidden');
+      btn.setAttribute('aria-expanded', 'true');
+      window.setTimeout(() => {
+        document.addEventListener(
+          'click',
+          () => {
+            menu.setAttribute('hidden', '');
+            btn.setAttribute('aria-expanded', 'false');
+          },
+          { once: true }
+        );
+      }, 0);
+    });
+  });
+
   root.querySelectorAll('[data-set-line]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const next = PRODUCT_LINE_BY_ID[btn.dataset.setLine];
       if (!next || !ownsLine(next.id) || next.id === activeLine.id) return;
+      if (ownedLines.length < 2) return;
+      persistState();
       activeLine = next;
       rememberActiveLine(next.id);
+      loadCalculatorForLine(next.id);
       recipeCatalog = 'base';
       recipeFilter = 'all';
-      kitHubTab = 'recetas';
       showToast(`${next.emoji} ${next.short}`);
+      render();
+    });
+  });
+
+  root.querySelectorAll('[data-home-currency-toggle]').forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const wrap = btn.closest('.home-currency');
+      const menu = wrap?.querySelector('.home-currency-menu');
+      if (!menu) return;
+      const willOpen = menu.hasAttribute('hidden');
+      root.querySelectorAll('.home-currency-menu').forEach((el) => el.setAttribute('hidden', ''));
+      root.querySelectorAll('[data-home-currency-toggle]').forEach((el) => el.setAttribute('aria-expanded', 'false'));
+      if (!willOpen) return;
+      menu.removeAttribute('hidden');
+      btn.setAttribute('aria-expanded', 'true');
+      window.setTimeout(() => {
+        document.addEventListener(
+          'click',
+          () => {
+            menu.setAttribute('hidden', '');
+            btn.setAttribute('aria-expanded', 'false');
+          },
+          { once: true }
+        );
+      }, 0);
+    });
+  });
+
+  root.querySelectorAll('[data-set-currency]').forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const code = btn.dataset.setCurrency;
+      if (!code || code === getCurrencyCode()) {
+        root.querySelectorAll('.home-currency-menu').forEach((el) => el.setAttribute('hidden', ''));
+        return;
+      }
+      setCurrencyCode(code);
+      showToast(`Moneda: ${code}`);
       render();
     });
   });
@@ -2224,6 +2893,7 @@ function bindEvents() {
   root.querySelectorAll('[data-view]').forEach((el) => {
     el.addEventListener('click', () => {
       if (el.dataset.kitHub) kitHubTab = el.dataset.kitHub;
+      if (el.dataset.recipeCatalog) recipeCatalog = el.dataset.recipeCatalog;
       navigateTo(el.dataset.view);
     });
   });
@@ -2328,40 +2998,8 @@ function bindEvents() {
 
   const bonusSearch = document.getElementById('bonus-search');
   if (bonusSearch) {
-    const applyRecipeFilters = () => {
-      const q = bonusSearch.value.trim().toLowerCase();
-      const isFiltering = Boolean(q) || recipeFilter !== 'all';
-      let visible = 0;
-      document.querySelectorAll('#menu-list .menu-item').forEach((item) => {
-        const tipoOk = recipeFilter === 'all' || item.dataset.tipo === recipeFilter;
-        const searchOk = !q || item.dataset.search.includes(q);
-        const show = tipoOk && searchOk;
-        item.style.display = show ? '' : 'none';
-        if (show) visible += 1;
-      });
-      document.querySelectorAll('#menu-list .menu-week').forEach((week) => {
-        const visibleItems = [...week.querySelectorAll('.menu-item')].filter(
-          (i) => i.style.display !== 'none'
-        );
-        const hasVisible = visibleItems.length > 0;
-        week.style.display = hasVisible ? '' : 'none';
-        if (isFiltering && hasVisible) {
-          week.open = true;
-        } else if (!isFiltering) {
-          week.open = false;
-        }
-      });
-      const countEl = document.getElementById('menu-list-count');
-      if (countEl) {
-        countEl.textContent = isFiltering
-          ? `${visible} receta${visible === 1 ? '' : 's'} encontrada${visible === 1 ? '' : 's'}`
-          : `${document.querySelectorAll('#menu-list .menu-item').length} recetas · toca una semana para ver`;
-      }
-      document.getElementById('menu-empty')?.classList.toggle('hidden', visible > 0);
-    };
-
-    bonusSearch.addEventListener('input', applyRecipeFilters);
-    applyRecipeFilters();
+    bonusSearch.addEventListener('input', applyRecipeListFilters);
+    applyRecipeListFilters();
   }
 
   document.getElementById('menu-expand-all')?.addEventListener('click', () => {
@@ -2379,10 +3017,19 @@ function bindEvents() {
     });
   });
 
+  enableHorizontalDragScroll(document.getElementById('recipe-filters'));
+  enableHorizontalDragScroll(document.getElementById('kit-section-nav'));
+
   root.querySelectorAll('[data-recipe-filter]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      recipeFilter = btn.dataset.recipeFilter;
-      render();
+    btn.addEventListener('click', (event) => {
+      if (btn.dataset.dragMoved === '1') {
+        event.preventDefault();
+        event.stopPropagation();
+        delete btn.dataset.dragMoved;
+        return;
+      }
+      recipeFilter = btn.dataset.recipeFilter || 'all';
+      applyRecipeListFilters();
     });
   });
 

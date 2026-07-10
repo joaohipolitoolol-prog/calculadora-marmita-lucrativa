@@ -34,9 +34,9 @@ export function purchaseFlagsFromSearch(search = typeof window !== 'undefined' ?
   };
 }
 
-/** Defaults for organic signup (no purchase query). Paletas is the main product. */
+/** Organic signup (no purchase query / code) — no product until buy or admin grant. */
 export const DEFAULT_PRODUCT_FLAGS = {
-  hasKit: true,
+  hasKit: false,
   hasPremium: false,
   hasPostres: false,
   hasPostresPremium: false,

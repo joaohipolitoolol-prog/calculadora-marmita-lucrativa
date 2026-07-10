@@ -38,7 +38,7 @@ export const UPSELL_DECLINE_LABEL = 'No gracias, continuar al acceso del kit';
 export const UPSELL_TIMER_MS = 10 * 60 * 1000;
 export const UPSELL_TIMER_STORAGE_KEY = 'upsell_offer_deadline_v1';
 export const UPSELL_VALUE_STACK = [
-  '20 recetas premium (bañadas, rellenas, postre)',
+  '20 recetas premium (6 bañadas + rellenas y estilo postre)',
   '10 combos con precio guía y mensaje de venta',
   'Menú premium editable para WhatsApp',
   'Mensajes para combos y fechas especiales',

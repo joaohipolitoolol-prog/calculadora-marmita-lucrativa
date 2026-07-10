@@ -1,17 +1,17 @@
 const STORAGE_KEY = 'paletas_currency';
 
 export const CURRENCIES = [
-  { code: 'USD', label: 'Dólar (US)', symbol: 'US$', locale: 'en-US' },
-  { code: 'MXN', label: 'Peso mexicano', symbol: '$', locale: 'es-MX' },
-  { code: 'ARS', label: 'Peso argentino', symbol: '$', locale: 'es-AR' },
-  { code: 'COP', label: 'Peso colombiano', symbol: '$', locale: 'es-CO' },
-  { code: 'CLP', label: 'Peso chileno', symbol: '$', locale: 'es-CL' },
-  { code: 'PEN', label: 'Sol peruano', symbol: 'S/', locale: 'es-PE' },
-  { code: 'BRL', label: 'Real brasileño', symbol: 'R$', locale: 'pt-BR' },
-  { code: 'EUR', label: 'Euro', symbol: '€', locale: 'es-ES' },
-  { code: 'BOB', label: 'Boliviano', symbol: 'Bs', locale: 'es-BO' },
-  { code: 'UYU', label: 'Peso uruguayo', symbol: '$', locale: 'es-UY' },
-  { code: 'GTQ', label: 'Quetzal', symbol: 'Q', locale: 'es-GT' },
+  { code: 'USD', label: 'Dólar (US)', symbol: 'US$', icon: '🇺🇸', locale: 'en-US' },
+  { code: 'MXN', label: 'Peso mexicano', symbol: '$', icon: '🇲🇽', locale: 'es-MX' },
+  { code: 'ARS', label: 'Peso argentino', symbol: '$', icon: '🇦🇷', locale: 'es-AR' },
+  { code: 'COP', label: 'Peso colombiano', symbol: '$', icon: '🇨🇴', locale: 'es-CO' },
+  { code: 'CLP', label: 'Peso chileno', symbol: '$', icon: '🇨🇱', locale: 'es-CL' },
+  { code: 'PEN', label: 'Sol peruano', symbol: 'S/', icon: '🇵🇪', locale: 'es-PE' },
+  { code: 'BRL', label: 'Real brasileño', symbol: 'R$', icon: '🇧🇷', locale: 'pt-BR' },
+  { code: 'EUR', label: 'Euro', symbol: '€', icon: '🇪🇺', locale: 'es-ES' },
+  { code: 'BOB', label: 'Boliviano', symbol: 'Bs', icon: '🇧🇴', locale: 'es-BO' },
+  { code: 'UYU', label: 'Peso uruguayo', symbol: '$', icon: '🇺🇾', locale: 'es-UY' },
+  { code: 'GTQ', label: 'Quetzal', symbol: 'Q', icon: '🇬🇹', locale: 'es-GT' },
 ];
 
 export function getCurrencyCode() {

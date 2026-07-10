@@ -23,7 +23,7 @@ export const PRODUCTS = [
     field: 'hasPostres',
     label: 'Postres Kit',
     short: 'Postres',
-    emoji: '🍮',
+    emoji: '🍨',
     group: 'postres',
     tier: 'main',
   },
@@ -46,6 +46,13 @@ export function normalizeProfile(profile = {}) {
   for (const product of PRODUCTS) {
     normalized[product.field] = Boolean(profile[product.field]);
   }
+  const pending = profile.premiumPending && typeof profile.premiumPending === 'object'
+    ? profile.premiumPending
+    : {};
+  normalized.premiumPending = {
+    paletas: Boolean(pending.paletas),
+    postres: Boolean(pending.postres),
+  };
   return normalized;
 }
 
@@ -63,8 +70,32 @@ export function activeProductCount(profile) {
   return PRODUCTS.filter((p) => profile?.[p.field]).length;
 }
 
+export function hasAnyEntitlement(profile) {
+  if (!profile) return false;
+  if (profile.isAdmin) return true;
+  return PRODUCTS.some((p) => profile[p.field]);
+}
+
+/**
+ * admin | orphan | pending_kit | pending_upsell | active
+ * - pending_kit: no product yet (organic / waiting unlock)
+ * - pending_upsell: has kit + premiumPending for a line, no premium yet
+ */
 export function profileStatus(profile) {
   if (profile?.isAdmin) return 'admin';
   if (profile?.missingProfile) return 'orphan';
+
+  const hasKit = Boolean(profile?.hasKit || profile?.hasPostres);
+  const hasPremium = Boolean(profile?.hasPremium || profile?.hasPostresPremium);
+  const pendingUpsell =
+    (profile?.premiumPending?.paletas && profile?.hasKit && !profile?.hasPremium) ||
+    (profile?.premiumPending?.postres && profile?.hasPostres && !profile?.hasPostresPremium);
+
+  if (!hasKit && !hasPremium) return 'pending_kit';
+  if (pendingUpsell) return 'pending_upsell';
   return 'active';
+}
+
+export function isPendingStatus(status) {
+  return status === 'pending_kit' || status === 'pending_upsell' || status === 'pending';
 }

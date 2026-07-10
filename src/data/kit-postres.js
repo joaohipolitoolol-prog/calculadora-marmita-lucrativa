@@ -1,70 +1,36 @@
-/** Skeleton Postres — mesmo shape do kit Paletas; conteúdo real entra depois. */
+/**
+ * Kit Postres en vaso — conteúdo in-app.
+ * Recetas, combos y mensajes vienen de JSON generados por scripts/build-postres-content.mjs.
+ */
 
-export const RECETAS_POSTRES = [
-  {
-    id: 'postre-fresa',
-    nombre: 'Fresa cremosa',
-    tipo: 'Cremoso',
-    dificultad: 'Fácil',
-    tiempo: '25 min',
-    porciones: '8 vasos',
-    descripcion: 'Postre en vaso de fresa. Receta completa en el PDF del kit.',
-    ingredientes: ['Fresas', 'Crema', 'Azúcar', 'Galleta'],
-    pasos: ['Contenido completo disponible cuando se liberen los archivos del kit.'],
-    tip: 'Usa vasos transparentes para mostrar las capas.',
-  },
-  {
-    id: 'postre-oreo',
-    nombre: 'Oreo en vaso',
-    tipo: 'Cremoso',
-    dificultad: 'Fácil',
-    tiempo: '20 min',
-    porciones: '8 vasos',
-    descripcion: 'Capas de galleta y crema. Detalle en el kit PDF.',
-    ingredientes: ['Galletas Oreo', 'Crema', 'Leche condensada'],
-    pasos: ['Contenido completo disponible cuando se liberen los archivos del kit.'],
-    tip: 'Reserva trozos de galleta para decorar arriba.',
-  },
-  {
-    id: 'postre-chocolate',
-    nombre: 'Chocolate',
-    tipo: 'Cremoso',
-    dificultad: 'Media',
-    tiempo: '30 min',
-    porciones: '8 vasos',
-    descripcion: 'Postre de chocolate en vaso. Receta completa en el kit.',
-    ingredientes: ['Chocolate', 'Crema', 'Azúcar'],
-    pasos: ['Contenido completo disponible cuando se liberen los archivos del kit.'],
-    tip: 'Sirve frío para mejor textura.',
-  },
-];
+import recetasData from './recetas-postres.json';
+import recetasPremiumData from './recetas-postres-premium.json';
+import combosData from './combos-postres-premium.json';
+import mensajesData from './mensajes-postres.json';
+import mensajesPremiumData from './mensajes-postres-premium.json';
+import fechasPremiumData from './fechas-postres-premium.json';
+import guiaPremiumData from './guia-postres-premium.json';
 
-export const RECETAS_POSTRES_PREMIUM = [];
+/** 30 recetas del kit principal */
+export const RECETAS_POSTRES = recetasData;
 
-export const COMBOS_POSTRES_PREMIUM = [];
+/** 20 recetas premium */
+export const RECETAS_POSTRES_PREMIUM = recetasPremiumData;
 
-export const MENSAJES_POSTRES = [
-  {
-    categoria: 'Estado / Story',
-    texto: '🍮 Postres en vaso disponibles hoy. Escríbeme para ver sabores y precios.',
-  },
-  {
-    categoria: 'Estado / Story',
-    texto: '¿Antojo dulce? Tengo postres en vaso listos para entregar.',
-  },
-  {
-    categoria: 'Promoción',
-    texto: 'Promo: 3 postres en vaso por [PRECIO]. Válido hasta el domingo.',
-  },
-  {
-    categoria: 'Cliente nuevo',
-    texto: 'Hola, gracias por escribir. Te comparto el menú de postres en vaso 👇',
-  },
-  {
-    categoria: 'Pedido',
-    texto: 'Perfecto, tu pedido: [SABORES] — Total: [PRECIO]. ¿Confirmo?',
-  },
-];
+/** 10 combos rentables — complemento premium */
+export const COMBOS_POSTRES_PREMIUM = combosData;
+
+/** Mensajes WhatsApp del kit base */
+export const MENSAJES_POSTRES = mensajesData;
+
+/** Mensajes premium (combos, fechas, valor) */
+export const MENSAJES_POSTRES_PREMIUM = mensajesPremiumData;
+
+/** Fechas especiales premium */
+export const FECHAS_POSTRES_PREMIUM = fechasPremiumData;
+
+/** Guía de presentación premium */
+export const GUIA_POSTRES_PREMIUM = guiaPremiumData;
 
 export const PLAN_7_DIAS_POSTRES = [
   {
@@ -74,7 +40,7 @@ export const PLAN_7_DIAS_POSTRES = [
     meta: 'Definir 3 a 5 postres para empezar',
     tareas: [
       'Revisa las recetas del kit',
-      'Elige 3 a 5 sabores fáciles',
+      'Elige 3 sabores fáciles (ej. fresa, Oreo, maracuyá)',
       'Anota ingredientes en la lista de compras',
     ],
   },
@@ -85,34 +51,107 @@ export const PLAN_7_DIAS_POSTRES = [
     meta: 'Saber cuánto cuesta cada vaso y a qué precio vender',
     tareas: [
       'Abre la Calculadora de Precios',
-      'Ingresa el costo real de cada ingrediente',
-      'Define tu margen y precio sugerido por vaso',
+      'Ingresa el costo real de cada ingrediente en tu ciudad',
+      'Define tu margen y anota el precio sugerido por vaso',
     ],
   },
   {
     dia: 3,
     titulo: 'Prepara una pequeña tanda',
-    duracion: '1–2 horas',
+    duracion: '1–2 horas + frío',
     meta: 'Probar que la receta sale bien antes de vender',
     tareas: [
-      'Produce 6-8 vasos de prueba',
-      'Prueba textura y dulzor',
+      'Produce 6–8 vasos de prueba (1–2 sabores)',
+      'Prueba textura, dulzor y presentación',
       'Ajusta antes de producir más',
+    ],
+  },
+  {
+    dia: 4,
+    titulo: 'Toma fotos y arma tu menú',
+    duracion: '45–60 min',
+    meta: 'Tener menú y foto listos para publicar',
+    tareas: [
+      'Fotografía con luz natural y fondo limpio (vaso transparente)',
+      'Completa el menú editable con sabores y precios',
+      'Prepara imagen o texto para WhatsApp',
+    ],
+  },
+  {
+    dia: 5,
+    titulo: 'Publica en WhatsApp',
+    duracion: '20–30 min',
+    meta: 'Que al menos 10 personas vean tu oferta',
+    tareas: [
+      'Publica tu menú en estado o historia',
+      'Usa uno de los mensajes listos del kit',
+      'Comparte con amigos, familia y vecinos',
+    ],
+  },
+  {
+    dia: 6,
+    titulo: 'Organiza pedidos',
+    duracion: 'Según demanda',
+    meta: 'Responder con claridad y anotar cada pedido',
+    tareas: [
+      'Anota sabores, cantidad y forma de pago',
+      'Confirma entrega o punto de recogida',
+      'Prepara la tanda del día con margen de frío',
+    ],
+  },
+  {
+    dia: 7,
+    titulo: 'Ajusta sabores y precios',
+    duracion: '30 min',
+    meta: 'Planificar la semana 2 con datos reales',
+    tareas: [
+      'Revisa qué sabores preguntaron más',
+      'Ajusta precios si algún ingrediente subió',
+      'Planifica la tanda de la próxima semana',
     ],
   },
 ];
 
 export const LISTA_COMPRAS_POSTRES = {
-  ingredientes: ['Crema de leche', 'Leche condensada', 'Fresas', 'Galletas', 'Chocolate'],
-  materiales: ['Vasos transparentes', 'Cucharitas', 'Tapas', 'Etiquetas'],
-  utensilios: ['Batidora', 'Espátula', 'Balanza', 'Refrigerador'],
+  ingredientes: [
+    'Crema de leche (para batir)',
+    'Queso crema',
+    'Leche condensada',
+    'Leche evaporada',
+    'Azúcar glass',
+    'Extracto de vainilla',
+    'Fresas u otras frutas',
+    'Maracuyá / pulpa',
+    'Chocolate semiamargo',
+    'Galletas María y Oreo',
+    'Dulce de leche',
+    'Mantequilla',
+  ],
+  materiales: [
+    'Vasos transparentes 180–220 ml',
+    'Cucharitas',
+    'Tapas (si entregas)',
+    'Etiquetas o stickers',
+    'Bolsas o empaque para transporte',
+  ],
+  utensilios: [
+    'Batidora o globo',
+    'Espátula',
+    'Balanza de cocina',
+    'Refrigerador con espacio',
+    'Piping bag (opcional, para crema)',
+  ],
 };
 
 export const CHECKLIST_POSTRES = [
-  'Vasos y cucharitas listos',
-  'Ingredientes medidos',
-  'Capas montadas y frías',
-  'Fotos listas para WhatsApp',
-  'Menú y precios actualizados',
-  'Mensajes de venta preparados',
+  'Revisar pedidos del día y cantidades por sabor',
+  'Vasos y cucharitas limpios y listos',
+  'Ingredientes fríos (crema) y medidos',
+  'Bases de galleta listas',
+  'Capas montadas sin rebosar',
+  'Tiempo de frío cumplido antes de entregar',
+  'Fotos o menú actualizado en WhatsApp',
+  'Mensajes de confirmación enviados',
+  'Empaque listo para transporte',
+  'Anotar qué sabores se agotaron',
 ];

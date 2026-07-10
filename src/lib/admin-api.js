@@ -28,8 +28,9 @@ export async function createAdminUser(idToken, payload) {
   return adminFetch(idToken, '/api/admin/users', { method: 'POST', body: payload });
 }
 
-export async function fetchAdminAnalytics(idToken) {
-  return adminFetch(idToken, '/api/admin/analytics', { method: 'GET' });
+export async function fetchAdminAnalytics(idToken, line = 'all') {
+  const qs = line && line !== 'all' ? `?line=${encodeURIComponent(line)}` : '';
+  return adminFetch(idToken, `/api/admin/analytics${qs}`, { method: 'GET' });
 }
 
 export async function deleteUserAccount(idToken, uid) {

@@ -37,7 +37,7 @@ export const PRODUCT_LINES = [
     name: 'Postres en Vaso',
     kitName: 'Kit Postres en Vaso',
     short: 'Postres',
-    emoji: '🍮',
+    emoji: '🍨',
     unitSingular: 'vaso',
     unitPlural: 'vasos',
     unitLabel: 'Postres por día',
@@ -52,7 +52,7 @@ export const PRODUCT_LINES = [
     accent: '#EC3F7A',
     favicon: '/favicon.svg?v=5',
     enabled: true,
-    /** false until kit PDFs + Hotmart upsell links are real */
+    /** false until kit PDFs + Hotmart upsell links are real — LP checkout blocked; admin can still unlock */
     sellable: false,
   },
   {
@@ -80,6 +80,13 @@ export const PRODUCT_LINES = [
 ];
 
 export const PRODUCT_LINE_BY_ID = Object.fromEntries(PRODUCT_LINES.map((l) => [l.id, l]));
+
+/** Ordem fixa no topbar: ativos + teasers (ex.: Donuts en breve). */
+export const TOPBAR_LINE_IDS = ['paletas', 'postres', 'donuts'];
+
+export function getTopbarLines() {
+  return TOPBAR_LINE_IDS.map((id) => PRODUCT_LINE_BY_ID[id]).filter(Boolean);
+}
 
 export function getEnabledLines() {
   return PRODUCT_LINES.filter((l) => l.enabled);

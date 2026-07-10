@@ -2,7 +2,7 @@
   {
     "num": 1,
     "nombre": "Cheesecake de fresa bañada",
-    "tipo": "Estilo postre",
+    "tipo": "Bañada",
     "dificultad": "Media",
     "prep": "25 min",
     "congelacion": "6-8 horas",
@@ -20,12 +20,12 @@
       "Congela hasta firmar. Derrite chocolate blanco a baño maría.",
       "Sumerge la mitad de cada paleta y deja escurrir sobre papel encerado."
     ],
-    "consejo": "Nombre 'cheesecake' en el menú eleva el precio. Foto con corte mostrando el interior rosado."
+    "consejo": "Nombre “cheesecake bañada” eleva el precio. Foto con corte rosado + baño blanco."
   },
   {
     "num": 2,
-    "nombre": "Chocolate belga con galleta crocante",
-    "tipo": "Rellena",
+    "nombre": "Chocolate belga bañado crocante",
+    "tipo": "Bañada",
     "dificultad": "Media",
     "prep": "30 min",
     "congelacion": "6 horas",
@@ -44,7 +44,7 @@
       "Agrega capa de galleta triturada, cubre con más mezcla.",
       "Congela, inserta palitos. Baña con chocolate derretido al servir o antes de congelar."
     ],
-    "consejo": "Combo infantil: incluye esta paleta + 2 frutales coloridas."
+    "consejo": "Baño oscuro + galleta = look pastelería. Combo infantil con 2 frutales."
   },
   {
     "num": 3,
@@ -115,8 +115,8 @@
   },
   {
     "num": 6,
-    "nombre": "Dulce de leche con alfajor",
-    "tipo": "Estilo postre",
+    "nombre": "Dulce de leche bañado estilo alfajor",
+    "tipo": "Bañada",
     "dificultad": "Media",
     "prep": "25 min",
     "congelacion": "6 horas",
@@ -133,7 +133,7 @@
       "Agrega trozos de alfajor. Vierte en moldes.",
       "Congela. Baña la punta en chocolate si quieres más presentación."
     ],
-    "consejo": "Sabor nostálgico en Argentina, Uruguay, Colombia. Cobrar 20-30% más que frutales."
+    "consejo": "Baño parcial + migas de alfajor. Anuncia como edición especial."
   },
   {
     "num": 7,
@@ -270,8 +270,8 @@
   },
   {
     "num": 13,
-    "nombre": "Pistacho con chocolate blanco",
-    "tipo": "Rellena",
+    "nombre": "Pistacho bañado en chocolate blanco",
+    "tipo": "Bañada",
     "dificultad": "Media",
     "prep": "25 min",
     "congelacion": "6 horas",
@@ -288,7 +288,7 @@
       "Vierte en moldes y congela.",
       "Baña con chocolate blanco derretido."
     ],
-    "consejo": "Sabor diferenciado. Cobrar más — ingrediente más caro se justifica en el precio."
+    "consejo": "Ticket alto. El baño blanco se ve premium en vaso/foto."
   },
   {
     "num": 14,
@@ -337,8 +337,8 @@
   },
   {
     "num": 16,
-    "nombre": "Nutella con avellanas",
-    "tipo": "Rellena",
+    "nombre": "Nutella bañada con avellanas",
+    "tipo": "Bañada",
     "dificultad": "Fácil",
     "prep": "20 min",
     "congelacion": "5 horas",
@@ -353,9 +353,10 @@
     "pasos": [
       "Mezcla Nutella con leche tibia hasta integrar.",
       "Agrega azúcar y crema.",
-      "Vierte en moldes con avellanas. Congela."
+      "Vierte en moldes con avellanas. Congela.",
+      "Baña con chocolate derretido y deja escurrir sobre papel encerado."
     ],
-    "consejo": "Contiene frutos secos — siempre pregunta por alergias."
+    "consejo": "Baño + avellana picada arriba. Avisa alérgeno."
   },
   {
     "num": 17,
@@ -402,8 +403,8 @@
   },
   {
     "num": 19,
-    "nombre": "Caramelo salado con almendras",
-    "tipo": "Rellena",
+    "nombre": "Caramelo salado bañado con almendras",
+    "tipo": "Bañada",
     "dificultad": "Media",
     "prep": "30 min",
     "congelacion": "6 horas",
@@ -421,7 +422,7 @@
       "Mezcla con leche y sal.",
       "Vierte en moldes con almendras. Baña parcialmente en chocolate."
     ],
-    "consejo": "Tendencia 'gourmet'. Precio más alto que paletas básicas."
+    "consejo": "Baño parcial (mitad) se ve pro. Ideal para combos premium."
   },
   {
     "num": 20,

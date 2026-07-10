@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const config = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -21,14 +22,20 @@ export const isFirebaseConfigured = Boolean(
 let app = null;
 let auth = null;
 let db = null;
+let storage = null;
 
 if (isFirebaseConfigured) {
   app = initializeApp(config);
   auth = getAuth(app);
   db = getFirestore(app);
+  storage = config.storageBucket ? getStorage(app) : null;
 }
 
-export { app, auth, db };
+export { app, auth, db, storage };
+
+export function canUseStorage() {
+  return Boolean(storage);
+}
 
 export function requireFirebase() {
   if (!isFirebaseConfigured || !auth) {

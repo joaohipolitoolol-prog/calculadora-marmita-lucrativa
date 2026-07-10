@@ -10,11 +10,13 @@ import {
   PRICE_ACCESS_LABEL,
   STICKY_CTA_LABEL,
   TRUST_CTA_LABEL,
+  WHATSAPP_NUMBER_ID,
 } from './config.js';
 import { initDemo } from './demo.js';
-import { trackCurrentPage } from '../lib/page-analytics.js';
+import { bindTrackClicks, trackCheckout, trackCurrentPage } from '../lib/track.js';
 
-trackCurrentPage();
+trackCurrentPage({ line: 'paletas' });
+bindTrackClicks({ page: 'home', line: 'paletas', numberId: WHATSAPP_NUMBER_ID });
 
 function trackInitiateCheckout() {
   if (typeof window.fbq === 'function') {
@@ -63,7 +65,12 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
     link.textContent = CTA_LABEL;
   }
   link.setAttribute('rel', 'noopener');
-  link.addEventListener('click', trackInitiateCheckout);
+  link.dataset.checkout = link.dataset.checkout || 'kit';
+  if (!link.dataset.track) link.dataset.track = 'checkout_kit';
+  link.addEventListener('click', () => {
+    trackInitiateCheckout();
+    trackCheckout('kit', { page: 'home', line: 'paletas', ctaId: link.dataset.track });
+  });
 });
 
 initDemo();

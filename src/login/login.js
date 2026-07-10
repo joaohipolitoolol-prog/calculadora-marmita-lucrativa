@@ -1,4 +1,5 @@
 import { login, resetPassword, guardAuthPage } from '../lib/auth.js';
+import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import {
   applyAuthBrand,
   getAfterLoginUrl,
@@ -16,6 +17,9 @@ const forgotBtn = document.getElementById('forgot-btn');
 
 const params = new URLSearchParams(window.location.search);
 const authLine = applyAuthBrand(getAuthProductLine());
+
+trackCurrentPage({ line: authLine?.id });
+bindTrackClicks({ page: 'login', line: authLine?.id });
 
 if (params.get('compra') === '1') {
   const qs = params.toString();

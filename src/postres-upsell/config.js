@@ -1,12 +1,12 @@
 /** Configuración del upsell Postres — editar aquí */
 
-/** ⚠️ Reemplaza por el link real de Hotmart del upsell Postres Premium. */
-export const UPSELL_CHECKOUT_URL = 'COLOCAR_LINK_HOTMART_UPSELL_POSTRES_AQUI';
+/** Upsell US$12 — https://pay.hotmart.com/Y106683338S?off=dq94mmmj */
+export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/Y106683338S?off=dq94mmmj';
 
-/** ⚠️ Reemplaza por el link real de Hotmart del downsell Postres. */
-export const DOWNSELL_CHECKOUT_URL = 'COLOCAR_LINK_HOTMART_DOWNSELL_POSTRES_AQUI';
+/** Downsell US$9,97 — https://pay.hotmart.com/Y106683338S?off=0dwxzf2m */
+export const DOWNSELL_CHECKOUT_URL = 'https://pay.hotmart.com/Y106683338S?off=0dwxzf2m';
 
-/** Cadastro com flag Postres — Hotmart thank-you do premium também pode apontar aqui com &postres_premium=1 */
+/** Cadastro com flag Postres — Hotmart thank-you do premium também pode apontar aqui */
 export const ACCESS_URL = '/cadastrar?compra=1&postres=1&line=postres';
 export const UPSELL_POST_PURCHASE_URL = '/cadastrar?compra=1&postres=1&postres_premium=1&line=postres';
 

@@ -45,6 +45,7 @@ const state = {
   kiwifySubTab: 'urls',
   userSearch: '',
   userFilter: 'all',
+  lineFilter: 'all',
   selectedUserIds: new Set(),
   detailUserId: null,
   sidebarOpen: false,
@@ -94,6 +95,7 @@ function paint() {
     kiwifyContent: renderKiwifyContent(),
     user: state.currentAdminUser,
     sidebarOpen: state.sidebarOpen,
+    lineFilter: state.lineFilter,
   });
   bindEvents();
 }
@@ -115,9 +117,18 @@ async function loadUsers() {
 async function loadAnalytics() {
   try {
     const token = await state.currentAdminUser.getIdToken();
-    state.analyticsCache = await fetchAdminAnalytics(token);
+    state.analyticsCache = await fetchAdminAnalytics(token, state.lineFilter);
   } catch {
-    state.analyticsCache = { pages: [], todayTotal: 0, allTimeTotal: 0, history: [] };
+    state.analyticsCache = {
+      pages: [],
+      todayTotal: 0,
+      allTimeTotal: 0,
+      history: [],
+      kpis: {},
+      ctas: [],
+      whatsapp: [],
+      events: [],
+    };
   }
 }
 
@@ -126,7 +137,11 @@ async function refreshAll() {
   if (state.activeTab === 'codes') {
     state.codesCache = await listAccessCodes();
   }
-  if (state.activeTab === 'dashboard' || state.activeTab === 'analytics') {
+  if (
+    state.activeTab === 'dashboard' ||
+    state.activeTab === 'analytics' ||
+    state.activeTab === 'channels'
+  ) {
     await loadAnalytics();
   }
   paint();
@@ -150,24 +165,6 @@ async function bulkUpdateProduct(productId, active) {
   showToast(t('toast.usersUpdated', { n: ids.length }));
   state.selectedUserIds.clear();
   await refreshAll();
-}
-
-async function toggleKitWithEmail(uid, active, userRecord) {
-  await updateUserProfile(uid, { hasKit: active });
-  if (active && userRecord?.email) {
-    try {
-      const token = await state.currentAdminUser.getIdToken();
-      await sendWelcomeEmail(token, {
-        email: userRecord.email,
-        name: userRecord.displayName,
-      });
-      showToast('Kit liberado y email enviado');
-    } catch {
-      showToast('Kit liberado — email no enviado');
-    }
-  } else {
-    showToast(active ? 'Acceso activado' : 'Acceso revocado');
-  }
 }
 
 function bindEvents() {
@@ -200,12 +197,27 @@ function bindEvents() {
     btn.addEventListener('click', async () => {
       state.activeTab = btn.dataset.tab;
       state.sidebarOpen = false;
+      if (btn.dataset.setFilter) {
+        state.userFilter = btn.dataset.setFilter;
+      }
       if (state.activeTab === 'codes') {
         state.codesCache = await listAccessCodes();
       }
-      if (state.activeTab === 'dashboard' || state.activeTab === 'analytics') {
+      if (
+        state.activeTab === 'dashboard' ||
+        state.activeTab === 'analytics' ||
+        state.activeTab === 'channels'
+      ) {
         await loadAnalytics();
       }
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-line-filter]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      state.lineFilter = btn.dataset.lineFilter || 'all';
+      await loadAnalytics();
       paint();
     });
   });
@@ -274,7 +286,15 @@ function bindEvents() {
       const uid = input.dataset.userId;
       const productId = input.dataset.drawerProduct;
       const active = input.checked;
-      await updateProduct(uid, productId, active);
+      const updates = {};
+      const product = PRODUCT_BY_ID[productId];
+      if (!product) return;
+      updates[product.field] = active;
+      // Liberar upsell limpia pending de esa línea
+      if (active && product.tier === 'upsell') {
+        updates[`premiumPending.${product.group}`] = false;
+      }
+      await updateUserProfile(uid, updates);
       if (productId === 'paletas_kit' && active) {
         const user = state.usersCache.find((u) => u.id === uid);
         if (user?.email) {
@@ -287,6 +307,20 @@ function bindEvents() {
         }
       }
       showToast(t('toast.accessUpdated'));
+      await refreshAll();
+      state.detailUserId = uid;
+      paint();
+    });
+  });
+
+  root.querySelectorAll('[data-clear-pending]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const uid = btn.dataset.clearPending;
+      await updateUserProfile(uid, {
+        'premiumPending.paletas': false,
+        'premiumPending.postres': false,
+      });
+      showToast(t('toast.pendingCleared'));
       await refreshAll();
       state.detailUserId = uid;
       paint();
@@ -354,7 +388,7 @@ function bindEvents() {
             <div class="admin-form-products">
               <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_kit"><span>🍓 ${escapeHtml(productLabel('paletas_kit'))}</span></label>
               <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_premium"><span>⭐ ${escapeHtml(productLabel('paletas_premium'))}</span></label>
-              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_kit"><span>🍮 ${escapeHtml(productLabel('postres_kit'))}</span></label>
+              <label class="admin-check-card"><input type="checkbox" name="product" value="postres_kit"><span>🍨 ${escapeHtml(productLabel('postres_kit'))}</span></label>
               <label class="admin-check-card"><input type="checkbox" name="product" value="postres_premium"><span>✨ ${escapeHtml(productLabel('postres_premium'))}</span></label>
             </div>
             <div class="admin-modal-actions">

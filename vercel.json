@@ -15,6 +15,7 @@
     { "source": "/upsell-paletas-premium", "destination": "/upsell-paletas-premium.html" },
     { "source": "/postres", "destination": "/postres.html" },
     { "source": "/postres/upsell", "destination": "/postres-upsell.html" },
-    { "source": "/postresaviso", "destination": "/postres-aviso.html" }
+    { "source": "/postresaviso", "destination": "/postres-aviso.html" },
+    { "source": "/m/:slug", "destination": "/m.html" }
   ]
 }

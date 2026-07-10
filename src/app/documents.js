@@ -1,13 +1,25 @@
 /** Catálogo de entregáveis do kit + premium (IDs estáveis para viewer nativo). */
 
+/**
+ * kind:
+ *  - native  → abre conteúdo in-app; downloadHref opcional (PDF)
+ *  - html    → iframe HTML; Imprimir/PDF ou download
+ *  - pdf     → iframe PDF (legado); preferir native+download
+ *  - xlsx    → download direto
+ *  - app-link → navega na app
+ *
+ * native: checklist | plan | mensajes | lista | combos | recetas | recetas-premium | menu
+ */
+
 export const KIT_DOWNLOADS = [
   {
     id: 'kit-principal',
-    kind: 'pdf',
-    href: '/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.pdf',
+    kind: 'native',
+    native: 'recetas',
+    href: '/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.html',
     downloadHref: '/paletas-de-whatsapp/produto/Kit_Paletas_de_WhatsApp.pdf',
     title: 'Kit Principal',
-    desc: '30 recetas + guía completa del método 3P',
+    desc: '30 recetas en la app · PDF opcional',
     tag: 'Empezar aquí',
     icon: '📘',
     accent: '#ff4f8b',
@@ -15,51 +27,57 @@ export const KIT_DOWNLOADS = [
   },
   {
     id: 'calculadora',
-    kind: 'xlsx',
-    href: '/paletas-de-whatsapp/produto/Calculadora_Precios_Paletas.xlsx',
+    kind: 'app-link',
+    href: '#',
     downloadHref: '/paletas-de-whatsapp/produto/Calculadora_Precios_Paletas.xlsx',
-    title: 'Calculadora Excel',
-    desc: 'Compatible con Google Sheets',
+    title: 'Calculadora de precios',
+    desc: 'En la app · también Excel / Sheets',
+    tag: 'En la app',
     icon: '📊',
     accent: '#ff7a1a',
+    appView: 'calc',
   },
   {
     id: 'menu-editable',
-    kind: 'html',
+    kind: 'native',
+    native: 'menu',
     href: '/paletas-de-whatsapp/produto/Menu_Editable_Paletas.html',
     downloadHref: '/paletas-de-whatsapp/produto/Menu_Editable_Paletas.pdf',
     title: 'Menú editable',
-    desc: 'Edita y copia a WhatsApp · también puedes bajar el PDF',
+    desc: 'Edita en la app · PDF opcional',
     icon: '📋',
     accent: '#5ecf9a',
   },
   {
     id: 'mensajes',
-    kind: 'pdf',
-    href: '/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.pdf',
+    kind: 'native',
+    native: 'mensajes',
+    href: '/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.html',
     downloadHref: '/paletas-de-whatsapp/produto/Mensajes_para_Vender_Paletas.pdf',
     title: 'Mensajes WhatsApp',
-    desc: '60 textos listos para copiar',
+    desc: 'Textos listos para copiar · PDF opcional',
     icon: '💬',
     accent: '#a78bfa',
   },
   {
     id: 'plan-7-dias',
-    kind: 'pdf',
-    href: '/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf',
+    kind: 'native',
+    native: 'plan',
+    href: '/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.html',
     downloadHref: '/paletas-de-whatsapp/produto/Plan_7_Dias_Paletas.pdf',
     title: 'Plan de 7 días',
-    desc: 'Guía paso a paso',
+    desc: 'Paso a paso en la app · PDF opcional',
     icon: '📅',
     accent: '#60a5fa',
   },
   {
     id: 'checklist',
-    kind: 'pdf',
-    href: '/paletas-de-whatsapp/produto/Checklist_Paletas.pdf',
+    kind: 'native',
+    native: 'checklist',
+    href: '/paletas-de-whatsapp/produto/Checklist_Paletas.html',
     downloadHref: '/paletas-de-whatsapp/produto/Checklist_Paletas.pdf',
     title: 'Checklist',
-    desc: 'Compras, producción y venta',
+    desc: 'Marca en la app · PDF opcional',
     icon: '✅',
     accent: '#f472b6',
   },
@@ -68,17 +86,19 @@ export const KIT_DOWNLOADS = [
 export const PREMIUM_DOWNLOADS = [
   {
     id: 'kit-premium',
-    kind: 'html',
+    kind: 'native',
+    native: 'recetas-premium',
     href: '/paletas-premium/produto/Kit_Premium_Paletas.html',
     downloadHref: '/paletas-premium/produto/Kit_Premium_Paletas.html',
     title: 'Kit Premium',
-    desc: '20 recetas premium',
+    desc: '20 recetas premium en la app',
     icon: '✨',
     accent: '#ffc94a',
   },
   {
     id: 'combos',
-    kind: 'html',
+    kind: 'native',
+    native: 'combos',
     href: '/paletas-premium/produto/Combos_Rentables.html',
     downloadHref: '/paletas-premium/produto/Combos_Rentables.html',
     title: 'Combos rentables',
@@ -128,66 +148,152 @@ export const PREMIUM_DOWNLOADS = [
   },
 ];
 
-/** Postres kit — placeholders até os PDFs finais entrarem em /public/postres/produto/ */
+/** Postres — nativo en app + PDF/imprimir opcional */
 export const POSTRES_DOWNLOADS = [
   {
     id: 'postres-kit-principal',
-    kind: 'coming-soon',
-    href: '#',
-    downloadHref: '#',
-    title: 'Kit Postres en Vaso',
-    desc: 'Recetas + método para vender por WhatsApp',
-    tag: 'En breve',
-    icon: '🍮',
+    kind: 'native',
+    native: 'recetas',
+    href: '/postres/produto/Kit_Postres_en_Vaso.html',
+    downloadHref: '/postres/produto/Kit_Postres_en_Vaso.html',
+    title: 'Kit Principal',
+    desc: '30 recetas en la app · Imprimir / PDF',
+    tag: 'Empezar aquí',
+    icon: '📘',
     accent: '#EC3F7A',
     featured: true,
   },
   {
     id: 'postres-calculadora',
-    kind: 'coming-soon',
+    kind: 'app-link',
     href: '#',
     downloadHref: '#',
-    title: 'Calculadora Postres',
-    desc: 'Costos y precio sugerido por vaso',
-    tag: 'En breve',
+    title: 'Calculadora de precios',
+    desc: 'Calcula costo y ganancia por vaso',
+    tag: 'En la app',
     icon: '📊',
     accent: '#ff7a1a',
+    appView: 'calc',
   },
   {
     id: 'postres-menu',
-    kind: 'coming-soon',
-    href: '#',
-    downloadHref: '#',
+    kind: 'native',
+    native: 'menu',
+    href: '/postres/produto/Menu_Editable_Postres.html',
+    downloadHref: '/postres/produto/Menu_Editable_Postres.html',
     title: 'Menú editable',
-    desc: 'Copia y pega en WhatsApp',
-    tag: 'En breve',
+    desc: 'Edita en la app · Imprimir / PDF',
     icon: '📋',
     accent: '#5ecf9a',
   },
   {
     id: 'postres-mensajes',
-    kind: 'coming-soon',
-    href: '#',
-    downloadHref: '#',
+    kind: 'native',
+    native: 'mensajes',
+    href: '/postres/produto/Mensajes_Postres.html',
+    downloadHref: '/postres/produto/Mensajes_Postres.html',
     title: 'Mensajes WhatsApp',
-    desc: 'Textos listos para vender postres',
-    tag: 'En breve',
+    desc: 'Textos listos · PDF opcional',
     icon: '💬',
     accent: '#a78bfa',
+  },
+  {
+    id: 'postres-plan',
+    kind: 'native',
+    native: 'plan',
+    href: '/postres/produto/Plan_7_Dias_Postres.html',
+    downloadHref: '/postres/produto/Plan_7_Dias_Postres.html',
+    title: 'Plan de 7 días',
+    desc: 'Paso a paso en la app',
+    icon: '📅',
+    accent: '#60a5fa',
+  },
+  {
+    id: 'postres-checklist',
+    kind: 'native',
+    native: 'checklist',
+    href: '/postres/produto/Checklist_Postres.html',
+    downloadHref: '/postres/produto/Checklist_Postres.html',
+    title: 'Checklist',
+    desc: 'Marca en la app · PDF opcional',
+    icon: '✅',
+    accent: '#f472b6',
+  },
+  {
+    id: 'postres-lista',
+    kind: 'native',
+    native: 'lista',
+    href: '/postres/produto/Lista_Compras_Postres.html',
+    downloadHref: '/postres/produto/Lista_Compras_Postres.html',
+    title: 'Lista de compras',
+    desc: 'Ingredientes y materiales',
+    icon: '🛒',
+    accent: '#ff7a1a',
   },
 ];
 
 export const POSTRES_PREMIUM_DOWNLOADS = [
   {
     id: 'postres-premium-kit',
-    kind: 'coming-soon',
-    href: '#',
-    downloadHref: '#',
-    title: 'Postres Premium',
-    desc: 'Recetas y combos avanzados',
-    tag: 'En breve',
+    kind: 'native',
+    native: 'recetas-premium',
+    href: '/postres-premium/produto/Kit_Premium_Postres.html',
+    downloadHref: '/postres-premium/produto/Kit_Premium_Postres.html',
+    title: 'Kit Premium',
+    desc: '20 recetas premium en la app',
     icon: '✨',
     accent: '#ffc94a',
+  },
+  {
+    id: 'postres-premium-combos',
+    kind: 'native',
+    native: 'combos',
+    href: '/postres-premium/produto/Combos_Rentables_Postres.html',
+    downloadHref: '/postres-premium/produto/Combos_Rentables_Postres.html',
+    title: 'Combos rentables',
+    desc: '10 combos con precio guía',
+    icon: '📦',
+    accent: '#ff7a1a',
+  },
+  {
+    id: 'postres-premium-menu',
+    kind: 'html',
+    href: '/postres-premium/produto/Menu_Premium_Postres.html',
+    downloadHref: '/postres-premium/produto/Menu_Premium_Postres.html',
+    title: 'Menú premium',
+    desc: 'Copia y pega en WhatsApp',
+    icon: '📋',
+    accent: '#5ecf9a',
+  },
+  {
+    id: 'postres-premium-mensajes',
+    kind: 'html',
+    href: '/postres-premium/produto/Mensajes_Premium_Postres.html',
+    downloadHref: '/postres-premium/produto/Mensajes_Premium_Postres.html',
+    title: 'Mensajes premium',
+    desc: 'Combos y fechas especiales',
+    icon: '💬',
+    accent: '#a78bfa',
+  },
+  {
+    id: 'postres-premium-fechas',
+    kind: 'html',
+    href: '/postres-premium/produto/Fechas_Especiales_Postres.html',
+    downloadHref: '/postres-premium/produto/Fechas_Especiales_Postres.html',
+    title: 'Fechas especiales',
+    desc: 'Día de la Madre, Navidad…',
+    icon: '🎉',
+    accent: '#60a5fa',
+  },
+  {
+    id: 'postres-premium-guia',
+    kind: 'html',
+    href: '/postres-premium/produto/Guia_Presentacion_Postres.html',
+    downloadHref: '/postres-premium/produto/Guia_Presentacion_Postres.html',
+    title: 'Guía de presentación',
+    desc: 'Fotos y empaque',
+    icon: '📸',
+    accent: '#f472b6',
   },
 ];
 
@@ -204,13 +310,24 @@ export function getDocById(id) {
 }
 
 export function isViewableDoc(doc) {
-  return Boolean(doc && (doc.kind === 'pdf' || doc.kind === 'html'));
+  return Boolean(doc && (doc.kind === 'pdf' || doc.kind === 'html' || doc.kind === 'native'));
+}
+
+export function isNativeDoc(doc) {
+  return Boolean(doc && doc.kind === 'native' && doc.native);
 }
 
 export function kindLabel(kind) {
   if (kind === 'pdf') return 'PDF';
   if (kind === 'html') return 'HTML';
   if (kind === 'xlsx') return 'Excel';
+  if (kind === 'app-link') return 'App';
+  if (kind === 'native') return 'App';
   if (kind === 'coming-soon') return 'Pronto';
   return '';
+}
+
+export function hasPdfDownload(doc) {
+  const href = doc?.downloadHref || '';
+  return href.endsWith('.pdf');
 }

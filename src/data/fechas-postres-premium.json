@@ -1,0 +1,78 @@
+[
+  {
+    "fecha": "San Valentín",
+    "ideas": [
+      "Combo pareja",
+      "Red velvet",
+      "Pistacho y frambuesa",
+      "Mensaje en la tapa o tarjeta"
+    ],
+    "promo": "Pedidos hasta el 12 de febrero. Aparta con anticipación."
+  },
+  {
+    "fecha": "Día de la Madre",
+    "ideas": [
+      "Pack premium x6",
+      "Tres leches",
+      "Tarjeta impresa simple",
+      "Entrega coordinada"
+    ],
+    "promo": "Regalo dulce para mamá — caja surtida de postres en vaso."
+  },
+  {
+    "fecha": "Día del Niño",
+    "ideas": [
+      "Combo infantil",
+      "Oreo / vainilla chispas",
+      "Colores vivos",
+      "Stickers en el vaso"
+    ],
+    "promo": "Pack infantil con sabores favoritos."
+  },
+  {
+    "fecha": "Fines de semana",
+    "ideas": [
+      "Combo fin de semana",
+      "Brownie",
+      "Publicar viernes por la tarde"
+    ],
+    "promo": "Caja lista sábado y domingo — cantidad limitada."
+  },
+  {
+    "fecha": "Verano / vacaciones",
+    "ideas": [
+      "Combo tropical",
+      "Mango, maracuyá, sandía",
+      "Descuento en packs grandes"
+    ],
+    "promo": "Calor = postres frescos. Promo en combos de 6 o más."
+  },
+  {
+    "fecha": "Navidad y fin de año",
+    "ideas": [
+      "Manzana canela",
+      "Dulce de leche",
+      "Bandejas regalo",
+      "Pedidos con 1 semana de anticipación"
+    ],
+    "promo": "Bandeja regalo premium para compartir en fiestas."
+  },
+  {
+    "fecha": "Cumpleaños",
+    "ideas": [
+      "Combo encargo",
+      "Velita en el vaso (foto)",
+      "Sabores favoritos del cumpleañero"
+    ],
+    "promo": "¿Cumpleaños? Armo la bandeja con los sabores que elijas."
+  },
+  {
+    "fecha": "Fechas locales",
+    "ideas": [
+      "Adapta a feriados de tu país",
+      "Sabores con color temático",
+      "Historia en WhatsApp"
+    ],
+    "promo": "Edición especial [nombre del feriado] — solo esta semana."
+  }
+]
