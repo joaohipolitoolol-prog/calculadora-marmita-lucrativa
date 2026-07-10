@@ -103,6 +103,12 @@ import {
 } from './onboarding.js';
 import { DEV_ADMIN_ACCESS, DEV_UNLOCK_ALL_CONTENT } from '../site/dev.js';
 import {
+  getContentSettings,
+  isLineKitOpen,
+  isLinePremiumOpen,
+  loadContentSettings,
+} from '../lib/content-settings.js';
+import {
   isPwaInstalled,
   openPwaGuide,
 } from './pwa-install.js';
@@ -378,18 +384,33 @@ function writePremiumFlag(lineId, on) {
   }
 }
 
-function hasPremiumAccess() {
-  if (DEV_UNLOCK_ALL_CONTENT) return true;
+function hasUserPremiumEntitlement() {
   if (userProfile) {
     return Boolean(userProfile[lineBrand().premiumField] || userProfile.isAdmin);
   }
   return readPremiumFlag(lineBrand().id);
 }
 
+function hasPremiumAccess() {
+  if (DEV_UNLOCK_ALL_CONTENT) return true;
+  if (!hasUserPremiumEntitlement()) return false;
+  if (userProfile?.isAdmin) return true;
+  return isLinePremiumOpen(lineBrand().id, getContentSettings());
+}
+
 function hasKitContentAccess() {
   if (DEV_UNLOCK_ALL_CONTENT) return true;
-  // Active chip = owned line → content unlocked (admin can revoke the flag anytime).
-  return ownsLine(lineBrand().id);
+  if (!ownsLine(lineBrand().id)) return false;
+  if (userProfile?.isAdmin) return true;
+  return isLineKitOpen(lineBrand().id, getContentSettings());
+}
+
+function isKitPausedByAdmin() {
+  return ownsLine(lineBrand().id) && !isLineKitOpen(lineBrand().id, getContentSettings()) && !userProfile?.isAdmin;
+}
+
+function isPremiumPausedByAdmin() {
+  return hasUserPremiumEntitlement() && !isLinePremiumOpen(lineBrand().id, getContentSettings()) && !userProfile?.isAdmin;
 }
 
 const SIMULATION_VOLUMES = [10, 20, 30];
@@ -650,7 +671,7 @@ async function bootstrap() {
 
   scenarios = await listScenarios(currentUser.uid);
   if (activeView === 'menuWeb') {
-    await ensureMenuDraftLoaded(currentUser.uid);
+    await ensureMenuDraftLoaded(currentUser.uid, lineId);
   }
   render();
   maybeWelcome();
@@ -705,12 +726,34 @@ function renderKitPendingBanner() {
 }
 
 function renderKitLockedCard(title = 'Contenido del kit') {
+  const brand = lineBrand();
+  if (isKitPausedByAdmin()) {
+    return `
+    <div class="section-card kit-locked-card">
+      <span class="kit-locked-badge" aria-hidden="true">⏸</span>
+      <h2>${escapeHtml(title)}</h2>
+      <p class="section-text">El contenido de <strong>${escapeHtml(brand.short)}</strong> está temporalmente en mantenimiento. Intenta de nuevo más tarde.</p>
+    </div>
+  `;
+  }
+
   return `
     <div class="section-card kit-locked-card">
       <span class="kit-locked-badge" aria-hidden="true">🔒</span>
       <h2>${escapeHtml(title)}</h2>
-      <p class="section-text">Estamos confirmando tu compra. Puedes usar la calculadora mientras tanto; te avisamos por correo cuando el kit esté listo.</p>
+      <p class="section-text">Estamos confirmando tu compra de <strong>${escapeHtml(brand.kitName)}</strong>. Puedes usar la calculadora mientras tanto; te avisamos por correo cuando el kit esté listo.</p>
       <a href="${lineWhatsApp('support').href}" class="btn btn-primary" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">Ayuda por WhatsApp</a>
+    </div>
+  `;
+}
+
+function renderPremiumPausedCard() {
+  const brand = lineBrand();
+  return `
+    <div class="section-card kit-locked-card premium-paused-card">
+      <span class="kit-locked-badge" aria-hidden="true">⏸</span>
+      <h2>Premium ${escapeHtml(brand.short)}</h2>
+      <p class="section-text">El contenido premium está temporalmente cerrado. Tu acceso sigue activo — vuelve a intentar más tarde.</p>
     </div>
   `;
 }
@@ -748,6 +791,7 @@ watchAuth(async (user) => {
 
   const profile = await resolveUserProfile(user);
   userProfile = profile;
+  await loadContentSettings();
   kitUnlocked = hasKitAccess(profile, user);
   ownedLines = ownedLinesFromProfile(profile);
   if (DEV_UNLOCK_ALL_CONTENT && ownedLines.length === 0) {
@@ -863,7 +907,7 @@ function renderTopbarLineSwitcher() {
   const owned = ownedLines.filter(Boolean);
   const canSwitch = owned.length > 1;
   const brand = lineBrand();
-  const lines = getTopbarLines();
+  const lines = getTopbarLines().filter((line) => !line.enabled || ownsLine(line.id));
 
   const menuItems = lines
     .map((line) => {
@@ -884,15 +928,7 @@ function renderTopbarLineSwitcher() {
       }
 
       if (!ownedLine) {
-        return `
-          <div class="topbar-line-item locked" aria-disabled="true">
-            <span class="topbar-line-emoji" aria-hidden="true">${line.emoji}</span>
-            <span class="topbar-line-item-text">
-              <strong>${escapeHtml(line.short)}</strong>
-              <em>Sin acceso</em>
-            </span>
-          </div>
-        `;
+        return '';
       }
 
       if (!canSwitch) {
@@ -2428,17 +2464,21 @@ function renderBonus() {
   if (!hasKitContentAccess()) {
     listHtml = `<div class="premium-locked-card">${renderKitLockedCard(title)}</div>`;
   } else if (isPremium && !hasPremiumAccess()) {
+    if (isPremiumPausedByAdmin()) {
+      listHtml = renderPremiumPausedCard();
+    } else {
     const premiumTeaser =
       lineBrand().id === 'postres'
         ? 'Recetas premium, combos rentables y mensajes para fechas especiales'
         : 'Bañadas, rellenas y estilo postre de ticket alto';
     listHtml = `
       <div class="premium-locked-card">
-        <h3>Complemento premium</h3>
+        <h3>Complemento premium · ${escapeHtml(lineBrand().short)}</h3>
         <p>${premiumTeaser} — incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
         ${renderPremiumUpsell()}
       </div>
     `;
+    }
   } else {
     const recipes = isPremium ? kit.recipesPremium : kit.recipes;
     const lineId = lineBrand().id;
@@ -2531,9 +2571,10 @@ function renderPremiumSubNav() {
 
 function renderPremiumHub() {
   if (!hasPremiumAccess()) {
+    if (isPremiumPausedByAdmin()) return renderPremiumPausedCard();
     return `
       <div class="section-card">
-        <h2>Complemento premium</h2>
+        <h2>Complemento premium · ${escapeHtml(lineBrand().short)}</h2>
         <p class="section-text">Combos rentables, menú editable, mensajes para fechas especiales y guía de presentación.</p>
         <div class="premium-locked-card">${renderPremiumUpsell()}</div>
       </div>
@@ -2727,6 +2768,8 @@ function renderListaCompras() {
 
 function renderPremiumUpsell() {
   if (hasPremiumAccess()) return '';
+  if (isPremiumPausedByAdmin()) return renderPremiumPausedCard();
+  if (!isLinePremiumOpen(lineBrand().id, getContentSettings())) return '';
   const kit = kitContentForLine();
 
   return `
@@ -3009,7 +3052,7 @@ function navigateTo(view) {
   };
 
   if (view === 'menuWeb') {
-    ensureMenuDraftLoaded(currentUser.uid).then(go);
+    ensureMenuDraftLoaded(currentUser.uid, activeLine?.id || 'paletas').then(go);
     return;
   }
 

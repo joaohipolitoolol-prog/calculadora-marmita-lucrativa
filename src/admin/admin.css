@@ -1629,6 +1629,55 @@ body {
     display: inline-flex;
   }
 
+.admin-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.admin-content-line-card {
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  padding: 16px;
+  background: var(--admin-surface);
+  display: grid;
+  gap: 12px;
+}
+
+.admin-content-line-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.admin-content-line-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.admin-content-line-head p {
+  margin: 4px 0 0;
+  color: var(--admin-muted);
+  font-size: 0.85rem;
+}
+
+.admin-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--admin-bg);
+  font-size: 0.92rem;
+}
+
+.admin-toggle-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--admin-accent);
+}
+
   .admin-content {
     padding: 16px;
   }

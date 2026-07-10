@@ -8,16 +8,31 @@ import {
 } from 'firebase/firestore';
 
 const SLUG_RE = /^[a-z0-9-]{3,32}$/;
-const LOCAL_KEY = (uid) => `menu_web_draft_v2_${uid}`;
+const LOCAL_KEY = (uid, lineId = 'paletas') => `menu_web_draft_v3_${lineId}_${uid}`;
 const MAX_DATA_URL_CHARS = 70_000;
 /** Firebase Storage download URLs can be long */
 const MAX_HTTPS_URL = 2500;
 
-export const DEFAULT_CATEGORIES = [
-  { id: 'cat_frutales', name: 'Frutales' },
-  { id: 'cat_cremosas', name: 'Cremosas' },
-  { id: 'cat_especiales', name: 'Especiales' },
-];
+const LINE_MENU_DEFAULTS = {
+  paletas: {
+    tagline: 'Paletas artesanales',
+    categories: [
+      { id: 'cat_frutales', name: 'Frutales' },
+      { id: 'cat_cremosas', name: 'Cremosas' },
+      { id: 'cat_especiales', name: 'Especiales' },
+    ],
+  },
+  postres: {
+    tagline: 'Postres en vaso',
+    categories: [
+      { id: 'cat_cremosos', name: 'Cremosos' },
+      { id: 'cat_frutales', name: 'Frutales' },
+      { id: 'cat_especiales', name: 'Especiales' },
+    ],
+  },
+};
+
+export const DEFAULT_CATEGORIES = LINE_MENU_DEFAULTS.paletas.categories;
 
 export function canUseMenusCloud() {
   return isFirebaseConfigured && Boolean(db);
@@ -75,17 +90,18 @@ export function emptyItem(categoryId = '') {
   };
 }
 
-export function emptyMenuDraft() {
+export function emptyMenuDraft(lineId = 'paletas') {
+  const defaults = LINE_MENU_DEFAULTS[lineId] || LINE_MENU_DEFAULTS.paletas;
   return {
     slug: '',
     published: false,
     businessName: '',
-    tagline: '',
+    tagline: defaults.tagline,
     whatsapp: '',
     phone: '',
     coverImage: '',
     logoImage: '',
-    categories: DEFAULT_CATEGORIES.map((c) => ({ ...c })),
+    categories: defaults.categories.map((c) => ({ ...c })),
     items: [],
     note: '',
     updatedAt: 0,
@@ -154,7 +170,11 @@ export function normalizeMenuPayload(data = {}) {
 /** @deprecated use menu-images.js — kept for any leftover imports */
 export { compressImageFile } from './menu-images.js';
 
-function draftRef(uid) {
+function draftRef(uid, lineId = 'paletas') {
+  return doc(db, 'users', uid, 'private', `menu_${lineId}`);
+}
+
+function legacyDraftRef(uid) {
   return doc(db, 'users', uid, 'private', 'menu');
 }
 
@@ -162,15 +182,18 @@ function publicRef(slug) {
   return doc(db, 'menus', slug);
 }
 
-function readLocalDraft(uid) {
+function readLocalDraft(uid, lineId = 'paletas') {
   if (!uid) return null;
   try {
-    const raw = localStorage.getItem(LOCAL_KEY(uid));
+    const raw = localStorage.getItem(LOCAL_KEY(uid, lineId));
     if (!raw) {
-      // migrate v1 key if present
-      const legacy = localStorage.getItem(`menu_web_draft_v1_${uid}`);
-      if (!legacy) return null;
-      return normalizeMenuPayload(JSON.parse(legacy));
+      if (lineId === 'paletas') {
+        const legacyV2 = localStorage.getItem(`menu_web_draft_v2_${uid}`);
+        if (legacyV2) return normalizeMenuPayload(JSON.parse(legacyV2));
+        const legacyV1 = localStorage.getItem(`menu_web_draft_v1_${uid}`);
+        if (legacyV1) return normalizeMenuPayload(JSON.parse(legacyV1));
+      }
+      return null;
     }
     return normalizeMenuPayload(JSON.parse(raw));
   } catch {
@@ -178,10 +201,10 @@ function readLocalDraft(uid) {
   }
 }
 
-function writeLocalDraft(uid, draft) {
+function writeLocalDraft(uid, draft, lineId = 'paletas') {
   if (!uid) return;
   try {
-    localStorage.setItem(LOCAL_KEY(uid), JSON.stringify(draft));
+    localStorage.setItem(LOCAL_KEY(uid, lineId), JSON.stringify(draft));
   } catch {
     /* quota — try without heavy images */
     try {
@@ -191,7 +214,7 @@ function writeLocalDraft(uid, draft) {
         logoImage: '',
         items: draft.items.map((i) => ({ ...i, image: '' })),
       };
-      localStorage.setItem(LOCAL_KEY(uid), JSON.stringify(slim));
+      localStorage.setItem(LOCAL_KEY(uid, lineId), JSON.stringify(slim));
     } catch {
       /* ignore */
     }
@@ -210,27 +233,40 @@ export function publicMenuPreviewPath(slug) {
   return `/m.html?slug=${encodeURIComponent(s)}`;
 }
 
-export async function loadMenuDraft(uid) {
-  if (!uid) return emptyMenuDraft();
+export async function loadMenuDraft(uid, lineId = 'paletas') {
+  if (!uid) return emptyMenuDraft(lineId);
 
   if (canUseMenusCloud()) {
     try {
-      const snap = await getDoc(draftRef(uid));
+      const snap = await getDoc(draftRef(uid, lineId));
       if (snap.exists()) {
         const data = snap.data();
         const draft = normalizeMenuPayload({
           ...data,
           updatedAt: data.updatedAt?.toMillis?.() || data.updatedAt || 0,
         });
-        writeLocalDraft(uid, draft);
+        writeLocalDraft(uid, draft, lineId);
         return draft;
+      }
+
+      if (lineId === 'paletas') {
+        const legacySnap = await getDoc(legacyDraftRef(uid));
+        if (legacySnap.exists()) {
+          const data = legacySnap.data();
+          const draft = normalizeMenuPayload({
+            ...data,
+            updatedAt: data.updatedAt?.toMillis?.() || data.updatedAt || 0,
+          });
+          writeLocalDraft(uid, draft, lineId);
+          return draft;
+        }
       }
     } catch {
       /* fall through */
     }
   }
 
-  return readLocalDraft(uid) || emptyMenuDraft();
+  return readLocalDraft(uid, lineId) || emptyMenuDraft(lineId);
 }
 
 function draftDocFields(draft) {
@@ -250,19 +286,19 @@ function draftDocFields(draft) {
   };
 }
 
-export async function saveMenuDraft(uid, rawDraft) {
+export async function saveMenuDraft(uid, rawDraft, lineId = 'paletas') {
   const draft = normalizeMenuPayload({
     ...rawDraft,
     updatedAt: Date.now(),
   });
-  writeLocalDraft(uid, draft);
+  writeLocalDraft(uid, draft, lineId);
 
   if (!canUseMenusCloud() || !uid) {
     return { ok: true, draft, cloud: false };
   }
 
   try {
-    await setDoc(draftRef(uid), draftDocFields(draft), { merge: true });
+    await setDoc(draftRef(uid, lineId), draftDocFields(draft), { merge: true });
     return { ok: true, draft, cloud: true };
   } catch (err) {
     return { ok: false, draft, cloud: false, error: err };
@@ -286,7 +322,7 @@ function publicPayload(uid, draft) {
   };
 }
 
-export async function publishMenu(uid, rawDraft, { previousSlug = '' } = {}) {
+export async function publishMenu(uid, rawDraft, { previousSlug = '', lineId = 'paletas' } = {}) {
   const draft = normalizeMenuPayload(rawDraft);
 
   if (!draft.businessName) {
@@ -302,7 +338,7 @@ export async function publishMenu(uid, rawDraft, { previousSlug = '' } = {}) {
     return { ok: false, error: 'missing_items', draft };
   }
 
-  const saved = await saveMenuDraft(uid, draft);
+  const saved = await saveMenuDraft(uid, draft, lineId);
   if (!saved.ok && canUseMenusCloud()) {
     return { ok: false, error: 'save_failed', draft: saved.draft };
   }
@@ -358,9 +394,9 @@ export async function publishMenu(uid, rawDraft, { previousSlug = '' } = {}) {
   }
 }
 
-export async function unpublishMenu(uid, rawDraft) {
+export async function unpublishMenu(uid, rawDraft, lineId = 'paletas') {
   const draft = normalizeMenuPayload({ ...rawDraft, published: false });
-  const saved = await saveMenuDraft(uid, draft);
+  const saved = await saveMenuDraft(uid, draft, lineId);
 
   if (canUseMenusCloud() && draft.slug && isValidSlug(draft.slug)) {
     try {

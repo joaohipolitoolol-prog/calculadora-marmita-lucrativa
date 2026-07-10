@@ -30,6 +30,10 @@ import {
   kiwifyPremiumEmailHtml,
 } from '../kiwify/email-templates.js';
 import { DEV_ADMIN_ACCESS } from '../site/dev.js';
+import {
+  loadContentSettings,
+  saveContentSettings,
+} from '../lib/content-settings.js';
 import { confirmDialog, copyText, escapeHtml, showToast } from './helpers.js';
 import { productLabel, setAdminLang, t } from './i18n.js';
 import { renderShell } from './views.js';
@@ -159,6 +163,9 @@ async function refreshAll() {
   if (state.activeTab === 'codes') {
     state.codesCache = await listAccessCodes();
   }
+  if (state.activeTab === 'content') {
+    await loadContentSettings();
+  }
   if (
     state.activeTab === 'dashboard' ||
     state.activeTab === 'analytics' ||
@@ -225,6 +232,9 @@ function bindEvents() {
       if (state.activeTab === 'codes') {
         state.codesCache = await listAccessCodes();
       }
+      if (state.activeTab === 'content') {
+        await loadContentSettings();
+      }
       if (
         state.activeTab === 'dashboard' ||
         state.activeTab === 'analytics' ||
@@ -248,6 +258,23 @@ function bindEvents() {
     btn.addEventListener('click', () => {
       state.kiwifySubTab = btn.dataset.kiwifyTab;
       paint();
+    });
+  });
+
+  root.querySelectorAll('[data-content-flag]').forEach((input) => {
+    input.addEventListener('change', async () => {
+      const lineId = input.dataset.contentLine;
+      const flag = input.dataset.contentFlag;
+      const checked = input.checked;
+      const result = await saveContentSettings({
+        [lineId]: { [flag]: checked },
+      });
+      if (result.ok) {
+        showToast(t('content.saved'));
+        return;
+      }
+      input.checked = !checked;
+      showToast('No se pudo guardar');
     });
   });
 
@@ -597,6 +624,7 @@ watchAuth(async (user) => {
 
     state.currentAdminUser = user;
     await loadUsers();
+    await loadContentSettings();
     await loadAnalytics();
     paint();
   } catch (error) {

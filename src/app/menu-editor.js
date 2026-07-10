@@ -21,6 +21,7 @@ import { uploadMenuImage } from '../lib/menu-images.js';
 
 let draft = emptyMenuDraft();
 let loadedUid = null;
+let loadedLineId = 'paletas';
 let busy = false;
 let claimedSlug = '';
 /** @type {'menu' | 'settings' | 'item' | 'categories' | null} */
@@ -44,22 +45,28 @@ const ERROR_MESSAGES = {
   image_too_large: 'Imagen muy pesada. Prueba otra más liviana.',
 };
 
-export async function ensureMenuDraftLoaded(uid) {
+export async function ensureMenuDraftLoaded(uid, lineId = 'paletas') {
   if (!uid) {
-    draft = emptyMenuDraft();
+    draft = emptyMenuDraft(lineId);
     loadedUid = null;
+    loadedLineId = lineId;
     screen = 'menu';
     return draft;
   }
-  if (loadedUid === uid) return draft;
-  draft = await loadMenuDraft(uid);
+  if (loadedUid === uid && loadedLineId === lineId) return draft;
+  draft = await loadMenuDraft(uid, lineId);
   loadedUid = uid;
+  loadedLineId = lineId;
   claimedSlug = draft.slug || '';
   screen = 'menu';
   editingItemId = null;
   itemForm = null;
   filterCategoryId = 'all';
   return draft;
+}
+
+function menuLineId() {
+  return loadedLineId || 'paletas';
 }
 
 export function getMenuDraft() {
@@ -550,7 +557,7 @@ async function pickImage(input, { kind, itemId, maxSide, uid, onDone, showToast,
     const url = await uploadMenuImage(uid, file, { kind, itemId, maxSide });
     onDone(url);
     if (kind !== 'item') {
-      const saved = await saveMenuDraft(uid, draft);
+      const saved = await saveMenuDraft(uid, draft, menuLineId());
       draft = saved.draft;
     }
     showToast('Foto lista');
@@ -568,14 +575,14 @@ async function doPublish(uid, showToast, render, { unpublish = false } = {}) {
   render();
   try {
     if (unpublish) {
-      const result = await unpublishMenu(uid, { ...draft, published: false });
+      const result = await unpublishMenu(uid, { ...draft, published: false }, menuLineId());
       draft = result.draft;
       loadedUid = uid;
       showToast(canUseMenusCloud() ? 'Menú despublicado' : 'Guardado en este dispositivo');
       return;
     }
 
-    const result = await publishMenu(uid, { ...draft, published: true }, { previousSlug: claimedSlug });
+    const result = await publishMenu(uid, { ...draft, published: true }, { previousSlug: claimedSlug, lineId: menuLineId() });
     draft = result.draft;
     loadedUid = uid;
     if (!result.ok) {
@@ -636,7 +643,7 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
       if (screen === 'settings') {
         readSettingsFromDom(root);
         ensureAutoSlug();
-        await saveMenuDraft(uid, draft);
+        await saveMenuDraft(uid, draft, menuLineId());
       }
       if (screen === 'categories') {
         syncCategoryNamesFromDom(root);
@@ -644,7 +651,7 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
         if (!draft.categories.length) {
           draft.categories = [{ id: newCategoryId(), name: 'General' }];
         }
-        await saveMenuDraft(uid, draft);
+        await saveMenuDraft(uid, draft, menuLineId());
       }
       closeItemEditor();
       screen = 'menu';
@@ -655,7 +662,7 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
   root.querySelector('[data-save-settings]')?.addEventListener('click', async () => {
     readSettingsFromDom(root);
     ensureAutoSlug();
-    const saved = await saveMenuDraft(uid, draft);
+    const saved = await saveMenuDraft(uid, draft, menuLineId());
     draft = saved.draft;
     loadedUid = uid;
     screen = 'menu';
@@ -669,7 +676,7 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
     if (!draft.categories.length) {
       draft.categories = [{ id: newCategoryId(), name: 'General' }];
     }
-    const saved = await saveMenuDraft(uid, draft);
+    const saved = await saveMenuDraft(uid, draft, menuLineId());
     draft = saved.draft;
     loadedUid = uid;
     screen = 'menu';
@@ -699,7 +706,7 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
   root.querySelectorAll('[data-seed-demo]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       seedDemoProducts();
-      const saved = await saveMenuDraft(uid, draft);
+      const saved = await saveMenuDraft(uid, draft, menuLineId());
       draft = saved.draft;
       loadedUid = uid;
       showToast('Menú demo cargado');
@@ -827,7 +834,7 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
     } else {
       draft.items = [...draft.items, { ...itemForm, id: itemForm.id || newItemId() }];
     }
-    const saved = await saveMenuDraft(uid, draft);
+    const saved = await saveMenuDraft(uid, draft, menuLineId());
     draft = saved.draft;
     loadedUid = uid;
     closeItemEditor();
@@ -839,7 +846,7 @@ export function bindMenuWebEvents({ uid, root, showToast, render, locked }) {
     if (!editingItemId) return;
     if (!window.confirm('¿Eliminar este producto?')) return;
     draft.items = draft.items.filter((i) => i.id !== editingItemId);
-    const saved = await saveMenuDraft(uid, draft);
+    const saved = await saveMenuDraft(uid, draft, menuLineId());
     draft = saved.draft;
     loadedUid = uid;
     closeItemEditor();

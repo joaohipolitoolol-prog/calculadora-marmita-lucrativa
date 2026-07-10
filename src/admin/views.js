@@ -1,4 +1,6 @@
 import { PRODUCTS, isPendingStatus, profileStatus } from '../lib/products.js';
+import { getEnabledLines } from '../lib/product-lines.js';
+import { getContentSettings } from '../lib/content-settings.js';
 import { WHATSAPP_NUMBERS } from '../lib/whatsapp-numbers.js';
 import { ICONS } from './icons.js';
 import { escapeHtml, formatDate, formatDateTime, getUserInitial } from './helpers.js';
@@ -562,6 +564,50 @@ export function renderCodesView(codes) {
   `;
 }
 
+export function renderContentView() {
+  const settings = getContentSettings();
+  const lines = getEnabledLines().filter((line) => line.sellable);
+
+  return `
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <div>
+          <h2>${t('meta.content.title')}</h2>
+          <p class="admin-hint">${t('content.hint')}</p>
+        </div>
+      </div>
+      <div class="admin-card-body">
+        <div class="admin-content-grid">
+          ${lines
+            .map((line) => {
+              const flags = settings.lines[line.id] || {};
+              return `
+            <div class="admin-content-line-card">
+              <div class="admin-content-line-head">
+                <span class="admin-content-line-emoji" aria-hidden="true">${line.emoji}</span>
+                <div>
+                  <strong>${escapeHtml(t(`content.line.${line.id}`))}</strong>
+                  <p>${escapeHtml(line.kitName)}</p>
+                </div>
+              </div>
+              <label class="admin-toggle-row">
+                <span>${t('content.kitOpen')}</span>
+                <input type="checkbox" data-content-flag="kitOpen" data-content-line="${line.id}" ${flags.kitOpen !== false ? 'checked' : ''}>
+              </label>
+              <label class="admin-toggle-row">
+                <span>${t('content.premiumOpen')}</span>
+                <input type="checkbox" data-content-flag="premiumOpen" data-content-line="${line.id}" ${flags.premiumOpen !== false ? 'checked' : ''}>
+              </label>
+            </div>
+          `;
+            })
+            .join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export function renderChannelsView(kiwifySubTab, kiwifyContent, analytics) {
   const waClicks = Object.fromEntries((analytics?.whatsapp || []).map((w) => [w.key, w.today || 0]));
 
@@ -701,6 +747,9 @@ export function renderShell(props) {
       break;
     case 'codes':
       content = renderCodesView(codes);
+      break;
+    case 'content':
+      content = renderContentView();
       break;
     case 'channels':
       content = renderChannelsView(kiwifySubTab, kiwifyContent, analytics);
