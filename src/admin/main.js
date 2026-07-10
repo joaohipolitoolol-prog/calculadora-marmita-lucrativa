@@ -58,6 +58,7 @@ const state = {
   selectedUserIds: new Set(),
   detailUserId: null,
   sidebarOpen: false,
+  apiWarnings: [],
 };
 
 function getDetailUser() {
@@ -131,10 +132,24 @@ async function loadUsers() {
     setApiWarning('users', null);
   } catch (error) {
     console.warn('[admin] users API fallback:', error);
-    state.usersCache = (await listUsers()).map((u) => ({ ...u, missingProfile: false }));
+    const firestoreUsers = await listUsers();
+    state.usersCache = firestoreUsers.map((u) => ({
+      ...u,
+      id: u.id,
+      missingProfile: false,
+    }));
+    const message = String(error?.message || '');
+    const isLocalApi =
+      message.includes('Failed to fetch') ||
+      message.includes('NetworkError') ||
+      message.includes('CONNECTION_REFUSED');
     setApiWarning(
       'users',
-      isFirebaseAdminError(error?.message) ? 'firebaseAdmin' : error?.message || 'usersApi'
+      isFirebaseAdminError(message)
+        ? 'firebaseAdmin'
+        : isLocalApi
+          ? 'localApi'
+          : message || 'usersApi'
     );
   }
 }
@@ -645,6 +660,12 @@ watchAuth(async (user) => {
         displayName: user.displayName || '',
         ...ADMIN_PROFILE_GRANTS,
       });
+    }
+
+    const allowlist = await loadAdminAllowlist();
+    if (allowlist.length === 0 && user.email) {
+      await saveAdminEmails([user.email]);
+      await loadAdminAllowlist();
     }
 
     state.currentAdminUser = user;

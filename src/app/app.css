@@ -4600,6 +4600,24 @@ body.onboarding-open {
   text-align: center;
 }
 
+.admin-mode-banner {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  color: var(--brown-mid);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  display: grid;
+  gap: 4px;
+}
+
+.admin-mode-banner strong {
+  color: var(--brown);
+  font-size: 0.82rem;
+}
+
 .kit-locked-card {
   text-align: center;
   padding-top: 8px;

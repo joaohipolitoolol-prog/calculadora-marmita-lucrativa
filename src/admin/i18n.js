@@ -111,6 +111,12 @@ const STRINGS = {
     'dashboard.trafficSub': 'Visitas y eventos por página.',
     'dashboard.noTraffic': 'Sin datos de tráfico aún.',
     'dashboard.orphanWarn': 'Hay {n} usuario(s) en Auth sin perfil completo. Usa Sincronizar en Usuarios para corregirlo.',
+    'warn.firebaseAdmin':
+      'Firebase Admin no está configurado en el servidor (FIREBASE_SERVICE_ACCOUNT en Vercel). La lista puede estar incompleta y analytics no guarda.',
+    'warn.localApi':
+      'API local no disponible. Usa npm run dev (proxy a producción) o npm run dev:api con Vercel CLI para ver todos los usuarios.',
+    'warn.usersApi': 'No se pudo cargar la lista completa de usuarios desde el servidor.',
+    'warn.analyticsApi': 'No se pudieron cargar las métricas del servidor.',
     'dashboard.kpis': 'Hoy',
     'analytics.loading': 'Cargando métricas...',
     'analytics.landingPages': 'Páginas',
@@ -322,7 +328,11 @@ const STRINGS = {
     'dashboard.noTraffic': 'Sem dados de tráfego ainda.',
     'dashboard.orphanWarn': 'Há {n} usuário(s) no Auth sem perfil completo. Use Sincronizar em Usuários para corrigir.',
     'warn.firebaseAdmin':
-      'Firebase Admin não está configurado no servidor (FIREBASE_SERVICE_ACCOUNT na Vercel). Visitas não são salvas e a lista de usuários pode estar incompleta.',
+      'Firebase Admin não está configurado no servidor (FIREBASE_SERVICE_ACCOUNT na Vercel). A lista pode estar incompleta e analytics não salva.',
+    'warn.localApi':
+      'API local indisponível. Use npm run dev (proxy para produção) ou npm run dev:api com Vercel CLI para ver todos os usuários.',
+    'warn.usersApi': 'Não foi possível carregar a lista completa de usuários do servidor.',
+    'warn.analyticsApi': 'Não foi possível carregar as métricas do servidor.',
     'dashboard.kpis': 'Hoje',
     'analytics.loading': 'Carregando métricas...',
     'analytics.landingPages': 'Páginas',

@@ -739,6 +739,28 @@ export function renderSidebar(activeTab, users, user, sidebarOpen) {
   `;
 }
 
+function renderApiWarnings(apiWarnings = []) {
+  if (!apiWarnings?.length) return '';
+  const labels = {
+    firebaseAdmin: t('warn.firebaseAdmin'),
+    localApi: t('warn.localApi'),
+    usersApi: t('warn.usersApi'),
+    analyticsApi: t('warn.analyticsApi'),
+  };
+
+  const items = apiWarnings
+    .map((warning) => labels[warning.id] || warning.message || warning.id)
+    .filter(Boolean);
+
+  if (!items.length) return '';
+
+  return `
+    <div class="admin-api-warnings">
+      ${items.map((text) => `<p>${escapeHtml(text)}</p>`).join('')}
+    </div>
+  `;
+}
+
 export function renderShell(props) {
   const {
     activeTab,
@@ -754,6 +776,7 @@ export function renderShell(props) {
     user,
     sidebarOpen,
     lineFilter = 'all',
+    apiWarnings = [],
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -789,7 +812,10 @@ export function renderShell(props) {
           <button type="button" class="admin-menu-btn" id="admin-menu-toggle" aria-label="Menu">${ICONS.menu}</button>
           <div class="admin-header-titles"><h1>${meta.title}</h1><p>${meta.subtitle}</p></div>
         </header>
-        <main class="admin-content">${content}</main>
+        <main class="admin-content">
+          ${renderApiWarnings(apiWarnings)}
+          ${content}
+        </main>
       </div>
       ${renderUserDrawer(detailUser)}
     </div>

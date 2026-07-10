@@ -386,7 +386,7 @@ function writePremiumFlag(lineId, on) {
 
 function hasUserPremiumEntitlement() {
   if (userProfile) {
-    return Boolean(userProfile[lineBrand().premiumField] || userProfile.isAdmin);
+    return Boolean(userProfile[lineBrand().premiumField]);
   }
   return readPremiumFlag(lineBrand().id);
 }
@@ -394,23 +394,21 @@ function hasUserPremiumEntitlement() {
 function hasPremiumAccess() {
   if (DEV_UNLOCK_ALL_CONTENT) return true;
   if (!hasUserPremiumEntitlement()) return false;
-  if (userProfile?.isAdmin) return true;
   return isLinePremiumOpen(lineBrand().id, getContentSettings());
 }
 
 function hasKitContentAccess() {
   if (DEV_UNLOCK_ALL_CONTENT) return true;
   if (!ownsLine(lineBrand().id)) return false;
-  if (userProfile?.isAdmin) return true;
   return isLineKitOpen(lineBrand().id, getContentSettings());
 }
 
 function isKitPausedByAdmin() {
-  return ownsLine(lineBrand().id) && !isLineKitOpen(lineBrand().id, getContentSettings()) && !userProfile?.isAdmin;
+  return ownsLine(lineBrand().id) && !isLineKitOpen(lineBrand().id, getContentSettings());
 }
 
 function isPremiumPausedByAdmin() {
-  return hasUserPremiumEntitlement() && !isLinePremiumOpen(lineBrand().id, getContentSettings()) && !userProfile?.isAdmin;
+  return hasUserPremiumEntitlement() && !isLinePremiumOpen(lineBrand().id, getContentSettings());
 }
 
 const SIMULATION_VOLUMES = [10, 20, 30];
@@ -714,6 +712,16 @@ function maybeWelcome() {
     showToast('Demo activa — tus datos quedan en este celular.');
     sessionStorage.removeItem('paletas_demo_welcome');
   }
+}
+
+function renderAdminModeBanner() {
+  if (!userIsAdmin) return '';
+  return `
+    <div class="admin-mode-banner" role="status">
+      <strong>Modo admin</strong>
+      <span>Los bloqueos de Contenido en /admin también aplican aquí. Usa otra cuenta para probar como cliente.</span>
+    </div>
+  `;
 }
 
 function renderKitPendingBanner() {
@@ -1801,6 +1809,7 @@ function render() {
       </header>
 
       <main class="app-content${activeView === 'document' ? ' app-content-doc' : ''}">
+        ${renderAdminModeBanner()}
         ${renderActiveView()}
       </main>
 

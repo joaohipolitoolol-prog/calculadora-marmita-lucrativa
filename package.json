@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "vercel dev --listen 3000",
     "build": "node scripts/generate-icons.mjs && vite build",
     "sync:paletas": "node scripts/sync-paletas-deliverables.mjs",
     "icons": "node scripts/generate-icons.mjs",

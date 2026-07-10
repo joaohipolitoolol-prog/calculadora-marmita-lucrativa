@@ -28,6 +28,15 @@ function devHtmlRewrites() {
 
 export default defineConfig({
   plugins: [devHtmlRewrites()],
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.VITE_DEV_API_URL || 'https://paletasparawhatsapp.vercel.app',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
   build: {
     rollupOptions: {
       input: {

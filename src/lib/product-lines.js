@@ -155,7 +155,6 @@ export function readRememberedLineId() {
 
 export function profileOwnsLine(profile, line) {
   if (!profile || !line) return false;
-  if (profile.isAdmin) return true;
   return Boolean(profile[line.mainField] || profile[line.premiumField]);
 }
 
