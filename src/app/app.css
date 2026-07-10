@@ -3089,7 +3089,17 @@ body.onboarding-open {
   text-align: center;
 }
 
-.files-support .btn { width: 100%; margin-top: 8px; }
+.files-support.support-card-compact .btn {
+  width: auto;
+  margin-top: 8px;
+}
+
+.files-support .section-text {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  margin: 0 0 6px;
+  color: var(--gray);
+}
 
 /* ── Home ── */
 .home-page {
@@ -3995,6 +4005,33 @@ body.onboarding-open {
   background: var(--surface);
   box-shadow: var(--shadow-sm);
   border: none;
+}
+
+.kit-premium-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: -4px 0 14px;
+  padding: 0 2px;
+}
+
+.kit-premium-nav-btn {
+  border: 1px solid var(--gray-border);
+  background: var(--surface);
+  color: var(--brown-mid);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.kit-premium-nav-btn.active {
+  color: var(--pink);
+  border-color: rgba(255, 79, 139, 0.35);
+  background: #fff7fb;
 }
 
 .kit-content .section-card + .section-card {

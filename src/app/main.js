@@ -138,7 +138,6 @@ import {
   renderGuiaPresentacion,
   renderKitExtras,
   renderMensajesList,
-  renderPremiumLocked,
 } from './kit-sections.js';
 import { canUseMenusCloud } from '../lib/menus.js';
 
@@ -154,6 +153,23 @@ let scenarios = [];
 let activeView = 'home';
 let kitHubTab = 'recetas';
 let kitSection = 'mensajes';
+let premiumSubSection = 'combos';
+const PREMIUM_SUB_SECTIONS = [
+  { id: 'combos', label: 'Combos' },
+  { id: 'menu-premium', label: 'Menú' },
+  { id: 'mensajes-premium', label: 'Mensajes' },
+  { id: 'fechas', label: 'Fechas' },
+  { id: 'guia', label: 'Guía' },
+];
+
+function setKitSection(id) {
+  if (id === 'premium' || PREMIUM_SUB_SECTIONS.some((s) => s.id === id)) {
+    kitSection = 'premium';
+    premiumSubSection = id === 'premium' ? premiumSubSection || 'combos' : id;
+    return;
+  }
+  kitSection = id;
+}
 let menuWaDraft = null;
 let menuPremiumDraft = null;
 let activeDocId = null;
@@ -1403,67 +1419,47 @@ function openDocument(id) {
         break;
       case 'menu':
         kitHubTab = 'vender';
-        kitSection = 'menu';
+        setKitSection('menu');
         activeView = 'kit';
         activeDocId = null;
         break;
       case 'mensajes':
         kitHubTab = 'vender';
-        kitSection = 'mensajes';
+        setKitSection('mensajes');
         activeView = 'kit';
         activeDocId = null;
         break;
       case 'plan':
         kitHubTab = 'vender';
-        kitSection = 'plan';
+        setKitSection('plan');
         activeView = 'kit';
         activeDocId = null;
         break;
       case 'checklist':
         kitHubTab = 'vender';
-        kitSection = 'checklist';
+        setKitSection('checklist');
         activeView = 'kit';
         activeDocId = null;
         break;
       case 'lista':
         kitHubTab = 'vender';
-        kitSection = 'lista';
+        setKitSection('lista');
         activeView = 'kit';
         activeDocId = null;
         break;
       case 'combos':
-        kitHubTab = 'vender';
-        kitSection = 'combos';
-        activeView = 'kit';
-        activeDocId = null;
-        break;
       case 'menu-premium':
-        kitHubTab = 'vender';
-        kitSection = 'menu-premium';
-        activeView = 'kit';
-        activeDocId = null;
-        break;
       case 'mensajes-premium':
-        kitHubTab = 'vender';
-        kitSection = 'mensajes-premium';
-        activeView = 'kit';
-        activeDocId = null;
-        break;
       case 'fechas':
-        kitHubTab = 'vender';
-        kitSection = 'fechas';
-        activeView = 'kit';
-        activeDocId = null;
-        break;
       case 'guia':
         kitHubTab = 'vender';
-        kitSection = 'guia';
+        setKitSection(doc.native);
         activeView = 'kit';
         activeDocId = null;
         break;
       case 'tecnicas':
         kitHubTab = 'vender';
-        kitSection = 'tecnicas';
+        setKitSection('tecnicas');
         activeView = 'kit';
         activeDocId = null;
         break;
@@ -1671,9 +1667,9 @@ function renderFiles() {
       `
       }
       ${renderCrossSellOffer()}
-      <div class="section-card files-support">
+      <div class="section-card files-support support-card-compact">
         <p class="section-text">¿Dudas con tu acceso?</p>
-        <a href="${lineWhatsApp('support').href}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">WhatsApp · ${lineWhatsApp('support').display}</a>
+        <a href="${lineWhatsApp('support').href}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support" title="Soporte por WhatsApp" aria-label="Soporte por WhatsApp">${ICONS.whatsapp}<span>Soporte</span></a>
       </div>
     </div>
   `;
@@ -2447,15 +2443,11 @@ function renderKitSectionNav() {
   const sections = [
     { id: 'menu', label: 'Menú' },
     { id: 'mensajes', label: 'Mensajes' },
-    { id: 'combos', label: 'Combos', premium: true },
-    { id: 'menu-premium', label: 'Menú ✨', premium: true },
-    { id: 'mensajes-premium', label: 'Msgs ✨', premium: true },
-    { id: 'fechas', label: 'Fechas', premium: true },
-    { id: 'guia', label: 'Guía', premium: true },
     { id: 'plan', label: 'Plan' },
     { id: 'lista', label: 'Compras' },
     { id: 'checklist', label: 'Checklist' },
     ...(lineId === 'paletas' ? [{ id: 'tecnicas', label: 'Tips' }] : []),
+    { id: 'premium', label: 'Premium', premium: true },
     { id: 'ayuda', label: 'Ayuda' },
   ];
 
@@ -2471,20 +2463,51 @@ function renderKitSectionNav() {
         )
         .join('')}
     </div>
+    ${kitSection === 'premium' && hasPremiumAccess() ? renderPremiumSubNav() : ''}
   `;
 }
 
-function renderCombosPremium() {
+function renderPremiumSubNav() {
+  return `
+    <div class="kit-premium-nav" role="tablist" aria-label="Complemento premium">
+      ${PREMIUM_SUB_SECTIONS.map(
+        (s) => `
+          <button type="button" class="kit-premium-nav-btn ${premiumSubSection === s.id ? 'active' : ''}" data-premium-sub="${s.id}" role="tab" aria-selected="${premiumSubSection === s.id}">
+            ${escapeHtml(s.label)}
+          </button>
+        `
+      ).join('')}
+    </div>
+  `;
+}
+
+function renderPremiumHub() {
   if (!hasPremiumAccess()) {
     return `
       <div class="section-card">
-        <h2>10 Combos Rentables</h2>
-        <p class="section-text">Ideas con precio guía, público objetivo y mensaje listo para WhatsApp — incluidos en el complemento premium.</p>
+        <h2>Complemento premium</h2>
+        <p class="section-text">Combos rentables, menú editable, mensajes para fechas especiales y guía de presentación.</p>
         <div class="premium-locked-card">${renderPremiumUpsell()}</div>
       </div>
     `;
   }
 
+  switch (premiumSubSection) {
+    case 'menu-premium':
+      return renderMenuPremium();
+    case 'mensajes-premium':
+      return renderMensajesPremium();
+    case 'fechas':
+      return renderFechasPremium();
+    case 'guia':
+      return renderGuiaPremium();
+    case 'combos':
+    default:
+      return renderCombosPremium();
+  }
+}
+
+function renderCombosPremium() {
   return `
     <div class="combos-page">
       <div class="section-card">
@@ -2537,9 +2560,6 @@ function renderMensajesWhatsApp() {
 }
 
 function renderMensajesPremium() {
-  if (!hasPremiumAccess()) {
-    return renderPremiumLocked('Mensajes premium', renderPremiumUpsell());
-  }
   return `<div data-mensajes-source="premium">${renderMensajesList(kitContentForLine().mensajesPremium, {
     exportHref: premiumExportHref('mensajes-premium'),
     formatMessage: formatWhatsAppMessage,
@@ -2547,9 +2567,6 @@ function renderMensajesPremium() {
 }
 
 function renderMenuPremium() {
-  if (!hasPremiumAccess()) {
-    return renderPremiumLocked('Menú premium', renderPremiumUpsell());
-  }
   const brand = lineBrand();
   const kit = kitContentForLine();
   const lineId = brand.id;
@@ -2567,18 +2584,12 @@ function renderMenuPremium() {
 }
 
 function renderFechasPremium() {
-  if (!hasPremiumAccess()) {
-    return renderPremiumLocked('Fechas especiales', renderPremiumUpsell());
-  }
   return renderFechasEspeciales(kitContentForLine().fechasPremium, {
     exportHref: premiumExportHref('fechas'),
   });
 }
 
 function renderGuiaPremium() {
-  if (!hasPremiumAccess()) {
-    return renderPremiumLocked('Guía de presentación', renderPremiumUpsell());
-  }
   return renderGuiaPresentacion(kitContentForLine().guiaPremium, {
     exportHref: premiumExportHref('guia'),
   });
@@ -2795,11 +2806,7 @@ function renderKitContent() {
   const lockedTitles = {
     menu: 'Menú para WhatsApp',
     mensajes: 'Mensajes para WhatsApp',
-    combos: 'Combos rentables',
-    'menu-premium': 'Menú premium',
-    'mensajes-premium': 'Mensajes premium',
-    fechas: 'Fechas especiales',
-    guia: 'Guía de presentación',
+    premium: 'Complemento premium',
     tecnicas: 'Técnicas y tips',
     plan: 'Plan de 7 días',
     lista: 'Lista de compras',
@@ -2818,16 +2825,8 @@ function renderKitContent() {
       return renderMenuWhatsApp();
     case 'mensajes':
       return renderMensajesWhatsApp();
-    case 'combos':
-      return renderCombosPremium();
-    case 'menu-premium':
-      return renderMenuPremium();
-    case 'mensajes-premium':
-      return renderMensajesPremium();
-    case 'fechas':
-      return renderFechasPremium();
-    case 'guia':
-      return renderGuiaPremium();
+    case 'premium':
+      return renderPremiumHub();
     case 'tecnicas':
       return renderTecnicasKit();
     case 'plan':
@@ -2845,7 +2844,7 @@ function renderAccount() {
   return `
     <div class="kit-page">
       ${renderKitSectionNav()}
-      <div class="kit-content">${renderKitContent()}${renderPremiumUpsell()}</div>
+      <div class="kit-content">${renderKitContent()}${kitSection === 'premium' ? '' : renderPremiumUpsell()}</div>
     </div>
   `;
 }
@@ -2984,7 +2983,7 @@ function bindEvents() {
     locked: !hasKitContentAccess(),
   });
 
-  if (kitSection === 'menu-premium' && hasPremiumAccess()) {
+  if (kitSection === 'premium' && premiumSubSection === 'menu-premium' && hasPremiumAccess()) {
     const kit = kitContentForLine();
     bindMenuPremiumEvents({
       root,
@@ -3331,7 +3330,14 @@ function bindEvents() {
 
   root.querySelectorAll('[data-kit-section]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      kitSection = btn.dataset.kitSection;
+      setKitSection(btn.dataset.kitSection);
+      render();
+    });
+  });
+
+  root.querySelectorAll('[data-premium-sub]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      premiumSubSection = btn.dataset.premiumSub;
       render();
     });
   });
