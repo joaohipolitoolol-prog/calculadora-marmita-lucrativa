@@ -15,7 +15,7 @@ const POSTRES = {
   registerDesc:
     'Crea tu cuenta y accede a recetas, calculadora y mensajes para vender postres en vaso por WhatsApp.',
   loginDesc: 'Entra con el correo de tu compra para ver recetas, precios y mensajes de postres en vaso.',
-  footerPrice: 'US$5,97',
+  footerPrice: 'US$6,97',
   footerLp: '/postres',
   logoHref: '/postres',
   loginHref: '/postres/login',
@@ -91,7 +91,7 @@ function buildPostresAuthPage(sourceName, outName, kind) {
   }
 
   html = html.replace(
-    /<p>¿Aún no compraste\? <a href="[^"]*">Ver kit · US\$ 5,97<\/a><\/p>/,
+    /<p>¿Aún no compraste\? <a href="[^"]*">Ver kit · US\$ [0-9]+,[0-9]{2}<\/a><\/p>/,
     `<p>¿Aún no compraste? <a href="${line.footerLp}">Ver kit Postres · ${line.footerPrice}</a></p>`
   );
 

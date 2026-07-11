@@ -66,7 +66,7 @@ export const PRODUCT_LINES = [
     landingPath: '/donuts',
     upsellPath: '/donuts/upsell',
     checkoutUrl: '#',
-    priceLabel: 'US$5,97',
+    priceLabel: 'US$6,97',
     mainField: 'hasDonuts',
     premiumField: 'hasDonutsPremium',
     queryKey: 'donuts',
