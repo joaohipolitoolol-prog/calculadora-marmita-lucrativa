@@ -1,32 +1,24 @@
 import { BRAND_KIT } from '../site/brand.js';
 import {
-  CALC_CTA_LABEL,
   CHECKOUT_URL,
-  CTA_LABEL,
   HERO_CTA_LABEL,
   MAIN_PRICE,
   MAIN_PRICE_LABEL,
   OFFER_CTA_LABEL,
   PRICE_ACCESS_LABEL,
   STICKY_CTA_LABEL,
-  TRUST_CTA_LABEL,
   WHATSAPP_NUMBER_ID,
 } from './config.js';
 import { initDemo } from './demo.js';
+import {
+  bindHardCheckoutLinks,
+  bindOfferSticky,
+  bindScrollToOffer,
+} from '../lib/landing-checkout.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'paletas' });
 bindTrackClicks({ page: 'home', line: 'paletas', numberId: WHATSAPP_NUMBER_ID });
-
-function trackInitiateCheckout() {
-  if (typeof window.fbq === 'function') {
-    window.fbq('track', 'InitiateCheckout', {
-      value: MAIN_PRICE,
-      currency: 'USD',
-      content_name: BRAND_KIT,
-    });
-  }
-}
 
 document.querySelectorAll('[data-price]').forEach((el) => {
   el.textContent = MAIN_PRICE_LABEL;
@@ -44,45 +36,27 @@ if (logo) {
   });
 }
 
-document.querySelectorAll('[data-checkout]').forEach((link) => {
-  if (!CHECKOUT_URL || CHECKOUT_URL.includes('SEU-LINK')) {
-    link.setAttribute('aria-disabled', 'true');
-    link.addEventListener('click', (e) => e.preventDefault());
-    return;
-  }
-  link.href = CHECKOUT_URL;
-  if (link.dataset.checkoutHero !== undefined) {
+bindScrollToOffer();
+document.querySelectorAll('[data-scroll-offer]').forEach((link) => {
+  if (link.dataset.ctaHero !== undefined || link.dataset.checkoutHero !== undefined) {
     link.textContent = HERO_CTA_LABEL;
-  } else if (link.dataset.checkoutOffer !== undefined) {
-    link.textContent = OFFER_CTA_LABEL;
-  } else if (link.dataset.checkoutCalc !== undefined) {
-    link.textContent = CALC_CTA_LABEL;
-  } else if (link.dataset.checkoutTrust !== undefined) {
-    link.textContent = TRUST_CTA_LABEL;
-  } else if (link.dataset.checkoutSticky !== undefined) {
-    link.textContent = STICKY_CTA_LABEL;
-  } else if (link.dataset.checkoutCustom === undefined) {
-    link.textContent = CTA_LABEL;
   }
-  link.setAttribute('rel', 'noopener');
-  link.dataset.checkout = link.dataset.checkout || 'kit';
-  if (!link.dataset.track) link.dataset.track = 'checkout_kit';
-  link.addEventListener('click', () => {
-    trackInitiateCheckout();
-  });
 });
 
-const sticky = document.getElementById('purchase-sticky');
-if (sticky) {
-  const showAfter = 420;
-  const onScroll = () => {
-    const visible = window.scrollY > showAfter;
-    sticky.classList.toggle('visible', visible);
-    sticky.setAttribute('aria-hidden', visible ? 'false' : 'true');
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-}
+bindHardCheckoutLinks({
+  checkoutUrl: CHECKOUT_URL,
+  price: MAIN_PRICE,
+  contentName: BRAND_KIT,
+  contentIds: ['paletas_kit'],
+  page: 'home',
+  line: 'paletas',
+  labels: {
+    offer: OFFER_CTA_LABEL,
+    sticky: STICKY_CTA_LABEL,
+  },
+});
+
+bindOfferSticky(document.getElementById('purchase-sticky'));
 
 try {
   initDemo();

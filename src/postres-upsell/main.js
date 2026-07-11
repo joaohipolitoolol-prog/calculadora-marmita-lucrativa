@@ -16,15 +16,26 @@ import {
   UPSELL_TIMER_MS,
   UPSELL_TIMER_STORAGE_KEY,
 } from './config.js';
+import { MAIN_PRICE, PRODUCT_NAME } from '../postres/config.js';
+import { fireThankYouPurchase } from '../lib/landing-checkout.js';
+import { markCheckoutPending } from '../lib/meta-pixel.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'postres' });
 bindTrackClicks({ page: 'upsell-postres', line: 'postres' });
 
+fireThankYouPurchase({
+  line: 'postres',
+  value: MAIN_PRICE,
+  contentName: PRODUCT_NAME,
+  contentIds: ['postres_kit'],
+});
+
 const isPlaceholder = (url) =>
   !url || url.includes('COLOCAR_LINK') || url === '#';
 
 function trackInitiateCheckout(value, contentName) {
+  markCheckoutPending('postres');
   if (typeof window.fbq === 'function') {
     window.fbq('track', 'InitiateCheckout', {
       value,

@@ -55,6 +55,9 @@ export function authRegisterPath(lineId = 'paletas', query = {}) {
   if (lineId === 'paletas' && params.get('compra') === '1' && !params.has('paletas')) {
     params.set('paletas', '1');
   }
+  if (params.get('compra') === '1' && !params.has('src')) {
+    params.set('src', 'hotmart');
+  }
   const qs = params.toString();
   return qs ? `${brand.registerPath}?${qs}` : brand.registerPath;
 }

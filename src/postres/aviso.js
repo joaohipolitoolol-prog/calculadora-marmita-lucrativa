@@ -1,8 +1,17 @@
 import { ACCESS_URL, UPSELL_URL, WHATSAPP_NUMBER_ID, WHATSAPP_URL } from './aviso-config.js';
+import { MAIN_PRICE, PRODUCT_NAME } from './config.js';
+import { fireThankYouPurchase } from '../lib/landing-checkout.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'postres' });
 bindTrackClicks({ page: 'aviso-postres', line: 'postres', numberId: WHATSAPP_NUMBER_ID });
+
+fireThankYouPurchase({
+  line: 'postres',
+  value: MAIN_PRICE,
+  contentName: PRODUCT_NAME,
+  contentIds: ['postres_kit'],
+});
 
 const accessBtn = document.getElementById('aviso-access');
 if (accessBtn && ACCESS_URL) {

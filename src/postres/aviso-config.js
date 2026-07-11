@@ -6,7 +6,7 @@ import { authLoginPath, authRegisterPath } from '../login/auth-lines.js';
 export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
 
 /** Preferir upsell; aviso fica como fallback / suporte */
-export const ACCESS_URL = authRegisterPath('postres', { compra: '1' });
+export const ACCESS_URL = authRegisterPath('postres', { compra: '1', src: 'hotmart' });
 export const UPSELL_URL = '/postres/upsell';
 export const LOGIN_URL = authLoginPath('postres');
 

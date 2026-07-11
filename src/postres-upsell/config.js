@@ -8,10 +8,11 @@ export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/Y106683338S?off=dq94
 /** Downsell Mini Pack US$7 — actualiza el link de Hotmart si cambias el precio. */
 export const DOWNSELL_CHECKOUT_URL = 'https://pay.hotmart.com/Y106683338S?off=0dwxzf2m';
 
-export const ACCESS_URL = authRegisterPath('postres', { compra: '1' });
+export const ACCESS_URL = authRegisterPath('postres', { compra: '1', src: 'hotmart' });
 export const UPSELL_POST_PURCHASE_URL = authRegisterPath('postres', {
   compra: '1',
   postres_premium: '1',
+  src: 'hotmart',
 });
 
 export const UPSELL_PRICE_USD = 9.97;

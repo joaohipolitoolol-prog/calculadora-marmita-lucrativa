@@ -1,4 +1,5 @@
 import { isFirebaseConfigured } from '../lib/firebase.js';
+import { purchaseFlagsFromSearch } from '../lib/purchase-flags.js';
 import {
   resolveLineFromSearch,
   resolveLineFromPathname,
@@ -102,7 +103,8 @@ export function applyAuthBrand(line = getAuthProductLine()) {
   if (cardIcon) cardIcon.textContent = brand.emoji;
 
   const sub = document.querySelector('.auth-sub');
-  if (sub && !window.location.search.includes('compra=1')) {
+  const trustedPurchase = Boolean(purchaseFlagsFromSearch(window.location.search));
+  if (sub && !trustedPurchase) {
     sub.textContent = isRegister ? brand.registerSub : brand.loginSub;
   }
 
@@ -110,7 +112,8 @@ export function applyAuthBrand(line = getAuthProductLine()) {
   if (hint && isRegister) hint.textContent = brand.kitHint;
 
   const purchaseBanner = document.getElementById('purchase-banner');
-  if (purchaseBanner && window.location.search.includes('compra=1')) {
+  if (purchaseBanner && trustedPurchase) {
+    purchaseBanner.hidden = false;
     purchaseBanner.textContent = `✓ ${brand.purchaseBanner}`;
   }
 

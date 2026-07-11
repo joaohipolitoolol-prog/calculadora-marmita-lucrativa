@@ -4,90 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>Tu Kit Postres en Vaso</title>
+<title>Acceso al kit | Postres en Vaso</title>
+<link rel="icon" href="/favicon.svg?v=5" type="image/svg+xml">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root { --rosa: #EC3F7A; --crema: #FFF4E6; --chocolate: #5C2E1F; --menta: #CFF7E2; }
+:root { --rosa: #EC3F7A; --crema: #FFF4E6; --chocolate: #5C2E1F; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Nunito', system-ui, sans-serif; background: linear-gradient(160deg, var(--crema), #FFE8F0 50%, var(--menta)); min-height: 100vh; color: var(--chocolate); }
-.container { max-width: 720px; margin: 0 auto; padding: 32px 20px; }
-header { text-align: center; margin-bottom: 32px; }
-header .icon { font-size: 56px; }
-header h1 { font-size: 28px; font-weight: 800; margin: 12px 0 8px; }
-header p { color: #6B5E57; font-size: 15px; }
-.badge { display: inline-block; background: var(--rosa); color: white; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 14px; border-radius: 50px; margin-bottom: 16px; }
-.card { background: white; border-radius: 18px; padding: 20px 24px; margin-bottom: 14px; box-shadow: 0 4px 20px rgba(92,46,31,0.08); display: flex; align-items: center; gap: 16px; text-decoration: none; color: inherit; transition: transform 0.15s; }
-.card:hover { transform: translateY(-2px); }
-.card-icon { font-size: 32px; flex-shrink: 0; }
-.card-info h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-.card-info p { font-size: 12px; color: #6B5E57; }
-.card-arrow { margin-left: auto; color: var(--rosa); font-weight: 800; font-size: 18px; }
-.section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6B5E57; margin: 24px 0 12px; }
-.steps { background: white; border-radius: 18px; padding: 20px 24px; box-shadow: 0 4px 20px rgba(92,46,31,0.08); margin-bottom: 20px; }
-.steps ol { margin-left: 20px; }
-.steps li { margin-bottom: 8px; font-size: 14px; }
-.app-link { display: block; text-align: center; margin: 20px 0; }
-.app-link a { color: var(--rosa); font-weight: 800; text-decoration: none; }
-footer { text-align: center; margin-top: 32px; font-size: 12px; color: #6B5E57; }
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: linear-gradient(160deg, var(--crema), #FFE8F0 55%);
+  min-height: 100vh;
+  color: var(--chocolate);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.box {
+  max-width: 420px;
+  text-align: center;
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: 0 8px 28px rgba(92,46,31,0.08);
+}
+h1 { font-size: 22px; font-weight: 800; margin-bottom: 10px; }
+p { font-size: 15px; color: #6B5E57; line-height: 1.5; margin-bottom: 20px; }
+a.btn {
+  display: inline-block;
+  background: var(--rosa);
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+  padding: 14px 24px;
+  border-radius: 999px;
+}
+a.secondary { display: block; margin-top: 14px; color: var(--rosa); font-weight: 700; font-size: 14px; }
 </style>
+<script>
+(function () {
+  var pending = false;
+  try { pending = !!sessionStorage.getItem('pending_purchase_postres'); } catch (e) {}
+  if (pending) {
+    location.replace('/postres/cadastrar?compra=1&src=hotmart&line=postres&postres=1');
+  }
+})();
+</script>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div class="badge">Acceso confirmado</div>
-    <div class="icon">🍨</div>
-    <h1>¡Tu kit está listo!</h1>
-    <p>Postres en Vaso — Recetas, precios y mensajes para empezar desde casa.</p>
-  </header>
-
-  <div class="steps">
-    <ol>
-      <li><strong>App web</strong> — recetas y calculadora en el celular</li>
-      <li><strong>Menú para WhatsApp</strong> — copia tu carta en Kit → Vender</li>
-      <li><strong>Plan de 7 días</strong> — un paso por día</li>
-      <li><strong>Lista de compras</strong> — marca lo que necesitas</li>
-    </ol>
+  <div class="box">
+    <h1>Entra a tu kit</h1>
+    <p>El contenido completo está en el área de miembros. Inicia sesión o crea tu cuenta con el correo de la compra.</p>
+    <a class="btn" href="/postres/login">Iniciar sesión</a>
+    <a class="secondary" href="/postres/cadastrar?line=postres">Crear cuenta</a>
   </div>
-
-  <p class="app-link"><a href="/app?line=postres">Abrir la app →</a></p>
-
-  <div class="section-title">Archivos del kit</div>
-
-  <a class="card" href="produto/Kit_Postres_en_Vaso.html" target="_blank">
-    <div class="card-icon">📘</div>
-    <div class="card-info"><h3>Kit Principal</h3><p>30 recetas — imprimir / PDF</p></div>
-    <span class="card-arrow">→</span>
-  </a>
-  <a class="card" href="produto/Menu_Editable_Postres.html" target="_blank">
-    <div class="card-icon">📋</div>
-    <div class="card-info"><h3>Menú editable</h3><p>Copia en WhatsApp</p></div>
-    <span class="card-arrow">→</span>
-  </a>
-  <a class="card" href="produto/Mensajes_Postres.html" target="_blank">
-    <div class="card-icon">💬</div>
-    <div class="card-info"><h3>Mensajes WhatsApp</h3><p>Textos listos</p></div>
-    <span class="card-arrow">→</span>
-  </a>
-  <a class="card" href="produto/Plan_7_Dias_Postres.html" target="_blank">
-    <div class="card-icon">📅</div>
-    <div class="card-info"><h3>Plan de 7 días</h3><p>Paso a paso</p></div>
-    <span class="card-arrow">→</span>
-  </a>
-  <a class="card" href="produto/Lista_Compras_Postres.html" target="_blank">
-    <div class="card-icon">🛒</div>
-    <div class="card-info"><h3>Lista de compras</h3><p>Ingredientes y materiales</p></div>
-    <span class="card-arrow">→</span>
-  </a>
-  <a class="card" href="produto/Checklist_Postres.html" target="_blank">
-    <div class="card-icon">✅</div>
-    <div class="card-info"><h3>Checklist</h3><p>Antes de vender</p></div>
-    <span class="card-arrow">→</span>
-  </a>
-
-  <footer>
-    <p>Prepara. Calcula. Publica. 🍨</p>
-    <p style="margin-top:8px">¿Dudas? Escríbenos por WhatsApp con tu correo de compra.</p>
-  </footer>
-</div>
 </body>
 </html>

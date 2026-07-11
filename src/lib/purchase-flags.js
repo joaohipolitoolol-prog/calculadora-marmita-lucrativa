@@ -1,13 +1,30 @@
 /**
  * Flags de produto a partir da URL de cadastro / pós-compra.
  *
+ * Grants só com fonte confiável (`src=hotmart|email|admin|kiwify`)
+ * ou checkout recente no mesmo browser (`pending_purchase_*`).
+ *
  * Exemplos:
- *   ?compra=1                         → Paletas kit
- *   ?compra=1&premium=1               → Paletas kit + premium
- *   ?compra=1&postres=1               → Postres kit
- *   ?compra=1&postres=1&postres_premium=1 → Postres kit + premium
- *   ?compra=1&postres=1&paletas=1     → ambos os kits (cross-sell)
+ *   ?compra=1&src=hotmart              → Paletas kit
+ *   ?compra=1&premium=1&src=hotmart    → Paletas kit + premium
+ *   ?compra=1&postres=1&src=email      → Postres kit
+ *   ?compra=1&postres=1&postres_premium=1&src=hotmart
+ *   ?compra=1&postres=1&paletas=1&src=hotmart → ambos
  */
+
+import { hasCheckoutPending } from './meta-pixel.js';
+
+const TRUSTED_SRC = new Set(['hotmart', 'email', 'admin', 'kiwify']);
+
+export function isTrustedPurchaseSource(search = typeof window !== 'undefined' ? window.location.search : '') {
+  const params = new URLSearchParams(search);
+  const src = (params.get('src') || '').toLowerCase();
+  if (TRUSTED_SRC.has(src)) return true;
+
+  const line = params.get('line') === 'postres' ? 'postres' : 'paletas';
+  if (typeof window === 'undefined') return false;
+  return hasCheckoutPending(line) || hasCheckoutPending('paletas') || hasCheckoutPending('postres');
+}
 
 export function purchaseFlagsFromSearch(search = typeof window !== 'undefined' ? window.location.search : '') {
   const params = new URLSearchParams(search);
@@ -20,6 +37,7 @@ export function purchaseFlagsFromSearch(search = typeof window !== 'undefined' ?
 
   const hasExplicit = compra || premium || postres || postresPremium || paletas;
   if (!hasExplicit) return null;
+  if (!isTrustedPurchaseSource(search)) return null;
 
   const hasPostres = postres || postresPremium || (compra && line === 'postres');
   const hasPostresPremium = postresPremium;
@@ -69,5 +87,8 @@ export function appendPurchaseQuery(path, flags = {}) {
   if (flags.hasPostres || flags.postres) url.searchParams.set('postres', '1');
   if (flags.hasPostresPremium || flags.postresPremium) url.searchParams.set('postres_premium', '1');
   if (flags.hasKit || flags.paletas) url.searchParams.set('paletas', '1');
+  if (flags.compra || flags.hasPremium || flags.premium || flags.hasPostres || flags.postres || flags.hasKit || flags.paletas) {
+    url.searchParams.set('src', flags.src || 'hotmart');
+  }
   return `${url.pathname}${url.search}`;
 }

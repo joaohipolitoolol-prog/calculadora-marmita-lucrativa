@@ -9,10 +9,10 @@ import { BRAND_KIT, BRAND_NAME } from '../site/brand.js';
 
 /** URLs para colar na Kiwify — página de obrigado e emails */
 export const KIWIFY_URLS = {
-  accessShort: `${SITE_URL}${REGISTER_PATH}?compra=1`,
-  accessPremiumShort: `${SITE_URL}${REGISTER_PATH}?compra=1&premium=1`,
-  loginKit: `${SITE_URL}${REGISTER_PATH}?compra=1`,
-  loginPremium: `${SITE_URL}${REGISTER_PATH}?compra=1&premium=1`,
+  accessShort: `${SITE_URL}${REGISTER_PATH}?compra=1&src=email`,
+  accessPremiumShort: `${SITE_URL}${REGISTER_PATH}?compra=1&premium=1&src=email`,
+  loginKit: `${SITE_URL}${REGISTER_PATH}?compra=1&src=email`,
+  loginPremium: `${SITE_URL}${REGISTER_PATH}?compra=1&premium=1&src=email`,
   membros: `${SITE_URL}/app?view=files`,
   upsell: POST_PURCHASE_UPSELL_URL,
   upsellPath: `${SITE_URL}${UPSELL_PATH}`,

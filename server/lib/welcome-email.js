@@ -4,11 +4,11 @@ export function buildWelcomeEmailHtml(name, siteUrl = SITE_URL, { line = 'paleta
   const greeting = name ? `Hola ${name},` : 'Hola,';
   const isPostres = line === 'postres';
   const accessUrl = isPostres
-    ? `${siteUrl}/postres/cadastrar?compra=1&line=postres`
-    : `${siteUrl}/acesso`;
+    ? `${siteUrl}/postres/cadastrar?compra=1&src=email&line=postres&postres=1`
+    : `${siteUrl}/cadastrar?compra=1&src=email&line=paletas`;
   const appUrl = isPostres
-    ? `${siteUrl}/app?compra=1&line=postres&postres=1`
-    : `${siteUrl}/app?compra=1`;
+    ? `${siteUrl}/app?compra=1&src=email&line=postres&postres=1`
+    : `${siteUrl}/app?compra=1&src=email&line=paletas`;
   const membrosUrl = `${siteUrl}/membros`;
   const emoji = isPostres ? '🍨' : '🍓';
   const title = isPostres ? '¡Tu kit de Postres está listo!' : '¡Tu kit está listo!';

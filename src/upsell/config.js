@@ -7,8 +7,8 @@ import { SITE_URL } from '../site/config.js';
  * 1. Compra kit → upsell
  * 2. Acepta → checkout Hotmart
  * 3. Rechaza → downsell modal
- * 4. Rechaza downsell → /cadastrar?compra=1
- * 5. Compra upsell → /cadastrar?compra=1&premium=1
+ * 4. Rechaza downsell → /cadastrar?compra=1&src=hotmart
+ * 5. Compra upsell → /cadastrar?compra=1&premium=1&src=hotmart
  */
 
 export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E';
@@ -16,8 +16,8 @@ export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E';
 /** Downsell Mini Pack (US$ 7) — actualiza el link de Hotmart si cambias el precio. */
 export const DOWNSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E?off=16xak8rd';
 
-export const ACCESS_URL = '/cadastrar?compra=1&line=paletas';
-export const UPSELL_POST_PURCHASE_URL = '/cadastrar?compra=1&premium=1&line=paletas';
+export const ACCESS_URL = '/cadastrar?compra=1&src=hotmart&line=paletas';
+export const UPSELL_POST_PURCHASE_URL = '/cadastrar?compra=1&premium=1&src=hotmart&line=paletas';
 
 export const UPSELL_CURRENCY = 'USD';
 export const UPSELL_PRICE_USD = 9.97;
