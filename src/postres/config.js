@@ -11,8 +11,8 @@ export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
 export const META_PIXEL_ID = '1369803401885896';
 
 export const MAIN_PRICE = 5.97;
-export const MAIN_PRICE_LABEL = 'US$5,97';
-export const PRICE_ACCESS_LABEL = 'Acceso completo por US$5,97';
+export const MAIN_PRICE_LABEL = 'US$ 5,97';
+export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 5,97';
 
 export const HERO_CTA_LABEL = 'Quiero preparar y vender mis postres';
 export const CALC_CTA_LABEL = 'Quiero vender postres por WhatsApp';
