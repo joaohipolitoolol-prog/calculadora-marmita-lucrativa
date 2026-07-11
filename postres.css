@@ -125,8 +125,39 @@
   color: var(--pink-dark);
 }
 
-/* Sticky / final CTA */
-.postres-theme .sticky-purchase {
+.postres-theme .offer-card {
+  background: linear-gradient(165deg, #FFFFFF 0%, #FFF7FB 100%);
+  border: 1px solid rgba(236, 63, 122, 0.18);
+  box-shadow: 0 16px 40px rgba(42, 23, 18, 0.08);
+}
+
+.postres-theme .offer-tag {
+  background: rgba(236, 63, 122, 0.12);
+  color: var(--pink-dark);
+}
+
+.postres-theme .guarantee-card {
+  border-color: rgba(236, 63, 122, 0.16);
+  background: linear-gradient(160deg, #FFF7FB, #FFE8F2);
+}
+
+.postres-theme .guarantee-badge {
+  background: var(--pink);
+  color: #fff;
+}
+
+.postres-theme .method-num {
+  background: rgba(236, 63, 122, 0.12);
+  color: var(--pink-dark);
+}
+
+.postres-theme .demo-section {
+  background:
+    radial-gradient(circle at 90% 10%, rgba(236, 63, 122, 0.1) 0%, transparent 42%),
+    var(--cream);
+}
+
+.postres-theme .purchase-sticky {
   background: rgba(255, 247, 251, 0.96);
   border-top-color: rgba(236, 63, 122, 0.14);
 }
