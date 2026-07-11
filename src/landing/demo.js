@@ -122,11 +122,16 @@ function readValues(root) {
 }
 
 function renderResults(root, r) {
-  root.querySelector('[data-out="profit"]').textContent = moneyDemo(r.gananciaUnidad);
-  root.querySelector('[data-out="cost"]').textContent = moneyDemo(r.costoReal);
-  root.querySelector('[data-out="margin"]').textContent = percent(r.margenActual);
-  root.querySelector('[data-out="ideal"]').textContent = moneyDemo(r.precioRecomendado);
-  root.querySelector('[data-out="daily"]').textContent = moneyDemo(Math.abs(r.gananciaDia));
+  const setText = (sel, value) => {
+    const el = root.querySelector(sel);
+    if (el) el.textContent = value;
+  };
+
+  setText('[data-out="profit"]', moneyDemo(r.gananciaUnidad));
+  setText('[data-out="cost"]', moneyDemo(r.costoReal));
+  setText('[data-out="margin"]', percent(r.margenActual));
+  setText('[data-out="ideal"]', moneyDemo(r.precioRecomendado));
+  setText('[data-out="daily"]', moneyDemo(Math.abs(r.gananciaDia)));
 
   const dailyLabel = root.querySelector('[data-out="daily-label"]');
   if (dailyLabel) {
@@ -146,25 +151,35 @@ function renderResults(root, r) {
   const alertBox = root.querySelector('[data-out="alert-box"]');
   const alertText = root.querySelector('[data-out="alert-text"]');
 
-  profitCard.classList.remove('status-lucro', 'status-alerta', 'status-prejuizo');
-  profitCard.classList.add(`status-${r.status}`);
+  if (profitCard) {
+    profitCard.classList.remove('status-lucro', 'status-alerta', 'status-prejuizo');
+    profitCard.classList.add(`status-${r.status}`);
+  }
 
-  profitEl.classList.remove('green', 'red');
-  profitEl.classList.add(r.gananciaUnidad >= 0 ? 'green' : 'red');
+  if (profitEl) {
+    profitEl.classList.remove('green', 'red');
+    profitEl.classList.add(r.gananciaUnidad >= 0 ? 'green' : 'red');
+  }
 
-  dailyEl.classList.remove('green', 'red');
-  dailyEl.classList.add(r.gananciaUnidad >= 0 ? 'green' : 'red');
+  if (dailyEl) {
+    dailyEl.classList.remove('green', 'red');
+    dailyEl.classList.add(r.gananciaUnidad >= 0 ? 'green' : 'red');
+  }
 
-  marginEl.classList.remove('warn', 'green', 'red');
-  marginEl.classList.add(
-    r.status === 'prejuizo' ? 'red' : r.status === 'alerta' ? 'warn' : 'green'
-  );
+  if (marginEl) {
+    marginEl.classList.remove('warn', 'green', 'red');
+    marginEl.classList.add(
+      r.status === 'prejuizo' ? 'red' : r.status === 'alerta' ? 'warn' : 'green'
+    );
+  }
 
-  if (r.alertText) {
-    alertBox.hidden = false;
-    alertText.textContent = r.alertText;
-  } else {
-    alertBox.hidden = true;
+  if (alertBox && alertText) {
+    if (r.alertText) {
+      alertBox.hidden = false;
+      alertText.textContent = r.alertText;
+    } else {
+      alertBox.hidden = true;
+    }
   }
 }
 

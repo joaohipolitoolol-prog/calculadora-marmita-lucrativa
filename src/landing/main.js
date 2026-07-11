@@ -73,8 +73,6 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
   });
 });
 
-initDemo();
-
 const sticky = document.getElementById('purchase-sticky');
 if (sticky) {
   const showAfter = 420;
@@ -85,4 +83,10 @@ if (sticky) {
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+}
+
+try {
+  initDemo();
+} catch (err) {
+  console.error('[landing] initDemo failed', err);
 }
