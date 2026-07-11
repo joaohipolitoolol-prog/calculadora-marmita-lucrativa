@@ -5,7 +5,6 @@ import {
   DOWNSELL_DECLINE_LABEL,
   DOWNSELL_PRICE_LABEL,
   DOWNSELL_PRICE_USD,
-  META_PIXEL_ID,
   UPSELL_CHECKOUT_URL,
   UPSELL_CURRENCY,
   STICKY_CTA_LABEL,
@@ -18,7 +17,7 @@ import {
   UPSELL_TIMER_MS,
   UPSELL_TIMER_STORAGE_KEY,
 } from './config.js';
-import { bindTrackClicks, trackCheckout, trackCurrentPage } from '../lib/track.js';
+import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'paletas' });
 bindTrackClicks({ page: 'upsell-paletas', line: 'paletas' });
@@ -62,7 +61,6 @@ document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
       return;
     }
     trackInitiateCheckout();
-    trackCheckout('upsell', { page: 'upsell-paletas', line: 'paletas' });
     try {
       localStorage.setItem('premium_pending_paletas', '1');
     } catch {
@@ -136,6 +134,8 @@ if (downsellModal) {
     }
     link.href = DOWNSELL_CHECKOUT_URL;
     link.setAttribute('rel', 'noopener');
+    link.dataset.checkout = 'downsell';
+    link.dataset.track = link.dataset.track || 'downsell_checkout';
     link.addEventListener('click', () => {
       if (typeof window.fbq === 'function') {
         window.fbq('track', 'InitiateCheckout', {
@@ -167,10 +167,6 @@ document.querySelectorAll('[data-upsell-price]').forEach((el) => {
 document.querySelectorAll('[data-upsell-price-compare]').forEach((el) => {
   el.textContent = UPSELL_PRICE_COMPARE_LABEL;
 });
-
-if (typeof window.fbq === 'function' && META_PIXEL_ID) {
-  window.fbq('track', 'PageView');
-}
 
 const stickyBar = document.getElementById('upsell-sticky');
 const heroCta = document.querySelector('.upsell-hero [data-upsell-checkout]');

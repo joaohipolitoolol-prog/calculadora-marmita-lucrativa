@@ -13,7 +13,7 @@ import {
   WHATSAPP_NUMBER_ID,
 } from './config.js';
 import { initDemo } from './demo.js';
-import { bindTrackClicks, trackCheckout, trackCurrentPage } from '../lib/track.js';
+import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'paletas' });
 bindTrackClicks({ page: 'home', line: 'paletas', numberId: WHATSAPP_NUMBER_ID });
@@ -69,7 +69,6 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
   if (!link.dataset.track) link.dataset.track = 'checkout_kit';
   link.addEventListener('click', () => {
     trackInitiateCheckout();
-    trackCheckout('kit', { page: 'home', line: 'paletas', ctaId: link.dataset.track });
   });
 });
 

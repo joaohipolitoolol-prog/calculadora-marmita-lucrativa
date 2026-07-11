@@ -13,7 +13,7 @@ import {
   WHATSAPP_URL,
 } from './config.js';
 import { initDemo } from './demo.js';
-import { bindTrackClicks, trackCheckout, trackCurrentPage } from '../lib/track.js';
+import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { PRODUCT_LINE_BY_ID } from '../lib/product-lines.js';
 
 trackCurrentPage({ line: 'postres' });
@@ -85,7 +85,6 @@ document.querySelectorAll('[data-checkout]').forEach((link) => {
   }
   link.addEventListener('click', (e) => {
     e.preventDefault();
-    trackCheckout('kit', { page: 'postres', line: 'postres', ctaId: link.dataset.track });
     handleCheckoutClick();
   });
 });

@@ -436,6 +436,8 @@ body {
 
 .admin-content-inner {
   max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .admin-stat.accent-blue { --stat-accent: #3b82f6; }
@@ -1655,6 +1657,45 @@ body {
     display: inline-flex;
   }
 
+  .admin-content {
+    padding: 16px;
+  }
+
+  .admin-header {
+    padding: 14px 16px;
+  }
+
+  .admin-header-titles h1 {
+    font-size: 1.15rem;
+  }
+
+  .admin-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .admin-stat {
+    padding: 14px;
+  }
+
+  .admin-stat-value {
+    font-size: 1.5rem;
+  }
+
+  .admin-card-head,
+  .admin-card-body {
+    padding: 14px 16px;
+  }
+
+  .admin-search {
+    max-width: none;
+  }
+
+  .codes-form {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-denied-email {
   margin: 12px 0 0;
   color: var(--admin-muted);
@@ -1735,7 +1776,7 @@ body {
   font-size: 0.85rem;
 }
 
-.admin-toggle-row {
+.admin-content-line-card .admin-toggle-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1746,7 +1787,7 @@ body {
   font-size: 0.92rem;
 }
 
-.admin-toggle-row input {
+.admin-content-line-card .admin-toggle-row input {
   width: 18px;
   height: 18px;
   accent-color: var(--admin-accent);
@@ -1897,45 +1938,6 @@ body {
   }
   .admin-inbox-actions {
     justify-content: flex-start;
-  }
-}
-
-  .admin-content {
-    padding: 16px;
-  }
-
-  .admin-header {
-    padding: 14px 16px;
-  }
-
-  .admin-header-titles h1 {
-    font-size: 1.15rem;
-  }
-
-  .admin-stats {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .admin-stat {
-    padding: 14px;
-  }
-
-  .admin-stat-value {
-    font-size: 1.5rem;
-  }
-
-  .admin-card-head,
-  .admin-card-body {
-    padding: 14px 16px;
-  }
-
-  .admin-search {
-    max-width: none;
-  }
-
-  .codes-form {
-    grid-template-columns: 1fr;
   }
 }
 

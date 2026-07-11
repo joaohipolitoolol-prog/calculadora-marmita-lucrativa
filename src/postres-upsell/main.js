@@ -16,7 +16,7 @@ import {
   UPSELL_TIMER_MS,
   UPSELL_TIMER_STORAGE_KEY,
 } from './config.js';
-import { bindTrackClicks, trackCheckout, trackCurrentPage } from '../lib/track.js';
+import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'postres' });
 bindTrackClicks({ page: 'upsell-postres', line: 'postres' });
@@ -54,7 +54,6 @@ document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
       return;
     }
     trackInitiateCheckout(UPSELL_PRICE_USD, UPSELL_NAME);
-    trackCheckout('upsell', { page: 'upsell-postres', line: 'postres' });
     try {
       localStorage.setItem('premium_pending_postres', '1');
     } catch {
@@ -128,6 +127,8 @@ if (downsellModal) {
     }
     link.href = DOWNSELL_CHECKOUT_URL;
     link.setAttribute('rel', 'noopener');
+    link.dataset.checkout = 'downsell';
+    link.dataset.track = link.dataset.track || 'downsell_checkout';
     link.addEventListener('click', () => {
       trackInitiateCheckout(DOWNSELL_PRICE_USD, `${UPSELL_NAME} (downsell)`);
     });

@@ -8,7 +8,9 @@ export const TRACKED_PAGES = {
   'aviso-postres': '/postresaviso',
   acesso: '/acesso',
   cadastrar: '/cadastrar',
+  'cadastrar-postres': '/postres/cadastrar',
   login: '/login',
+  'login-postres': '/postres/login',
   app: '/app',
 };
 
@@ -18,6 +20,10 @@ const PAGE_LINES = {
   'upsell-paletas': 'paletas',
   'upsell-postres': 'postres',
   'aviso-postres': 'postres',
+  cadastrar: 'paletas',
+  'cadastrar-postres': 'postres',
+  login: 'paletas',
+  'login-postres': 'postres',
 };
 
 function send(payload) {

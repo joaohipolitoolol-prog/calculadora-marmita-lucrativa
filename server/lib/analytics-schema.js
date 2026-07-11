@@ -7,8 +7,10 @@ export const PAGE_META = {
   'upsell-postres': { path: '/postres/upsell', label: 'Upsell Postres', line: 'postres' },
   'aviso-postres': { path: '/postresaviso', label: 'Aviso Postres', line: 'postres' },
   acesso: { path: '/acesso', label: 'Acceso', line: null },
-  cadastrar: { path: '/cadastrar', label: 'Registro', line: null },
-  login: { path: '/login', label: 'Login', line: null },
+  cadastrar: { path: '/cadastrar', label: 'Registro Paletas', line: 'paletas' },
+  'cadastrar-postres': { path: '/postres/cadastrar', label: 'Registro Postres', line: 'postres' },
+  login: { path: '/login', label: 'Login Paletas', line: 'paletas' },
+  'login-postres': { path: '/postres/login', label: 'Login Postres', line: 'postres' },
   app: { path: '/app', label: 'App', line: null },
 };
 

@@ -382,7 +382,7 @@ function renderHistoryBars(history) {
     </div>`;
 }
 
-export function renderAnalyticsView(analytics, lineFilter = 'all') {
+export function renderAnalyticsView(analytics, lineFilter = 'all', users = []) {
   if (!analytics) {
     return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">${t('analytics.loading')}</p></div></div>`;
   }
@@ -395,7 +395,7 @@ export function renderAnalyticsView(analytics, lineFilter = 'all') {
 
   return `
     ${renderLineFilter(lineFilter)}
-    ${renderStatsGrid({ total: 0, pending: 0, pendingKit: 0, pendingUpsell: 0, active: 0, premium: 0 }, analytics)}
+    ${renderStatsGrid(getStats(users), analytics)}
     <div class="admin-grid-2">
       <div class="admin-card">
         <div class="admin-card-head"><h2>${t('analytics.events')}</h2></div>
@@ -950,7 +950,7 @@ export function renderShell(props) {
       content = renderUsersView(users, selectedIds, userFilter, userSearch);
       break;
     case 'analytics':
-      content = renderAnalyticsView(analytics, lineFilter);
+      content = renderAnalyticsView(analytics, lineFilter, users);
       break;
     case 'codes':
       content = renderCodesView(codes);
@@ -977,8 +977,10 @@ export function renderShell(props) {
           <div class="admin-header-titles"><h1>${meta.title}</h1><p>${meta.subtitle}</p></div>
         </header>
         <main class="admin-content">
-          ${renderApiWarnings(apiWarnings)}
-          ${content}
+          <div class="admin-content-inner">
+            ${renderApiWarnings(apiWarnings)}
+            ${content}
+          </div>
         </main>
       </div>
       ${renderUserDrawer(detailUser)}
