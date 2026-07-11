@@ -164,8 +164,23 @@
 
 .postres-theme .final-cta {
   background:
-    radial-gradient(circle at 80% 20%, rgba(236, 63, 122, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(236, 63, 122, 0.1) 0%, transparent 45%),
     linear-gradient(180deg, var(--pink-light), var(--cream));
+  color: var(--brown);
+}
+
+.postres-theme .final-cta h2 {
+  color: var(--brown);
+}
+
+.postres-theme .final-cta > .container > p,
+.postres-theme .final-cta .cta-note,
+.postres-theme .final-cta .final-cta-reassure {
+  color: var(--brown-mid);
+}
+
+.postres-theme .final-cta .final-cta-reassure strong {
+  color: var(--brown);
 }
 
 /* WhatsApp block */
