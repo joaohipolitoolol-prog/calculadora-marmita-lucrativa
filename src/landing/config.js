@@ -59,7 +59,7 @@ export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
-export const HERO_CTA_LABEL = 'Quiero preparar mi primera oferta';
+export const HERO_CTA_LABEL = 'Quiero armar mi primera oferta';
 
 export const CALC_CTA_LABEL = 'Quiero calcular antes de vender';
 

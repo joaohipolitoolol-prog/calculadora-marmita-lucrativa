@@ -2649,6 +2649,88 @@ body:has(.purchase-sticky.visible) {
   color: #8696a0;
 }
 
+.wa-quote-inline {
+  margin: 16px 0 4px;
+  max-width: 100%;
+}
+
+.offer-card .wa-quote-inline::before {
+  display: none;
+}
+
+.offer-card .wa-quote-inline {
+  border-radius: 12px;
+  background: var(--pink-light);
+  border-color: rgba(232, 67, 122, 0.12);
+}
+
+.offer-card .urgency-natural {
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+.wa-reviews-early .wa-quotes {
+  margin-bottom: 0;
+}
+
+.wa-reviews-prints-only {
+  padding-top: var(--space-lg);
+}
+
+/* ===== Authority ===== */
+.authority-block {
+  background: var(--white);
+  text-align: center;
+}
+
+.authority-block .section-text {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 34rem;
+}
+
+/* ===== Objections ===== */
+.objections-block {
+  background: var(--cream);
+}
+
+.objections-block h2 {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.objections-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.objection-item {
+  background: var(--white);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+}
+
+.objection-item h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  color: var(--brown);
+}
+
+.objection-item p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--gray);
+  line-height: 1.5;
+}
+
+@media (min-width: 640px) {
+  .objections-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+}
+
 .wa-reviews-shell {
   position: relative;
 }
