@@ -21,6 +21,54 @@
   <meta name="twitter:description" content="En pocos días puedes tener receta, precio, menú y mensaje listos para WhatsApp.">
   <meta name="twitter:image" content="https://paletasparawhatsapp.vercel.app/paletas/og-paletas-whatsapp.webp?v=2">
   <title>Empieza a ganar dinero vendiendo paletas desde WhatsApp | Paletas para WhatsApp</title>
+  <!-- A/B entry: redirect sticky/override before paint; gate first visit until assign -->
+  <style>
+    html.ab-pending { background: #fff8fb; }
+    html.ab-pending body {
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
+  <script>
+    (function () {
+      try {
+        var path = location.pathname.replace(/\/$/, '') || '/';
+        if (path !== '/') return;
+        var KEY = 'ab_paletas_entry';
+        var params = new URLSearchParams(location.search);
+        var v = String(params.get('v') || '').toLowerCase();
+        if (v === 'quiz' || v === 'lp') {
+          try { localStorage.setItem(KEY, v); } catch (e) {}
+          if (v === 'quiz') {
+            location.replace('/diagnostico');
+            return;
+          }
+          document.documentElement.classList.add('ab-ready');
+          return;
+        }
+        var sticky = null;
+        try { sticky = localStorage.getItem(KEY); } catch (e) {}
+        if (sticky === 'quiz') {
+          location.replace('/diagnostico');
+          return;
+        }
+        if (sticky === 'lp') {
+          document.documentElement.classList.add('ab-ready');
+          return;
+        }
+        document.documentElement.classList.add('ab-pending');
+        /* Failsafe: never leave visitor on blank screen if JS bundle fails */
+        setTimeout(function () {
+          var root = document.documentElement;
+          if (root.classList.contains('ab-pending')) {
+            root.classList.remove('ab-pending');
+            root.classList.add('ab-ready');
+          }
+        }, 3200);
+      } catch (e) {}
+    })();
+  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -61,7 +109,10 @@
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1369803401885896');
-    fbq('track', 'PageView');
+    /* PageView only when LP is confirmed (not while gated / before quiz redirect) */
+    if (!document.documentElement.classList.contains('ab-pending')) {
+      fbq('track', 'PageView');
+    }
   </script>
   <link rel="icon" href="/favicon.svg?v=5" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=5">

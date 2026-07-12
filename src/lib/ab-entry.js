@@ -6,6 +6,28 @@ import { trackEvent } from './track.js';
 
 export const AB_STORAGE_KEY = 'ab_paletas_entry';
 
+const FETCH_MS = 1800;
+
+/**
+ * Show LP after gate (first visit) and fire Meta PageView once if deferred.
+ */
+export function revealLanding() {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  const wasPending = root.classList.contains('ab-pending');
+  root.classList.remove('ab-pending');
+  root.classList.add('ab-ready');
+  if (!wasPending) return;
+  try {
+    if (typeof window.fbq === 'function' && !window.__abLpPageView) {
+      window.__abLpPageView = true;
+      window.fbq('track', 'PageView');
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
  * @returns {'lp'|'quiz'|null}
  */
@@ -59,6 +81,32 @@ export function assignVariant(entry = {}) {
   return roll < pct ? 'quiz' : 'lp';
 }
 
+async function fetchEntryConfig() {
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = setTimeout(() => {
+    try {
+      ctrl?.abort();
+    } catch {
+      /* ignore */
+    }
+  }, FETCH_MS);
+  try {
+    const res = await fetch('/api/experiments', {
+      credentials: 'omit',
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+      signal: ctrl?.signal,
+    });
+    if (!res.ok) return { enabled: false, quizPercent: 0 };
+    const data = await res.json();
+    return data?.paletas?.entry || { enabled: false, quizPercent: 0 };
+  } catch {
+    return { enabled: false, quizPercent: 0 };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /**
  * Resolve entry variant for `/`. May redirect to /diagnostico.
  * @returns {Promise<{ variant: 'lp'|'quiz', quizPercent: number, source: string, redirected: boolean }>}
@@ -86,6 +134,7 @@ export async function resolvePaletasEntryAb() {
       window.location.replace('/diagnostico');
       return { variant: 'quiz', quizPercent: 100, source: 'override', redirected: true };
     }
+    revealLanding();
     return { variant: 'lp', quizPercent: 0, source: 'override', redirected: false };
   }
 
@@ -101,24 +150,11 @@ export async function resolvePaletasEntryAb() {
       window.location.replace('/diagnostico');
       return { variant: 'quiz', quizPercent: 0, source: 'sticky', redirected: true };
     }
+    revealLanding();
     return { variant: 'lp', quizPercent: 0, source: 'sticky', redirected: false };
   }
 
-  let entry = { enabled: false, quizPercent: 0 };
-  try {
-    const res = await fetch('/api/experiments', {
-      credentials: 'omit',
-      cache: 'no-store',
-      headers: { Accept: 'application/json' },
-    });
-    if (res.ok) {
-      const data = await res.json();
-      entry = data?.paletas?.entry || entry;
-    }
-  } catch {
-    /* fallback LP */
-  }
-
+  const entry = await fetchEntryConfig();
   const variant = assignVariant(entry);
   writeStickyVariant(variant);
   trackEvent('ab_assign', {
@@ -138,6 +174,7 @@ export async function resolvePaletasEntryAb() {
     };
   }
 
+  revealLanding();
   return {
     variant: 'lp',
     quizPercent: Number(entry.quizPercent) || 0,
