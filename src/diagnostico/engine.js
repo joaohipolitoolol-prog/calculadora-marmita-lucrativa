@@ -38,6 +38,22 @@ const REDUCED_MOTION =
 
 const QUESTION_SET = new Set(QUESTION_IDS);
 
+/** Every screen starts at the top — window scroll, not only focus. */
+function scrollQuizToTop() {
+  if (typeof window === 'undefined') return;
+  const snap = () => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    } catch {
+      window.scrollTo(0, 0);
+    }
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+    if (document.body) document.body.scrollTop = 0;
+  };
+  snap();
+  requestAnimationFrame(snap);
+}
+
 export function createDiagnostico(root) {
   const state = {
     index: 0,
@@ -292,6 +308,7 @@ export function createDiagnostico(root) {
 
     els.stage.innerHTML = html;
     bindScreen(screen);
+    scrollQuizToTop();
     els.stage.focus({ preventScroll: true });
   }
 
