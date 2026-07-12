@@ -15,7 +15,7 @@ const POSTRES = {
   registerDesc:
     'Crea tu cuenta y accede a recetas, calculadora y mensajes para vender postres en vaso por WhatsApp.',
   loginDesc: 'Entra con el correo de tu compra para ver recetas, precios y mensajes de postres en vaso.',
-  footerPrice: 'US$6,97',
+  footerPrice: 'US$6,99',
   footerLp: '/postres',
   logoHref: '/postres',
   loginHref: '/postres/login',

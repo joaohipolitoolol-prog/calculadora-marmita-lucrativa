@@ -272,7 +272,7 @@ async function buildOg() {
       <text x="72" y="340" fill="#2A1712" font-family="Nunito, Arial, sans-serif" font-size="54" font-weight="800">para WhatsApp</text>
       <text x="72" y="410" fill="#6D5550" font-family="Nunito, Arial, sans-serif" font-size="26">Recetas · Calculadora · Menú · Mensajes</text>
       <rect x="72" y="450" width="280" height="54" rx="27" fill="#EC3F7A"/>
-      <text x="212" y="485" text-anchor="middle" fill="#fff" font-family="Nunito, Arial, sans-serif" font-size="22" font-weight="800">US$ 6,97</text>
+      <text x="212" y="485" text-anchor="middle" fill="#fff" font-family="Nunito, Arial, sans-serif" font-size="22" font-weight="800">US$ 6,99</text>
     </svg>
   `);
 

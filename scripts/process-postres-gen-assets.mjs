@@ -191,7 +191,7 @@ if (existsSync(resolve(dir, 'hero-variedad-postres.webp'))) {
     <text x="72" y="330" fill="#2A1712" font-family="Arial" font-size="52" font-weight="800">para WhatsApp</text>
     <text x="72" y="400" fill="#6D5550" font-family="Arial" font-size="24">Recetas · Calculadora · Menú · Mensajes</text>
     <rect x="72" y="440" width="260" height="52" rx="26" fill="#EC3F7A"/>
-    <text x="202" y="474" text-anchor="middle" fill="#fff" font-family="Arial" font-size="22" font-weight="800">US$ 6,97</text>
+    <text x="202" y="474" text-anchor="middle" fill="#fff" font-family="Arial" font-size="22" font-weight="800">US$ 6,99</text>
   </svg>`);
 
   await sharp(ogSvg)

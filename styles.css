@@ -2743,6 +2743,31 @@ body:has(.purchase-sticky.visible) {
   padding-top: var(--space-lg);
 }
 
+/* Compact proof inserts between sections */
+.proof-bump {
+  padding: 14px 0 6px;
+}
+
+.proof-bump-alt {
+  padding: 18px 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 249, 246, 0.9));
+}
+
+.proof-bump .wa-quotes {
+  margin-bottom: 0;
+  gap: 10px;
+}
+
+.proof-bump .wa-quote p {
+  font-size: 1rem;
+}
+
+.proof-bump-single .wa-quote {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
 /* ===== Authority ===== */
 .authority-block {
   background: var(--white);
