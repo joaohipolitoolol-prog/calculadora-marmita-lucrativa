@@ -2577,6 +2577,94 @@ body:has(.purchase-sticky.visible) {
   color: var(--pink);
 }
 
+/* ===== WhatsApp reviews ===== */
+.wa-reviews {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 79, 139, 0.09), transparent 42%),
+    radial-gradient(circle at 88% 82%, rgba(0, 128, 105, 0.08), transparent 40%),
+    var(--cream);
+  overflow: hidden;
+}
+
+.wa-reviews-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.wa-reviews-head h2 {
+  margin-bottom: 8px;
+}
+
+.wa-reviews-head .section-text {
+  margin: 0 auto;
+  max-width: 28rem;
+}
+
+.wa-reviews-shell {
+  position: relative;
+}
+
+.wa-reviews-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 36px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--cream));
+  z-index: 1;
+}
+
+.wa-reviews-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 16px;
+  padding: 4px 40px 8px 16px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  touch-action: pan-x pan-y;
+}
+
+.wa-reviews-track::-webkit-scrollbar {
+  display: none;
+}
+
+.wa-review {
+  margin: 0;
+  flex: 0 0 min(72vw, 280px);
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+.wa-review img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(61, 34, 40, 0.14);
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .wa-reviews-track {
+    scroll-padding-inline: max(16px, calc((100vw - 520px) / 2 + 16px));
+    padding-inline: max(16px, calc((100vw - 520px) / 2 + 16px));
+    padding-right: max(40px, calc((100vw - 520px) / 2 + 16px));
+  }
+
+  .wa-review {
+    flex-basis: 300px;
+  }
+}
+
 /* ===== FAQ ===== */
 .faq {
   background: var(--cream);

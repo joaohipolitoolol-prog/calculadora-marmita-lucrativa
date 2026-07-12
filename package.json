@@ -11,6 +11,7 @@
     "sync:paletas": "node scripts/sync-paletas-deliverables.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "assets:postres": "node scripts/build-postres-assets.mjs",
+    "assets:wa-reviews": "node scripts/export-wa-reviews.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "resend": "^4.5.1"
   },
   "devDependencies": {
+    "playwright": "^1.61.1",
     "sharp": "^0.34.1",
     "vite": "^5.4.0"
   }

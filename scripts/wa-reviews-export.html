@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WhatsApp review exports</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: #1a1a1a;
+      padding: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+
+    /* Phone shell */
+    .phone {
+      width: 360px;
+      background: #000;
+      border-radius: 36px;
+      padding: 10px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+    }
+    .phone-screen {
+      border-radius: 28px;
+      overflow: hidden;
+      background: #efeae2;
+      height: 640px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Status bar */
+    .status {
+      height: 28px;
+      background: #008069;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .status-icons {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    /* Chat header */
+    .header {
+      background: #008069;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px 10px;
+      min-height: 56px;
+    }
+    .back {
+      width: 22px;
+      height: 22px;
+      opacity: .95;
+      flex-shrink: 0;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .header-meta { flex: 1; min-width: 0; }
+    .header-name {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .header-sub {
+      font-size: 12.5px;
+      opacity: .85;
+      margin-top: 1px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      padding-right: 4px;
+      opacity: .95;
+    }
+    .header-actions svg { width: 20px; height: 20px; }
+
+    /* Chat area with WA wallpaper feel */
+    .chat {
+      flex: 1;
+      overflow: hidden;
+      padding: 10px 8px 14px;
+      background-color: #efeae2;
+      background-image:
+        radial-gradient(rgba(0,0,0,.035) 1.1px, transparent 1.1px),
+        radial-gradient(rgba(0,0,0,.028) 1px, transparent 1px);
+      background-size: 22px 22px, 31px 31px;
+      background-position: 0 0, 10px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 3px;
+    }
+
+    .day {
+      align-self: center;
+      background: #e1f2fb;
+      color: #54656f;
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 7px;
+      margin: 4px 0 8px;
+      box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
+    }
+
+    .row {
+      display: flex;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+    .row.in { justify-content: flex-start; }
+    .row.out { justify-content: flex-end; }
+
+    .bubble {
+      max-width: 82%;
+      padding: 6px 8px 5px 9px;
+      border-radius: 7.5px;
+      position: relative;
+      box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
+      font-size: 14.2px;
+      line-height: 1.35;
+      color: #111b21;
+    }
+    .bubble.in {
+      background: #fff;
+      border-top-left-radius: 0;
+    }
+    .bubble.out {
+      background: #d9fdd3;
+      border-top-right-radius: 0;
+    }
+    .bubble.in::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 8px 8px 0;
+      border-color: transparent #fff transparent transparent;
+    }
+    .bubble.out::before {
+      content: "";
+      position: absolute;
+      right: -7px;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 0 8px 8px;
+      border-color: transparent transparent transparent #d9fdd3;
+    }
+
+    .msg { white-space: pre-wrap; word-break: break-word; padding-right: 52px; }
+    .msg.short { padding-right: 48px; }
+
+    .meta {
+      position: absolute;
+      right: 7px;
+      bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: #667781;
+      line-height: 1;
+    }
+    .ticks {
+      width: 16px;
+      height: 11px;
+      margin-top: 1px;
+    }
+    .ticks.blue path { fill: #53bdeb; }
+    .ticks.gray path { fill: #8696a0; }
+
+    .composer {
+      background: #f0f2f5;
+      padding: 6px 8px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .composer-input {
+      flex: 1;
+      background: #fff;
+      border-radius: 24px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      color: #667781;
+      font-size: 15px;
+      gap: 10px;
+    }
+    .mic {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #008069;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PALETAS 1 -->
+  <div class="phone" data-shot="paletas-1" data-out="paletas/reviews/wa-maria.png">
+    <div class="phone-screen">
+      <div class="status"><span>10:42</span><span class="status-icons">LTE · ▮▮▮ · 🔋</span></div>
+      <div class="header">
+        <svg class="back" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="avatar" style="background:#e91e8c">M</div>
+        <div class="header-meta">
+          <div class="header-name">María G.</div>
+          <div class="header-sub">en línea</div>
+        </div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1L6.6 10.8z"/></svg>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="day">Hoy</div>
+        <div class="row out"><div class="bubble out"><div class="msg short">¡Hola María! ¿Cómo te va con el kit?</div><div class="meta">10:18<svg class="ticks blue" viewBox="0 0 16 11"><path d="M11.1 1.1L5.4 7.3 2.9 4.8 1.7 6l3.7 3.7 7-7.6z"/><path d="M14.3 1.1L8.6 7.3 7.7 6.4 6.5 7.6l2.1 2.1 7-7.6z"/></svg></div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">holaa! ya hice las de fresa 🍓</div><div class="meta">10:21</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">vendí 8 el sábado a vecinas jaja no lo creía</div><div class="meta">10:21</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">la calculadora me dejó clara cuánto cobrar, antes inventaba el precio</div><div class="meta">10:22</div></div></div>
+        <div class="row out"><div class="bubble out"><div class="msg short">¡Qué bueno! 🙌</div><div class="meta">10:24<svg class="ticks blue" viewBox="0 0 16 11"><path d="M11.1 1.1L5.4 7.3 2.9 4.8 1.7 6l3.7 3.7 7-7.6z"/><path d="M14.3 1.1L8.6 7.3 7.7 6.4 6.5 7.6l2.1 2.1 7-7.6z"/></svg></div></div></div>
+      </div>
+      <div class="composer"><div class="composer-input"><span>😊</span><span>Mensaje</span></div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a1 1 0 01-1-1v-2h2v2a1 1 0 01-1 1z"/></svg></div></div>
+    </div>
+  </div>
+
+  <!-- PALETAS 2 -->
+  <div class="phone" data-shot="paletas-2" data-out="paletas/reviews/wa-andrea.png">
+    <div class="phone-screen">
+      <div class="status"><span>19:07</span><span class="status-icons">5G · ▮▮▮ · 🔋</span></div>
+      <div class="header">
+        <svg class="back" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="avatar" style="background:#00a884">A</div>
+        <div class="header-meta">
+          <div class="header-name">Andrea</div>
+          <div class="header-sub">últ. vez hoy a las 18:55</div>
+        </div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1L6.6 10.8z"/></svg>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="day">Ayer</div>
+        <div class="row in"><div class="bubble in"><div class="msg">compré ayer y hoy ya armé el menú 😍</div><div class="meta">18:41</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">los mensajes listos me ahorraron un montón, no sabía qué poner en el estado</div><div class="meta">18:42</div></div></div>
+        <div class="row out"><div class="bubble out"><div class="msg">Me alegra Andrea. ¿Ya publicaste?</div><div class="meta">18:50<svg class="ticks blue" viewBox="0 0 16 11"><path d="M11.1 1.1L5.4 7.3 2.9 4.8 1.7 6l3.7 3.7 7-7.6z"/><path d="M14.3 1.1L8.6 7.3 7.7 6.4 6.5 7.6l2.1 2.1 7-7.6z"/></svg></div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg short">síii ya pedí 3 vecinas 🙏</div><div class="meta">18:53</div></div></div>
+      </div>
+      <div class="composer"><div class="composer-input"><span>😊</span><span>Mensaje</span></div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a1 1 0 01-1-1v-2h2v2a1 1 0 01-1 1z"/></svg></div></div>
+    </div>
+  </div>
+
+  <!-- PALETAS 3 -->
+  <div class="phone" data-shot="paletas-3" data-out="paletas/reviews/wa-lucia.png">
+    <div class="phone-screen">
+      <div class="status"><span>08:14</span><span class="status-icons">LTE · ▮▮ · 🔋</span></div>
+      <div class="header">
+        <svg class="back" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="avatar" style="background:#7c4dff">L</div>
+        <div class="header-meta">
+          <div class="header-name">Lucía R.</div>
+          <div class="header-sub">en línea</div>
+        </div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1L6.6 10.8z"/></svg>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="day">Hoy</div>
+        <div class="row in"><div class="bubble in"><div class="msg">pensé q era solo recetas</div><div class="meta">07:58</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">pero el plan de 7 días está buenísimo, me ordenó todo</div><div class="meta">07:58</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">mañana publico en estados 💪 gracias</div><div class="meta">08:01</div></div></div>
+        <div class="row out"><div class="bubble out"><div class="msg short">Éxito Lucía 🍓</div><div class="meta">08:06<svg class="ticks blue" viewBox="0 0 16 11"><path d="M11.1 1.1L5.4 7.3 2.9 4.8 1.7 6l3.7 3.7 7-7.6z"/><path d="M14.3 1.1L8.6 7.3 7.7 6.4 6.5 7.6l2.1 2.1 7-7.6z"/></svg></div></div></div>
+      </div>
+      <div class="composer"><div class="composer-input"><span>😊</span><span>Mensaje</span></div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a1 1 0 01-1-1v-2h2v2a1 1 0 01-1 1z"/></svg></div></div>
+    </div>
+  </div>
+
+  <!-- POSTRES 1 -->
+  <div class="phone" data-shot="postres-1" data-out="postres/reviews/wa-carmen.png">
+    <div class="phone-screen">
+      <div class="status"><span>14:33</span><span class="status-icons">LTE · ▮▮▮ · 🔋</span></div>
+      <div class="header">
+        <svg class="back" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="avatar" style="background:#ec3f7a">C</div>
+        <div class="header-meta">
+          <div class="header-name">Carmen</div>
+          <div class="header-sub">en línea</div>
+        </div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1L6.6 10.8z"/></svg>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="day">Hoy</div>
+        <div class="row in"><div class="bubble in"><div class="msg">acabo de hacer el cheesecake en vaso 🍨</div><div class="meta">14:12</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">quedó igualito a la foto del kit</div><div class="meta">14:12</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">ya mandé el menú a mi grupo de mamás jaja</div><div class="meta">14:15</div></div></div>
+        <div class="row out"><div class="bubble out"><div class="msg short">¡Éxito Carmen!</div><div class="meta">14:20<svg class="ticks blue" viewBox="0 0 16 11"><path d="M11.1 1.1L5.4 7.3 2.9 4.8 1.7 6l3.7 3.7 7-7.6z"/><path d="M14.3 1.1L8.6 7.3 7.7 6.4 6.5 7.6l2.1 2.1 7-7.6z"/></svg></div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg short">graciasss 💗</div><div class="meta">14:21</div></div></div>
+      </div>
+      <div class="composer"><div class="composer-input"><span>😊</span><span>Mensaje</span></div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a1 1 0 01-1-1v-2h2v2a1 1 0 01-1 1z"/></svg></div></div>
+    </div>
+  </div>
+
+  <!-- POSTRES 2 -->
+  <div class="phone" data-shot="postres-2" data-out="postres/reviews/wa-paola.png">
+    <div class="phone-screen">
+      <div class="status"><span>21:05</span><span class="status-icons">Wi-Fi · ▮▮▮ · 🔋</span></div>
+      <div class="header">
+        <svg class="back" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="avatar" style="background:#ff7a1a">P</div>
+        <div class="header-meta">
+          <div class="header-name">Paola M.</div>
+          <div class="header-sub">últ. vez hoy a las 20:48</div>
+        </div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1L6.6 10.8z"/></svg>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="day">Hoy</div>
+        <div class="row in"><div class="bubble in"><div class="msg">no sabía cuánto cobrar y con la calculadora me salió clarito</div><div class="meta">20:36</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">antes casi regalaba los vasos 😅</div><div class="meta">20:36</div></div></div>
+        <div class="row out"><div class="bubble out"><div class="msg short">Eso es clave 👌</div><div class="meta">20:40<svg class="ticks blue" viewBox="0 0 16 11"><path d="M11.1 1.1L5.4 7.3 2.9 4.8 1.7 6l3.7 3.7 7-7.6z"/><path d="M14.3 1.1L8.6 7.3 7.7 6.4 6.5 7.6l2.1 2.1 7-7.6z"/></svg></div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">sí, vale cada centavo el kit</div><div class="meta">20:44</div></div></div>
+      </div>
+      <div class="composer"><div class="composer-input"><span>😊</span><span>Mensaje</span></div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a1 1 0 01-1-1v-2h2v2a1 1 0 01-1 1z"/></svg></div></div>
+    </div>
+  </div>
+
+  <!-- POSTRES 3 -->
+  <div class="phone" data-shot="postres-3" data-out="postres/reviews/wa-sofia.png">
+    <div class="phone-screen">
+      <div class="status"><span>11:28</span><span class="status-icons">5G · ▮▮▮ · 🔋</span></div>
+      <div class="header">
+        <svg class="back" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="avatar" style="background:#128c7e">S</div>
+        <div class="header-meta">
+          <div class="header-name">Sofía</div>
+          <div class="header-sub">en línea</div>
+        </div>
+        <div class="header-actions">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1L6.6 10.8z"/></svg>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="day">Hoy</div>
+        <div class="row in"><div class="bubble in"><div class="msg">en 2 días ya tenía 3 sabores listos</div><div class="meta">11:09</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg">los textos para WhatsApp son oro, copié y listo</div><div class="meta">11:10</div></div></div>
+        <div class="row in"><div class="bubble in"><div class="msg short">mi hermana ya me pidió 10 😂</div><div class="meta">11:11</div></div></div>
+        <div class="row out"><div class="bubble out"><div class="msg short">Empieza así 🍨</div><div class="meta">11:18<svg class="ticks blue" viewBox="0 0 16 11"><path d="M11.1 1.1L5.4 7.3 2.9 4.8 1.7 6l3.7 3.7 7-7.6z"/><path d="M14.3 1.1L8.6 7.3 7.7 6.4 6.5 7.6l2.1 2.1 7-7.6z"/></svg></div></div></div>
+      </div>
+      <div class="composer"><div class="composer-input"><span>😊</span><span>Mensaje</span></div><div class="mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 14a3 3 0 003-3V5a3 3 0 10-6 0v6a3 3 0 003 3zm5-3a5 5 0 01-10 0H5a7 7 0 0014 0h-2zm-5 9a1 1 0 01-1-1v-2h2v2a1 1 0 01-1 1z"/></svg></div></div>
+    </div>
+  </div>
+
+</body>
+</html>
