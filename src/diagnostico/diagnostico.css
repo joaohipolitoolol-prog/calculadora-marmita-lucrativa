@@ -215,7 +215,7 @@ a {
 .dx-toast-line {
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--dx-gray);
+  color: var(--dx-brown);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -223,7 +223,15 @@ a {
 
 .dx-toast-line strong {
   font-weight: 800;
-  color: var(--dx-brown);
+}
+
+.dx-toast-preview {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--dx-gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dx-toast-now {

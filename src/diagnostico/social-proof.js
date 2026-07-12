@@ -1,49 +1,71 @@
 /**
- * Prova social — sem número frágil.
- * A linha evolui com o funil; depoimentos reais carregam a prova.
+ * Prova social — histórias concretas, não copy genérica.
+ * Usa os mesmos nomes dos depoimentos e dos toasts WhatsApp.
  */
 
 export function socialLineFor(phase, answers = {}) {
+  const fallback =
+    'Norma publicó su menú un martes — el miércoles le escribieron 3 vecinas';
+
+  if (phase === 'welcome') {
+    return fallback;
+  }
+
   if (phase === 'result') {
-    return 'Mujeres como tú ya están dando este paso · ahora es tu turno';
+    if (answers.blocker === 'precio') {
+      return 'Luciana ya no adivina precios — calcula y publica el mismo día';
+    }
+    if (answers.blocker === 'ventas') {
+      return 'Alejandra dudaba si alguien compraría — hoy le piden cada semana';
+    }
+    if (answers.blocker === 'recetas') {
+      return 'Yadira arrancó con 2 sabores y repitió lo que salió bien';
+    }
+    if (answers.blocker === 'whatsapp') {
+      return 'Mary publicó un estado y le respondieron el mismo día';
+    }
+    if (answers.blocker === 'empezar') {
+      return 'Norma probó primero con lo que tenía en casa — sin arriesgar de más';
+    }
+    return 'Mujeres como tú ya dieron este paso — ahora te toca a ti';
   }
 
   if (phase === 'deep') {
     if (answers.blocker === 'precio') {
-      return 'Otras también tenían trabas con el precio — y empezaron igual';
+      return 'Norma tampoco sabía cuánto cobrar — hasta que calculó cada paleta';
     }
     if (answers.blocker === 'ventas') {
-      return 'Otras también dudaban antes de la primera venta';
+      return 'Alejandra pensaba que nadie le iba a comprar — su vecina pidió 6 el primer finde';
     }
     if (answers.blocker === 'recetas') {
-      return 'Otras también querían recetas claras antes de empezar';
+      return 'Yadira tenía miedo de equivocarse — empezó con pocas recetas claras';
     }
     if (answers.blocker === 'whatsapp') {
-      return 'Otras también querían vender bien por WhatsApp';
+      return 'Mary no sabía qué escribir en el estado — usó un mensaje listo y le contestaron en horas';
     }
     if (answers.blocker === 'empezar') {
-      return 'Otras también tenían miedo de gastar y no vender';
+      return 'Luciana también tenía miedo de gastar — arrancó con lo mínimo en casa';
     }
-    return 'Estamos armando un plan según tu momento';
+    return 'Estamos armando tu plan según lo que nos contaste';
   }
 
   if (phase === 'mid') {
     if (answers.experience === 'never') {
-      return 'Mujeres de distintos países también empezaron desde cero';
+      return 'Yadira nunca había vendido — su primer pedido fue de una vecina del edificio';
     }
     if (answers.experience === 'family') {
-      return 'Otras también empezaron vendiendo lo que ya preparaban en casa';
+      return 'Alejandra hacía paletas para su familia — la primera venta fue a una compañera';
     }
     if (answers.experience === 'tried') {
-      return 'Otras también intentaron, se frenaron — y siguieron';
+      return 'Mary probó vender, se frenó… y retomó con un plan más claro';
     }
     if (answers.experience === 'selling') {
-      return 'Otras también sumaron un sistema más claro a lo que ya vendían';
+      return 'Luciana ya vendía — pero le faltaba orden en precios y menú';
     }
-    return 'Mujeres de distintos países ya usan el Kit Paletas para empezar desde casa';
+    return fallback;
   }
 
-  return 'Mujeres de distintos países ya usan el Kit Paletas para empezar desde casa';
+  return fallback;
 }
 
 export function phaseFromScreen(screenId) {

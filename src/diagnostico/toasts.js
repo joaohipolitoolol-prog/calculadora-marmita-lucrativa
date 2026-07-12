@@ -2,15 +2,23 @@
  * Notificações WhatsApp — 1 por tela, abaixo do header, sem overlap.
  */
 
+/** Preview de mensagem real — como aparece na notificação do celular */
 const PEDIDOS = [
-  { who: 'Laura', text: 'Nuevo pedido' },
-  { who: 'Andrea', text: 'Nuevo mensaje' },
-  { who: 'Sofía', text: 'Te escribió' },
-  { who: 'Valeria', text: 'Nuevo pedido' },
-  { who: 'Camila', text: 'Quiere comprar' },
-  { who: 'Daniela', text: 'Nuevo mensaje' },
-  { who: 'Mariana', text: 'Nuevo pedido' },
-  { who: 'Paula', text: 'Te escribió' },
+  { who: 'Alejandra', text: 'Hola! me apartas 6 de oreo para mañana?' },
+  { who: 'Vecina Carmen', text: 'Vi tu estado, cuánto sale la caja x6?' },
+  { who: 'Yadira', text: 'Oiga, tienen de maracuyá hoy?' },
+  { who: 'Mariana', text: 'Para el cumple de mi niña, 12 porfa 🎂' },
+  { who: 'Compañera Ana', text: 'Se ve riquísimo!! me guardas 2?' },
+  { who: 'Luciana', text: 'Mi vecina me pasó tu num, qué sabores hay?' },
+  { who: 'Norma', text: 'Cuánto demoran? las necesito el sábado' },
+  { who: 'Tía Lupita', text: 'Dame la dirección para pasar a recoger' },
+  { who: 'Mary', text: 'Las de chocolate ya están disponibles?' },
+  { who: 'Valeria', text: 'Quisiera probar, vendes sueltas?' },
+  { who: 'Daniela', text: 'Me encantaron las de la otra vez! otra caja' },
+  { who: 'Sofía', text: 'A qué hora puedo pasar por 8 paletas?' },
+  { who: 'Paula', text: 'Cuánto cobra si le pido para el trabajo?' },
+  { who: 'Camila', text: 'Hola buenas, tiene de fresas con crema?' },
+  { who: 'Andrea', text: 'Norma me recomendó, cuánto la docena?' },
 ];
 
 /** Telas com toast — sem competir com loading/diagnosis/offer */
@@ -128,7 +136,8 @@ export function createPedidoToasts(root, { reducedMotion = false } = {}) {
       <span class="dx-toast-icon" aria-hidden="true">${WA_ICON}</span>
       <span class="dx-toast-body">
         <span class="dx-toast-app">WhatsApp</span>
-        <span class="dx-toast-line"><strong>${escapeHtml(pedido.who)}</strong> · ${escapeHtml(pedido.text)}</span>
+        <span class="dx-toast-line"><strong>${escapeHtml(pedido.who)}</strong></span>
+        <span class="dx-toast-preview">${escapeHtml(pedido.text)}</span>
       </span>
       <span class="dx-toast-now">ahora</span>
     `;

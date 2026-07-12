@@ -53,7 +53,7 @@ function withAbDefaults(payload = {}) {
 }
 
 function send(payload) {
-  const body = JSON.stringify(payload);
+  const body = JSON.stringify(withAbDefaults(payload));
   const url = '/api/analytics/event';
 
   try {

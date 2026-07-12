@@ -26,6 +26,9 @@ export const EVENT_TYPES = new Set([
   'ab_assign',
   'diagnostico_quiz_start',
   'diagnostico_view_offer',
+  'diagnostico_step',
+  'diagnostico_abandon',
+  'page_dwell',
 ]);
 
 export const AB_VARIANTS = new Set(['lp', 'quiz']);

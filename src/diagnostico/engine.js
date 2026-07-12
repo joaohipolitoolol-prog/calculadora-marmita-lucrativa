@@ -251,6 +251,16 @@ export function createDiagnostico(root) {
     });
   }
 
+  function trackStepView() {
+    const id = currentId();
+    if (!id) return;
+    trackEvent('diagnostico_step', {
+      page: 'diagnostico',
+      line: 'paletas',
+      ctaId: id,
+    });
+  }
+
   function answer(key, value, event) {
     state.answers[key] = value;
     state.selected = value;
@@ -308,6 +318,7 @@ export function createDiagnostico(root) {
 
     els.stage.innerHTML = html;
     bindScreen(screen);
+    trackStepView();
     scrollQuizToTop();
     els.stage.focus({ preventScroll: true });
   }
@@ -744,6 +755,16 @@ export function createDiagnostico(root) {
   // boot
   updateSocial();
   render();
+
+  window.addEventListener('pagehide', () => {
+    if (state.trackedViewOffer) return;
+    if (currentId() === 'welcome' && state.index === 0) return;
+    trackEvent('diagnostico_abandon', {
+      page: 'diagnostico',
+      line: 'paletas',
+      ctaId: currentId(),
+    });
+  });
 
   return {
     getState: () => ({ ...state, answers: { ...state.answers } }),

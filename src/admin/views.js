@@ -394,16 +394,23 @@ export function renderAnalyticsView(analytics, lineFilter = 'all', users = []) {
     return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">${t('analytics.loading')}</p></div></div>`;
   }
 
+  const kpis = analytics.kpis || {};
   const pages = analytics.pages || [];
   const history = analytics.history || [];
   const ctas = analytics.ctas || [];
   const whatsapp = analytics.whatsapp || [];
-  const kpis = analytics.kpis || {};
-  const abEntry = analytics.ab?.paletas?.entry || null;
 
   return `
     ${renderLineFilter(lineFilter)}
-    ${renderAbEntryCard(abEntry)}
+    <div class="admin-card admin-card-accent admin-card-link">
+      <div class="admin-card-body admin-card-body-row">
+        <div>
+          <h2>${t('analytics.abTitle')}</h2>
+          <p class="admin-hint">${t('analytics.abMovedHint')}</p>
+        </div>
+        <button type="button" class="admin-btn sm primary" data-tab="funnel">${t('content.abResultsLink')}</button>
+      </div>
+    </div>
     ${renderStatsGrid(getStats(users), analytics)}
     <div class="admin-grid-2">
       <div class="admin-card">
@@ -508,6 +515,313 @@ function cell(metric) {
     today: Number(metric.today) || 0,
     total: Number(metric.total) || 0,
   };
+}
+
+function formatDuration(seconds) {
+  const s = Math.max(0, Math.round(Number(seconds) || 0));
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return r ? `${m}m ${r}s` : `${m}m`;
+}
+
+function pageMetric(pages, key) {
+  const row = pages.find((p) => p.key === key);
+  return { today: row?.today || 0, total: row?.total || 0 };
+}
+
+function renderQuizStepsChart(steps) {
+  if (!steps?.length) return `<p class="admin-table-empty">—</p>`;
+  return steps
+    .map(
+      (step, i) => `
+    <div class="admin-quiz-step-row">
+      <div class="admin-quiz-step-head">
+        <span class="admin-quiz-step-idx">${i + 1}</span>
+        <strong>${escapeHtml(step.label)}</strong>
+        <span class="admin-quiz-step-count">
+          <span class="admin-metric today">${step.today || 0}</span> / ${step.total || 0}
+        </span>
+        ${
+          i > 0 && step.dropFromPrev > 0
+            ? `<span class="admin-quiz-drop">−${step.dropFromPrev}%</span>`
+            : ''
+        }
+      </div>
+      <div class="admin-quiz-step-bar" aria-hidden="true"><span style="width:${step.pctOfMax || 0}%"></span></div>
+    </div>`
+    )
+    .join('');
+}
+
+function renderAbConfigCard(entry, dirty) {
+  const quizPct = Number(entry.quizPercent) || 0;
+  const lpPct = 100 - quizPct;
+  const liveLabel = entry.enabled
+    ? t('content.abLiveOn', { quiz: String(quizPct), lp: String(lpPct) })
+    : t('content.abLiveOff');
+
+  return `
+    <div class="admin-card admin-card-accent" data-funnel-ab-config>
+      <div class="admin-card-head">
+        <div>
+          <h2>${t('content.abTitle')}</h2>
+          <p class="admin-hint">${t('content.abHint')}</p>
+        </div>
+        <span class="admin-status-pill ${entry.enabled ? 'is-on' : ''}" data-ab-live-pill>${escapeHtml(liveLabel)}</span>
+      </div>
+      <div class="admin-card-body">
+        <label class="admin-toggle-row">
+          <span>
+            ${t('content.abEnabled')}
+            <span class="admin-toggle-hint">${t('content.abEnabledHint')}</span>
+          </span>
+          <input type="checkbox" id="ab-paletas-enabled" data-ab-enabled data-funnel-dirty ${entry.enabled ? 'checked' : ''}>
+        </label>
+        <label class="admin-field admin-ab-percent">
+          <span>${t('content.abQuizPercent')}</span>
+          <div class="admin-ab-range-row">
+            <input
+              type="range"
+              id="ab-paletas-quiz-percent"
+              data-ab-quiz-percent
+              data-funnel-dirty
+              min="0"
+              max="100"
+              step="5"
+              value="${quizPct}"
+              ${entry.enabled ? '' : 'disabled'}
+            >
+            <input
+              type="number"
+              id="ab-paletas-quiz-number"
+              data-ab-quiz-number
+              data-funnel-dirty
+              min="0"
+              max="100"
+              step="1"
+              value="${quizPct}"
+              ${entry.enabled ? '' : 'disabled'}
+            >
+            <span class="admin-ab-unit">%</span>
+          </div>
+          <p class="admin-hint" id="ab-paletas-split-label" data-ab-split-label>
+            ${t('content.abSplit', { quiz: String(quizPct), lp: String(lpPct) })}
+          </p>
+        </label>
+        <p class="admin-hint">${t('content.abOverrides')}</p>
+      </div>
+    </div>
+    <div class="admin-save-bar ${dirty ? 'is-dirty' : ''}" data-funnel-save-bar>
+      <div class="admin-save-bar-copy">
+        <strong data-funnel-save-status>${dirty ? t('content.dirty') : t('funnel.saveAbHint')}</strong>
+      </div>
+      <button type="button" class="admin-btn primary admin-save-bar-btn" data-funnel-save-ab ${dirty ? '' : 'disabled'}>
+        ${t('funnel.saveAb')}
+      </button>
+    </div>`;
+}
+
+export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft = null) {
+  if (!analytics) {
+    return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">${t('analytics.loading')}</p></div></div>`;
+  }
+
+  const pages = analytics.pages || [];
+  const ctas = analytics.ctas || [];
+  const whatsapp = analytics.whatsapp || [];
+  const kpis = analytics.kpis || {};
+  const abEntry = analytics.ab?.paletas?.entry || null;
+  const funnel = analytics.funnel || {};
+  const quizSteps = funnel.quizSteps || [];
+  const dwell = funnel.dwell || {};
+  const abandon = funnel.abandon || { today: 0, total: 0 };
+  const showPaletasQuiz = lineFilter === 'paletas' || lineFilter === 'all';
+  const isPostresOnly = lineFilter === 'postres';
+
+  const home = pageMetric(pages, 'home');
+  const quiz = pageMetric(pages, 'diagnostico');
+  const postresLp = pageMetric(pages, 'postres');
+
+  const welcomeStep = quizSteps.find((s) => s.id === 'welcome');
+  const offerStep = quizSteps.find((s) => s.id === 'offer');
+  const completePct =
+    welcomeStep?.total > 0
+      ? Math.round(((offerStep?.total || 0) / welcomeStep.total) * 1000) / 10
+      : 0;
+
+  const experiments = getExperiments();
+  const savedEntry = experiments.paletas?.entry || { enabled: false, quizPercent: 0 };
+  const entry = funnelDraft?.ab
+    ? {
+        enabled: funnelDraft.ab.enabled === true,
+        quizPercent: Number(funnelDraft.ab.quizPercent) || 0,
+      }
+    : savedEntry;
+  const dirty = Boolean(funnelDraft?.dirty);
+
+  const lpKpi = isPostresOnly ? postresLp : home;
+  const quizKpi = isPostresOnly ? { today: 0, total: 0 } : quiz;
+
+  const entryPages = pages.filter((p) => {
+    if (isPostresOnly) return p.key === 'postres' || String(p.key).startsWith('upsell-postres');
+    if (lineFilter === 'paletas') {
+      return p.line === 'paletas' || p.key === 'home' || p.key === 'diagnostico';
+    }
+    return true;
+  });
+
+  return `
+    ${renderLineFilter(lineFilter)}
+    <div class="admin-funnel-kpis">
+      <div class="admin-funnel-kpi">
+        <span>${isPostresOnly ? t('funnel.lpPages') : t('funnel.kpiViews')}</span>
+        <strong><span class="admin-metric today">${lpKpi.today}</span> / ${lpKpi.total}</strong>
+      </div>
+      <div class="admin-funnel-kpi">
+        <span>${t('funnel.kpiQuiz')}</span>
+        <strong><span class="admin-metric today">${quizKpi.today}</span> / ${quizKpi.total}</strong>
+      </div>
+      <div class="admin-funnel-kpi">
+        <span>${t('funnel.kpiCheckout')}</span>
+        <strong><span class="admin-metric today">${kpis.checkoutToday || 0}</span> / ${kpis.checkoutTotal || kpis.checkoutToday || 0}</strong>
+      </div>
+      <div class="admin-funnel-kpi">
+        <span>${t('funnel.kpiWa')}</span>
+        <strong><span class="admin-metric today">${kpis.whatsappToday || 0}</span> / ${kpis.whatsappTotal || kpis.whatsappToday || 0}</strong>
+      </div>
+    </div>
+
+    ${
+      isPostresOnly
+        ? `
+      <div class="admin-card">
+        <div class="admin-card-body"><p class="admin-hint">${t('funnel.postresSoon')}</p></div>
+      </div>`
+        : ''
+    }
+
+    ${
+      showPaletasQuiz
+        ? `
+      ${renderAbConfigCard(entry, dirty)}
+      ${renderAbEntryCard(abEntry)}
+      <div class="admin-grid-2">
+        <div class="admin-card">
+          <div class="admin-card-head">
+            <div>
+              <h2>${t('funnel.quizSteps')}</h2>
+              <p class="admin-hint">${t('funnel.quizStepsHint')}</p>
+            </div>
+          </div>
+          <div class="admin-card-body admin-quiz-steps">${renderQuizStepsChart(quizSteps)}</div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-head"><h2>${t('funnel.dwell')}</h2></div>
+          <div class="admin-card-body">
+            <div class="admin-dwell-grid">
+              <div class="admin-dwell-cell">
+                <span>${t('funnel.dwellLp')}</span>
+                <strong>${formatDuration(dwell.home?.avgSecondsToday || dwell.home?.avgSeconds || 0)}</strong>
+                <small>${dwell.home?.todaySessions || 0} hoy · ${dwell.home?.sessions || 0} total</small>
+              </div>
+              <div class="admin-dwell-cell">
+                <span>${t('funnel.dwellQuiz')}</span>
+                <strong>${formatDuration(dwell.diagnostico?.avgSecondsToday || dwell.diagnostico?.avgSeconds || 0)}</strong>
+                <small>${dwell.diagnostico?.todaySessions || 0} hoy · ${dwell.diagnostico?.sessions || 0} total</small>
+              </div>
+              <div class="admin-dwell-cell accent-warn">
+                <span>${t('funnel.abandon')}</span>
+                <strong><span class="admin-metric today">${abandon.today || 0}</span> / ${abandon.total || 0}</strong>
+                <small>${t('funnel.abandonHint')}</small>
+              </div>
+              <div class="admin-dwell-cell accent-green">
+                <span>${t('funnel.completeRate')}</span>
+                <strong>${completePct}%</strong>
+                <small>${offerStep?.total || 0} / ${welcomeStep?.total || 0} ${t('funnel.quizSteps').toLowerCase()}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`
+        : ''
+    }
+
+    ${
+      lineFilter === 'all'
+        ? `<p class="admin-hint admin-funnel-note">${t('funnel.abOnlyPaletas')}</p>`
+        : ''
+    }
+
+    <div class="admin-grid-2">
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>${t('funnel.ctaClicks')}</h2></div>
+        <div class="admin-card-body">
+          ${
+            ctas.length
+              ? ctas
+                  .slice(0, 10)
+                  .map(
+                    (c) => `
+            <div class="admin-traffic-row">
+              <div><strong>${escapeHtml(c.key)}</strong><span>${escapeHtml(c.line || '—')}</span></div>
+              <span class="admin-metric today">${c.today || 0}</span> / ${c.total || 0}
+            </div>`
+                  )
+                  .join('')
+              : `<p class="admin-table-empty">—</p>`
+          }
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-head"><h2>${t('analytics.whatsapp')}</h2></div>
+        <div class="admin-card-body">
+          ${
+            whatsapp.length
+              ? whatsapp
+                  .slice(0, 8)
+                  .map(
+                    (w) => `
+            <div class="admin-traffic-row">
+              <div><strong>${escapeHtml(w.key)}</strong><span>${escapeHtml(w.purpose || w.line || '—')}</span></div>
+              <span class="admin-metric today">${w.today || 0}</span> / ${w.total || 0}
+            </div>`
+                  )
+                  .join('')
+              : `<p class="admin-table-empty">—</p>`
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-head"><h2>${t('funnel.lpPages')}</h2></div>
+      <div class="admin-card-body flush">
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>${t('analytics.page')}</th><th>${t('analytics.path')}</th><th>${t('analytics.today')}</th><th>${t('analytics.total')}</th></tr></thead>
+            <tbody>
+              ${
+                entryPages.length
+                  ? entryPages
+                      .map(
+                        (p) => `
+                <tr>
+                  <td><strong>${escapeHtml(p.label)}</strong></td>
+                  <td><code>${escapeHtml(p.path || '—')}</code></td>
+                  <td><span class="admin-metric today">${p.today || 0}</span></td>
+                  <td><span class="admin-metric">${p.total || 0}</span></td>
+                </tr>`
+                      )
+                      .join('')
+                  : `<tr><td colspan="4" class="admin-table-empty">${t('analytics.noVisits')}</td></tr>`
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderAbArmColumn(label, arm) {
@@ -782,74 +1096,19 @@ export function renderCodesView(codes) {
 
 export function renderContentView(draft = null) {
   const settings = getContentSettings();
-  const experiments = getExperiments();
-  const savedEntry = experiments.paletas?.entry || { enabled: false, quizPercent: 0 };
-  const entry = draft?.ab
-    ? {
-        enabled: draft.ab.enabled === true,
-        quizPercent: Number(draft.ab.quizPercent) || 0,
-      }
-    : savedEntry;
-  const quizPct = Number(entry.quizPercent) || 0;
-  const lpPct = 100 - quizPct;
   const lines = getEnabledLines().filter((line) => line.sellable);
   const adminEmails = getAdminAllowlist();
   const dirty = Boolean(draft?.dirty);
-  const liveLabel = entry.enabled
-    ? t('content.abLiveOn', { quiz: String(quizPct), lp: String(lpPct) })
-    : t('content.abLiveOff');
 
   return `
     <div class="admin-content-stack" data-content-settings>
-      <div class="admin-card admin-card-accent">
-        <div class="admin-card-head">
+      <div class="admin-card admin-card-accent admin-card-link">
+        <div class="admin-card-body admin-card-body-row">
           <div>
             <h2>${t('content.abTitle')}</h2>
-            <p class="admin-hint">${t('content.abHint')}</p>
+            <p class="admin-hint">${t('content.abMovedToFunnel')}</p>
           </div>
-          <span class="admin-status-pill ${entry.enabled ? 'is-on' : ''}" data-ab-live-pill>${escapeHtml(liveLabel)}</span>
-        </div>
-        <div class="admin-card-body">
-          <label class="admin-toggle-row">
-            <span>
-              ${t('content.abEnabled')}
-              <span class="admin-toggle-hint">${t('content.abEnabledHint')}</span>
-            </span>
-            <input type="checkbox" id="ab-paletas-enabled" data-ab-enabled data-content-dirty ${entry.enabled ? 'checked' : ''}>
-          </label>
-          <label class="admin-field admin-ab-percent">
-            <span>${t('content.abQuizPercent')}</span>
-            <div class="admin-ab-range-row">
-              <input
-                type="range"
-                id="ab-paletas-quiz-percent"
-                data-ab-quiz-percent
-                data-content-dirty
-                min="0"
-                max="100"
-                step="5"
-                value="${quizPct}"
-                ${entry.enabled ? '' : 'disabled'}
-              >
-              <input
-                type="number"
-                id="ab-paletas-quiz-number"
-                data-ab-quiz-number
-                data-content-dirty
-                min="0"
-                max="100"
-                step="1"
-                value="${quizPct}"
-                ${entry.enabled ? '' : 'disabled'}
-              >
-              <span class="admin-ab-unit">%</span>
-            </div>
-            <p class="admin-hint" id="ab-paletas-split-label" data-ab-split-label>
-              ${t('content.abSplit', { quiz: String(quizPct), lp: String(lpPct) })}
-            </p>
-          </label>
-          <p class="admin-hint">${t('content.abOverrides')}</p>
-          <button type="button" class="admin-btn sm ghost" data-tab="analytics">${t('content.abResultsLink')}</button>
+          <button type="button" class="admin-btn sm primary" data-tab="funnel">${t('content.abResultsLink')}</button>
         </div>
       </div>
 
@@ -1121,6 +1380,7 @@ export function renderShell(props) {
     lineFilter = 'all',
     apiWarnings = [],
     contentDraft = null,
+    funnelDraft = null,
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -1128,6 +1388,9 @@ export function renderShell(props) {
   switch (activeTab) {
     case 'users':
       content = renderUsersView(users, selectedIds, userFilter, userSearch);
+      break;
+    case 'funnel':
+      content = renderFunnelView(analytics, lineFilter, funnelDraft);
       break;
     case 'analytics':
       content = renderAnalyticsView(analytics, lineFilter, users);

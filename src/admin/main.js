@@ -76,6 +76,7 @@ const state = {
   sidebarOpen: false,
   apiWarnings: [],
   contentDraft: null,
+  funnelDraft: null,
   settingsLoadError: null,
 };
 
@@ -126,6 +127,7 @@ function paint() {
     lineFilter: state.lineFilter,
     apiWarnings: state.apiWarnings,
     contentDraft: state.contentDraft,
+    funnelDraft: state.funnelDraft,
     settingsLoadError: state.settingsLoadError,
   });
   bindEvents();
@@ -336,7 +338,8 @@ async function refreshAll() {
   if (
     state.activeTab === 'dashboard' ||
     state.activeTab === 'analytics' ||
-    state.activeTab === 'channels'
+    state.activeTab === 'channels' ||
+    state.activeTab === 'funnel'
   ) {
     await loadAnalytics();
   }
@@ -380,6 +383,10 @@ function bindEvents() {
         if (!window.confirm(t('content.unsavedLeave'))) return;
         state.contentDraft = null;
       }
+      if (state.activeTab === 'funnel' && state.funnelDraft?.dirty) {
+        if (!window.confirm(t('content.unsavedLeave'))) return;
+        state.funnelDraft = null;
+      }
       setAdminLang(btn.dataset.adminLang);
       state.sidebarOpen = false;
       paint();
@@ -404,11 +411,22 @@ function bindEvents() {
         if (!window.confirm(t('content.unsavedLeave'))) return;
         state.contentDraft = null;
       }
+      if (
+        state.activeTab === 'funnel' &&
+        nextTab !== 'funnel' &&
+        state.funnelDraft?.dirty
+      ) {
+        if (!window.confirm(t('content.unsavedLeave'))) return;
+        state.funnelDraft = null;
+      }
 
       state.activeTab = nextTab;
       state.sidebarOpen = false;
       if (btn.dataset.setFilter) {
         state.userFilter = btn.dataset.setFilter;
+      }
+      if (state.activeTab === 'funnel' && state.lineFilter === 'all') {
+        state.lineFilter = 'paletas';
       }
       if (state.activeTab === 'codes') {
         state.codesCache = await listAccessCodes();
@@ -420,10 +438,17 @@ function bindEvents() {
           state.contentDraft = null;
         }
       }
+      if (state.activeTab === 'funnel') {
+        if (!state.funnelDraft?.dirty) {
+          await loadAdminPanelSettings();
+          state.funnelDraft = null;
+        }
+      }
       if (
         state.activeTab === 'dashboard' ||
         state.activeTab === 'analytics' ||
-        state.activeTab === 'channels'
+        state.activeTab === 'channels' ||
+        state.activeTab === 'funnel'
       ) {
         await loadAnalytics();
       }
@@ -447,13 +472,6 @@ function bindEvents() {
   });
 
   function collectContentDraftFromDom() {
-    const abEnabledEl = root.querySelector('[data-ab-enabled]');
-    const abNumber = root.querySelector('[data-ab-quiz-number]');
-    const abRange = root.querySelector('[data-ab-quiz-percent]');
-    const quizPercent = Math.max(
-      0,
-      Math.min(100, Math.round(Number(abNumber?.value ?? abRange?.value) || 0)),
-    );
     const lines = {};
     root.querySelectorAll('[data-content-flag]').forEach((input) => {
       const lineId = input.dataset.contentLine;
@@ -464,11 +482,24 @@ function bindEvents() {
     });
     return {
       dirty: true,
+      lines,
+    };
+  }
+
+  function collectFunnelDraftFromDom() {
+    const abEnabledEl = root.querySelector('[data-ab-enabled]');
+    const abNumber = root.querySelector('[data-ab-quiz-number]');
+    const abRange = root.querySelector('[data-ab-quiz-percent]');
+    const quizPercent = Math.max(
+      0,
+      Math.min(100, Math.round(Number(abNumber?.value ?? abRange?.value) || 0)),
+    );
+    return {
+      dirty: true,
       ab: {
         enabled: Boolean(abEnabledEl?.checked),
         quizPercent,
       },
-      lines,
     };
   }
 
@@ -480,9 +511,19 @@ function bindEvents() {
     bar?.classList.add('is-dirty');
     if (status) status.textContent = t('content.dirty');
     if (btn) btn.disabled = false;
+  }
+
+  function markFunnelDirty() {
+    state.funnelDraft = collectFunnelDraftFromDom();
+    const bar = root.querySelector('[data-funnel-save-bar]');
+    const status = root.querySelector('[data-funnel-save-status]');
+    const btn = root.querySelector('[data-funnel-save-ab]');
+    bar?.classList.add('is-dirty');
+    if (status) status.textContent = t('content.dirty');
+    if (btn) btn.disabled = false;
 
     const enabled = Boolean(root.querySelector('[data-ab-enabled]')?.checked);
-    const quiz = state.contentDraft.ab.quizPercent;
+    const quiz = state.funnelDraft.ab.quizPercent;
     const pill = root.querySelector('[data-ab-live-pill]');
     if (pill) {
       pill.textContent = enabled
@@ -509,6 +550,12 @@ function bindEvents() {
   }
 
   root.querySelectorAll('[data-content-dirty]').forEach((input) => {
+    input.addEventListener('change', () => {
+      markContentDirty();
+    });
+  });
+
+  root.querySelectorAll('[data-funnel-dirty]').forEach((input) => {
     const eventName = input.type === 'range' || input.type === 'number' ? 'input' : 'change';
     input.addEventListener(eventName, () => {
       if (input.matches('[data-ab-enabled]')) {
@@ -526,7 +573,7 @@ function bindEvents() {
         if (range) range.value = String(v);
         syncAbSplitLabel(v);
       }
-      markContentDirty();
+      markFunnelDirty();
     });
   });
 
@@ -534,6 +581,68 @@ function bindEvents() {
     const btn = root.querySelector('[data-content-save-all]');
     const status = root.querySelector('[data-content-save-status]');
     const draft = collectContentDraftFromDom();
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = t('content.saving');
+    }
+    if (status) status.textContent = t('content.saving');
+
+    try {
+      const token = await state.currentAdminUser.getIdToken();
+      const saved = await saveAdminSettings(token, {
+        content: { lines: draft.lines },
+      });
+
+      if (saved?.content) applyContentSettingsFromServer(saved.content);
+      else applyContentSettingsLocal(draft.lines);
+
+      state.contentDraft = null;
+      state.settingsLoadError = null;
+      showToast(t('content.allSaved'));
+      paint();
+      return;
+    } catch (apiErr) {
+      console.warn('[admin] settings API, trying client write', apiErr);
+
+      const contentResult = await saveContentSettings(draft.lines);
+
+      if (contentResult.ok && contentResult.cloud) {
+        state.contentDraft = null;
+        showToast(t('content.allSaved'));
+        paint();
+        return;
+      }
+
+      state.contentDraft = draft;
+      const detail = String(
+        apiErr?.message ||
+          contentResult.error?.code ||
+          contentResult.error?.message ||
+          '',
+      );
+      const needsServer = /firebase admin|no configurado|503/i.test(detail);
+      const blocked = /permission|insufficient|forbidden|blocked/i.test(detail);
+      const localOnly = contentResult.ok && !contentResult.cloud;
+      showToast(
+        needsServer || localOnly
+          ? t('content.saveNeedServer')
+          : blocked
+            ? t('content.saveBlocked')
+            : t('toast.saveError'),
+      );
+    }
+
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = t('content.saveAll');
+    }
+    if (status) status.textContent = t('content.dirty');
+  });
+
+  root.querySelector('[data-funnel-save-ab]')?.addEventListener('click', async () => {
+    const btn = root.querySelector('[data-funnel-save-ab]');
+    const status = root.querySelector('[data-funnel-save-status]');
+    const draft = collectFunnelDraftFromDom();
     if (btn) {
       btn.disabled = true;
       btn.textContent = t('content.saving');
@@ -551,53 +660,42 @@ function bindEvents() {
             },
           },
         },
-        content: { lines: draft.lines },
       });
 
       if (saved?.experiments) applyExperimentsFromServer(saved.experiments);
       else applyExperimentsLocal({ paletas: { entry: draft.ab } });
-      if (saved?.content) applyContentSettingsFromServer(saved.content);
-      else applyContentSettingsLocal(draft.lines);
 
-      state.contentDraft = null;
+      state.funnelDraft = null;
       state.settingsLoadError = null;
-      showToast(t('content.allSaved'));
+      showToast(t('funnel.abSaved'));
       paint();
       return;
     } catch (apiErr) {
-      console.warn('[admin] settings API, trying client write', apiErr);
+      console.warn('[admin] funnel AB save, trying client write', apiErr);
 
-      const [expResult, contentResult] = await Promise.all([
-        saveExperiments({
-          paletas: {
-            entry: {
-              enabled: draft.ab.enabled,
-              quizPercent: draft.ab.quizPercent,
-            },
+      const expResult = await saveExperiments({
+        paletas: {
+          entry: {
+            enabled: draft.ab.enabled,
+            quizPercent: draft.ab.quizPercent,
           },
-        }),
-        saveContentSettings(draft.lines),
-      ]);
+        },
+      });
 
-      if (expResult.ok && expResult.cloud && contentResult.ok && contentResult.cloud) {
-        state.contentDraft = null;
-        showToast(t('content.allSaved'));
+      if (expResult.ok && expResult.cloud) {
+        state.funnelDraft = null;
+        showToast(t('funnel.abSaved'));
         paint();
         return;
       }
 
-      state.contentDraft = draft;
+      state.funnelDraft = draft;
       const detail = String(
-        apiErr?.message ||
-          expResult.error?.code ||
-          expResult.error?.message ||
-          contentResult.error?.message ||
-          '',
+        apiErr?.message || expResult.error?.code || expResult.error?.message || '',
       );
       const needsServer = /firebase admin|no configurado|503/i.test(detail);
       const blocked = /permission|insufficient|forbidden|blocked/i.test(detail);
-      const localOnly =
-        (expResult.ok && !expResult.cloud) || (contentResult.ok && !contentResult.cloud);
+      const localOnly = expResult.ok && !expResult.cloud;
       showToast(
         needsServer || localOnly
           ? t('content.saveNeedServer')
@@ -609,7 +707,7 @@ function bindEvents() {
 
     if (btn) {
       btn.disabled = false;
-      btn.textContent = t('content.saveAll');
+      btn.textContent = t('funnel.saveAb');
     }
     if (status) status.textContent = t('content.dirty');
   });

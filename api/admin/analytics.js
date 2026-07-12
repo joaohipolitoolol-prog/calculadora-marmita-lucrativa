@@ -1,6 +1,11 @@
 import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
 import { PAGE_META, todayKey } from '../../server/lib/analytics-schema.js';
 import { publicAbEntry, rate } from '../../server/lib/analytics-ab.js';
+import {
+  buildStepDropoff,
+  publicDwell,
+  publicQuizSteps,
+} from '../../server/lib/analytics-funnel.js';
 
 /** Last N UTC day keys (YYYY-MM-DD), newest first — avoids Firestore orderBy(__name__) index. */
 function lastDayKeys(n = 14) {
@@ -122,6 +127,14 @@ export default async function handler(req, res) {
     });
 
     const abEntry = buildAbPayload(summary.ab?.paletas?.entry || {});
+    const funnel = {
+      quizSteps: buildStepDropoff(publicQuizSteps(summary.quiz_steps || {})),
+      dwell: publicDwell(summary.dwell || {}),
+      abandon: {
+        today: Number(summary.quiz_abandon?.today) || 0,
+        total: Number(summary.quiz_abandon?.total) || 0,
+      },
+    };
 
     return res.status(200).json({
       line,
@@ -138,6 +151,7 @@ export default async function handler(req, res) {
           entry: abEntry,
         },
       },
+      funnel,
       kpis: {
         pageViewsToday: todayTotal,
         pageViewsTotal: allTimeTotal,

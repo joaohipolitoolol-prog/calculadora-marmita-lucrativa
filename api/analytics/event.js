@@ -12,6 +12,12 @@ import {
   normalizeAbVariant,
   resetAbToday,
 } from '../../server/lib/analytics-ab.js';
+import {
+  bumpPageDwell,
+  bumpQuizAbandon,
+  bumpQuizStep,
+  resetFunnelToday,
+} from '../../server/lib/analytics-funnel.js';
 
 function bump(map, key, n = 1) {
   if (!key) return;
@@ -49,6 +55,7 @@ export default async function handler(req, res) {
     const purpose = sanitizeKey(body.purpose, 24);
     const tier = sanitizeKey(body.tier, 24);
     const uid = sanitizeKey(body.uid, 128);
+    const seconds = Math.min(7200, Math.max(0, Number(body.seconds) || 0));
     const ab =
       normalizeAbVariant(body.ab) ||
       normalizeAbVariant(purpose) ||
@@ -70,6 +77,7 @@ export default async function handler(req, res) {
       tier: tier || null,
       uid: uid || null,
       ab: ab || null,
+      seconds: seconds || null,
       createdAt: FieldValue.serverTimestamp(),
       day,
     };
@@ -110,6 +118,7 @@ export default async function handler(req, res) {
           }
         }
         resetAbToday(summary);
+        resetFunnelToday(summary);
         summary.todayKey = day;
       }
 
@@ -192,6 +201,16 @@ export default async function handler(req, res) {
       if (ab) {
         const metric = metricForAbEvent(event, { page, ctaId });
         if (metric) bumpAbMetric(summary, daily, ab, metric);
+      }
+
+      if (event === 'diagnostico_step' && ctaId) {
+        bumpQuizStep(summary, daily, ctaId);
+      }
+      if (event === 'page_dwell' && page && seconds > 0) {
+        bumpPageDwell(summary, daily, page, seconds);
+      }
+      if (event === 'diagnostico_abandon') {
+        bumpQuizAbandon(summary, daily);
       }
 
       daily.date = day;

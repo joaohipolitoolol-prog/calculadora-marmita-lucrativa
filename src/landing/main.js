@@ -18,6 +18,7 @@ import {
 } from '../lib/landing-checkout.js';
 import { initWaReviewsPrints } from '../lib/wa-reviews.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
+import { initPageDwell } from '../lib/page-dwell.js';
 import { resolvePaletasEntryAb } from '../lib/ab-entry.js';
 
 async function boot() {
@@ -26,6 +27,7 @@ async function boot() {
   if (ab.redirected) return;
 
   trackCurrentPage({ line: 'paletas' });
+  initPageDwell('home', { line: 'paletas' });
   bindTrackClicks({ page: 'home', line: 'paletas', numberId: WHATSAPP_NUMBER_ID });
 
   document.querySelectorAll('[data-price]').forEach((el) => {

@@ -1,6 +1,7 @@
 import './diagnostico.css';
 import { createDiagnostico } from './engine.js';
 import { ensureQuizAbTracking } from '../lib/ab-entry.js';
+import { initPageDwell } from '../lib/page-dwell.js';
 import { trackPageView } from '../lib/track.js';
 
 const root = document.querySelector('[data-diagnostico]');
@@ -11,4 +12,5 @@ if (root) {
   ensureQuizAbTracking();
   createDiagnostico(root);
   trackPageView('diagnostico');
+  initPageDwell('diagnostico', { line: 'paletas' });
 }
