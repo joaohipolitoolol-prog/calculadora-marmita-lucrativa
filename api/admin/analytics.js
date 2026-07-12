@@ -1,5 +1,18 @@
 import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
-import { PAGE_META } from '../../server/lib/analytics-schema.js';
+import { PAGE_META, todayKey } from '../../server/lib/analytics-schema.js';
+
+/** Last N UTC day keys (YYYY-MM-DD), newest first — avoids Firestore orderBy(__name__) index. */
+function lastDayKeys(n = 14) {
+  const keys = [];
+  const anchor = todayKey();
+  const base = new Date(`${anchor}T00:00:00.000Z`);
+  for (let i = 0; i < n; i++) {
+    const d = new Date(base);
+    d.setUTCDate(base.getUTCDate() - i);
+    keys.push(d.toISOString().slice(0, 10));
+  }
+  return keys;
+}
 
 function mapCounterObject(obj = {}) {
   return Object.entries(obj).map(([key, data]) => {
@@ -43,24 +56,25 @@ export default async function handler(req, res) {
       ? summarySnap.data()
       : { pages: {}, events: {}, lines: {}, ctas: {}, whatsapp: {} };
 
-    const daysSnap = await firestore
-      .collection('analytics_daily')
-      .orderBy(firebaseAdmin.firestore.FieldPath.documentId(), 'desc')
-      .limit(14)
-      .get();
+    const dayKeys = lastDayKeys(14);
+    const daySnaps = await firestore.getAll(
+      ...dayKeys.map((id) => firestore.doc(`analytics_daily/${id}`)),
+    );
 
-    const history = daysSnap.docs.map((docSnap) => {
-      const data = docSnap.data() || {};
-      return {
-        date: docSnap.id,
-        total: data.total || 0,
-        pages: data.pages || {},
-        events: data.events || {},
-        lines: data.lines || {},
-        ctas: data.ctas || {},
-        whatsapp: data.whatsapp || {},
-      };
-    });
+    const history = daySnaps
+      .filter((docSnap) => docSnap.exists)
+      .map((docSnap) => {
+        const data = docSnap.data() || {};
+        return {
+          date: docSnap.id,
+          total: data.total || 0,
+          pages: data.pages || {},
+          events: data.events || {},
+          lines: data.lines || {},
+          ctas: data.ctas || {},
+          whatsapp: data.whatsapp || {},
+        };
+      });
 
     let pages = mapCounterObject(summary.pages || {});
     pages = filterByLine(pages, line);
