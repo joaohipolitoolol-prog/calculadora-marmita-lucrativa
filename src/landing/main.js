@@ -16,7 +16,7 @@ import {
   bindOfferSticky,
   bindScrollToOffer,
 } from '../lib/landing-checkout.js';
-import { bindWaReviewsDrag } from '../lib/wa-reviews.js';
+import { initWaReviewsPrints } from '../lib/wa-reviews.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { resolvePaletasEntryAb } from '../lib/ab-entry.js';
 
@@ -67,7 +67,7 @@ async function boot() {
   });
 
   bindOfferSticky(document.getElementById('purchase-sticky'));
-  document.querySelectorAll('.wa-reviews-track-prints').forEach((el) => bindWaReviewsDrag(el));
+  initWaReviewsPrints();
 
   try {
     initDemo();

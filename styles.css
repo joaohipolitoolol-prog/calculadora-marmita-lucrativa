@@ -2904,14 +2904,62 @@ body:has(.purchase-sticky.visible) {
   opacity: 0.95;
 }
 
+/* Soft continuous pass — light presence, not noise */
+.wa-reviews-track-prints.is-marquee {
+  overflow: hidden;
+  scroll-snap-type: none;
+  padding-inline: 16px;
+  cursor: default;
+  touch-action: pan-y;
+}
+
+.wa-reviews-marquee-inner {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  will-change: transform;
+  animation: wa-reviews-marquee var(--wa-marquee-duration, 36s) linear infinite;
+}
+
+.wa-reviews-track-prints.is-marquee-paused .wa-reviews-marquee-inner {
+  animation-play-state: paused;
+}
+
+.wa-reviews-track-prints.is-marquee .wa-review {
+  scroll-snap-align: none;
+}
+
+@keyframes wa-reviews-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-reviews-marquee-inner {
+    animation: none !important;
+  }
+}
+
 @media (min-width: 768px) {
   .wa-reviews-shell-prints::after {
     display: none;
   }
 
-  .wa-reviews-track-prints {
+  .wa-reviews-track-prints:not(.is-marquee) {
     justify-content: center;
     padding-inline: 24px;
+    gap: 16px;
+  }
+
+  .wa-reviews-track-prints.is-marquee {
+    padding-inline: 24px;
+  }
+
+  .wa-reviews-marquee-inner {
     gap: 16px;
   }
 
