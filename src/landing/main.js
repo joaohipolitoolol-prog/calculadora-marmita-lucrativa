@@ -6,6 +6,7 @@ import {
   MAIN_PRICE_LABEL,
   OFFER_CTA_LABEL,
   PRICE_ACCESS_LABEL,
+  PRICE_CTA_LABEL,
   STICKY_CTA_LABEL,
   WHATSAPP_NUMBER_ID,
 } from './config.js';
@@ -15,6 +16,7 @@ import {
   bindOfferSticky,
   bindScrollToOffer,
 } from '../lib/landing-checkout.js';
+import { bindWaReviewsDrag } from '../lib/wa-reviews.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'paletas' });
@@ -38,8 +40,10 @@ if (logo) {
 
 bindScrollToOffer();
 document.querySelectorAll('[data-scroll-offer]').forEach((link) => {
-  if (link.dataset.ctaHero !== undefined || link.dataset.checkoutHero !== undefined) {
+  if (link.dataset.ctaHero !== undefined) {
     link.textContent = HERO_CTA_LABEL;
+  } else if (link.dataset.ctaPrice !== undefined) {
+    link.textContent = PRICE_CTA_LABEL;
   }
 });
 
@@ -57,6 +61,7 @@ bindHardCheckoutLinks({
 });
 
 bindOfferSticky(document.getElementById('purchase-sticky'));
+document.querySelectorAll('.wa-reviews-track-prints').forEach((el) => bindWaReviewsDrag(el));
 
 try {
   initDemo();
