@@ -22,6 +22,7 @@ export const EVENT_TYPES = new Set([
   'register',
   'login',
   'app_open',
+  'ab_assign',
 ]);
 
 export const LINES = new Set(['paletas', 'postres', 'donuts']);

@@ -1,6 +1,7 @@
 import { PRODUCTS, isPendingStatus, profileStatus } from '../lib/products.js';
 import { getEnabledLines } from '../lib/product-lines.js';
 import { getContentSettings } from '../lib/content-settings.js';
+import { getExperiments } from '../lib/experiments.js';
 import { getAdminAllowlist } from '../lib/admin-access.js';
 import { WHATSAPP_NUMBERS } from '../lib/whatsapp-numbers.js';
 import { ICONS } from './icons.js';
@@ -83,16 +84,21 @@ function renderProductPills(user) {
 
 function renderStatusBadge(user) {
   const status = profileStatus(user);
-  if (status === 'admin') return `<span class="admin-badge admin">${t('status.admin')}</span>`;
-  if (status === 'orphan') return `<span class="admin-badge warn">${t('status.orphan')}</span>`;
-  if (status === 'active') return `<span class="admin-badge active">${t('status.active')}</span>`;
-  if (status === 'pending_upsell') {
-    return `<span class="admin-badge pending">${t('status.pending_upsell')}</span>`;
+  const badges = [];
+  if (status === 'admin') badges.push(`<span class="admin-badge admin">${t('status.admin')}</span>`);
+  else if (status === 'orphan') badges.push(`<span class="admin-badge warn">${t('status.orphan')}</span>`);
+  else if (status === 'active') badges.push(`<span class="admin-badge active">${t('status.active')}</span>`);
+  else if (status === 'pending_upsell') {
+    badges.push(`<span class="admin-badge pending">${t('status.pending_upsell')}</span>`);
+  } else if (status === 'pending_kit') {
+    badges.push(`<span class="admin-badge pending">${t('status.pending_kit')}</span>`);
+  } else {
+    badges.push(`<span class="admin-badge pending">${t('status.pending')}</span>`);
   }
-  if (status === 'pending_kit') {
-    return `<span class="admin-badge pending">${t('status.pending_kit')}</span>`;
+  if (user.needsPasswordSetup) {
+    badges.push(`<span class="admin-badge warn">${t('status.noPassword')}</span>`);
   }
-  return `<span class="admin-badge pending">${t('status.pending')}</span>`;
+  return `<div class="admin-pill-row">${badges.join('')}</div>`;
 }
 
 function renderLineFilter(activeLine) {
@@ -279,6 +285,7 @@ export function renderUserDrawer(user) {
       </div>
       <div class="admin-drawer-body">
         ${user.missingProfile ? `<div class="admin-alert warn">${t('drawer.orphanWarn')}</div>` : ''}
+        ${user.needsPasswordSetup ? `<div class="admin-alert info">${t('drawer.noPassword')}</div>` : ''}
         ${
           user.lastGrantSource || user.lastGrantAt
             ? `<div class="admin-drawer-meta-note">
@@ -696,6 +703,10 @@ export function renderCodesView(codes) {
 
 export function renderContentView() {
   const settings = getContentSettings();
+  const experiments = getExperiments();
+  const entry = experiments.paletas?.entry || { enabled: false, quizPercent: 0 };
+  const quizPct = Number(entry.quizPercent) || 0;
+  const lpPct = 100 - quizPct;
   const lines = getEnabledLines().filter((line) => line.sellable);
   const adminEmails = getAdminAllowlist();
 
@@ -715,6 +726,57 @@ export function renderContentView() {
           </label>
           <button type="submit" class="admin-btn primary">${t('content.saveAdmins')}</button>
         </form>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <div>
+          <h2>${t('content.abTitle')}</h2>
+          <p class="admin-hint">${t('content.abHint')}</p>
+        </div>
+      </div>
+      <div class="admin-card-body">
+        <label class="admin-toggle-row">
+          <span>
+            ${t('content.abEnabled')}
+            <span class="admin-toggle-hint">${t('content.abEnabledHint')}</span>
+          </span>
+          <input type="checkbox" id="ab-paletas-enabled" data-ab-enabled ${entry.enabled ? 'checked' : ''}>
+        </label>
+        <label class="admin-field admin-ab-percent">
+          <span>${t('content.abQuizPercent')}</span>
+          <div class="admin-ab-range-row">
+            <input
+              type="range"
+              id="ab-paletas-quiz-percent"
+              data-ab-quiz-percent
+              min="0"
+              max="100"
+              step="5"
+              value="${quizPct}"
+              ${entry.enabled ? '' : 'disabled'}
+            >
+            <input
+              type="number"
+              id="ab-paletas-quiz-number"
+              data-ab-quiz-number
+              min="0"
+              max="100"
+              step="1"
+              value="${quizPct}"
+              ${entry.enabled ? '' : 'disabled'}
+            >
+            <span class="admin-ab-unit">%</span>
+          </div>
+          <p class="admin-hint" id="ab-paletas-split-label" data-ab-split-label>
+            ${t('content.abSplit', { quiz: String(quizPct), lp: String(lpPct) })}
+          </p>
+        </label>
+        <p class="admin-hint">${t('content.abOverrides')}</p>
+        <button type="button" class="admin-btn primary" id="ab-paletas-save" data-ab-save>
+          ${t('content.abSave')}
+        </button>
       </div>
     </div>
 

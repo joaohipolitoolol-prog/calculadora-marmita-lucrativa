@@ -1,68 +1,66 @@
 /**
- * Prova social — mulheres + número (sem país).
- * A linha evolui com o funil; o número ancora pertencimento.
+ * Prova social — sem número frágil.
+ * A linha evolui com o funil; depoimentos reais carregam a prova.
  */
-
-const SOCIAL_N = 'Más de 300';
 
 export function socialLineFor(phase, answers = {}) {
   if (phase === 'result') {
-    return `${SOCIAL_N} mujeres ya dieron este paso · ahora es tu turno`;
+    return 'Mujeres como tú ya están dando este paso · ahora es tu turno';
   }
 
   if (phase === 'deep') {
     if (answers.blocker === 'precio') {
-      return `${SOCIAL_N} mujeres también tenían trabas con el precio`;
+      return 'Otras también tenían trabas con el precio — y empezaron igual';
     }
     if (answers.blocker === 'ventas') {
-      return `${SOCIAL_N} mujeres también dudaban antes de la primera venta`;
+      return 'Otras también dudaban antes de la primera venta';
     }
     if (answers.blocker === 'recetas') {
-      return `${SOCIAL_N} mujeres también querían recetas claras`;
+      return 'Otras también querían recetas claras antes de empezar';
     }
     if (answers.blocker === 'whatsapp') {
-      return `${SOCIAL_N} mujeres también querían vender bien por WhatsApp`;
+      return 'Otras también querían vender bien por WhatsApp';
     }
     if (answers.blocker === 'empezar') {
-      return `${SOCIAL_N} mujeres también no sabían por dónde empezar`;
+      return 'Otras también tenían miedo de gastar y no vender';
     }
-    return `${SOCIAL_N} mujeres ya están armando su diagnóstico`;
+    return 'Estamos armando un plan según tu momento';
   }
 
   if (phase === 'mid') {
     if (answers.experience === 'never') {
-      return `${SOCIAL_N} mujeres también empezaron desde cero`;
+      return 'Mujeres de distintos países también empezaron desde cero';
+    }
+    if (answers.experience === 'family') {
+      return 'Otras también empezaron vendiendo lo que ya preparaban en casa';
     }
     if (answers.experience === 'tried') {
-      return `${SOCIAL_N} mujeres también intentaron y se frenaron — y siguieron`;
+      return 'Otras también intentaron, se frenaron — y siguieron';
     }
     if (answers.experience === 'selling') {
-      return `${SOCIAL_N} mujeres también sumaron paletas a lo que ya vendían`;
+      return 'Otras también sumaron un sistema más claro a lo que ya vendían';
     }
-    return `${SOCIAL_N} mujeres ya empezaron a vender paletas desde casa`;
+    return 'Mujeres de distintos países ya usan el Kit Paletas para empezar desde casa';
   }
 
-  return `${SOCIAL_N} mujeres ya empezaron a vender paletas desde casa`;
+  return 'Mujeres de distintos países ya usan el Kit Paletas para empezar desde casa';
 }
 
 export function phaseFromScreen(screenId) {
   if (screenId === 'welcome') return 'welcome';
   if (
     screenId === 'diagnosis' ||
-    screenId === 'simulation' ||
-    screenId === 'insight' ||
-    screenId === 'kit_match' ||
+    screenId === 'plan' ||
     screenId === 'trust' ||
     screenId === 'offer'
   ) {
     return 'result';
   }
   if (
-    screenId === 'q_blocker' ||
-    screenId === 'q_cooking' ||
-    screenId === 'q_whatsapp' ||
-    screenId === 'q_speed' ||
-    screenId === 'affirm_2' ||
+    screenId === 'q_channel' ||
+    screenId === 'q_start' ||
+    screenId === 'q_victory' ||
+    screenId === 'q_name' ||
     screenId === 'loading'
   ) {
     return 'deep';

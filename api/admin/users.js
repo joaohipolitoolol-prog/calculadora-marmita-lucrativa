@@ -2,6 +2,10 @@ import { verifyAdminRequest, getFirebaseAdmin, FieldValue } from '../../server/l
 
 const PRODUCT_FIELDS = ['hasKit', 'hasPremium', 'hasPostres', 'hasPostresPremium'];
 
+function hasPasswordProvider(authUser) {
+  return (authUser?.providerData || []).some((p) => p.providerId === 'password');
+}
+
 function serializeTimestamp(value) {
   if (!value) return null;
   if (value.toDate) return value.toDate().toISOString();
@@ -43,6 +47,7 @@ function mergeUser(authUser, profile) {
       registeredLine: base?.registeredLine || null,
       lastActiveLine: base?.lastActiveLine || null,
       premiumPending: base?.premiumPending || { paletas: false, postres: false },
+      needsPasswordSetup: Boolean(base?.needsPasswordSetup) || !hasPasswordProvider(authUser),
       createdAt: base?.createdAt || authUser.metadata?.creationTime || null,
       updatedAt: base?.updatedAt || null,
       lastLoginAt: base?.lastLoginAt || authUser.metadata?.lastSignInTime || null,
@@ -56,6 +61,7 @@ function mergeUser(authUser, profile) {
   return {
     ...base,
     premiumPending: base?.premiumPending || { paletas: false, postres: false },
+    needsPasswordSetup: Boolean(base?.needsPasswordSetup),
     missingProfile: false,
     authOnly: false,
   };
@@ -96,41 +102,117 @@ async function listMergedUsers(firebaseAdmin) {
   });
 }
 
+function productFlagsFromBody(products = {}) {
+  return {
+    hasKit: Boolean(products.paletas_kit),
+    hasPremium: Boolean(products.paletas_premium),
+    hasPostres: Boolean(products.postres_kit),
+    hasPostresPremium: Boolean(products.postres_premium),
+  };
+}
+
+/**
+ * Create or link a user by email.
+ * Password optional: empty = no password (buyer can reset later) or link existing Auth account.
+ */
 async function createUser(firebaseAdmin, body) {
   const { email, password, displayName, products = {}, registeredFrom = 'manual' } = body || {};
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
+  const name = String(displayName || '').trim();
+  const rawPassword = password == null ? '' : String(password);
+  const wantsPassword = rawPassword.length > 0;
 
-  if (!email || !password) {
-    throw Object.assign(new Error('email y password son obligatorios'), { status: 400 });
+  if (!normalizedEmail) {
+    throw Object.assign(new Error('email es obligatorio'), { status: 400 });
   }
-  if (String(password).length < 6) {
+  if (wantsPassword && rawPassword.length < 6) {
     throw Object.assign(new Error('La contraseña debe tener al menos 6 caracteres'), {
       status: 400,
     });
   }
 
-  const authUser = await firebaseAdmin.auth().createUser({
-    email: String(email).trim().toLowerCase(),
-    password: String(password),
-    displayName: String(displayName || '').trim() || undefined,
-  });
+  const auth = firebaseAdmin.auth();
+  const firestore = firebaseAdmin.firestore();
+  const flags = productFlagsFromBody(products);
+
+  let authUser = null;
+  let linkedExisting = false;
+  let createdAuth = false;
+
+  try {
+    authUser = await auth.getUserByEmail(normalizedEmail);
+    linkedExisting = true;
+  } catch (err) {
+    if (err?.code !== 'auth/user-not-found') throw err;
+  }
+
+  if (authUser) {
+    if (wantsPassword) {
+      await auth.updateUser(authUser.uid, {
+        password: rawPassword,
+        displayName: name || authUser.displayName || undefined,
+      });
+      authUser = await auth.getUser(authUser.uid);
+    } else if (name && name !== authUser.displayName) {
+      await auth.updateUser(authUser.uid, { displayName: name });
+      authUser = await auth.getUser(authUser.uid);
+    }
+  } else {
+    const createPayload = {
+      email: normalizedEmail,
+      displayName: name || undefined,
+    };
+    if (wantsPassword) createPayload.password = rawPassword;
+    authUser = await auth.createUser(createPayload);
+    createdAuth = true;
+  }
+
+  const ref = firestore.doc(`users/${authUser.uid}`);
+  const snap = await ref.get();
+  const prev = snap.exists ? snap.data() || {} : {};
+
+  const needsPasswordSetup =
+    !wantsPassword && !hasPasswordProvider(authUser)
+      ? true
+      : wantsPassword
+        ? false
+        : Boolean(prev.needsPasswordSetup);
 
   const profile = {
-    email: authUser.email,
-    displayName: String(displayName || '').trim(),
-    registeredFrom,
-    isAdmin: false,
-    hasKit: Boolean(products.paletas_kit),
-    hasPremium: Boolean(products.paletas_premium),
-    hasPostres: Boolean(products.postres_kit),
-    hasPostresPremium: Boolean(products.postres_premium),
-    premiumPending: { paletas: false, postres: false },
-    createdAt: FieldValue.serverTimestamp(),
+    email: authUser.email || normalizedEmail,
+    displayName: name || prev.displayName || authUser.displayName || '',
+    registeredFrom: prev.registeredFrom || registeredFrom,
+    isAdmin: Boolean(prev.isAdmin),
+    // OR-merge grants so re-adding never strips access
+    hasKit: Boolean(prev.hasKit) || flags.hasKit,
+    hasPremium: Boolean(prev.hasPremium) || flags.hasPremium,
+    hasPostres: Boolean(prev.hasPostres) || flags.hasPostres,
+    hasPostresPremium: Boolean(prev.hasPostresPremium) || flags.hasPostresPremium,
+    premiumPending: normalizePremiumPending(prev.premiumPending),
+    needsPasswordSetup,
     updatedAt: FieldValue.serverTimestamp(),
   };
 
-  await firebaseAdmin.firestore().doc(`users/${authUser.uid}`).set(profile, { merge: true });
+  if (!snap.exists) {
+    profile.createdAt = FieldValue.serverTimestamp();
+  }
 
-  return { uid: authUser.uid, email: authUser.email };
+  if (flags.hasKit || flags.hasPremium || flags.hasPostres || flags.hasPostresPremium) {
+    profile.lastGrantSource = linkedExisting ? 'admin_link' : 'admin_manual';
+    profile.lastGrantAt = new Date().toISOString();
+  }
+
+  await ref.set(profile, { merge: true });
+
+  return {
+    uid: authUser.uid,
+    email: authUser.email || normalizedEmail,
+    linkedExisting,
+    createdAuth,
+    needsPasswordSetup,
+  };
 }
 
 async function syncMissingProfiles(firebaseAdmin) {

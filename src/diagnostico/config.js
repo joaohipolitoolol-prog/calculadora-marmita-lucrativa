@@ -2,8 +2,8 @@
 
 export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y?checkoutMode=10';
 
-export const MAIN_PRICE = 6.99;
-export const MAIN_PRICE_LABEL = 'US$ 6,99';
+export const MAIN_PRICE = 7.49;
+export const MAIN_PRICE_LABEL = 'US$ 7,49';
 export const BRAND = 'Paletas para WhatsApp';
 export const KIT_NAME = 'Kit Paletas para WhatsApp';
 export const META_PIXEL_ID = '1369803401885896';
@@ -58,22 +58,27 @@ export const WA_REVIEWS = {
   },
 };
 
-/** Reviews alinhadas ao bloqueio — ordem pensada para não repetir o print do affirm_1 */
-export function reviewsForDiagnosis(diagnosisId) {
+/** Reviews alinhadas ao bloqueio — uma única fonte de verdade */
+export function diagnosisReviewIds(diagnosisId) {
   const map = {
     precio: ['norma', 'luciana'],
     confianza: ['alejandra', 'norma'],
-    recetas: ['alejandra', 'norma'],
+    recetas: ['luciana', 'vecinas'],
     whatsapp: ['alejandra', 'yadira'],
     inicio: ['yadira', 'alejandra'],
   };
-  const ids = map[diagnosisId] || map.inicio;
-  return ids.map((id) => WA_REVIEWS[id]).filter(Boolean);
+  return map[diagnosisId] || map.inicio;
 }
 
-/** Print no affirm_1 — por experiência (nunca = Yadira, não Alejandra) */
+export function reviewsForDiagnosis(diagnosisId) {
+  return diagnosisReviewIds(diagnosisId)
+    .map((id) => WA_REVIEWS[id])
+    .filter(Boolean);
+}
+
+/** Print no affirm_1 — por experiência (nunca/family = Yadira, não Alejandra) */
 export function reviewForExperience(experience) {
-  if (experience === 'never') return WA_REVIEWS.yadira;
+  if (experience === 'never' || experience === 'family') return WA_REVIEWS.yadira;
   if (experience === 'tried') return WA_REVIEWS.vecinas;
   if (experience === 'selling') return WA_REVIEWS.luciana;
   return WA_REVIEWS.norma;
@@ -111,15 +116,4 @@ export function pickUnusedReviews(preferredIds = [], used = [], count = 2) {
     out.push(WA_REVIEWS[id]);
   }
   return out;
-}
-
-export function diagnosisReviewIds(diagnosisId) {
-  const map = {
-    precio: ['norma', 'luciana'],
-    confianza: ['alejandra', 'norma'],
-    recetas: ['alejandra', 'norma'],
-    whatsapp: ['alejandra', 'yadira'],
-    inicio: ['yadira', 'alejandra'],
-  };
-  return map[diagnosisId] || map.inicio;
 }

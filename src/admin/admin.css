@@ -547,6 +547,12 @@ body {
   color: #92400e;
 }
 
+.admin-alert.info {
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #1e3a8a;
+}
+
 .admin-alert.error {
   background: #fef2f2;
   border: 1px solid #fca5a5;
@@ -1723,6 +1729,36 @@ body {
   padding: 12px 14px;
   font: inherit;
   resize: vertical;
+}
+
+.admin-ab-percent {
+  margin-top: 16px;
+}
+
+.admin-ab-range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-ab-range-row input[type='range'] {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-ab-range-row input[type='number'] {
+  width: 72px;
+  border-radius: 10px;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.admin-ab-unit {
+  font-size: 0.9rem;
+  color: var(--admin-muted, #6b7280);
 }
 
 .admin-api-warnings {

@@ -35,14 +35,14 @@ function send(payload) {
   try {
     if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
       const blob = new Blob([body], { type: 'application/json' });
-      if (navigator.sendBeacon(url, blob)) return;
+      if (navigator.sendBeacon(url, blob)) return Promise.resolve();
     }
   } catch {
     /* fall through */
   }
 
-  if (typeof fetch === 'undefined') return;
-  fetch(url, {
+  if (typeof fetch === 'undefined') return Promise.resolve();
+  return fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body,
@@ -51,12 +51,12 @@ function send(payload) {
 }
 
 export function trackEvent(event, data = {}) {
-  if (!event) return;
+  if (!event) return Promise.resolve();
   const payload = { event, ...data };
   if (!payload.line && payload.page && PAGE_LINES[payload.page]) {
     payload.line = PAGE_LINES[payload.page];
   }
-  send(payload);
+  return send(payload);
 }
 
 export function trackPageView(pageKey, extra = {}) {

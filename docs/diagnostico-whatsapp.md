@@ -133,7 +133,7 @@ card "Lo que necesitas"
 ```
 eyebrow "Tu plan personalizado"
 título (varia por speed)
-price card US$ 6,99 + garantía
+price card US$ 7,49 + garantía
 lista includes
 details/objeções
 [ CTA checkout Hotmart ]

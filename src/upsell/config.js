@@ -35,11 +35,11 @@ export const UPSELL_PACK_NAME = 'Pack Premium de Combos para WhatsApp';
 export const DOWNSELL_PACK_NAME = 'Mini Pack de Combos para WhatsApp';
 
 export const UPSELL_NAME = UPSELL_PACK_NAME;
-export const UPSELL_CTA_LABEL = 'Sí, agregar Pack Premium por US$9,97';
-export const STICKY_CTA_LABEL = 'Agregar Pack Premium';
+export const UPSELL_CTA_LABEL = 'Sí, quiero el Pack Premium por US$9,97';
+export const STICKY_CTA_LABEL = 'Agregar ahora';
 export const DOWNSELL_CTA_LABEL = 'Sí, agregar Mini Pack por US$7';
-export const UPSELL_DECLINE_LABEL = 'No gracias, continuar con mi kit básico';
-export const DOWNSELL_DECLINE_LABEL = 'No gracias, continuar sin este pack';
+export const UPSELL_DECLINE_LABEL = 'No gracias, continuar sin el Pack Premium';
+export const DOWNSELL_DECLINE_LABEL = 'No gracias, continuar sin pack';
 
 export const UPSELL_TIMER_MS = 10 * 60 * 1000;
 export const UPSELL_TIMER_STORAGE_KEY = 'upsell_offer_deadline_v2';

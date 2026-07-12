@@ -104,6 +104,16 @@ a {
   padding-bottom: 4px;
 }
 
+/* Welcome: sem barra de progresso — evita “0% / 15 pasos” */
+.dx-app.is-welcome .dx-progress-meta,
+.dx-app.is-welcome .dx-progress {
+  display: none;
+}
+
+.dx-app.is-welcome .dx-social {
+  margin-bottom: 8px;
+}
+
 .dx-social {
   display: flex;
   align-items: center;
@@ -1112,6 +1122,40 @@ a {
   font-weight: 700;
   line-height: 1.45;
   color: var(--dx-brown);
+}
+
+.dx-profile {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--dx-pink-dark);
+  text-wrap: balance;
+}
+
+.dx-path {
+  margin: 8px 0 0;
+  padding: 0 0 0 1.15rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--dx-brown);
+}
+
+.dx-path li {
+  margin: 0 0 6px;
+}
+
+.dx-path li:last-child {
+  margin-bottom: 0;
+}
+
+.dx-card .dx-note {
+  margin: 10px 0 0;
+}
+
+.dx-plan .dx-points {
+  margin-bottom: 16px;
 }
 
 .dx-points {

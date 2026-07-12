@@ -10,9 +10,9 @@ export const WHATSAPP_URL = getWhatsAppUrl(WHATSAPP_NUMBER_ID);
 export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
 export const META_PIXEL_ID = '1369803401885896';
 
-export const MAIN_PRICE = 6.99;
-export const MAIN_PRICE_LABEL = 'US$ 6,99';
-export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 6,99';
+export const MAIN_PRICE = 7.49;
+export const MAIN_PRICE_LABEL = 'US$ 7,49';
+export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 7,49';
 
 export const HERO_CTA_LABEL = 'Quiero preparar mi primera oferta';
 export const CALC_CTA_LABEL = 'Quiero calcular antes de vender';

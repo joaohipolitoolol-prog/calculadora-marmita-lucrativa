@@ -1,11 +1,15 @@
 /**
- * Diagnóstico WhatsApp — motor de UI, estado y navegación.
- * Cada transición da feedback; nunca deja la pantalla “muerta”.
+ * Diagnóstico WhatsApp — motor de UI, estado e navegação.
+ * Cada transição dá feedback; nunca deixa a tela “morta”.
  */
 
 import { icon } from './icons.js';
-import { SCREEN_FLOW, buildScreen, computeDiagnosis } from './copy.js';
-import { computeDaySimulation } from './simulation.js';
+import {
+  SCREEN_FLOW,
+  QUESTION_IDS,
+  buildScreen,
+  computeDiagnosis,
+} from './copy.js';
 import {
   socialLineFor,
   phaseFromScreen,
@@ -21,31 +25,17 @@ import {
   pickUnusedReviews,
   diagnosisReviewIds,
 } from './config.js';
-import { trackMetaInitiateCheckout } from '../lib/meta-pixel.js';
+import {
+  trackMetaInitiateCheckout,
+  trackMetaCustom,
+} from '../lib/meta-pixel.js';
 import { trackEvent, trackCta } from '../lib/track.js';
 
 const REDUCED_MOTION =
   typeof window !== 'undefined' &&
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-/** Telas que só aparecem se o bloqueio pedir — funil mais curto, mesmo sentimento de app */
-function shouldSkipScreen(id, answers) {
-  // Sem blocker ainda → não pular (ainda não sabemos o caminho)
-  if (!answers.blocker) return false;
-
-  if (id === 'q_cooking') {
-    return answers.blocker !== 'recetas' && answers.blocker !== 'empezar';
-  }
-  if (id === 'q_whatsapp') {
-    return answers.blocker !== 'whatsapp' && answers.blocker !== 'ventas';
-  }
-  return false;
-}
-
-function applySkipDefaults(id, answers) {
-  if (id === 'q_cooking' && !answers.cooking) answers.cooking = 'mid';
-  if (id === 'q_whatsapp' && !answers.whatsappLevel) answers.whatsappLevel = 'sometimes';
-}
+const QUESTION_SET = new Set(QUESTION_IDS);
 
 export function createDiagnostico(root) {
   const state = {
@@ -55,13 +45,16 @@ export function createDiagnostico(root) {
     transitioning: false,
     selected: null,
     pedidosSeen: 0,
-    simulation: null,
     usedReviews: [],
+    trackedProgress50: false,
+    trackedComplete: false,
+    trackedViewOffer: false,
   };
 
   const els = {
     progressFill: root.querySelector('[data-progress-fill]'),
     progressWrap: root.querySelector('[data-progress]'),
+    progressMeta: root.querySelector('[data-progress-meta]'),
     stepLabel: root.querySelector('[data-step-label]'),
     stepPct: root.querySelector('[data-step-pct]'),
     socialText: root.querySelector('[data-social-text]'),
@@ -71,7 +64,6 @@ export function createDiagnostico(root) {
 
   const toasts = createPedidoToasts(root, { reducedMotion: REDUCED_MOTION });
 
-  // Audio só depois do primeiro toque (política do browser)
   root.addEventListener(
     'pointerdown',
     () => {
@@ -87,7 +79,6 @@ export function createDiagnostico(root) {
   function screenData() {
     return buildScreen(currentId(), state.answers, state.diagnosisId, {
       pedidosSeen: state.pedidosSeen || toasts.getCount(),
-      simulation: state.simulation,
     });
   }
 
@@ -97,42 +88,72 @@ export function createDiagnostico(root) {
     els.socialText.textContent = socialLineFor(phase, state.answers);
   }
 
-  function visiblePath() {
-    return SCREEN_FLOW.filter((id) => !shouldSkipScreen(id, state.answers));
+  function answeredQuestionCount() {
+    return QUESTION_IDS.filter((id) => {
+      const key = questionKey(id);
+      return key && state.answers[key] != null && state.answers[key] !== '';
+    }).length;
+  }
+
+  function questionKey(screenId) {
+    const map = {
+      q_experience: 'experience',
+      q_blocker: 'blocker',
+      q_channel: 'channel',
+      q_start: 'start',
+      q_victory: 'victory',
+    };
+    return map[screenId];
   }
 
   function setProgress() {
-    const path = visiblePath();
-    const pos = Math.max(0, path.indexOf(currentId()));
-    const step = pos + 1;
-    const total = path.length;
-    const safe = Math.round((pos / Math.max(1, total - 1)) * 100);
+    const id = currentId();
+    const isWelcome = id === 'welcome';
+    const isQuestion = QUESTION_SET.has(id);
+    const totalQ = QUESTION_IDS.length;
+    const done = answeredQuestionCount();
 
-    if (els.progressFill) els.progressFill.style.width = `${safe}%`;
-    els.progressWrap?.setAttribute('aria-valuenow', String(safe));
-    if (els.stepLabel) {
-      els.stepLabel.textContent = `PASO ${step} DE ${total}`;
+    root.classList.toggle('is-welcome', isWelcome);
+    root.classList.toggle('is-questions', isQuestion);
+    root.classList.toggle('is-result', !isWelcome && !isQuestion);
+
+    let pct = 0;
+    let label = '';
+
+    if (isWelcome) {
+      pct = 0;
+      label = '';
+    } else if (isQuestion) {
+      const qIndex = QUESTION_IDS.indexOf(id);
+      const step = Math.max(1, qIndex + 1);
+      // Primeira pergunta já ~15% — sensação de avanço imediato
+      pct = step === 1 ? 15 : Math.round((step / totalQ) * 100);
+      label = `${step} de ${totalQ}`;
+    } else if (id === 'affirm_1' || id === 'q_name') {
+      pct = Math.max(70, Math.round((done / totalQ) * 100));
+      label = done >= totalQ ? 'Casi listo' : `${done} de ${totalQ}`;
+    } else if (id === 'loading') {
+      pct = 90;
+      label = 'Armando tu plan';
+    } else {
+      pct = 100;
+      label = 'Tu diagnóstico';
     }
+
+    if (els.progressFill) els.progressFill.style.width = `${pct}%`;
+    els.progressWrap?.setAttribute('aria-valuenow', String(pct));
+    if (els.stepLabel) els.stepLabel.textContent = label;
     if (els.stepPct) {
-      els.stepPct.textContent = `${safe}%`;
+      els.stepPct.textContent = isWelcome ? '' : `${pct}%`;
+      els.stepPct.hidden = isWelcome || !pct;
     }
-    root.dataset.screen = currentId();
+    root.dataset.screen = id;
     updateSocial();
-  }
-
-  function advanceIndex() {
-    let next = state.index + 1;
-    while (next < SCREEN_FLOW.length && shouldSkipScreen(SCREEN_FLOW[next], state.answers)) {
-      applySkipDefaults(SCREEN_FLOW[next], state.answers);
-      next += 1;
-    }
-    return next;
   }
 
   function pulseAmbient() {
     if (!els.ambient || REDUCED_MOTION) return;
     els.ambient.classList.remove('is-pulse');
-    // force reflow
     void els.ambient.offsetWidth;
     els.ambient.classList.add('is-pulse');
   }
@@ -166,28 +187,61 @@ export function createDiagnostico(root) {
     state.transitioning = false;
   }
 
+  function fireFunnelEvents(id) {
+    if (id === 'q_channel' && !state.trackedProgress50) {
+      state.trackedProgress50 = true;
+      trackMetaCustom('QuizProgress', { step: id, progress: 50 });
+      trackEvent('diagnostico_progress', {
+        page: 'diagnostico',
+        line: 'paletas',
+        progress: 50,
+        step: id,
+      });
+    }
+
+    if (id === 'diagnosis' && !state.trackedComplete) {
+      state.trackedComplete = true;
+      trackMetaCustom('QuizComplete', {
+        diagnosis: state.diagnosisId,
+      });
+    }
+
+    if (id === 'offer' && !state.trackedViewOffer) {
+      state.trackedViewOffer = true;
+      trackMetaCustom('ViewOffer', {
+        diagnosis: state.diagnosisId,
+        value: MAIN_PRICE,
+        currency: 'USD',
+      });
+      trackEvent('diagnostico_view_offer', {
+        page: 'diagnostico',
+        line: 'paletas',
+        diagnosis: state.diagnosisId,
+      });
+    }
+  }
+
   function goNext() {
     if (state.transitioning) return;
-    const next = advanceIndex();
+    const next = state.index + 1;
     if (next >= SCREEN_FLOW.length) return;
     state.index = next;
     const id = currentId();
 
     if (id === 'diagnosis') {
       state.diagnosisId = computeDiagnosis(state.answers);
-      state.simulation = computeDaySimulation(state.answers);
       trackEvent('diagnostico_result', {
         page: 'diagnostico',
         line: 'paletas',
         diagnosis: state.diagnosisId,
-        simAmount: state.simulation?.amountNum,
         ...state.answers,
       });
     }
 
+    fireFunnelEvents(id);
+
     transitionTo(() => render()).then(() => {
       if (id === 'loading') runLoading();
-      // 1 toast por tela, depois da transição (sem overlap com header)
       state.pedidosSeen = toasts.show(id);
     });
 
@@ -210,7 +264,6 @@ export function createDiagnostico(root) {
       celebrate(rect.left + rect.width / 2, rect.top + rect.height / 2);
     }
 
-    // micro delay so the selection feels satisfying
     wait(REDUCED_MOTION ? 120 : 380).then(() => {
       goNext();
     });
@@ -242,14 +295,8 @@ export function createDiagnostico(root) {
       case 'diagnosis':
         html = renderDiagnosis(screen);
         break;
-      case 'simulation':
-        html = renderSimulation(screen);
-        break;
-      case 'insight':
-        html = renderInsight(screen);
-        break;
-      case 'kit':
-        html = renderKit(screen);
+      case 'plan':
+        html = renderPlan(screen);
         break;
       case 'trust':
         html = renderTrust(screen);
@@ -268,7 +315,16 @@ export function createDiagnostico(root) {
 
   function bindScreen(screen) {
     els.stage.querySelectorAll('[data-next]').forEach((el) => {
-      el.addEventListener('click', () => goNext());
+      el.addEventListener('click', () => {
+        if (screen.type === 'welcome') {
+          trackMetaCustom('QuizStart', { page: 'diagnostico' });
+          trackEvent('diagnostico_quiz_start', {
+            page: 'diagnostico',
+            line: 'paletas',
+          });
+        }
+        goNext();
+      });
     });
 
     els.stage.querySelectorAll('[data-answer]').forEach((el) => {
@@ -334,7 +390,6 @@ export function createDiagnostico(root) {
       row?.classList.add('is-done');
     }
 
-    // Ícone confirma → 1s → próxima tela
     const loader = els.stage.querySelector('[data-loader]');
     const core = els.stage.querySelector('[data-loader-core]');
     const title = els.stage.querySelector('#dx-title');
@@ -494,7 +549,7 @@ export function createDiagnostico(root) {
           <span class="dx-loader-core" data-loader-core>${icon('search')}</span>
         </div>
         <h1 id="dx-title" class="dx-title">Armando tu diagnóstico…</h1>
-        <p class="dx-body">Estamos cruzando tus respuestas para encontrar el bloqueo principal.</p>
+        <p class="dx-body">Estamos organizando tus respuestas para encontrar el bloqueo principal.</p>
         <ul class="dx-load-list">${steps}</ul>
       </section>
     `;
@@ -513,15 +568,26 @@ export function createDiagnostico(root) {
       `
       : '';
 
+    const pathHtml = (s.path || []).length
+      ? `
+        <ol class="dx-path">
+          ${(s.path || []).map((step) => `<li>${esc(step)}</li>`).join('')}
+        </ol>
+        ${s.pathNote ? `<p class="dx-note">${esc(s.pathNote)}</p>` : ''}
+      `
+      : '';
+
     return `
       <section class="dx-screen dx-diagnosis" aria-labelledby="dx-title">
         <p class="dx-badge dx-badge-warn">${icon(s.icon, 'dx-icon dx-icon-sm')} ${esc(s.badge)}</p>
+        ${s.profile ? `<p class="dx-profile">Tu perfil: ${esc(s.profile)}</p>` : ''}
         <h1 id="dx-title" class="dx-title">${esc(s.title)}</h1>
         <p class="dx-body">${esc(s.body)}</p>
         <div class="dx-card dx-card-soft">
           <p class="dx-card-label">Lo que necesitas</p>
           <p class="dx-card-text">${esc(s.need)}</p>
         </div>
+        ${pathHtml ? `<div class="dx-card dx-card-soft"><p class="dx-card-label">Tu mejor camino</p>${pathHtml}</div>` : ''}
         ${reviewHtml}
         <button type="button" class="dx-btn dx-btn-primary" data-next>
           ${esc(s.cta)}
@@ -531,53 +597,7 @@ export function createDiagnostico(root) {
     `;
   }
 
-  function renderSimulation(s) {
-    return `
-      <section class="dx-screen dx-simulation" aria-labelledby="dx-title">
-        <p class="dx-eyebrow">${esc(s.eyebrow)}</p>
-        <div class="dx-sim-card">
-          <p class="dx-sim-label">${icon('star', 'dx-icon dx-icon-sm')} Proyección orientativa</p>
-          <p class="dx-sim-amount">${esc(s.amount)}</p>
-          <p class="dx-sim-sub">eso es lo que podrías generar en un buen día con paletas bien publicadas en WhatsApp</p>
-        </div>
-        <h1 id="dx-title" class="dx-title">${esc(s.title)}</h1>
-        <p class="dx-body">${esc(s.body)}</p>
-        <p class="dx-note">${esc(s.note)} · ~${esc(String(s.units))} paletas</p>
-        <button type="button" class="dx-btn dx-btn-primary" data-next>
-          ${esc(s.cta)}
-        </button>
-        <p class="dx-micro">${esc(s.micro)}</p>
-      </section>
-    `;
-  }
-
-  function renderInsight(s) {
-    const points = (s.points || [])
-      .map(
-        (p) => `
-        <li class="dx-point">
-          <span class="dx-point-icon">${icon(p.icon)}</span>
-          <span>${esc(p.text)}</span>
-        </li>
-      `,
-      )
-      .join('');
-
-    return `
-      <section class="dx-screen dx-insight" aria-labelledby="dx-title">
-        <div class="dx-q-icon dx-q-icon-pink">${icon(s.icon)}</div>
-        <h1 id="dx-title" class="dx-title">${esc(s.title)}</h1>
-        <p class="dx-body">${esc(s.body)}</p>
-        <ul class="dx-points">${points}</ul>
-        <button type="button" class="dx-btn dx-btn-primary" data-next>
-          ${esc(s.cta)}
-        </button>
-        <p class="dx-micro">${esc(s.micro)}</p>
-      </section>
-    `;
-  }
-
-  function renderKit(s) {
+  function renderPlan(s) {
     const focusSet = new Set(s.focusIds || []);
     const items = KIT_ITEMS.map((item) => {
       const isFocus = focusSet.has(item.id);
@@ -590,11 +610,23 @@ export function createDiagnostico(root) {
       `;
     }).join('');
 
+    const points = (s.points || [])
+      .map(
+        (p) => `
+        <li class="dx-point">
+          <span class="dx-point-icon">${icon(p.icon)}</span>
+          <span>${esc(p.text)}</span>
+        </li>
+      `,
+      )
+      .join('');
+
     return `
-      <section class="dx-screen dx-kit" aria-labelledby="dx-title">
+      <section class="dx-screen dx-plan" aria-labelledby="dx-title">
         <p class="dx-eyebrow">${esc(s.eyebrow)}</p>
         <h1 id="dx-title" class="dx-title">${esc(s.title)}</h1>
         <p class="dx-body">${esc(s.body)}</p>
+        ${points ? `<ul class="dx-points">${points}</ul>` : ''}
         <ul class="dx-kit-list">${items}</ul>
         <button type="button" class="dx-btn dx-btn-primary" data-next>
           ${esc(s.cta)}
@@ -657,7 +689,6 @@ export function createDiagnostico(root) {
   }
 
   function renderOffer(s) {
-    // Sem strip de prints — trust já mostrou prova social (evita repetir)
     const objections = (s.objections || [])
       .map(
         (o) => `

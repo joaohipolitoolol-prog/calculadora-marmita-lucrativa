@@ -13,21 +13,16 @@ const PEDIDOS = [
   { who: 'Paula', text: 'Te escribió' },
 ];
 
-/** Todas as telas depois do welcome */
+/** Telas com toast — sem competir com loading/diagnosis/offer */
 const TOAST_SCREENS = new Set([
   'q_experience',
-  'q_goal',
-  'affirm_1',
   'q_blocker',
+  'affirm_1',
+  'q_channel',
+  'q_start',
+  'q_victory',
   'q_name',
-  'q_cooking',
-  'q_whatsapp',
-  'q_speed',
-  'affirm_2',
-  // Sem toast em loading/diagnosis/offer — não competir com o “diagnóstico”
-  'simulation',
-  'insight',
-  'kit_match',
+  'plan',
   'trust',
 ]);
 

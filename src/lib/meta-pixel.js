@@ -4,6 +4,12 @@ function canTrack() {
   return typeof window !== 'undefined' && typeof window.fbq === 'function';
 }
 
+/** Custom events (QuizStart, QuizComplete, ViewOffer, …) */
+export function trackMetaCustom(eventName, params = {}) {
+  if (!canTrack() || !eventName) return;
+  window.fbq('trackCustom', eventName, params);
+}
+
 export function trackMetaInitiateCheckout({
   value,
   currency = 'USD',

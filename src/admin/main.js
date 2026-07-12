@@ -39,6 +39,10 @@ import {
   loadContentSettings,
   saveContentSettings,
 } from '../lib/content-settings.js';
+import {
+  loadExperiments,
+  saveExperiments,
+} from '../lib/experiments.js';
 import { TTS_VOICE } from '../lib/tts-config.js';
 import { confirmDialog, copyText, escapeHtml, showToast } from './helpers.js';
 import { productLabel, setAdminLang, t } from './i18n.js';
@@ -276,6 +280,7 @@ async function refreshAll() {
   }
   if (state.activeTab === 'content') {
     await loadContentSettings();
+    await loadExperiments();
     await loadAdminAllowlist();
   }
   if (
@@ -346,6 +351,7 @@ function bindEvents() {
       }
       if (state.activeTab === 'content') {
         await loadContentSettings();
+        await loadExperiments();
         await loadAdminAllowlist();
       }
       if (
@@ -389,6 +395,58 @@ function bindEvents() {
       input.checked = !checked;
       showToast(t('toast.saveError'));
     });
+  });
+
+  function syncAbSplitLabel(pct) {
+    const label = root.querySelector('[data-ab-split-label]');
+    if (!label) return;
+    const quiz = Math.max(0, Math.min(100, Math.round(Number(pct) || 0)));
+    label.textContent = t('content.abSplit', {
+      quiz: String(quiz),
+      lp: String(100 - quiz),
+    });
+  }
+
+  function setAbControlsEnabled(on) {
+    root.querySelectorAll('[data-ab-quiz-percent], [data-ab-quiz-number]').forEach((el) => {
+      el.disabled = !on;
+    });
+  }
+
+  const abEnabled = root.querySelector('[data-ab-enabled]');
+  const abRange = root.querySelector('[data-ab-quiz-percent]');
+  const abNumber = root.querySelector('[data-ab-quiz-number]');
+
+  abEnabled?.addEventListener('change', () => {
+    setAbControlsEnabled(abEnabled.checked);
+  });
+
+  abRange?.addEventListener('input', () => {
+    if (abNumber) abNumber.value = abRange.value;
+    syncAbSplitLabel(abRange.value);
+  });
+
+  abNumber?.addEventListener('input', () => {
+    let v = Math.max(0, Math.min(100, Math.round(Number(abNumber.value) || 0)));
+    abNumber.value = String(v);
+    if (abRange) abRange.value = String(v);
+    syncAbSplitLabel(v);
+  });
+
+  root.querySelector('[data-ab-save]')?.addEventListener('click', async () => {
+    const enabled = Boolean(abEnabled?.checked);
+    const quizPercent = Math.max(
+      0,
+      Math.min(100, Math.round(Number(abNumber?.value ?? abRange?.value) || 0)),
+    );
+    const result = await saveExperiments({
+      paletas: { entry: { enabled, quizPercent } },
+    });
+    if (result.ok) {
+      showToast(t('content.abSaved'));
+      return;
+    }
+    showToast(t('toast.saveError'));
   });
 
   document.getElementById('admin-tts-test')?.addEventListener('click', async () => {
@@ -616,7 +674,11 @@ function bindEvents() {
           <form id="add-user-form" class="admin-form-grid">
             <label>${escapeHtml(t('modal.createUser.name'))}<input name="displayName" type="text" required></label>
             <label>${escapeHtml(t('modal.createUser.email'))}<input name="email" type="email" required></label>
-            <label>${escapeHtml(t('modal.createUser.password'))}<input name="password" type="password" required minlength="6"></label>
+            <label>
+              ${escapeHtml(t('modal.createUser.password'))}
+              <input name="password" type="password" minlength="6" autocomplete="new-password" placeholder="${escapeHtml(t('modal.createUser.passwordOptional'))}">
+            </label>
+            <p class="admin-hint">${escapeHtml(t('modal.createUser.passwordHint'))}</p>
             <div class="admin-form-products">
               <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_kit"><span>🍓 ${escapeHtml(productLabel('paletas_kit'))}</span></label>
               <label class="admin-check-card"><input type="checkbox" name="product" value="paletas_premium"><span>⭐ ${escapeHtml(productLabel('paletas_premium'))}</span></label>
@@ -647,15 +709,22 @@ function bindEvents() {
       });
       try {
         const token = await state.currentAdminUser.getIdToken();
+        const password = String(form.password.value || '').trim();
         const data = await createAdminUser(token, {
           displayName: form.displayName.value,
           email: form.email.value,
-          password: form.password.value,
+          password: password || undefined,
           products,
         });
         state.usersCache = data.users || state.usersCache;
         document.getElementById('add-user-modal')?.remove();
-        showToast(t('toast.userCreated'));
+        if (data.linkedExisting) {
+          showToast(t('toast.userLinked'));
+        } else if (data.needsPasswordSetup) {
+          showToast(t('toast.userCreatedNoPass'));
+        } else {
+          showToast(t('toast.userCreated'));
+        }
         paint();
       } catch (error) {
         showToast(error.message || t('toast.createError'));
@@ -846,6 +915,7 @@ watchAuth(async (user) => {
     await loadAdminAllowlist();
     await loadUsers();
     await loadContentSettings();
+    await loadExperiments();
     await loadAnalytics();
     paint();
   } catch (error) {

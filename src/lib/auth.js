@@ -8,6 +8,16 @@ import { rememberActiveLine, resolveLineFromSearch, premiumStorageKey, LEGACY_PR
 import { claimPendingPurchases } from './claim-pending.js';
 import { trackEvent } from './track.js';
 
+/** While true, guardAuthPage must not redirect — Auth fires before profile/grants save. */
+let authBusy = false;
+
+function setAuthBusy(busy) {
+  authBusy = Boolean(busy);
+  if (typeof document !== 'undefined') {
+    document.body.dataset.authBusy = authBusy ? '1' : '0';
+  }
+}
+
 async function claimPendingForUser(user) {
   if (!user?.getIdToken) return;
   try {
@@ -191,45 +201,51 @@ export async function login(email, password, options = {}) {
   const rememberMe = options.rememberMe !== false;
   const search = options.search ?? (typeof window !== 'undefined' ? window.location.search : '');
   rememberLineFromUrl(search);
+  setAuthBusy(true);
 
-  if (isDemoMode()) {
-    const users = readDemoUsers();
-    const user = users.find((u) => u.email === email.trim().toLowerCase());
-    if (!user || user.password !== password) {
-      throw new Error('Correo o contraseña incorrectos.');
+  try {
+    if (isDemoMode()) {
+      const users = readDemoUsers();
+      const user = users.find((u) => u.email === email.trim().toLowerCase());
+      if (!user || user.password !== password) {
+        throw new Error('Correo o contraseña incorrectos.');
+      }
+      setDemoSession(user, rememberMe);
+      await applyPurchaseGrantsFromUrl(user.uid, search);
+      const refreshed = readDemoUsers().find((u) => u.uid === user.uid) || user;
+      setDemoSession(refreshed, rememberMe);
+      if (refreshed.hasPremium) setPremiumLocal('paletas', true);
+      if (refreshed.hasPostresPremium) setPremiumLocal('postres', true);
+      const line = resolveLineFromSearch(search);
+      await trackEvent('login', { page: 'login', line: line?.id || undefined, uid: refreshed.uid });
+      return toPublicUser(refreshed);
     }
-    setDemoSession(user, rememberMe);
-    await applyPurchaseGrantsFromUrl(user.uid, search);
-    const refreshed = readDemoUsers().find((u) => u.uid === user.uid) || user;
-    setDemoSession(refreshed, rememberMe);
-    if (refreshed.hasPremium) setPremiumLocal('paletas', true);
-    if (refreshed.hasPostresPremium) setPremiumLocal('postres', true);
-    const line = resolveLineFromSearch(search);
-    trackEvent('login', { page: 'login', line: line?.id || undefined, uid: refreshed.uid });
-    return toPublicUser(refreshed);
-  }
 
-  const { requireFirebase } = await import('./firebase.js');
-  const {
-    signInWithEmailAndPassword,
-    setPersistence,
-    browserLocalPersistence,
-    browserSessionPersistence,
-  } = await import('firebase/auth');
-  const auth = requireFirebase();
-  await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
-  const result = await signInWithEmailAndPassword(auth, email.trim(), password);
-  await loadAdminAllowlist();
-  await syncAdminFlag(result.user.uid, result.user.email);
-  await applyPurchaseGrantsFromUrl(result.user.uid, search);
-  await claimPendingForUser(result.user);
-  const line = resolveLineFromSearch(search);
-  await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
-  trackEvent('login', { page: 'login', line: line?.id || undefined, uid: result.user.uid });
-  const grants = purchaseFlagsFromSearch(search);
-  if (grants?.hasPremium) setPremiumLocal('paletas', true);
-  if (grants?.hasPostresPremium) setPremiumLocal('postres', true);
-  return result.user;
+    const { requireFirebase } = await import('./firebase.js');
+    const {
+      signInWithEmailAndPassword,
+      setPersistence,
+      browserLocalPersistence,
+      browserSessionPersistence,
+    } = await import('firebase/auth');
+    const auth = requireFirebase();
+    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+    const result = await signInWithEmailAndPassword(auth, email.trim(), password);
+    await loadAdminAllowlist();
+    await syncAdminFlag(result.user.uid, result.user.email);
+    await applyPurchaseGrantsFromUrl(result.user.uid, search);
+    await claimPendingForUser(result.user);
+    const line = resolveLineFromSearch(search);
+    await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
+    await trackEvent('login', { page: 'login', line: line?.id || undefined, uid: result.user.uid });
+    const grants = purchaseFlagsFromSearch(search);
+    if (grants?.hasPremium) setPremiumLocal('paletas', true);
+    if (grants?.hasPostresPremium) setPremiumLocal('postres', true);
+    return result.user;
+  } catch (error) {
+    setAuthBusy(false);
+    throw error;
+  }
 }
 
 export async function register(name, email, password, options = {}) {
@@ -238,67 +254,73 @@ export async function register(name, email, password, options = {}) {
   const flags = resolveProductFlags(options, search);
   const admin = isAdminEmail(email);
   const accessCode = getRegisterAccessCode(options);
+  setAuthBusy(true);
 
-  if (isDemoMode()) {
-    const normalizedEmail = email.trim().toLowerCase();
-    const users = readDemoUsers();
-    if (users.some((u) => u.email === normalizedEmail)) {
-      throw new Error('Este correo ya está registrado.');
+  try {
+    if (isDemoMode()) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const users = readDemoUsers();
+      if (users.some((u) => u.email === normalizedEmail)) {
+        throw new Error('Este correo ya está registrado.');
+      }
+      const user = createDemoUser(name, normalizedEmail, password, flags);
+      if (admin) {
+        user.hasKit = true;
+        user.isAdmin = true;
+      }
+      if (accessCode) {
+        const result = await validateAccessCodeFromDb(accessCode);
+        const grants = grantsFromAccessCode(result);
+        if (grants.hasKit) user.hasKit = true;
+        if (grants.hasPremium) user.hasPremium = true;
+        if (grants.hasPostres) user.hasPostres = true;
+        if (grants.hasPostresPremium) user.hasPostresPremium = true;
+      }
+      users.push(user);
+      writeDemoUsers(users);
+      setDemoSession(user);
+      if (user.hasPremium) setPremiumLocal('paletas', true);
+      if (user.hasPostresPremium) setPremiumLocal('postres', true);
+      const line = resolveLineFromSearch(search);
+      await trackEvent('register', { page: 'cadastrar', line: line?.id || undefined, uid: user.uid });
+      return toPublicUser(user);
     }
-    const user = createDemoUser(name, normalizedEmail, password, flags);
-    if (admin) {
-      user.hasKit = true;
-      user.isAdmin = true;
-    }
-    if (accessCode) {
-      const result = await validateAccessCodeFromDb(accessCode);
-      const grants = grantsFromAccessCode(result);
-      if (grants.hasKit) user.hasKit = true;
-      if (grants.hasPremium) user.hasPremium = true;
-      if (grants.hasPostres) user.hasPostres = true;
-      if (grants.hasPostresPremium) user.hasPostresPremium = true;
-    }
-    users.push(user);
-    writeDemoUsers(users);
-    setDemoSession(user);
-    if (user.hasPremium) setPremiumLocal('paletas', true);
-    if (user.hasPostresPremium) setPremiumLocal('postres', true);
+
+    const { requireFirebase } = await import('./firebase.js');
+    const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
+    const auth = requireFirebase();
+    const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
+    await updateProfile(result.user, { displayName: name.trim() });
+
     const line = resolveLineFromSearch(search);
-    trackEvent('register', { page: 'cadastrar', line: line?.id || undefined, uid: user.uid });
-    return toPublicUser(user);
+    const registeredFrom = resolveRegisteredFrom(search, accessCode);
+
+    await createUserProfile(result.user.uid, {
+      email: result.user.email,
+      displayName: name.trim(),
+      ...flags,
+      registeredFrom,
+      registeredLine: line?.id || null,
+    });
+    await syncAdminFlag(result.user.uid, result.user.email);
+
+    const codeGrants = await applyAccessCodeToUser(result.user.uid, accessCode);
+    await claimPendingForUser(result.user);
+    if (codeGrants?.hasPremium || flags.hasPremium) setPremiumLocal('paletas', true);
+    if (codeGrants?.hasPostresPremium || flags.hasPostresPremium) setPremiumLocal('postres', true);
+
+    await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
+    await trackEvent('register', {
+      page: 'cadastrar',
+      line: line?.id || undefined,
+      uid: result.user.uid,
+    });
+
+    return result.user;
+  } catch (error) {
+    setAuthBusy(false);
+    throw error;
   }
-
-  const { requireFirebase } = await import('./firebase.js');
-  const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
-  const auth = requireFirebase();
-  const result = await createUserWithEmailAndPassword(auth, email.trim(), password);
-  await updateProfile(result.user, { displayName: name.trim() });
-
-  const line = resolveLineFromSearch(search);
-  const registeredFrom = resolveRegisteredFrom(search, accessCode);
-
-  await createUserProfile(result.user.uid, {
-    email: result.user.email,
-    displayName: name.trim(),
-    ...flags,
-    registeredFrom,
-    registeredLine: line?.id || null,
-  });
-  await syncAdminFlag(result.user.uid, result.user.email);
-
-  const codeGrants = await applyAccessCodeToUser(result.user.uid, accessCode);
-  await claimPendingForUser(result.user);
-  if (codeGrants?.hasPremium || flags.hasPremium) setPremiumLocal('paletas', true);
-  if (codeGrants?.hasPostresPremium || flags.hasPostresPremium) setPremiumLocal('postres', true);
-
-  await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
-  trackEvent('register', {
-    page: 'cadastrar',
-    line: line?.id || undefined,
-    uid: result.user.uid,
-  });
-
-  return result.user;
 }
 
 export async function resetPassword(email) {
@@ -341,6 +363,11 @@ export function watchAuth(callback) {
 export function guardAuthPage() {
   watchAuth((user) => {
     if (user) {
+      if (authBusy) {
+        document.body.classList.remove('auth-checking');
+        document.body.classList.add('auth-resolved');
+        return;
+      }
       redirectIfAuthenticated(user);
       return;
     }
