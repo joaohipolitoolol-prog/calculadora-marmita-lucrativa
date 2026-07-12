@@ -106,7 +106,11 @@ export async function resolvePaletasEntryAb() {
 
   let entry = { enabled: false, quizPercent: 0 };
   try {
-    const res = await fetch('/api/experiments', { credentials: 'omit' });
+    const res = await fetch('/api/experiments', {
+      credentials: 'omit',
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+    });
     if (res.ok) {
       const data = await res.json();
       entry = data?.paletas?.entry || entry;

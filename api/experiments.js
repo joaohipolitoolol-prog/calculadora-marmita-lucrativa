@@ -15,8 +15,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 'no-store, max-age=0, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Vary', 'Accept-Encoding');
 
   const firebaseAdmin = getFirebaseAdmin();
   if (!firebaseAdmin) {

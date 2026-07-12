@@ -69,6 +69,7 @@ const state = {
   detailUserId: null,
   sidebarOpen: false,
   apiWarnings: [],
+  contentDraft: null,
 };
 
 function getDetailUser() {
@@ -117,6 +118,7 @@ function paint() {
     sidebarOpen: state.sidebarOpen,
     lineFilter: state.lineFilter,
     apiWarnings: state.apiWarnings,
+    contentDraft: state.contentDraft,
   });
   bindEvents();
 }
@@ -326,6 +328,10 @@ function bindEvents() {
 
   root.querySelectorAll('[data-admin-lang]').forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (state.activeTab === 'content' && state.contentDraft?.dirty) {
+        if (!window.confirm(t('content.unsavedLeave'))) return;
+        state.contentDraft = null;
+      }
       setAdminLang(btn.dataset.adminLang);
       state.sidebarOpen = false;
       paint();
@@ -341,7 +347,17 @@ function bindEvents() {
 
   root.querySelectorAll('[data-tab]').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      state.activeTab = btn.dataset.tab;
+      const nextTab = btn.dataset.tab;
+      if (
+        state.activeTab === 'content' &&
+        nextTab !== 'content' &&
+        state.contentDraft?.dirty
+      ) {
+        if (!window.confirm(t('content.unsavedLeave'))) return;
+        state.contentDraft = null;
+      }
+
+      state.activeTab = nextTab;
       state.sidebarOpen = false;
       if (btn.dataset.setFilter) {
         state.userFilter = btn.dataset.setFilter;
@@ -350,9 +366,12 @@ function bindEvents() {
         state.codesCache = await listAccessCodes();
       }
       if (state.activeTab === 'content') {
-        await loadContentSettings();
-        await loadExperiments();
-        await loadAdminAllowlist();
+        if (!state.contentDraft?.dirty) {
+          await loadContentSettings();
+          await loadExperiments();
+          await loadAdminAllowlist();
+          state.contentDraft = null;
+        }
       }
       if (
         state.activeTab === 'dashboard' ||
@@ -380,22 +399,51 @@ function bindEvents() {
     });
   });
 
-  root.querySelectorAll('[data-content-flag]').forEach((input) => {
-    input.addEventListener('change', async () => {
+  function collectContentDraftFromDom() {
+    const abEnabledEl = root.querySelector('[data-ab-enabled]');
+    const abNumber = root.querySelector('[data-ab-quiz-number]');
+    const abRange = root.querySelector('[data-ab-quiz-percent]');
+    const quizPercent = Math.max(
+      0,
+      Math.min(100, Math.round(Number(abNumber?.value ?? abRange?.value) || 0)),
+    );
+    const lines = {};
+    root.querySelectorAll('[data-content-flag]').forEach((input) => {
       const lineId = input.dataset.contentLine;
       const flag = input.dataset.contentFlag;
-      const checked = input.checked;
-      const result = await saveContentSettings({
-        [lineId]: { [flag]: checked },
-      });
-      if (result.ok) {
-        showToast(t('content.saved'));
-        return;
-      }
-      input.checked = !checked;
-      showToast(t('toast.saveError'));
+      if (!lineId || !flag) return;
+      if (!lines[lineId]) lines[lineId] = {};
+      lines[lineId][flag] = input.checked;
     });
-  });
+    return {
+      dirty: true,
+      ab: {
+        enabled: Boolean(abEnabledEl?.checked),
+        quizPercent,
+      },
+      lines,
+    };
+  }
+
+  function markContentDirty() {
+    state.contentDraft = collectContentDraftFromDom();
+    const bar = root.querySelector('[data-content-save-bar]');
+    const status = root.querySelector('[data-content-save-status]');
+    const btn = root.querySelector('[data-content-save-all]');
+    bar?.classList.add('is-dirty');
+    if (status) status.textContent = t('content.dirty');
+    if (btn) btn.disabled = false;
+
+    const enabled = Boolean(root.querySelector('[data-ab-enabled]')?.checked);
+    const quiz = state.contentDraft.ab.quizPercent;
+    const pill = root.querySelector('[data-ab-live-pill]');
+    if (pill) {
+      pill.textContent = enabled
+        ? t('content.abLiveOn', { quiz: String(quiz), lp: String(100 - quiz) })
+        : t('content.abLiveOff');
+      pill.classList.toggle('is-on', enabled);
+    }
+  }
 
   function syncAbSplitLabel(pct) {
     const label = root.querySelector('[data-ab-split-label]');
@@ -413,40 +461,67 @@ function bindEvents() {
     });
   }
 
-  const abEnabled = root.querySelector('[data-ab-enabled]');
-  const abRange = root.querySelector('[data-ab-quiz-percent]');
-  const abNumber = root.querySelector('[data-ab-quiz-number]');
-
-  abEnabled?.addEventListener('change', () => {
-    setAbControlsEnabled(abEnabled.checked);
-  });
-
-  abRange?.addEventListener('input', () => {
-    if (abNumber) abNumber.value = abRange.value;
-    syncAbSplitLabel(abRange.value);
-  });
-
-  abNumber?.addEventListener('input', () => {
-    let v = Math.max(0, Math.min(100, Math.round(Number(abNumber.value) || 0)));
-    abNumber.value = String(v);
-    if (abRange) abRange.value = String(v);
-    syncAbSplitLabel(v);
-  });
-
-  root.querySelector('[data-ab-save]')?.addEventListener('click', async () => {
-    const enabled = Boolean(abEnabled?.checked);
-    const quizPercent = Math.max(
-      0,
-      Math.min(100, Math.round(Number(abNumber?.value ?? abRange?.value) || 0)),
-    );
-    const result = await saveExperiments({
-      paletas: { entry: { enabled, quizPercent } },
+  root.querySelectorAll('[data-content-dirty]').forEach((input) => {
+    const eventName = input.type === 'range' || input.type === 'number' ? 'input' : 'change';
+    input.addEventListener(eventName, () => {
+      if (input.matches('[data-ab-enabled]')) {
+        setAbControlsEnabled(input.checked);
+      }
+      if (input.matches('[data-ab-quiz-percent]')) {
+        const num = root.querySelector('[data-ab-quiz-number]');
+        if (num) num.value = input.value;
+        syncAbSplitLabel(input.value);
+      }
+      if (input.matches('[data-ab-quiz-number]')) {
+        let v = Math.max(0, Math.min(100, Math.round(Number(input.value) || 0)));
+        input.value = String(v);
+        const range = root.querySelector('[data-ab-quiz-percent]');
+        if (range) range.value = String(v);
+        syncAbSplitLabel(v);
+      }
+      markContentDirty();
     });
-    if (result.ok) {
-      showToast(t('content.abSaved'));
+  });
+
+  root.querySelector('[data-content-save-all]')?.addEventListener('click', async () => {
+    const btn = root.querySelector('[data-content-save-all]');
+    const status = root.querySelector('[data-content-save-status]');
+    const draft = collectContentDraftFromDom();
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = t('content.saving');
+    }
+    if (status) status.textContent = t('content.saving');
+
+    const [expResult, contentResult] = await Promise.all([
+      saveExperiments({
+        paletas: {
+          entry: {
+            enabled: draft.ab.enabled,
+            quizPercent: draft.ab.quizPercent,
+          },
+        },
+      }),
+      saveContentSettings(draft.lines),
+    ]);
+
+    if (expResult.ok && contentResult.ok) {
+      state.contentDraft = null;
+      showToast(t('content.allSaved'));
+      // Bust any intermediate caches by reloading experiments from Firestore
+      await loadExperiments();
+      await loadContentSettings();
+      paint();
       return;
     }
+
+    state.contentDraft = draft;
     showToast(t('toast.saveError'));
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = t('content.saveAll');
+    }
+    if (status) status.textContent = t('content.dirty');
   });
 
   document.getElementById('admin-tts-test')?.addEventListener('click', async () => {

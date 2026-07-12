@@ -701,155 +701,179 @@ export function renderCodesView(codes) {
   `;
 }
 
-export function renderContentView() {
+export function renderContentView(draft = null) {
   const settings = getContentSettings();
   const experiments = getExperiments();
-  const entry = experiments.paletas?.entry || { enabled: false, quizPercent: 0 };
+  const savedEntry = experiments.paletas?.entry || { enabled: false, quizPercent: 0 };
+  const entry = draft?.ab
+    ? {
+        enabled: draft.ab.enabled === true,
+        quizPercent: Number(draft.ab.quizPercent) || 0,
+      }
+    : savedEntry;
   const quizPct = Number(entry.quizPercent) || 0;
   const lpPct = 100 - quizPct;
   const lines = getEnabledLines().filter((line) => line.sellable);
   const adminEmails = getAdminAllowlist();
+  const dirty = Boolean(draft?.dirty);
+  const liveLabel = entry.enabled
+    ? t('content.abLiveOn', { quiz: String(quizPct), lp: String(lpPct) })
+    : t('content.abLiveOff');
 
   return `
-    <div class="admin-card">
-      <div class="admin-card-head">
-        <div>
-          <h2>${t('content.adminsTitle')}</h2>
-          <p class="admin-hint">${t('content.adminsHint')}</p>
-        </div>
-      </div>
-      <div class="admin-card-body">
-        <form id="admin-emails-form" class="admin-emails-form">
-          <label class="admin-field">
-            <span>${t('content.adminEmails')}</span>
-            <textarea id="admin-emails-input" rows="4" placeholder="tu@correo.com">${escapeHtml(adminEmails.join('\n'))}</textarea>
-          </label>
-          <button type="submit" class="admin-btn primary">${t('content.saveAdmins')}</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="admin-card">
-      <div class="admin-card-head">
-        <div>
-          <h2>${t('content.abTitle')}</h2>
-          <p class="admin-hint">${t('content.abHint')}</p>
-        </div>
-      </div>
-      <div class="admin-card-body">
-        <label class="admin-toggle-row">
-          <span>
-            ${t('content.abEnabled')}
-            <span class="admin-toggle-hint">${t('content.abEnabledHint')}</span>
-          </span>
-          <input type="checkbox" id="ab-paletas-enabled" data-ab-enabled ${entry.enabled ? 'checked' : ''}>
-        </label>
-        <label class="admin-field admin-ab-percent">
-          <span>${t('content.abQuizPercent')}</span>
-          <div class="admin-ab-range-row">
-            <input
-              type="range"
-              id="ab-paletas-quiz-percent"
-              data-ab-quiz-percent
-              min="0"
-              max="100"
-              step="5"
-              value="${quizPct}"
-              ${entry.enabled ? '' : 'disabled'}
-            >
-            <input
-              type="number"
-              id="ab-paletas-quiz-number"
-              data-ab-quiz-number
-              min="0"
-              max="100"
-              step="1"
-              value="${quizPct}"
-              ${entry.enabled ? '' : 'disabled'}
-            >
-            <span class="admin-ab-unit">%</span>
+    <div class="admin-content-stack" data-content-settings>
+      <div class="admin-card admin-card-accent">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('content.abTitle')}</h2>
+            <p class="admin-hint">${t('content.abHint')}</p>
           </div>
-          <p class="admin-hint" id="ab-paletas-split-label" data-ab-split-label>
-            ${t('content.abSplit', { quiz: String(quizPct), lp: String(lpPct) })}
-          </p>
-        </label>
-        <p class="admin-hint">${t('content.abOverrides')}</p>
-        <button type="button" class="admin-btn primary" id="ab-paletas-save" data-ab-save>
-          ${t('content.abSave')}
-        </button>
-      </div>
-    </div>
-
-    <div class="admin-card">
-      <div class="admin-card-head">
-        <div>
-          <h2>${t('meta.content.title')}</h2>
-          <p class="admin-hint">${t('content.hint')}</p>
+          <span class="admin-status-pill ${entry.enabled ? 'is-on' : ''}" data-ab-live-pill>${escapeHtml(liveLabel)}</span>
         </div>
-      </div>
-      <div class="admin-card-body">
-        <div class="admin-content-grid">
-          ${lines
-            .map((line) => {
-              const flags = settings.lines[line.id] || {};
-              return `
-            <div class="admin-content-line-card">
-              <div class="admin-content-line-head">
-                <span class="admin-content-line-emoji" aria-hidden="true">${line.emoji}</span>
-                <div>
-                  <strong>${escapeHtml(t(`content.line.${line.id}`))}</strong>
-                  <p>${escapeHtml(line.kitName)}</p>
-                </div>
-              </div>
-              <label class="admin-toggle-row">
-                <span>
-                  ${t('content.kitOpen')}
-                  <span class="admin-toggle-hint">${t('content.kitOpenHint')}</span>
-                </span>
-                <input type="checkbox" data-content-flag="kitOpen" data-content-line="${line.id}" ${flags.kitOpen !== false ? 'checked' : ''}>
-              </label>
-              <label class="admin-toggle-row">
-                <span>
-                  ${t('content.premiumOpen')}
-                  <span class="admin-toggle-hint">${t('content.premiumOpenHint')}</span>
-                </span>
-                <input type="checkbox" data-content-flag="premiumOpen" data-content-line="${line.id}" ${flags.premiumOpen !== false ? 'checked' : ''}>
-              </label>
-              <label class="admin-toggle-row">
-                <span>
-                  ${t('content.audioGuideOpen')}
-                  <span class="admin-toggle-hint">${t('content.audioGuideOpenHint')}</span>
-                </span>
-                <input type="checkbox" data-content-flag="audioGuideOpen" data-content-line="${line.id}" ${flags.audioGuideOpen !== false ? 'checked' : ''}>
-              </label>
-              <label class="admin-toggle-row">
-                <span>
-                  ${t('content.menuWebOpen')}
-                  <span class="admin-toggle-hint">${t('content.menuWebOpenHint')}</span>
-                </span>
-                <input type="checkbox" data-content-flag="menuWebOpen" data-content-line="${line.id}" ${flags.menuWebOpen === true ? 'checked' : ''}>
-              </label>
+        <div class="admin-card-body">
+          <label class="admin-toggle-row">
+            <span>
+              ${t('content.abEnabled')}
+              <span class="admin-toggle-hint">${t('content.abEnabledHint')}</span>
+            </span>
+            <input type="checkbox" id="ab-paletas-enabled" data-ab-enabled data-content-dirty ${entry.enabled ? 'checked' : ''}>
+          </label>
+          <label class="admin-field admin-ab-percent">
+            <span>${t('content.abQuizPercent')}</span>
+            <div class="admin-ab-range-row">
+              <input
+                type="range"
+                id="ab-paletas-quiz-percent"
+                data-ab-quiz-percent
+                data-content-dirty
+                min="0"
+                max="100"
+                step="5"
+                value="${quizPct}"
+                ${entry.enabled ? '' : 'disabled'}
+              >
+              <input
+                type="number"
+                id="ab-paletas-quiz-number"
+                data-ab-quiz-number
+                data-content-dirty
+                min="0"
+                max="100"
+                step="1"
+                value="${quizPct}"
+                ${entry.enabled ? '' : 'disabled'}
+              >
+              <span class="admin-ab-unit">%</span>
             </div>
-          `;
-            })
-            .join('')}
+            <p class="admin-hint" id="ab-paletas-split-label" data-ab-split-label>
+              ${t('content.abSplit', { quiz: String(quizPct), lp: String(lpPct) })}
+            </p>
+          </label>
+          <p class="admin-hint">${t('content.abOverrides')}</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('meta.content.title')}</h2>
+            <p class="admin-hint">${t('content.hint')}</p>
+          </div>
+        </div>
+        <div class="admin-card-body">
+          <div class="admin-content-grid">
+            ${lines
+              .map((line) => {
+                const saved = settings.lines[line.id] || {};
+                const flags = draft?.lines?.[line.id]
+                  ? { ...saved, ...draft.lines[line.id] }
+                  : saved;
+                return `
+              <div class="admin-content-line-card">
+                <div class="admin-content-line-head">
+                  <span class="admin-content-line-emoji" aria-hidden="true">${line.emoji}</span>
+                  <div>
+                    <strong>${escapeHtml(t(`content.line.${line.id}`))}</strong>
+                    <p>${escapeHtml(line.kitName)}</p>
+                  </div>
+                </div>
+                <label class="admin-toggle-row">
+                  <span>
+                    ${t('content.kitOpen')}
+                    <span class="admin-toggle-hint">${t('content.kitOpenHint')}</span>
+                  </span>
+                  <input type="checkbox" data-content-flag="kitOpen" data-content-line="${line.id}" data-content-dirty ${flags.kitOpen !== false ? 'checked' : ''}>
+                </label>
+                <label class="admin-toggle-row">
+                  <span>
+                    ${t('content.premiumOpen')}
+                    <span class="admin-toggle-hint">${t('content.premiumOpenHint')}</span>
+                  </span>
+                  <input type="checkbox" data-content-flag="premiumOpen" data-content-line="${line.id}" data-content-dirty ${flags.premiumOpen !== false ? 'checked' : ''}>
+                </label>
+                <label class="admin-toggle-row">
+                  <span>
+                    ${t('content.audioGuideOpen')}
+                    <span class="admin-toggle-hint">${t('content.audioGuideOpenHint')}</span>
+                  </span>
+                  <input type="checkbox" data-content-flag="audioGuideOpen" data-content-line="${line.id}" data-content-dirty ${flags.audioGuideOpen !== false ? 'checked' : ''}>
+                </label>
+                <label class="admin-toggle-row">
+                  <span>
+                    ${t('content.menuWebOpen')}
+                    <span class="admin-toggle-hint">${t('content.menuWebOpenHint')}</span>
+                  </span>
+                  <input type="checkbox" data-content-flag="menuWebOpen" data-content-line="${line.id}" data-content-dirty ${flags.menuWebOpen === true ? 'checked' : ''}>
+                </label>
+              </div>
+            `;
+              })
+              .join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('content.adminsTitle')}</h2>
+            <p class="admin-hint">${t('content.adminsHint')}</p>
+          </div>
+        </div>
+        <div class="admin-card-body">
+          <form id="admin-emails-form" class="admin-emails-form">
+            <label class="admin-field">
+              <span>${t('content.adminEmails')}</span>
+              <textarea id="admin-emails-input" rows="4" placeholder="tu@correo.com">${escapeHtml(adminEmails.join('\n'))}</textarea>
+            </label>
+            <button type="submit" class="admin-btn primary">${t('content.saveAdmins')}</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('content.audioTitle')}</h2>
+            <p class="admin-hint">${t('content.audioHint')}</p>
+          </div>
+        </div>
+        <div class="admin-card-body">
+          <div class="admin-audio-test">
+            <button type="button" class="admin-btn primary" id="admin-tts-test">${t('content.audioTest')}</button>
+            <p class="admin-hint" id="admin-tts-status" role="status" aria-live="polite"></p>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="admin-card">
-      <div class="admin-card-head">
-        <div>
-          <h2>${t('content.audioTitle')}</h2>
-          <p class="admin-hint">${t('content.audioHint')}</p>
-        </div>
+    <div class="admin-save-bar ${dirty ? 'is-dirty' : ''}" data-content-save-bar>
+      <div class="admin-save-bar-copy">
+        <strong data-content-save-status>${dirty ? t('content.dirty') : t('content.saveAllHint')}</strong>
       </div>
-      <div class="admin-card-body">
-        <div class="admin-audio-test">
-          <button type="button" class="admin-btn primary" id="admin-tts-test">${t('content.audioTest')}</button>
-          <p class="admin-hint" id="admin-tts-status" role="status" aria-live="polite"></p>
-        </div>
-      </div>
+      <button type="button" class="admin-btn primary admin-save-bar-btn" data-content-save-all ${dirty ? '' : 'disabled'}>
+        ${t('content.saveAll')}
+      </button>
     </div>
   `;
 }
@@ -930,7 +954,7 @@ export function renderSidebar(activeTab, users, user, sidebarOpen) {
     <aside class="admin-sidebar ${sidebarOpen ? 'open' : ''}" aria-label="Admin navigation">
       <div class="admin-sidebar-top">
         <div class="admin-brand">
-          <div class="admin-brand-mark">Ops</div>
+          <img class="admin-brand-mark" src="/favicon.svg?v=5" width="34" height="34" alt="" decoding="async">
           <div class="admin-brand-text"><strong>${t('sidebar.brand')}</strong><span>${t('sidebar.sub')}</span></div>
         </div>
         <button type="button" class="admin-sidebar-close" data-close-sidebar aria-label="${t('sidebar.close')}">${ICONS.close}</button>
@@ -1003,6 +1027,7 @@ export function renderShell(props) {
     sidebarOpen,
     lineFilter = 'all',
     apiWarnings = [],
+    contentDraft = null,
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -1018,7 +1043,7 @@ export function renderShell(props) {
       content = renderCodesView(codes);
       break;
     case 'content':
-      content = renderContentView();
+      content = renderContentView(contentDraft);
       break;
     case 'channels':
       content = renderChannelsView(kiwifySubTab, kiwifyContent, analytics);
