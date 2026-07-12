@@ -2942,8 +2942,8 @@ body:has(.purchase-sticky.visible) {
   }
 
   .product-kit .inside-banner {
-    width: min(100vw - 48px, 700px);
-    max-width: min(100vw - 48px, 700px);
+    width: min(calc(100% - 48px), 700px);
+    max-width: min(calc(100% - 48px), 700px);
   }
 }
 
@@ -4163,12 +4163,14 @@ body:has(.purchase-sticky.visible) {
 }
 
 .product-kit .inside-banner {
-  width: min(100vw - 24px, 608px);
-  max-width: min(100vw - 24px, 608px);
+  display: block;
+  width: min(calc(100% - 32px), 608px);
+  max-width: min(calc(100% - 32px), 608px);
   margin: 14px auto 28px;
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
+  padding: 0;
+  position: static;
+  left: auto;
+  transform: none;
 }
 
 .flow-mock .mock-caption,
