@@ -12,7 +12,7 @@ export function socialLineFor(phase, answers = {}) {
 
   if (phase === 'deep') {
     if (answers.blocker === 'precio') {
-      return `${SOCIAL_N} mujeres también trababan en el precio`;
+      return `${SOCIAL_N} mujeres también tenían trabas con el precio`;
     }
     if (answers.blocker === 'ventas') {
       return `${SOCIAL_N} mujeres también dudaban antes de la primera venta`;
@@ -22,6 +22,9 @@ export function socialLineFor(phase, answers = {}) {
     }
     if (answers.blocker === 'whatsapp') {
       return `${SOCIAL_N} mujeres también querían vender bien por WhatsApp`;
+    }
+    if (answers.blocker === 'empezar') {
+      return `${SOCIAL_N} mujeres también no sabían por dónde empezar`;
     }
     return `${SOCIAL_N} mujeres ya están armando su diagnóstico`;
   }

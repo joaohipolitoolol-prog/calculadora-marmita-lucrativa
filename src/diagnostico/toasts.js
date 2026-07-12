@@ -24,13 +24,11 @@ const TOAST_SCREENS = new Set([
   'q_whatsapp',
   'q_speed',
   'affirm_2',
-  'loading',
-  'diagnosis',
+  // Sem toast em loading/diagnosis/offer — não competir com o “diagnóstico”
   'simulation',
   'insight',
   'kit_match',
   'trust',
-  'offer',
 ]);
 
 const WA_ICON = `

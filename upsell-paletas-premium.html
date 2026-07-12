@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="paletas-upsell.css">
+  <link rel="stylesheet" href="/paletas-upsell.css">
 </head>
 <body class="paletas-upsell-theme">
   <noscript><img height="1" width="1" style="display:none" alt=""
@@ -39,52 +39,56 @@
 
   <section class="upsell-hero">
     <div class="container">
+      <p class="upsell-brand">Paletas para WhatsApp</p>
       <p class="upsell-eyebrow">✓ Tu compra fue confirmada</p>
       <h1>Tu Kit Paletas ya está listo.</h1>
-      <p class="upsell-hero-sub">Ahora agrega el Pack Premium para vender combos más completos por WhatsApp.</p>
-      <p class="section-text">
-        Con el kit principal ya puedes empezar. Pero si quieres ofrecer un menú más atractivo, vender combos x3, x6 y familiares, y presentar tus paletas como una opción más premium, este pack te entrega recetas, mensajes y materiales extra para hacerlo sin crear todo desde cero.
-      </p>
-      <p class="upsell-hero-note">Tu kit principal ya te ayuda a empezar. Este pack es para quien quiere ir más allá y montar un menú más completo desde el primer día.</p>
+      <p class="upsell-hero-sub">Agrega el Pack Premium y vende combos x3, x6 y familiares por WhatsApp.</p>
 
       <figure class="upsell-hero-visual">
-        <div class="upsell-hero-grid">
-          <img src="/paletas/paleta-banada-salsa.webp?v=5" alt="Paleta bañada premium" width="260" height="260" loading="eager">
-          <img src="/paletas/sabor-chocolate.webp?v=5" alt="Paleta de chocolate" width="260" height="260" loading="eager">
-          <img src="/paletas/hero-variedad-paletas.webp?v=5" alt="Variedad de paletas" width="260" height="260" loading="eager">
-          <img src="/paletas/hero-paletas-fresas.webp?v=5" alt="Paleta de fresas con crema" width="260" height="260" loading="eager">
-        </div>
+        <img
+          src="/paletas/hero-variedad-paletas.webp?v=5"
+          alt="Variedad de paletas premium listas para vender"
+          width="800"
+          height="600"
+          loading="eager"
+          decoding="async"
+        >
       </figure>
 
-      <a href="#" class="btn btn-primary" data-upsell-checkout data-upsell-cta>Sí, agregar Pack Premium por US$9,97</a>
+      <div class="hero-price-row">
+        <span class="offer-price-old" data-upsell-price-compare>US$12</span>
+        <p class="hero-price" data-upsell-price>US$9,97</p>
+      </div>
+
+      <a href="#" class="btn btn-primary btn-cta-pulse" data-upsell-checkout data-upsell-cta>Sí, agregar Pack Premium por US$9,97</a>
       <p class="cta-note cta-note-urgent">Acceso inmediato · Oferta única · Garantía de 30 días</p>
       <a href="#" class="btn-decline" data-upsell-decline data-upsell-decline-label>No gracias, continuar con mi kit básico</a>
     </div>
   </section>
 
-  <section class="upsell-section alt">
+  <section class="upsell-section">
     <div class="container">
       <p class="section-label">El tamaño del pedido</p>
       <h2>La diferencia está en el tamaño del pedido</h2>
-      <p class="section-text">Vender una paleta por vez puede funcionar. Pero cuando tienes combos listos, puedes ofrecer opciones para parejas, familias, fines de semana, cumpleaños y fechas especiales. Eso hace que tu menú parezca más completo y que cada pedido tenga más valor.</p>
-      <div class="order-size-grid">
-        <article class="order-size-card">
-          <h3>Paletas sueltas</h3>
-          <p>Buenas para empezar, pero cada venta depende de una unidad por vez.</p>
-        </article>
-        <article class="order-size-card highlight">
-          <h3>Combos listos</h3>
-          <p>Ofertas x3, x6 y familiares para presentar opciones más completas.</p>
-        </article>
-        <article class="order-size-card">
-          <h3>Menú más premium</h3>
-          <p>Recetas, mensajes y fichas que ayudan a vender con mejor presentación.</p>
-        </article>
-      </div>
+      <p class="section-text">Una paleta suelta funciona para empezar. Con combos listos, ofreces opciones para parejas, familias y fechas especiales — y cada pedido vale más.</p>
+      <ol class="order-flow">
+        <li>
+          <strong>Paletas sueltas</strong>
+          <span>Buenas para empezar, una unidad por vez.</span>
+        </li>
+        <li class="order-flow-highlight">
+          <strong>Combos listos</strong>
+          <span>Ofertas x3, x6 y familiares ya armadas.</span>
+        </li>
+        <li>
+          <strong>Menú más premium</strong>
+          <span>Recetas, mensajes y fichas de presentación.</span>
+        </li>
+      </ol>
     </div>
   </section>
 
-  <section class="upsell-section">
+  <section class="upsell-section alt">
     <div class="container">
       <h2>Básico vs premium en tu menú</h2>
       <div class="compare-grid">
@@ -95,7 +99,6 @@
             <li>Cálculo de precio</li>
             <li>Menú inicial</li>
             <li>Mensajes base</li>
-            <li>Primera oferta para empezar</li>
           </ul>
         </div>
         <div class="compare-card premium">
@@ -106,9 +109,29 @@
             <li>Promos para fechas especiales</li>
             <li>Mensajes para vender combos</li>
             <li>Fichas de presentación</li>
-            <li>Menú con más valor percibido</li>
           </ul>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="upsell-section" id="valor">
+    <div class="container">
+      <h2>Qué recibes en el Pack Premium</h2>
+      <ul class="value-stack">
+        <li><strong>20 recetas premium</strong> — ingredientes, pasos y tip de venta</li>
+        <li><strong>10 combos rentables</strong> — contenido, precio sugerido y lógica de oferta</li>
+        <li><strong>Menú premium editable</strong> — para copiar y adaptar a tu WhatsApp</li>
+        <li><strong>Mensajes para combos</strong> — y promociones listas</li>
+        <li><strong>Fichas de presentación</strong> — para sabores especiales</li>
+        <li><strong>Guía de presentación</strong> — nombres, fotos, empaque y fechas</li>
+      </ul>
+      <p class="section-label example-label">Ejemplos</p>
+      <div class="example-chips">
+        <span class="example-chip">Chocolate con brownie</span>
+        <span class="example-chip">Combo familiar x6</span>
+        <span class="example-chip">Promo cumpleaños</span>
+        <span class="example-chip">Bañada en chocolate</span>
       </div>
     </div>
   </section>
@@ -117,45 +140,20 @@
     <div class="container">
       <p class="section-label">Ejemplo honesto</p>
       <h2>¿Cómo se paga solo el pack?</h2>
-      <p class="section-text">Este es un ejemplo simple para entender la lógica de los combos. Los costos pueden cambiar según tu país, ciudad e ingredientes.</p>
+      <p class="section-text">Ejemplo simple. Los costos cambian según tu país e ingredientes.</p>
       <div class="roi-box">
         <div class="roi-row"><span>Combo familiar x6</span><strong>US$ 12</strong></div>
         <div class="roi-row"><span>Costo estimado</span><strong>US$ 4,50</strong></div>
         <div class="roi-row highlight"><span>Ganancia aproximada</span><strong>US$ 7,50</strong></div>
         <div class="roi-foot">
-          <p>Si vendes <strong>2 combos familiares</strong>, podrías recuperar el valor del Pack Premium y todavía te quedaría ganancia. No es una promesa de ventas, es solo un ejemplo para ayudarte a pensar mejor tus precios.</p>
+          <p>Con <strong>2 combos familiares</strong> podrías recuperar el Pack Premium y aún quedar con ganancia. No es una promesa de ventas — solo un ejemplo para pensar tus precios.</p>
         </div>
       </div>
       <p class="roi-disclaimer">Usa la calculadora del kit principal para adaptar los números a tu realidad.</p>
-    </div>
-  </section>
 
-  <section class="upsell-section" id="valor">
-    <div class="container">
-      <h2>Qué recibes en el Pack Premium</h2>
-      <ul class="value-stack">
-        <li>20 recetas premium con ingredientes, pasos y tip de venta</li>
-        <li>10 combos rentables con contenido, precio sugerido y lógica de oferta</li>
-        <li>Menú premium editable para copiar y adaptar a tu WhatsApp</li>
-        <li>Mensajes para vender combos y promociones</li>
-        <li>Fichas de presentación para sabores especiales</li>
-        <li>Guía de presentación con nombres, fotos, empaque y fechas especiales</li>
-      </ul>
-      <p class="section-label" style="margin-top:20px">Ejemplos de recetas</p>
-      <div class="example-chips">
-        <span class="example-chip">Paleta de chocolate con brownie</span>
-        <span class="example-chip">Paleta de fresa cremosa</span>
-        <span class="example-chip">Paleta tipo cheesecake</span>
-        <span class="example-chip">Paleta bañada en chocolate</span>
-        <span class="example-chip">Paleta de mango con crema</span>
-      </div>
-      <p class="section-label" style="margin-top:16px">Ejemplos de combos</p>
-      <div class="example-chips">
-        <span class="example-chip">Combo pareja x3</span>
-        <span class="example-chip">Combo familiar x6</span>
-        <span class="example-chip">Promo fin de semana</span>
-        <span class="example-chip">Promo cumpleaños</span>
-        <span class="example-chip">Pack fechas especiales</span>
+      <div class="mid-cta">
+        <a href="#" class="btn btn-primary" data-upsell-checkout data-upsell-cta>Sí, agregar Pack Premium por US$9,97</a>
+        <a href="#" class="btn-decline" data-upsell-decline data-upsell-decline-label>No gracias, continuar con mi kit básico</a>
       </div>
     </div>
   </section>
@@ -163,23 +161,22 @@
   <section class="upsell-section alt" id="oferta">
     <div class="container">
       <p class="section-label">Oferta única</p>
-      <h2>Agrega el Pack Premium antes de salir de esta página</h2>
-      <p class="section-text">Esta es tu única oportunidad de sumar el Pack Premium a precio especial. Si cierras esta página, no volverá a mostrarse con esta oferta.</p>
+      <h2>Agrega el Pack Premium antes de salir</h2>
+      <p class="section-text">Esta es tu única oportunidad a precio especial. Si cierras esta página, no volverá a mostrarse así.</p>
       <div class="offer-box">
         <div class="offer-price-row">
           <span class="offer-price-old" data-upsell-price-compare>US$12</span>
           <p class="offer-price" data-upsell-price>US$9,97</p>
         </div>
-        <p class="section-text" style="text-align:center;margin-bottom:12px"><strong>Oferta especial para completar tu pedido</strong></p>
+        <p class="offer-tagline">Oferta especial para completar tu pedido</p>
         <ul class="offer-list">
           <li>20 recetas premium</li>
           <li>10 combos + menú editable</li>
           <li>Mensajes y fichas especiales</li>
           <li>Guía de presentación</li>
-          <li>Acceso inmediato</li>
-          <li>Pago único</li>
+          <li>Acceso inmediato · Pago único</li>
         </ul>
-        <a href="#" class="btn btn-primary" data-upsell-checkout data-upsell-cta>Sí, agregar Pack Premium por US$9,97</a>
+        <a href="#" class="btn btn-primary btn-cta-pulse" data-upsell-checkout data-upsell-cta>Sí, agregar Pack Premium por US$9,97</a>
         <p class="cta-note cta-note-urgent">Oferta única · Acceso inmediato · Garantía de 30 días</p>
         <a href="#" class="btn-decline" data-upsell-decline data-upsell-decline-label>No gracias, continuar con mi kit básico</a>
       </div>
@@ -199,15 +196,15 @@
       <div class="faq-list">
         <details class="faq-item" open>
           <summary class="faq-question">¿Necesito este pack para empezar?<span class="faq-icon" aria-hidden="true">+</span></summary>
-          <div class="faq-answer"><p>No. Tu kit principal ya te ayuda a empezar. Este Pack Premium es para quien quiere montar un menú más completo, con combos, recetas premium y materiales extra para vender con mejor presentación.</p></div>
+          <div class="faq-answer"><p>No. Tu kit principal ya te ayuda a empezar. Este Pack Premium es para quien quiere montar un menú más completo, con combos, recetas premium y materiales extra.</p></div>
         </details>
         <details class="faq-item">
           <summary class="faq-question">¿Es diferente de lo que ya compré?<span class="faq-icon" aria-hidden="true">+</span></summary>
-          <div class="faq-answer"><p>Sí. El kit principal te ayuda con la base para preparar, calcular y publicar. Este pack agrega recetas premium, combos, mensajes especiales y materiales para aumentar el valor percibido de tu menú.</p></div>
+          <div class="faq-answer"><p>Sí. El kit principal te da la base. Este pack agrega recetas premium, combos, mensajes especiales y materiales para subir el valor percibido de tu menú.</p></div>
         </details>
         <details class="faq-item">
           <summary class="faq-question">¿Garantiza más ventas?<span class="faq-icon" aria-hidden="true">+</span></summary>
-          <div class="faq-answer"><p>No prometemos ventas garantizadas. El objetivo es darte más opciones, mejor presentación y ofertas más completas para vender por WhatsApp con más claridad.</p></div>
+          <div class="faq-answer"><p>No prometemos ventas garantizadas. El objetivo es darte más opciones, mejor presentación y ofertas más completas para vender por WhatsApp.</p></div>
         </details>
         <details class="faq-item">
           <summary class="faq-question">¿Puedo conseguir esta oferta después?<span class="faq-icon" aria-hidden="true">+</span></summary>
@@ -239,41 +236,17 @@
   </div>
 
   <div class="downsell-overlay" id="downsell-modal" hidden>
-    <div class="downsell-card wide" role="dialog" aria-modal="true" aria-labelledby="downsell-title">
+    <div class="downsell-card" role="dialog" aria-modal="true" aria-labelledby="downsell-title">
       <button type="button" class="downsell-close" data-downsell-close aria-label="Cerrar">×</button>
       <p class="downsell-label">Mini Pack</p>
-      <h2 id="downsell-title">Espera, puedes llevar una versión más simple por solo <span data-downsell-price>US$7</span></h2>
-      <p class="downsell-text">Si no quieres el Pack Premium completo ahora, agrega el <strong>Mini Pack de Combos</strong> y empieza con opciones listas para vender pedidos más completos por WhatsApp.</p>
-      <p class="downsell-text">Esta versión es más pequeña que el Pack Premium, pero te ayuda a no quedarte solo con paletas sueltas.</p>
-      <h3 style="font-size:0.95rem;margin-top:14px">Qué recibes en el Mini Pack</h3>
+      <h2 id="downsell-title">Espera — una versión más simple por <span data-downsell-price>US$7</span></h2>
+      <p class="downsell-text">Si el Pack Premium completo no es para ahora, lleva el <strong>Mini Pack de Combos</strong> y empieza a vender pedidos más completos.</p>
       <ul class="downsell-mini-list">
         <li>5 ideas de combos para WhatsApp</li>
         <li>5 mensajes listos para vender combos</li>
-        <li>1 estructura simple de menú de combos</li>
+        <li>1 estructura simple de menú</li>
         <li>Promos básicas para fines de semana</li>
-        <li>Acceso digital inmediato</li>
       </ul>
-      <h3 style="font-size:0.95rem;margin-top:14px">Pack Premium vs Mini Pack</h3>
-      <div class="downsell-compare">
-        <div class="downsell-compare-col">
-          <h4>Mini Pack · <span data-downsell-price>US$7</span></h4>
-          <ul class="downsell-compare-list">
-            <li>5 ideas de combos</li>
-            <li>5 mensajes listos</li>
-            <li>1 estructura simple de menú</li>
-            <li>Promos básicas</li>
-          </ul>
-        </div>
-        <div class="downsell-compare-col premium-col">
-          <h4>Pack Premium · <span data-upsell-price>US$9,97</span></h4>
-          <ul class="downsell-compare-list">
-            <li>20 recetas premium</li>
-            <li>10 combos rentables</li>
-            <li>Menú premium editable</li>
-            <li>Guía de presentación</li>
-          </ul>
-        </div>
-      </div>
       <p class="downsell-price" data-downsell-price>US$7</p>
       <a href="#" class="btn btn-primary" data-downsell-checkout data-downsell-cta>Sí, agregar Mini Pack por US$7</a>
       <a href="#" class="btn-decline" data-downsell-final-decline>No gracias, continuar sin este pack</a>

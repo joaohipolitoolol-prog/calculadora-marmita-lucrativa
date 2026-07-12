@@ -31,7 +31,19 @@ html.paletas-upsell-theme {
   border-color: var(--pink-light);
 }
 
-.paletas-upsell-theme .upsell-hero-visual,
+.paletas-upsell-theme .upsell-hero-visual {
+  border: none;
+}
+
 .paletas-upsell-theme .offer-box {
   border-color: rgba(232, 67, 122, 0.28);
+}
+
+.paletas-upsell-theme .btn-cta-pulse {
+  animation-name: cta-soft-pulse-paletas;
+}
+
+@keyframes cta-soft-pulse-paletas {
+  0%, 100% { box-shadow: 0 8px 24px rgba(232, 67, 122, 0.32); }
+  50% { box-shadow: 0 10px 32px rgba(232, 67, 122, 0.5); }
 }

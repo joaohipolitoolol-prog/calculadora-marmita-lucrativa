@@ -5,7 +5,24 @@ import { createUserProfile, isAdminEmail, syncAdminFlag, touchUserActivity, upda
 import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
 import { purchaseFlagsFromSearch, resolveProductFlags } from './purchase-flags.js';
 import { rememberActiveLine, resolveLineFromSearch, premiumStorageKey, LEGACY_PREMIUM_STORAGE_KEY } from './product-lines.js';
+import { claimPendingPurchases } from './claim-pending.js';
 import { trackEvent } from './track.js';
+
+async function claimPendingForUser(user) {
+  if (!user?.getIdToken) return;
+  try {
+    const token = await user.getIdToken();
+    const result = await claimPendingPurchases(token);
+    if (result?.claimed && Array.isArray(result.grants)) {
+      for (const g of result.grants) {
+        if (g.line === 'paletas' && g.tier === 'premium') setPremiumLocal('paletas', true);
+        if (g.line === 'postres' && g.tier === 'premium') setPremiumLocal('postres', true);
+      }
+    }
+  } catch {
+    // Non-blocking — email link grants / admin can still unlock
+  }
+}
 
 function resolveRegisteredFrom(search, accessCode) {
   if (accessCode) return 'code';
@@ -205,6 +222,7 @@ export async function login(email, password, options = {}) {
   await loadAdminAllowlist();
   await syncAdminFlag(result.user.uid, result.user.email);
   await applyPurchaseGrantsFromUrl(result.user.uid, search);
+  await claimPendingForUser(result.user);
   const line = resolveLineFromSearch(search);
   await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
   trackEvent('login', { page: 'login', line: line?.id || undefined, uid: result.user.uid });
@@ -269,6 +287,7 @@ export async function register(name, email, password, options = {}) {
   await syncAdminFlag(result.user.uid, result.user.email);
 
   const codeGrants = await applyAccessCodeToUser(result.user.uid, accessCode);
+  await claimPendingForUser(result.user);
   if (codeGrants?.hasPremium || flags.hasPremium) setPremiumLocal('paletas', true);
   if (codeGrants?.hasPostresPremium || flags.hasPostresPremium) setPremiumLocal('postres', true);
 

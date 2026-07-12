@@ -61,10 +61,10 @@ export const DIAGNOSES = {
     id: 'confianza',
     badge: 'Bloqueo principal',
     title: 'Dudas de que alguien te compre',
-    body: 'Es normal. Quien nunca vendió (o vendió poco) piensa que “nadie va a querer”. El problema casi nunca es el producto: es no saber cómo pedirlo.',
+    body: 'Es normal. Quien nunca vendió (o vendió poco) piensa que “nadie va a querer”. El problema casi nunca es el producto: es no saber cómo pedir el pedido.',
     need: 'Necesitas mensajes listos, un menú claro y un plan de primeros pedidos — para publicar sin sentir que estás “molestando”.',
     bridge:
-      'No necesitas aparecer en videos. Necesitas un mensaje claro y un producto bonito que se venda solo en el chat.',
+      'No necesitas aparecer en videos. Necesitas un mensaje claro y un producto atractivo que se venda solo en el chat.',
     kitFocus: ['mensajes', 'pedidos'],
     focusLabel: 'Mensajes + primeros pedidos',
   },
@@ -73,9 +73,9 @@ export const DIAGNOSES = {
     badge: 'Bloqueo principal',
     title: 'No sabes qué preparar (ni si saldrá bien)',
     body: 'Si no tienes una receta confiable, cada intento se siente como un riesgo. Y el miedo a “desperdiciar ingredientes” te frena antes de empezar.',
-    need: 'Necesitas pocas recetas bonitas y claras — no un libro interminable — para empezar con seguridad y repetir lo que funciona.',
+    need: 'Necesitas pocas recetas claras y atractivas — no un libro interminable — para empezar con seguridad y repetir lo que funciona.',
     bridge:
-      'No necesitas decenas de recetas. Necesitas un producto bonito, fácil de repetir y listo para fotografiar.',
+      'No necesitas decenas de recetas. Necesitas un producto atractivo, fácil de repetir y listo para fotografiar.',
     kitFocus: ['recetas'],
     focusLabel: 'Recetas + presentación',
   },
@@ -106,17 +106,57 @@ export const DIAGNOSES = {
 /** Calcula el diagnóstico a partir de las respuestas */
 export function computeDiagnosis(answers) {
   const blocker = answers.blocker;
+
+  // Señales secundarias refinan el camino “no sé por dónde empezar”
+  if (blocker === 'empezar') {
+    if (answers.cooking === 'beginner') return 'recetas';
+    return 'inicio';
+  }
+
   if (blocker === 'precio') return 'precio';
-  if (blocker === 'ventas') return 'confianza';
+  if (blocker === 'ventas') {
+    // Duda de venta + WhatsApp muy bajo → el freno operativo es el chat
+    if (answers.whatsappLevel === 'low') return 'whatsapp';
+    return 'confianza';
+  }
   if (blocker === 'recetas') return 'recetas';
   if (blocker === 'whatsapp') return 'whatsapp';
-  if (blocker === 'empezar') return 'inicio';
 
-  // Fallbacks por señales secundarias
   if (answers.cooking === 'beginner') return 'recetas';
   if (answers.whatsappLevel === 'low') return 'whatsapp';
   if (answers.experience === 'never') return 'confianza';
   return 'inicio';
+}
+
+function insightPoints(diagnosisId) {
+  const map = {
+    precio: [
+      { icon: 'calc', text: 'Una calculadora simple de costo + ganancia' },
+      { icon: 'menu', text: 'Un menú con precios listos para WhatsApp' },
+      { icon: 'chat', text: 'Mensajes para publicar sin dudar del número' },
+    ],
+    confianza: [
+      { icon: 'chat', text: 'Mensajes listos que no suenan a “molestia”' },
+      { icon: 'check', text: 'Un plan corto de primeros pedidos' },
+      { icon: 'menu', text: 'Un menú claro para que te respondan' },
+    ],
+    recetas: [
+      { icon: 'recipe', text: 'Pocas recetas claras y repetibles' },
+      { icon: 'spark', text: 'Presentación lista para foto de WhatsApp' },
+      { icon: 'box', text: 'Guía de proveedores para no improvisar' },
+    ],
+    whatsapp: [
+      { icon: 'menu', text: 'Menú editable pensado para el chat' },
+      { icon: 'chat', text: 'Mensajes para publicar y responder' },
+      { icon: 'check', text: 'Flujo de pedido sin incomodarte' },
+    ],
+    inicio: [
+      { icon: 'book', text: 'Un orden claro: qué hacer primero' },
+      { icon: 'recipe', text: 'Producto, precio y mensaje en un solo kit' },
+      { icon: 'check', text: 'Primeros pedidos sin inventar el negocio' },
+    ],
+  };
+  return map[diagnosisId] || map.inicio;
 }
 
 function experienceTone(exp) {
@@ -139,7 +179,7 @@ function experienceTone(exp) {
   return {
     affirmTitle: 'Genial. Ya sabes lo que es vender.',
     affirmBody:
-      'Eso acelera todo. Ahora el foco es adaptar lo que ya sabes a un producto bonito, con precio claro y un menú listo para WhatsApp.',
+      'Eso acelera todo. Ahora el foco es adaptar lo que ya sabes a un producto atractivo, con precio claro y un menú listo para WhatsApp.',
     resultLead: 'Como ya vendes algo,',
   };
 }
@@ -175,15 +215,24 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
   const expLabel = LABELS.experience[answers.experience] || '';
   const blockerLabel = LABELS.blocker[answers.blocker] || '';
   const speedLabel = LABELS.speed[answers.speed] || '';
+  const goalLabel = LABELS.goal[answers.goal] || '';
+  const waLabel = LABELS.whatsapp[answers.whatsappLevel] || '';
   const sim = meta.simulation || null;
   const name = String(answers.name || '').trim();
-  const hi = name ? `${name}, ` : '';
+
+  const diagBodyJoined = (() => {
+    const lead = tone.resultLead;
+    const body = d.body.charAt(0).toLowerCase() + d.body.slice(1);
+    if (name) {
+      return `${name}, ${lead.charAt(0).toLowerCase()}${lead.slice(1)} ${body}`;
+    }
+    return `${lead} ${body}`;
+  })();
 
   const screens = {
     welcome: {
       id: 'welcome',
       type: 'welcome',
-      progress: 0,
       icon: 'search',
       image: '/paletas/authority-mujer-paletas.webp?v=3',
       imageAlt:
@@ -193,13 +242,12 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
       body: 'Responde unas preguntas y ve qué te frena para empezar a ganar desde casa — sin aparecer en videos.',
       note: 'Sin aparecer en videos · Desde casa · Solo WhatsApp',
       cta: 'Quiero descubrir cómo',
-      micro: 'Diagnóstico gratis · 2 minutos · Sin compromiso',
+      micro: 'Diagnóstico gratis · Sin compromiso',
     },
 
     q_experience: {
       id: 'q_experience',
       type: 'question',
-      progress: 8,
       key: 'experience',
       icon: 'user',
       title: '¿Cuál es tu situación hoy?',
@@ -229,7 +277,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     q_goal: {
       id: 'q_goal',
       type: 'question',
-      progress: 16,
       key: 'goal',
       icon: 'heart',
       title: answers.experience === 'selling'
@@ -264,16 +311,11 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     affirm_1: {
       id: 'affirm_1',
       type: 'affirm',
-      progress: 24,
       icon: 'check',
       title: tone.affirmTitle,
       body: tone.affirmBody,
       chip: '',
-      review: {
-        src: '/paletas/reviews/crops/wa-alejandra.webp?v=2',
-        alt: 'Alejandra: primer pedido de vecinas por WhatsApp',
-        caption: 'Mujeres como tú ya están recibiendo pedidos',
-      },
+      reviewKey: 'experience',
       cta: 'Continuar',
       micro: 'Vas bien · Siguiente pregunta',
     },
@@ -281,7 +323,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     q_blocker: {
       id: 'q_blocker',
       type: 'question',
-      progress: 36,
       key: 'blocker',
       icon: 'warning',
       title: '¿Qué te frena más ahora mismo?',
@@ -326,7 +367,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     q_name: {
       id: 'q_name',
       type: 'name',
-      progress: 40,
       icon: 'user',
       title: '¿Cómo te gusta que te digamos?',
       body: 'Solo tu primer nombre. Así el diagnóstico se siente hecho para ti.',
@@ -339,7 +379,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     q_cooking: {
       id: 'q_cooking',
       type: 'question',
-      progress: 48,
       key: 'cooking',
       icon: 'recipe',
       title: name
@@ -374,7 +413,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     q_whatsapp: {
       id: 'q_whatsapp',
       type: 'question',
-      progress: 60,
       key: 'whatsappLevel',
       icon: 'wa',
       title: '¿Cómo usas WhatsApp hoy?',
@@ -407,7 +445,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     q_speed: {
       id: 'q_speed',
       type: 'question',
-      progress: 72,
       key: 'speed',
       icon: 'clock',
       title: '¿Qué tan pronto quieres empezar?',
@@ -437,49 +474,49 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     affirm_2: {
       id: 'affirm_2',
       type: 'affirm',
-      progress: 80,
       icon: 'spark',
       title: name ? `${name}, ya tenemos tu mapa` : 'Ya tenemos tu mapa',
       body: [
         blockerLabel &&
           `Tu freno más fuerte hoy es ${blockerLabel}.`,
+        goalLabel && `Tu prioridad: ${goalLabel}.`,
         expLabel === 'nunca has vendido'
           ? 'Empezar de cero no te atrasa — te da claridad para no repetir errores ajenos.'
           : expLabel
             ? `Con lo que ya traes (${expLabel}), el siguiente paso es corregir ese punto exacto.`
             : '',
-        speedLabel ? `Y como ${speedLabel}, vamos a ir directo al plan.` : '',
+        waLabel && answers.whatsappLevel === 'low'
+          ? 'Como aún no usas WhatsApp para vender, el plan empieza por el chat.'
+          : '',
+        speedLabel ? `Y como ${speedLabel}, vamos directo al diagnóstico.` : '',
       ]
         .filter(Boolean)
         .join(' '),
       chip: '',
       cta: 'Ver mi diagnóstico',
-      micro: 'Último paso · Análisis personalizado',
+      micro: 'Casi listo · Tu diagnóstico',
     },
 
     loading: {
       id: 'loading',
       type: 'loading',
-      progress: 88,
       steps: [
         {
           icon: 'search',
-          text: name ? `Analizando las respuestas de ${name}…` : 'Analizando tus respuestas…',
+          text: name ? `Revisando las respuestas de ${name}…` : 'Revisando tus respuestas…',
         },
-        { icon: 'user', text: 'Comparando con perfiles de vendedoras…' },
-        { icon: 'warning', text: 'Identificando tu bloqueo principal…' },
-        { icon: 'spark', text: 'Preparando tu diagnóstico…' },
+        { icon: 'warning', text: 'Cruzando tu bloqueo con tu perfil…' },
+        { icon: 'spark', text: 'Armando tu diagnóstico…' },
       ],
     },
 
     diagnosis: {
       id: 'diagnosis',
       type: 'diagnosis',
-      progress: 90,
       icon: 'warning',
       badge: d.badge,
       title: d.title,
-      body: `${hi}${tone.resultLead} ${d.body}`,
+      body: diagBodyJoined,
       need: d.need,
       cta: '¿Qué necesito entonces?',
       micro: name
@@ -490,16 +527,26 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     simulation: {
       id: 'simulation',
       type: 'simulation',
-      progress: 93,
       icon: 'dollar',
-      eyebrow: 'Simulación de hoy',
-      amount: sim?.amountLabel || 'US$ 32,00',
-      units: sim?.units || 18,
+      eyebrow: 'Proyección de un buen día',
+      amount: sim?.amountLabel || 'US$ 18,00',
+      units: sim?.units || 10,
       title: name
-        ? `${name}, esto es lo que podrías haber generado hoy`
-        : 'Esto es lo que podrías haber generado hoy',
-      body: 'Con paletas publicadas bien en WhatsApp — precio claro, menú listo y mensajes que no dan vergüenza enviar.',
-      note: 'Simulación orientativa según tu perfil · ~US$ 1,65 de ganancia por paleta',
+        ? `${name}, así podría verse un día bien publicado`
+        : 'Así podría verse un día bien publicado',
+      body:
+        diagnosisId === 'precio'
+          ? 'Con precio claro y menú listo — sin adivinar si estás ganando o perdiendo.'
+          : diagnosisId === 'confianza'
+            ? 'Con mensajes y un plan de primeros pedidos — sin sentir que estás molestando.'
+            : diagnosisId === 'recetas'
+              ? 'Con pocas recetas claras — sin desperdiciar ingredientes a prueba y error.'
+              : diagnosisId === 'whatsapp'
+                ? 'Con menú y mensajes listos para el chat — sin improvisar cada publicación.'
+                : 'Con producto, precio y mensaje en orden — el sistema que te faltaba para empezar.',
+      note: goalLabel
+        ? `Proyección orientativa para ${goalLabel} · ~US$ 1,65 de ganancia por paleta`
+        : 'Proyección orientativa según tu perfil · ~US$ 1,65 de ganancia por paleta',
       cta: 'Ver cómo lograrlo',
       micro: 'No es una promesa — es una proyección para que veas el potencial',
     },
@@ -507,20 +554,21 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     insight: {
       id: 'insight',
       type: 'insight',
-      progress: 95,
       icon: 'spark',
-      title: d.bridge,
-      body:
+      title: 'Cómo salir de este bloqueo',
+      body: [
         answers.cooking === 'beginner'
           ? 'Con pasos claros y pocas recetas bien hechas, el miedo a “fallar” baja rápido.'
           : answers.experience === 'never'
             ? 'No necesitas experiencia previa. Necesitas un sistema corto: producto, precio y mensaje.'
             : 'Con lo que ya traes, lo que falta es orden: producto, precio y publicación.',
-      points: [
-        { icon: 'recipe', text: 'Un producto bonito y repetible' },
-        { icon: 'calc', text: 'Un precio que no te haga perder' },
-        { icon: 'wa', text: 'Una forma clara de publicar en WhatsApp' },
-      ],
+        goalLabel
+          ? `Eso es lo que te acerca a ${goalLabel} — sin inventar el negocio desde cero.`
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+      points: insightPoints(diagnosisId),
       cta: 'Ver la solución para mi caso',
       micro: 'Hecho a medida según tu diagnóstico',
     },
@@ -528,7 +576,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     kit_match: {
       id: 'kit_match',
       type: 'kit',
-      progress: 97,
       icon: 'gift',
       eyebrow: 'Solución para tu diagnóstico',
       title: `Por eso armamos el ${KIT_NAME}`,
@@ -541,7 +588,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     trust: {
       id: 'trust',
       type: 'trust',
-      progress: 99,
       icon: 'shield',
       title: 'Otras mujeres ya empezaron',
       body: 'Pequeñas victorias reales por WhatsApp — sin aparecer en videos.',
@@ -569,7 +615,6 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
     offer: {
       id: 'offer',
       type: 'offer',
-      progress: 100,
       icon: 'gift',
       eyebrow: name ? `Tu plan, ${name}` : 'Tu plan personalizado',
       title:
@@ -578,7 +623,9 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
           : answers.speed === 'week'
             ? 'Todo lo que necesitas para empezar esta semana'
             : 'Todo lo que necesitas para empezar con claridad',
-      body: d.bridge,
+      body: goalLabel
+        ? `Para ${goalLabel}, tu diagnóstico apuntó a esto: ${d.title}. El kit resuelve exactamente ese punto (${d.focusLabel}).`
+        : `Tu diagnóstico apuntó a esto: ${d.title}. El kit resuelve exactamente ese punto (${d.focusLabel}).`,
       price: MAIN_PRICE_LABEL,
       priceNote: 'Pago único · Acceso inmediato',
       guarantee: `Garantía de ${GUARANTEE_DAYS} días`,

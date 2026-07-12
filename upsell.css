@@ -147,6 +147,150 @@ a { text-decoration: none; color: inherit; }
   font-weight: 800;
 }
 
+.upsell-brand {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--pink);
+  margin-bottom: 8px;
+}
+
+.hero-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  margin: 4px 0 14px;
+}
+
+.hero-price-row .hero-price {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: var(--upsell-grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.offer-tagline {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.example-label {
+  margin-top: 20px;
+}
+
+.mid-cta {
+  margin-top: 22px;
+  text-align: center;
+}
+
+.mid-cta .btn-primary {
+  margin-bottom: 4px;
+}
+
+/* Order flow (replaces card grid) */
+.order-flow {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  counter-reset: order-step;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-left: 2px solid var(--gray-border);
+  padding-left: 18px;
+}
+
+.order-flow li {
+  position: relative;
+  padding: 0 0 18px 4px;
+  counter-increment: order-step;
+}
+
+.order-flow li:last-child {
+  padding-bottom: 0;
+}
+
+.order-flow li::before {
+  content: counter(order-step);
+  position: absolute;
+  left: -29px;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--pink-light);
+  color: var(--pink-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.order-flow-highlight::before {
+  background: var(--upsell-grad);
+  color: #fff;
+}
+
+.order-flow strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--brown);
+  margin-bottom: 2px;
+}
+
+.order-flow span {
+  font-size: 0.86rem;
+  color: var(--gray);
+  line-height: 1.45;
+}
+
+.order-flow-highlight strong {
+  color: var(--pink-dark);
+}
+
+/* Motion */
+@keyframes upsell-hero-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cta-soft-pulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(232, 67, 122, 0.32); }
+  50% { box-shadow: 0 10px 32px rgba(232, 67, 122, 0.48); }
+}
+
+@keyframes sticky-slide-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.upsell-hero-visual {
+  animation: upsell-hero-in 0.55s ease-out both;
+}
+
+.btn-cta-pulse {
+  animation: cta-soft-pulse 2.4s ease-in-out infinite;
+}
+
+.upsell-sticky:not([hidden]) {
+  animation: sticky-slide-in 0.28s ease-out;
+}
+
+body.downsell-open {
+  overflow: hidden;
+}
+
 .downsell-overlay {
   position: fixed;
   inset: 0;
@@ -168,6 +312,8 @@ a { text-decoration: none; color: inherit; }
   position: relative;
   width: 100%;
   max-width: 400px;
+  max-height: min(90vh, 640px);
+  overflow-y: auto;
   background: var(--white);
   border-radius: var(--radius);
   padding: 28px 22px 24px;
@@ -412,11 +558,11 @@ h2 {
 
 /* Hero */
 .upsell-hero {
-  padding: 20px 0 28px;
+  padding: 18px 0 26px;
   text-align: center;
   background:
-    radial-gradient(circle at 90% 0%, rgba(255, 201, 74, 0.2) 0%, transparent 45%),
-    radial-gradient(circle at 10% 20%, rgba(255, 79, 139, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 88% 8%, rgba(255, 181, 51, 0.16) 0%, transparent 42%),
+    radial-gradient(circle at 8% 18%, rgba(232, 67, 122, 0.12) 0%, transparent 40%),
     linear-gradient(180deg, var(--cream) 0%, var(--white) 100%);
 }
 
@@ -424,15 +570,15 @@ h2 {
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--green);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .upsell-hero-sub {
-  font-size: 1.15rem;
+  font-size: 1.08rem;
   font-weight: 700;
   color: var(--brown-dark, #2a1c15);
-  margin: 10px auto 14px;
-  max-width: 30ch;
+  margin: 8px auto 14px;
+  max-width: 32ch;
   line-height: 1.35;
 }
 
@@ -459,11 +605,31 @@ h2 {
 }
 
 .upsell-hero-visual {
-  margin: 16px 0 20px;
+  margin: 4px 0 16px;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
-  border: 2px solid rgba(232, 67, 122, 0.35);
+}
+
+.upsell-hero-visual img,
+.upsell-hero-visual picture {
+  display: block;
+  width: 100%;
+}
+
+.upsell-hero-visual img {
+  width: 100%;
+  height: 280px;
+  max-height: 42vw;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (min-width: 640px) {
+  .upsell-hero-visual img {
+    height: 320px;
+    max-height: 320px;
+  }
 }
 
 .upsell-hero-grid {
@@ -516,10 +682,15 @@ h2 {
 /* Sections */
 .upsell-section {
   padding: 28px 0;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(232, 67, 122, 0.04) 0%, transparent 50%),
+    var(--cream);
 }
 
 .upsell-section.alt {
-  background: var(--white);
+  background:
+    radial-gradient(circle at 0% 100%, rgba(232, 67, 122, 0.05) 0%, transparent 45%),
+    var(--white);
   border-top: 1px solid var(--gray-border);
   border-bottom: 1px solid var(--gray-border);
 }
@@ -584,12 +755,14 @@ h2 {
 }
 
 .compare-card.basic {
-  background: var(--gray-light);
+  background: transparent;
+  border-style: dashed;
 }
 
 .compare-card.premium {
   background: linear-gradient(165deg, var(--gold-soft), var(--pink-light));
-  border-color: rgba(255, 79, 139, 0.25);
+  border-color: rgba(232, 67, 122, 0.3);
+  box-shadow: var(--shadow-sm);
 }
 
 .compare-card h3 {
@@ -600,21 +773,29 @@ h2 {
 
 .compare-card ul {
   list-style: none;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 
 .compare-card li {
   font-size: 0.84rem;
   padding: 4px 0;
-  padding-left: 16px;
+  padding-left: 18px;
   position: relative;
 }
 
-.compare-card li::before {
-  content: '•';
+.compare-card.basic li::before {
+  content: '–';
   position: absolute;
   left: 0;
-  color: var(--pink);
+  color: var(--gray);
+}
+
+.compare-card.premium li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-weight: 800;
 }
 
 .compare-card p {
@@ -788,10 +969,16 @@ h2 {
 
 /* Footer */
 .upsell-footer {
-  padding: 24px 0 80px;
+  padding: 24px 0 calc(100px + env(safe-area-inset-bottom));
   text-align: center;
   font-size: 0.72rem;
   color: var(--gray);
+}
+
+@media (min-width: 768px) {
+  .upsell-footer {
+    padding-bottom: 32px;
+  }
 }
 
 .hero-price {
@@ -990,16 +1177,43 @@ h2 {
 
 .value-stack {
   margin: 14px 0;
-  padding-left: 20px;
+  padding: 0;
+  list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .value-stack li {
   font-size: 0.88rem;
   color: var(--brown-mid);
   line-height: 1.45;
+  padding: 12px 14px 12px 40px;
+  position: relative;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-border);
+}
+
+.value-stack li::before {
+  content: '✓';
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--green-light);
+  color: var(--green);
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.value-stack strong {
+  color: var(--brown);
 }
 
 .value-note {
@@ -1073,16 +1287,17 @@ h2 {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 10px;
+  justify-content: flex-start;
 }
 
 .example-chip {
   font-size: 0.78rem;
   font-weight: 700;
   padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--white);
-  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-xs);
+  background: var(--pink-light);
+  border: none;
   color: var(--brown-mid);
 }
 
@@ -1123,8 +1338,6 @@ h2 {
 
 .downsell-card.wide {
   max-width: 440px;
-  max-height: 90vh;
-  overflow-y: auto;
   text-align: left;
 }
 
@@ -1135,16 +1348,22 @@ h2 {
 .downsell-mini-list,
 .downsell-compare-list {
   list-style: none;
-  margin: 12px 0;
+  margin: 12px 0 4px;
   padding: 0;
+  text-align: left;
 }
 
 .downsell-mini-list li,
 .downsell-compare-list li {
   font-size: 0.86rem;
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--gray-border);
   color: var(--brown-mid);
+}
+
+.downsell-mini-list li:last-child,
+.downsell-compare-list li:last-child {
+  border-bottom: none;
 }
 
 .downsell-mini-list li::before {
@@ -1180,5 +1399,14 @@ h2 {
 @media (min-width: 480px) {
   .downsell-compare {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .upsell-hero-visual,
+  .btn-cta-pulse,
+  .upsell-sticky:not([hidden]),
+  .upsell-urgency-pill::before {
+    animation: none;
   }
 }

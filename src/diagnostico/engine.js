@@ -16,7 +16,10 @@ import {
   CHECKOUT_URL,
   MAIN_PRICE,
   KIT_NAME,
-  reviewsForDiagnosis,
+  reviewForExperience,
+  pickReview,
+  pickUnusedReviews,
+  diagnosisReviewIds,
 } from './config.js';
 import { trackMetaInitiateCheckout } from '../lib/meta-pixel.js';
 import { trackEvent, trackCta } from '../lib/track.js';
@@ -53,6 +56,7 @@ export function createDiagnostico(root) {
     selected: null,
     pedidosSeen: 0,
     simulation: null,
+    usedReviews: [],
   };
 
   const els = {
@@ -97,23 +101,20 @@ export function createDiagnostico(root) {
     return SCREEN_FLOW.filter((id) => !shouldSkipScreen(id, state.answers));
   }
 
-  function setProgress(pct) {
+  function setProgress() {
     const path = visiblePath();
     const pos = Math.max(0, path.indexOf(currentId()));
     const step = pos + 1;
     const total = path.length;
-    const safe =
-      pct != null
-        ? Math.max(0, Math.min(100, pct))
-        : Math.round((pos / Math.max(1, total - 1)) * 100);
+    const safe = Math.round((pos / Math.max(1, total - 1)) * 100);
 
     if (els.progressFill) els.progressFill.style.width = `${safe}%`;
-    els.progressWrap?.setAttribute('aria-valuenow', String(Math.round(safe)));
+    els.progressWrap?.setAttribute('aria-valuenow', String(safe));
     if (els.stepLabel) {
       els.stepLabel.textContent = `PASO ${step} DE ${total}`;
     }
     if (els.stepPct) {
-      els.stepPct.textContent = `${Math.round(safe)}%`;
+      els.stepPct.textContent = `${safe}%`;
     }
     root.dataset.screen = currentId();
     updateSocial();
@@ -217,7 +218,7 @@ export function createDiagnostico(root) {
 
   function render() {
     const screen = screenData();
-    setProgress(screen.progress ?? 0);
+    setProgress();
     state.selected = null;
     root.classList.toggle('is-welcome', screen.type === 'welcome');
 
@@ -328,12 +329,19 @@ export function createDiagnostico(root) {
     for (let i = 0; i < steps.length; i += 1) {
       const row = els.stage.querySelector(`[data-load-step="${i}"]`);
       row?.classList.add('is-active');
-      // ~2s más de anticipación antes del diagnóstico
-      await wait(REDUCED_MOTION ? 200 : 1400);
+      await wait(REDUCED_MOTION ? 200 : 900);
       row?.classList.remove('is-active');
       row?.classList.add('is-done');
     }
-    await wait(REDUCED_MOTION ? 100 : 600);
+
+    // Ícone confirma → 1s → próxima tela
+    const loader = els.stage.querySelector('[data-loader]');
+    const core = els.stage.querySelector('[data-loader-core]');
+    const title = els.stage.querySelector('#dx-title');
+    loader?.classList.add('is-confirmed');
+    if (core) core.innerHTML = icon('check', 'dx-icon dx-icon-lg');
+    if (title) title.textContent = 'Diagnóstico listo';
+    await wait(REDUCED_MOTION ? 200 : 1000);
     goNext();
   }
 
@@ -423,12 +431,28 @@ export function createDiagnostico(root) {
     `;
   }
 
+  function markReviewUsed(review) {
+    if (review?.id && !state.usedReviews.includes(review.id)) {
+      state.usedReviews.push(review.id);
+    }
+  }
+
   function renderAffirm(s) {
-    const review = s.review
+    let review = s.review || null;
+    if (s.reviewKey === 'experience') {
+      review = reviewForExperience(state.answers.experience);
+      markReviewUsed(review);
+      review = {
+        ...review,
+        caption: 'Mujeres como tú ya están recibiendo pedidos',
+      };
+    }
+
+    const reviewHtml = review
       ? `
         <figure class="dx-review dx-review-solo">
-          <img src="${esc(s.review.src)}" alt="${esc(s.review.alt)}" width="320" height="568" loading="lazy" decoding="async">
-          ${s.review.caption ? `<figcaption>${esc(s.review.caption)}</figcaption>` : ''}
+          <img src="${esc(review.src)}" alt="${esc(review.alt)}" width="320" height="568" loading="lazy" decoding="async">
+          ${review.caption ? `<figcaption>${esc(review.caption)}</figcaption>` : ''}
         </figure>
       `
       : '';
@@ -441,7 +465,7 @@ export function createDiagnostico(root) {
         <h1 id="dx-title" class="dx-title">${esc(s.title)}</h1>
         <p class="dx-body">${esc(s.body)}</p>
         ${s.chip ? `<p class="dx-chip">${esc(s.chip)}</p>` : ''}
-        ${review}
+        ${reviewHtml}
         <button type="button" class="dx-btn dx-btn-primary" data-next>
           ${esc(s.cta)}
         </button>
@@ -465,9 +489,9 @@ export function createDiagnostico(root) {
 
     return `
       <section class="dx-screen dx-loading" aria-labelledby="dx-title" aria-live="polite">
-        <div class="dx-loader" aria-hidden="true">
+        <div class="dx-loader" data-loader aria-hidden="true">
           <span class="dx-loader-ring"></span>
-          <span class="dx-loader-core">${icon('search')}</span>
+          <span class="dx-loader-core" data-loader-core>${icon('search')}</span>
         </div>
         <h1 id="dx-title" class="dx-title">Armando tu diagnóstico…</h1>
         <p class="dx-body">Estamos cruzando tus respuestas para encontrar el bloqueo principal.</p>
@@ -477,7 +501,9 @@ export function createDiagnostico(root) {
   }
 
   function renderDiagnosis(s) {
-    const review = reviewsForDiagnosis(state.diagnosisId)[0];
+    const preferred = diagnosisReviewIds(state.diagnosisId);
+    const review = pickReview(preferred, state.usedReviews);
+    markReviewUsed(review);
     const reviewHtml = review
       ? `
         <figure class="dx-review dx-review-solo dx-review-diag">
@@ -510,9 +536,9 @@ export function createDiagnostico(root) {
       <section class="dx-screen dx-simulation" aria-labelledby="dx-title">
         <p class="dx-eyebrow">${esc(s.eyebrow)}</p>
         <div class="dx-sim-card">
-          <p class="dx-sim-label">${icon('star', 'dx-icon dx-icon-sm')} Simulación de hoy</p>
+          <p class="dx-sim-label">${icon('star', 'dx-icon dx-icon-sm')} Proyección orientativa</p>
           <p class="dx-sim-amount">${esc(s.amount)}</p>
-          <p class="dx-sim-sub">eso es lo que podrías haber generado hoy con paletas bien publicadas en WhatsApp</p>
+          <p class="dx-sim-sub">eso es lo que podrías generar en un buen día con paletas bien publicadas en WhatsApp</p>
         </div>
         <h1 id="dx-title" class="dx-title">${esc(s.title)}</h1>
         <p class="dx-body">${esc(s.body)}</p>
@@ -598,7 +624,9 @@ export function createDiagnostico(root) {
   }
 
   function renderTrust(s) {
-    const reviews = reviewsForDiagnosis(state.diagnosisId);
+    const preferred = diagnosisReviewIds(state.diagnosisId);
+    const reviews = pickUnusedReviews(preferred, state.usedReviews, 2);
+    reviews.forEach(markReviewUsed);
     const points = (s.points || [])
       .map(
         (p) => `
@@ -629,7 +657,7 @@ export function createDiagnostico(root) {
   }
 
   function renderOffer(s) {
-    const reviews = reviewsForDiagnosis(state.diagnosisId).slice(0, 2);
+    // Sem strip de prints — trust já mostrou prova social (evita repetir)
     const objections = (s.objections || [])
       .map(
         (o) => `
@@ -663,8 +691,6 @@ export function createDiagnostico(root) {
         </div>
 
         <ul class="dx-include">${items}</ul>
-
-        ${renderReviewStrip(reviews, 'Lo que otras ya lograron')}
 
         <div class="dx-objections" aria-label="Dudas frecuentes">
           ${objections}

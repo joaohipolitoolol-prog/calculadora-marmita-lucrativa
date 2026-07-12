@@ -43,23 +43,37 @@ html.postres-upsell-theme {
   border-color: var(--gray-border);
 }
 
-.postres-upsell-theme .upsell-hero-visual,
-.postres-upsell-theme .offer-box {
-  border-color: rgba(236, 63, 122, 0.28);
-}
-
 .postres-upsell-theme .upsell-hero-visual {
-  margin: 20px auto;
-  max-width: 100%;
+  border: none;
+  margin: 4px 0 16px;
 }
 
 .postres-upsell-theme .upsell-hero-visual img {
   width: 100%;
-  max-width: 420px;
-  height: auto;
+  max-width: none;
   display: block;
-  margin: 0 auto;
-  border-radius: 18px;
-  box-shadow: 0 12px 32px rgba(236, 63, 122, 0.18);
-  border: 3px solid #fff;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+.postres-upsell-theme .offer-box {
+  border-color: rgba(236, 63, 122, 0.28);
+}
+
+.postres-upsell-theme .btn-cta-pulse {
+  animation-name: cta-soft-pulse-postres;
+}
+
+@keyframes cta-soft-pulse-postres {
+  0%, 100% { box-shadow: 0 8px 24px rgba(236, 63, 122, 0.3); }
+  50% { box-shadow: 0 10px 32px rgba(255, 181, 51, 0.45); }
+}
+
+.postres-upsell-theme .example-chip {
+  background: var(--orange-light);
+  color: var(--brown);
 }

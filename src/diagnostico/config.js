@@ -58,15 +58,68 @@ export const WA_REVIEWS = {
   },
 };
 
-/** Reviews alinhadas ao bloqueio do diagnóstico */
+/** Reviews alinhadas ao bloqueio — ordem pensada para não repetir o print do affirm_1 */
 export function reviewsForDiagnosis(diagnosisId) {
   const map = {
     precio: ['norma', 'luciana'],
-    confianza: ['alejandra', 'yadira'],
-    recetas: ['vecinas', 'alejandra'],
-    whatsapp: ['yadira', 'alejandra'],
-    inicio: ['vecinas', 'norma'],
+    confianza: ['alejandra', 'norma'],
+    recetas: ['alejandra', 'norma'],
+    whatsapp: ['alejandra', 'yadira'],
+    inicio: ['yadira', 'alejandra'],
   };
   const ids = map[diagnosisId] || map.inicio;
   return ids.map((id) => WA_REVIEWS[id]).filter(Boolean);
+}
+
+/** Print no affirm_1 — por experiência (nunca = Yadira, não Alejandra) */
+export function reviewForExperience(experience) {
+  if (experience === 'never') return WA_REVIEWS.yadira;
+  if (experience === 'tried') return WA_REVIEWS.vecinas;
+  if (experience === 'selling') return WA_REVIEWS.luciana;
+  return WA_REVIEWS.norma;
+}
+
+/**
+ * Escolhe review evitando as já usadas no funil.
+ * @param {string[]} preferredIds
+ * @param {Set<string>|string[]} used
+ */
+export function pickReview(preferredIds, used = []) {
+  const usedSet = used instanceof Set ? used : new Set(used);
+  const pool = preferredIds.length
+    ? preferredIds
+    : Object.keys(WA_REVIEWS);
+  for (const id of pool) {
+    if (!usedSet.has(id) && WA_REVIEWS[id]) return WA_REVIEWS[id];
+  }
+  for (const id of Object.keys(WA_REVIEWS)) {
+    if (!usedSet.has(id)) return WA_REVIEWS[id];
+  }
+  return null;
+}
+
+/** Até N reviews ainda não usadas (sem reusar). Preferidos primeiro. */
+export function pickUnusedReviews(preferredIds = [], used = [], count = 2) {
+  const usedSet = used instanceof Set ? used : new Set(used);
+  const out = [];
+  const seen = new Set();
+  const tryIds = [...preferredIds, ...Object.keys(WA_REVIEWS)];
+  for (const id of tryIds) {
+    if (out.length >= count) break;
+    if (usedSet.has(id) || seen.has(id) || !WA_REVIEWS[id]) continue;
+    seen.add(id);
+    out.push(WA_REVIEWS[id]);
+  }
+  return out;
+}
+
+export function diagnosisReviewIds(diagnosisId) {
+  const map = {
+    precio: ['norma', 'luciana'],
+    confianza: ['alejandra', 'norma'],
+    recetas: ['alejandra', 'norma'],
+    whatsapp: ['alejandra', 'yadira'],
+    inicio: ['yadira', 'alejandra'],
+  };
+  return map[diagnosisId] || map.inicio;
 }

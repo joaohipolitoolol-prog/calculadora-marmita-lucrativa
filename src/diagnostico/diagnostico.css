@@ -1001,6 +1001,24 @@ a {
   background: var(--dx-white);
   color: var(--dx-pink);
   box-shadow: var(--dx-shadow-sm);
+  transition: background 0.3s var(--dx-ease), color 0.3s var(--dx-ease), transform 0.3s var(--dx-ease);
+}
+
+.dx-loader.is-confirmed .dx-loader-ring {
+  animation: none;
+  border: 3px solid rgba(37, 165, 90, 0.35);
+  border-top-color: var(--dx-green);
+  opacity: 1;
+  transform: scale(1.02);
+  transition: border-color 0.25s var(--dx-ease), opacity 0.25s var(--dx-ease), transform 0.3s var(--dx-ease);
+}
+
+.dx-loader.is-confirmed .dx-loader-core {
+  background: var(--dx-green);
+  color: #fff;
+  transform: scale(1.1);
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(37, 165, 90, 0.28);
 }
 
 @keyframes dx-spin {

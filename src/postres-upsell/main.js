@@ -79,6 +79,12 @@ function openDownsell() {
   if (!downsellModal) return;
   downsellModal.hidden = false;
   document.body.classList.add('downsell-open');
+  const focusTarget =
+    downsellModal.querySelector('[data-downsell-checkout]') ||
+    downsellModal.querySelector('.downsell-close');
+  window.requestAnimationFrame(() => {
+    focusTarget?.focus?.();
+  });
 }
 
 function closeDownsell() {

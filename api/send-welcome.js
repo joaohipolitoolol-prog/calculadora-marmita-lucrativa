@@ -1,15 +1,9 @@
-import { Resend } from 'resend';
 import { verifyAdminRequest } from '../server/lib/firebase-admin.js';
-import { buildWelcomeEmailHtml } from '../server/lib/welcome-email.js';
-import { BRAND_KIT, BRAND_NAME } from '../src/site/brand.js';
+import { sendWelcomeEmailServer } from '../server/lib/send-welcome-email.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  if (!process.env.RESEND_API_KEY) {
-    return res.status(503).json({ error: 'RESEND_API_KEY no configurada en Vercel' });
   }
 
   try {
@@ -20,22 +14,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'email es obligatorio' });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const siteUrl = process.env.SITE_URL || 'https://paletasparawhatsapp.vercel.app';
-    const isPostres = line === 'postres';
-    const from = process.env.RESEND_FROM_EMAIL || `${BRAND_NAME} <onboarding@resend.dev>`;
-
-    const { error } = await resend.emails.send({
-      from,
-      to: email,
-      subject: isPostres
-        ? 'Tu Kit Postres en Vaso está listo 🍨'
-        : `Tu ${BRAND_KIT} está listo 🍓`,
-      html: buildWelcomeEmailHtml(name, siteUrl, { line }),
-    });
-
-    if (error) {
-      return res.status(500).json({ error: error.message || 'Error al enviar email' });
+    const result = await sendWelcomeEmailServer({ email, name, line });
+    if (!result.ok) {
+      const status = result.error?.includes('RESEND_API_KEY') ? 503 : 500;
+      return res.status(status).json({ error: result.error });
     }
 
     return res.status(200).json({ ok: true });

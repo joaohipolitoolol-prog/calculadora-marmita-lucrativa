@@ -74,5 +74,15 @@ service cloud.firestore {
       allow read: if signedIn();
       allow write: if isAdmin();
     }
+
+    // Server-only (Admin SDK). Clients must use /api/claim-pending.
+    match /pending_purchases/{email} {
+      allow read, write: if false;
+    }
+
+    match /purchase_webhook_log/{docId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
   }
 }

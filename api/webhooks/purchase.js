@@ -1,8 +1,9 @@
 /**
- * Purchase webhook stub — same grant path the live Hotmart/Kiwify hook will use.
+ * Purchase webhook stub — same grant path as Hotmart (normalized body).
  *
  * Auth: Authorization: Bearer <PURCHASE_WEBHOOK_SECRET>
- * Body: { email, product, event? }  product = paletas_kit | paletas_premium | postres_kit | postres_premium
+ * Body: { email, product, name?, event? }
+ *   product = paletas_kit | paletas_premium | postres_kit | postres_premium
  */
 import {
   findUserUidByEmail,
@@ -10,6 +11,8 @@ import {
   mapPurchaseProduct,
 } from '../../server/lib/grant-entitlements.js';
 import { getFirebaseAdmin, FieldValue } from '../../server/lib/firebase-admin.js';
+import { savePendingPurchase } from '../../server/lib/pending-purchases.js';
+import { sendWelcomeEmailServer } from '../../server/lib/send-welcome-email.js';
 
 function unauthorized(res) {
   return res.status(401).json({ error: 'Unauthorized' });
@@ -24,7 +27,7 @@ export default async function handler(req, res) {
   if (!secret) {
     return res.status(503).json({
       error: 'PURCHASE_WEBHOOK_SECRET no configurado',
-      hint: 'Stub listo — define el secret cuando conectes Hotmart/Kiwify',
+      hint: 'Define el secret cuando conectes Hotmart/Kiwify o usa /api/webhooks/hotmart',
     });
   }
 
@@ -37,7 +40,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { email, product, event: purchaseEvent } = req.body || {};
+    const { email, product, name = '', event: purchaseEvent } = req.body || {};
     const mapped = mapPurchaseProduct(product);
     if (!mapped) {
       return res.status(400).json({
@@ -46,51 +49,62 @@ export default async function handler(req, res) {
       });
     }
 
-    const uid = await findUserUidByEmail(email);
-    const logRef = firebaseAdmin.firestore().collection('purchase_webhook_log').doc();
-
-    if (!uid) {
-      await logRef.set({
-        email: String(email || '').toLowerCase(),
-        product,
-        line: mapped.line,
-        tier: mapped.tier,
-        purchaseEvent: purchaseEvent || null,
-        status: 'user_not_found',
-        createdAt: FieldValue.serverTimestamp(),
-      });
-      return res.status(202).json({
-        ok: true,
-        status: 'user_not_found',
-        message: 'Compra registrada; usuario aún no tiene cuenta',
-        line: mapped.line,
-        tier: mapped.tier,
-      });
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!normalizedEmail) {
+      return res.status(400).json({ error: 'email es obligatorio' });
     }
 
-    await grantEntitlements(uid, {
+    const uid = await findUserUidByEmail(normalizedEmail);
+    const logRef = firebaseAdmin.firestore().collection('purchase_webhook_log').doc();
+    let grantStatus = 'pending';
+
+    if (!uid) {
+      await savePendingPurchase({
+        email: normalizedEmail,
+        line: mapped.line,
+        tier: mapped.tier,
+        product,
+        source: 'purchase_webhook',
+        meta: { purchaseEvent: purchaseEvent || null, name },
+      });
+      grantStatus = 'pending_saved';
+    } else {
+      await grantEntitlements(uid, {
+        line: mapped.line,
+        tier: mapped.tier,
+        source: 'webhook_purchase',
+      });
+      grantStatus = 'granted';
+    }
+
+    const emailResult = await sendWelcomeEmailServer({
+      email: normalizedEmail,
+      name,
       line: mapped.line,
-      tier: mapped.tier,
-      source: 'webhook_purchase',
     });
 
     await logRef.set({
-      email: String(email || '').toLowerCase(),
-      uid,
+      provider: 'purchase',
+      email: normalizedEmail,
+      uid: uid || null,
       product,
       line: mapped.line,
       tier: mapped.tier,
       purchaseEvent: purchaseEvent || null,
-      status: 'granted',
+      status: grantStatus,
+      emailSent: Boolean(emailResult.ok),
+      emailError: emailResult.ok ? null : emailResult.error || null,
       createdAt: FieldValue.serverTimestamp(),
     });
 
-    return res.status(200).json({
+    return res.status(grantStatus === 'granted' ? 200 : 202).json({
       ok: true,
-      status: 'granted',
-      uid,
+      status: grantStatus,
+      uid: uid || undefined,
       line: mapped.line,
       tier: mapped.tier,
+      emailSent: Boolean(emailResult.ok),
+      emailError: emailResult.ok ? undefined : emailResult.error,
     });
   } catch (error) {
     return res.status(500).json({ error: error?.message || 'Error interno' });
