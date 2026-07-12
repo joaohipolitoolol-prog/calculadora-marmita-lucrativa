@@ -15,6 +15,7 @@ import {
   createAdminUser,
   deleteUserAccount,
   fetchAdminAnalytics,
+  fetchAdminSettings,
   fetchAdminUsers,
   saveAdminSettings,
   syncAdminUsers,
@@ -39,11 +40,13 @@ import {
 import {
   loadContentSettings,
   saveContentSettings,
+  applyContentSettingsFromServer,
   applyContentSettingsLocal,
 } from '../lib/content-settings.js';
 import {
   loadExperiments,
   saveExperiments,
+  applyExperimentsFromServer,
   applyExperimentsLocal,
 } from '../lib/experiments.js';
 import { TTS_VOICE } from '../lib/tts-config.js';
@@ -73,6 +76,7 @@ const state = {
   sidebarOpen: false,
   apiWarnings: [],
   contentDraft: null,
+  settingsLoadError: null,
 };
 
 function getDetailUser() {
@@ -122,8 +126,42 @@ function paint() {
     lineFilter: state.lineFilter,
     apiWarnings: state.apiWarnings,
     contentDraft: state.contentDraft,
+    settingsLoadError: state.settingsLoadError,
   });
   bindEvents();
+}
+
+/** Load experiments + content via Admin SDK API (authoritative). */
+async function loadAdminPanelSettings({ allowClientFallback = true } = {}) {
+  if (!state.currentAdminUser?.getIdToken) {
+    if (allowClientFallback) {
+      await loadContentSettings();
+      await loadExperiments();
+    }
+    return { ok: false, error: 'no-user' };
+  }
+
+  try {
+    const token = await state.currentAdminUser.getIdToken();
+    const data = await fetchAdminSettings(token);
+    if (data?.experiments) applyExperimentsFromServer(data.experiments);
+    if (data?.content) applyContentSettingsFromServer(data.content);
+    state.settingsLoadError = null;
+    setApiWarning('settings', null);
+    return { ok: true, data };
+  } catch (error) {
+    console.warn('[admin] settings GET failed', error);
+    state.settingsLoadError = error?.message || 'settingsLoad';
+    setApiWarning(
+      'settings',
+      isFirebaseAdminError(error?.message) ? 'firebaseAdmin' : error?.message || 'settingsLoad',
+    );
+    if (allowClientFallback) {
+      await loadContentSettings();
+      await loadExperiments();
+    }
+    return { ok: false, error };
+  }
 }
 
 /** Update users table + bulk bar without remounting the whole shell (keeps search focus). */
@@ -292,8 +330,7 @@ async function refreshAll() {
     state.codesCache = await listAccessCodes();
   }
   if (state.activeTab === 'content') {
-    await loadContentSettings();
-    await loadExperiments();
+    await loadAdminPanelSettings();
     await loadAdminAllowlist();
   }
   if (
@@ -378,8 +415,7 @@ function bindEvents() {
       }
       if (state.activeTab === 'content') {
         if (!state.contentDraft?.dirty) {
-          await loadContentSettings();
-          await loadExperiments();
+          await loadAdminPanelSettings();
           await loadAdminAllowlist();
           state.contentDraft = null;
         }
@@ -506,7 +542,7 @@ function bindEvents() {
 
     try {
       const token = await state.currentAdminUser.getIdToken();
-      await saveAdminSettings(token, {
+      const saved = await saveAdminSettings(token, {
         experiments: {
           paletas: {
             entry: {
@@ -518,10 +554,13 @@ function bindEvents() {
         content: { lines: draft.lines },
       });
 
-      applyExperimentsLocal({ paletas: { entry: draft.ab } });
-      applyContentSettingsLocal(draft.lines);
+      if (saved?.experiments) applyExperimentsFromServer(saved.experiments);
+      else applyExperimentsLocal({ paletas: { entry: draft.ab } });
+      if (saved?.content) applyContentSettingsFromServer(saved.content);
+      else applyContentSettingsLocal(draft.lines);
 
       state.contentDraft = null;
+      state.settingsLoadError = null;
       showToast(t('content.allSaved'));
       paint();
       return;
@@ -540,7 +579,7 @@ function bindEvents() {
         saveContentSettings(draft.lines),
       ]);
 
-      if (expResult.ok && contentResult.ok) {
+      if (expResult.ok && expResult.cloud && contentResult.ok && contentResult.cloud) {
         state.contentDraft = null;
         showToast(t('content.allSaved'));
         paint();
@@ -555,11 +594,12 @@ function bindEvents() {
           contentResult.error?.message ||
           '',
       );
-      const needsServer =
-        /firebase admin|no configurado|503/i.test(detail);
+      const needsServer = /firebase admin|no configurado|503/i.test(detail);
       const blocked = /permission|insufficient|forbidden|blocked/i.test(detail);
+      const localOnly =
+        (expResult.ok && !expResult.cloud) || (contentResult.ok && !contentResult.cloud);
       showToast(
-        needsServer
+        needsServer || localOnly
           ? t('content.saveNeedServer')
           : blocked
             ? t('content.saveBlocked')
@@ -1039,8 +1079,7 @@ watchAuth(async (user) => {
     state.currentAdminUser = user;
     await loadAdminAllowlist();
     await loadUsers();
-    await loadContentSettings();
-    await loadExperiments();
+    await loadAdminPanelSettings();
     await loadAnalytics();
     paint();
   } catch (error) {

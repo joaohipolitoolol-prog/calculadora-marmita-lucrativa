@@ -13,6 +13,8 @@ import { getFirebaseAdmin, FieldValue } from '../../server/lib/firebase-admin.js
 import { resolveHotmartProduct, APPROVED_EVENTS } from '../../server/lib/hotmart-map.js';
 import { savePendingPurchase } from '../../server/lib/pending-purchases.js';
 import { sendWelcomeEmailServer } from '../../server/lib/send-welcome-email.js';
+import { bumpAbMetric, normalizeAbVariant } from '../../server/lib/analytics-ab.js';
+import { todayKey } from '../../server/lib/analytics-schema.js';
 
 function getHottok(req) {
   return (
@@ -45,6 +47,52 @@ function parseProduct(body) {
     name: product.name || null,
     transaction: purchase.transaction || data.transaction || body.transaction || null,
   };
+}
+
+/** Hotmart sck/src → lp|quiz for A/B purchase attribution. */
+function parseAbFromHotmart(body) {
+  const data = body?.data || body || {};
+  const purchase = data.purchase || {};
+  const tracking = data.tracking || purchase.tracking || {};
+  const candidates = [
+    purchase.sck,
+    purchase.src,
+    tracking.sck,
+    tracking.src,
+    data.sck,
+    data.src,
+    body.sck,
+    body.src,
+    purchase.checkout_sck,
+    purchase.origin?.sck,
+    purchase.origin?.src,
+  ];
+  for (const c of candidates) {
+    const ab = normalizeAbVariant(c);
+    if (ab) return ab;
+  }
+  return null;
+}
+
+async function bumpAbPurchase(firestore, variant) {
+  if (!variant) return;
+  const day = todayKey();
+  const summaryRef = firestore.doc('analytics/summary');
+  const dailyRef = firestore.doc(`analytics_daily/${day}`);
+
+  await firestore.runTransaction(async (tx) => {
+    const summarySnap = await tx.get(summaryRef);
+    const dailySnap = await tx.get(dailyRef);
+    const summary = summarySnap.exists ? summarySnap.data() : { todayKey: day };
+    const daily = dailySnap.exists
+      ? dailySnap.data()
+      : { pages: {}, events: {}, total: 0, date: day };
+
+    bumpAbMetric(summary, daily, variant, 'purchase');
+    daily.date = day;
+    tx.set(summaryRef, summary, { merge: true });
+    tx.set(dailyRef, daily, { merge: true });
+  });
 }
 
 export default async function handler(req, res) {
@@ -80,8 +128,9 @@ export default async function handler(req, res) {
     const buyer = parseBuyer(body);
     const productInfo = parseProduct(body);
     const resolved = resolveHotmartProduct(productInfo);
-
-    const logRef = firebaseAdmin.firestore().collection('purchase_webhook_log').doc();
+    const abVariant = parseAbFromHotmart(body);
+    const firestore = firebaseAdmin.firestore();
+    const logRef = firestore.collection('purchase_webhook_log').doc();
 
     if (!buyer.email) {
       await logRef.set({
@@ -89,6 +138,7 @@ export default async function handler(req, res) {
         event: event || null,
         status: 'missing_email',
         rawProduct: productInfo,
+        ab: abVariant,
         createdAt: FieldValue.serverTimestamp(),
       });
       return res.status(400).json({ error: 'email del comprador no encontrado' });
@@ -101,6 +151,7 @@ export default async function handler(req, res) {
         event: event || null,
         status: 'unknown_product',
         rawProduct: productInfo,
+        ab: abVariant,
         createdAt: FieldValue.serverTimestamp(),
       });
       return res.status(400).json({
@@ -132,17 +183,25 @@ export default async function handler(req, res) {
           transaction: productInfo.transaction,
           phone: buyer.phone,
           name: buyer.name,
+          ab: abVariant,
         },
       });
       grantStatus = 'pending_saved';
     }
 
-    // Always email — this is the chargeback prevention.
     const emailResult = await sendWelcomeEmailServer({
       email: buyer.email,
       name: buyer.name,
       line: resolved.line,
     });
+
+    if (resolved.line === 'paletas' && abVariant) {
+      try {
+        await bumpAbPurchase(firestore, abVariant);
+      } catch (abErr) {
+        console.warn('[hotmart] ab purchase bump failed', abErr);
+      }
+    }
 
     await logRef.set({
       provider: 'hotmart',
@@ -154,6 +213,7 @@ export default async function handler(req, res) {
       event: event || null,
       transaction: productInfo.transaction || null,
       status: grantStatus,
+      ab: abVariant,
       emailSent: Boolean(emailResult.ok),
       emailError: emailResult.ok ? null : emailResult.error || null,
       createdAt: FieldValue.serverTimestamp(),
@@ -165,6 +225,7 @@ export default async function handler(req, res) {
       product: resolved.product,
       line: resolved.line,
       tier: resolved.tier,
+      ab: abVariant || undefined,
       emailSent: Boolean(emailResult.ok),
       emailError: emailResult.ok ? undefined : emailResult.error,
     });

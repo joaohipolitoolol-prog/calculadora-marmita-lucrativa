@@ -6,6 +6,12 @@ import {
   sanitizeKey,
   todayKey,
 } from '../../server/lib/analytics-schema.js';
+import {
+  bumpAbMetric,
+  metricForAbEvent,
+  normalizeAbVariant,
+  resetAbToday,
+} from '../../server/lib/analytics-ab.js';
 
 function bump(map, key, n = 1) {
   if (!key) return;
@@ -43,6 +49,10 @@ export default async function handler(req, res) {
     const purpose = sanitizeKey(body.purpose, 24);
     const tier = sanitizeKey(body.tier, 24);
     const uid = sanitizeKey(body.uid, 128);
+    const ab =
+      normalizeAbVariant(body.ab) ||
+      normalizeAbVariant(purpose) ||
+      null;
 
     const day = todayKey();
     const firestore = firebaseAdmin.firestore();
@@ -59,6 +69,7 @@ export default async function handler(req, res) {
       purpose: purpose || null,
       tier: tier || null,
       uid: uid || null,
+      ab: ab || null,
       createdAt: FieldValue.serverTimestamp(),
       day,
     };
@@ -98,6 +109,7 @@ export default async function handler(req, res) {
             summary.whatsapp[key].today = 0;
           }
         }
+        resetAbToday(summary);
         summary.todayKey = day;
       }
 
@@ -150,7 +162,12 @@ export default async function handler(req, res) {
 
       if (event === 'whatsapp_click' && numberId) {
         if (!summary.whatsapp[numberId]) {
-          summary.whatsapp[numberId] = { total: 0, today: 0, line: line || null, purpose: purpose || null };
+          summary.whatsapp[numberId] = {
+            total: 0,
+            today: 0,
+            line: line || null,
+            purpose: purpose || null,
+          };
         }
         summary.whatsapp[numberId].total = (summary.whatsapp[numberId].total || 0) + 1;
         summary.whatsapp[numberId].today = (summary.whatsapp[numberId].today || 0) + 1;
@@ -160,11 +177,21 @@ export default async function handler(req, res) {
       if (event === 'checkout_click' && tier) {
         const checkoutKey = `${line || 'unknown'}_${tier}`;
         if (!summary.ctas[checkoutKey]) {
-          summary.ctas[checkoutKey] = { total: 0, today: 0, line: line || null, kind: 'checkout' };
+          summary.ctas[checkoutKey] = {
+            total: 0,
+            today: 0,
+            line: line || null,
+            kind: 'checkout',
+          };
         }
         summary.ctas[checkoutKey].total = (summary.ctas[checkoutKey].total || 0) + 1;
         summary.ctas[checkoutKey].today = (summary.ctas[checkoutKey].today || 0) + 1;
         bump(daily.ctas, checkoutKey);
+      }
+
+      if (ab) {
+        const metric = metricForAbEvent(event, { page, ctaId });
+        if (metric) bumpAbMetric(summary, daily, ab, metric);
       }
 
       daily.date = day;

@@ -56,6 +56,15 @@ export async function loadExperiments() {
 }
 
 /**
+ * Update in-memory cache from server payload (full replace).
+ * @param {{ paletas?: object, updatedAt?: number }} raw
+ */
+export function applyExperimentsFromServer(raw = {}) {
+  cache = normalizeExperiments(raw);
+  return cache;
+}
+
+/**
  * @param {{ paletas?: { entry?: { enabled?: boolean, quizPercent?: number } } }} patch
  */
 export function applyExperimentsLocal(patch = {}) {

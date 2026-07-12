@@ -2,6 +2,7 @@
 
 export const PAGE_META = {
   home: { path: '/', label: 'Paletas LP', line: 'paletas' },
+  diagnostico: { path: '/diagnostico', label: 'Diagnóstico Quiz', line: 'paletas' },
   postres: { path: '/postres', label: 'Postres LP', line: 'postres' },
   'upsell-paletas': { path: '/upsell-paletas-premium', label: 'Upsell Paletas', line: 'paletas' },
   'upsell-postres': { path: '/postres/upsell', label: 'Upsell Postres', line: 'postres' },
@@ -23,7 +24,11 @@ export const EVENT_TYPES = new Set([
   'login',
   'app_open',
   'ab_assign',
+  'diagnostico_quiz_start',
+  'diagnostico_view_offer',
 ]);
+
+export const AB_VARIANTS = new Set(['lp', 'quiz']);
 
 export const LINES = new Set(['paletas', 'postres', 'donuts']);
 

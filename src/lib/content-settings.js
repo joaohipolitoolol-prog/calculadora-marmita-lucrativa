@@ -117,6 +117,12 @@ export async function saveContentSettings(patch) {
   }
 }
 
+/** Replace in-memory cache from server payload. */
+export function applyContentSettingsFromServer(raw = {}) {
+  cache = normalizeContentSettings(raw);
+  return cache;
+}
+
 /** Update in-memory cache only (after server-side save). */
 export function applyContentSettingsLocal(patch) {
   const mergedLines = { ...cache.lines };

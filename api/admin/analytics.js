@@ -1,5 +1,6 @@
 import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
 import { PAGE_META, todayKey } from '../../server/lib/analytics-schema.js';
+import { publicAbEntry, rate } from '../../server/lib/analytics-ab.js';
 
 /** Last N UTC day keys (YYYY-MM-DD), newest first — avoids Firestore orderBy(__name__) index. */
 function lastDayKeys(n = 14) {
@@ -35,6 +36,27 @@ function mapCounterObject(obj = {}) {
 function filterByLine(items, line) {
   if (!line || line === 'all') return items;
   return items.filter((item) => !item.line || item.line === line);
+}
+
+function buildAbPayload(entry) {
+  const ab = publicAbEntry(entry);
+  const enrich = (arm) => {
+    const assignT = arm.assign.today;
+    const assignAll = arm.assign.total;
+    return {
+      ...arm,
+      rates: {
+        checkoutToday: rate(arm.checkout.today, assignT),
+        checkoutTotal: rate(arm.checkout.total, assignAll),
+        purchaseToday: rate(arm.purchase.today, assignT),
+        purchaseTotal: rate(arm.purchase.total, assignAll),
+      },
+    };
+  };
+  return {
+    lp: enrich(ab.lp),
+    quiz: enrich(ab.quiz),
+  };
 }
 
 export default async function handler(req, res) {
@@ -73,6 +95,7 @@ export default async function handler(req, res) {
           lines: data.lines || {},
           ctas: data.ctas || {},
           whatsapp: data.whatsapp || {},
+          ab: data.ab || null,
         };
       });
 
@@ -98,6 +121,8 @@ export default async function handler(req, res) {
       return { ...day, total: lineTotal, lineTotal };
     });
 
+    const abEntry = buildAbPayload(summary.ab?.paletas?.entry || {});
+
     return res.status(200).json({
       line,
       pages,
@@ -108,6 +133,11 @@ export default async function handler(req, res) {
       todayTotal,
       allTimeTotal,
       history: filteredHistory,
+      ab: {
+        paletas: {
+          entry: abEntry,
+        },
+      },
       kpis: {
         pageViewsToday: todayTotal,
         pageViewsTotal: allTimeTotal,

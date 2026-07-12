@@ -1,5 +1,7 @@
 /** First-party analytics client — page views, CTAs, WhatsApp, auth, app opens. */
 
+const AB_STORAGE_KEY = 'ab_paletas_entry';
+
 export const TRACKED_PAGES = {
   home: '/',
   diagnostico: '/diagnostico',
@@ -28,6 +30,28 @@ const PAGE_LINES = {
   'login-postres': 'postres',
 };
 
+function readStickyAb() {
+  try {
+    const v = localStorage.getItem(AB_STORAGE_KEY);
+    if (v === 'lp' || v === 'quiz') return v;
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+function withAbDefaults(payload = {}) {
+  const next = { ...payload };
+  if (!next.line && next.page && PAGE_LINES[next.page]) {
+    next.line = PAGE_LINES[next.page];
+  }
+  if (!next.ab && next.line === 'paletas') {
+    const ab = readStickyAb();
+    if (ab) next.ab = ab;
+  }
+  return next;
+}
+
 function send(payload) {
   const body = JSON.stringify(payload);
   const url = '/api/analytics/event';
@@ -52,11 +76,7 @@ function send(payload) {
 
 export function trackEvent(event, data = {}) {
   if (!event) return Promise.resolve();
-  const payload = { event, ...data };
-  if (!payload.line && payload.page && PAGE_LINES[payload.page]) {
-    payload.line = PAGE_LINES[payload.page];
-  }
-  return send(payload);
+  return send(withAbDefaults({ event, ...data }));
 }
 
 export function trackPageView(pageKey, extra = {}) {

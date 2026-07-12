@@ -43,3 +43,7 @@ export async function saveAdminSettings(idToken, payload) {
     body: payload,
   });
 }
+
+export async function fetchAdminSettings(idToken) {
+  return adminFetch(idToken, '/api/admin/settings', { method: 'GET' });
+}

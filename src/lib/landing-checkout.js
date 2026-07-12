@@ -7,6 +7,7 @@ import {
   trackMetaInitiateCheckout,
   trackMetaPurchaseOnce,
 } from './meta-pixel.js';
+import { withAbCheckoutParam } from './ab-entry.js';
 
 export function bindScrollToOffer(selector = '[data-scroll-offer]') {
   document.querySelectorAll(selector).forEach((link) => {
@@ -36,6 +37,8 @@ export function bindHardCheckoutLinks({
   unsellableMessage = 'Aún no está a la venta.',
 } = {}) {
   const isPlaceholder = !checkoutUrl || /SEU-LINK|COLOCAR_LINK|#/.test(checkoutUrl);
+  const taggedUrl =
+    line === 'paletas' ? withAbCheckoutParam(checkoutUrl) : checkoutUrl;
 
   document.querySelectorAll('[data-checkout-offer], [data-checkout-sticky], [data-checkout-hard]').forEach((link) => {
     if (!isSellable || isPlaceholder) {
@@ -49,7 +52,7 @@ export function bindHardCheckoutLinks({
       return;
     }
 
-    link.href = checkoutUrl;
+    link.href = taggedUrl;
     link.setAttribute('rel', 'noopener');
     link.dataset.checkout = link.dataset.checkout || 'kit';
     if (!link.dataset.track) {
@@ -77,7 +80,7 @@ export function bindHardCheckoutLinks({
       // Postres historically used preventDefault + location; keep navigation reliable.
       if (line === 'postres') {
         e.preventDefault();
-        window.location.href = checkoutUrl;
+        window.location.href = taggedUrl;
       }
     });
   });

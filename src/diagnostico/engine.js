@@ -29,7 +29,8 @@ import {
   trackMetaInitiateCheckout,
   trackMetaCustom,
 } from '../lib/meta-pixel.js';
-import { trackEvent, trackCta } from '../lib/track.js';
+import { trackEvent, trackCheckout } from '../lib/track.js';
+import { withAbCheckoutParam } from '../lib/ab-entry.js';
 
 const REDUCED_MOTION =
   typeof window !== 'undefined' &&
@@ -191,12 +192,6 @@ export function createDiagnostico(root) {
     if (id === 'q_channel' && !state.trackedProgress50) {
       state.trackedProgress50 = true;
       trackMetaCustom('QuizProgress', { step: id, progress: 50 });
-      trackEvent('diagnostico_progress', {
-        page: 'diagnostico',
-        line: 'paletas',
-        progress: 50,
-        step: id,
-      });
     }
 
     if (id === 'diagnosis' && !state.trackedComplete) {
@@ -230,12 +225,6 @@ export function createDiagnostico(root) {
 
     if (id === 'diagnosis') {
       state.diagnosisId = computeDiagnosis(state.answers);
-      trackEvent('diagnostico_result', {
-        page: 'diagnostico',
-        line: 'paletas',
-        diagnosis: state.diagnosisId,
-        ...state.answers,
-      });
     }
 
     fireFunnelEvents(id);
@@ -243,13 +232,6 @@ export function createDiagnostico(root) {
     transitionTo(() => render()).then(() => {
       if (id === 'loading') runLoading();
       state.pedidosSeen = toasts.show(id);
-    });
-
-    trackEvent('diagnostico_step', {
-      page: 'diagnostico',
-      line: 'paletas',
-      step: id,
-      index: state.index,
     });
   }
 
@@ -356,11 +338,10 @@ export function createDiagnostico(root) {
 
     els.stage.querySelectorAll('[data-checkout]').forEach((el) => {
       el.addEventListener('click', () => {
-        trackCta('diagnostico_checkout', {
+        trackCheckout('kit', {
           page: 'diagnostico',
           line: 'paletas',
-          diagnosis: state.diagnosisId,
-          hasName: Boolean(state.answers.name),
+          ctaId: 'diagnostico_checkout',
         });
         trackMetaInitiateCheckout({
           value: MAIN_PRICE,
@@ -729,7 +710,7 @@ export function createDiagnostico(root) {
 
         <a
           class="dx-btn dx-btn-primary dx-btn-checkout"
-          href="${esc(CHECKOUT_URL)}"
+          href="${esc(withAbCheckoutParam(CHECKOUT_URL))}"
           rel="noopener"
           data-checkout
           data-checkout-hard
@@ -746,10 +727,6 @@ export function createDiagnostico(root) {
   // boot
   updateSocial();
   render();
-  trackEvent('diagnostico_start', {
-    page: 'diagnostico',
-    line: 'paletas',
-  });
 
   return {
     getState: () => ({ ...state, answers: { ...state.answers } }),

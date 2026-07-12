@@ -399,9 +399,11 @@ export function renderAnalyticsView(analytics, lineFilter = 'all', users = []) {
   const ctas = analytics.ctas || [];
   const whatsapp = analytics.whatsapp || [];
   const kpis = analytics.kpis || {};
+  const abEntry = analytics.ab?.paletas?.entry || null;
 
   return `
     ${renderLineFilter(lineFilter)}
+    ${renderAbEntryCard(abEntry)}
     ${renderStatsGrid(getStats(users), analytics)}
     <div class="admin-grid-2">
       <div class="admin-card">
@@ -497,6 +499,83 @@ export function renderAnalyticsView(analytics, lineFilter = 'all', users = []) {
       </div>
     </div>
     ${renderHistoryBars(history)}
+  `;
+}
+
+function cell(metric) {
+  if (!metric) return { today: 0, total: 0 };
+  return {
+    today: Number(metric.today) || 0,
+    total: Number(metric.total) || 0,
+  };
+}
+
+function renderAbArmColumn(label, arm) {
+  const assign = cell(arm?.assign);
+  const view = cell(arm?.view);
+  const start = cell(arm?.quiz_start);
+  const complete = cell(arm?.quiz_complete);
+  const checkout = cell(arm?.checkout);
+  const purchase = cell(arm?.purchase);
+  const rates = arm?.rates || {};
+  const rows = [
+    [t('analytics.abAssign'), assign],
+    [t('analytics.abView'), view],
+  ];
+  if (label === 'Quiz') {
+    rows.push([t('analytics.abQuizStart'), start]);
+    rows.push([t('analytics.abQuizComplete'), complete]);
+  }
+  rows.push([t('analytics.abCheckout'), checkout]);
+  rows.push([t('analytics.abPurchase'), purchase]);
+
+  return `
+    <div class="admin-ab-col">
+      <h3>${escapeHtml(label)}</h3>
+      <div class="admin-ab-metrics">
+        ${rows
+          .map(
+            ([name, m]) => `
+          <div class="admin-ab-row">
+            <span>${escapeHtml(name)}</span>
+            <strong><span class="admin-metric today">${m.today}</span> / ${m.total}</strong>
+          </div>`
+          )
+          .join('')}
+      </div>
+      <div class="admin-ab-rates">
+        <div><span>${t('analytics.abCvrCheckout')}</span><strong>${rates.checkoutToday ?? 0}% <small>/ ${rates.checkoutTotal ?? 0}%</small></strong></div>
+        <div><span>${t('analytics.abCvrPurchase')}</span><strong>${rates.purchaseToday ?? 0}% <small>/ ${rates.purchaseTotal ?? 0}%</small></strong></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAbEntryCard(abEntry) {
+  if (!abEntry) {
+    return `
+      <div class="admin-card admin-card-accent">
+        <div class="admin-card-head"><h2>${t('analytics.abTitle')}</h2></div>
+        <div class="admin-card-body"><p class="admin-hint">${t('analytics.abEmpty')}</p></div>
+      </div>`;
+  }
+
+  return `
+    <div class="admin-card admin-card-accent">
+      <div class="admin-card-head">
+        <div>
+          <h2>${t('analytics.abTitle')}</h2>
+          <p class="admin-hint">${t('analytics.abHint')}</p>
+        </div>
+      </div>
+      <div class="admin-card-body">
+        <div class="admin-ab-grid">
+          ${renderAbArmColumn('LP', abEntry.lp)}
+          ${renderAbArmColumn('Quiz', abEntry.quiz)}
+        </div>
+        <p class="admin-hint admin-ab-note">${t('analytics.abNote')}</p>
+      </div>
+    </div>
   `;
 }
 
@@ -770,6 +849,7 @@ export function renderContentView(draft = null) {
             </p>
           </label>
           <p class="admin-hint">${t('content.abOverrides')}</p>
+          <button type="button" class="admin-btn sm ghost" data-tab="analytics">${t('content.abResultsLink')}</button>
         </div>
       </div>
 
