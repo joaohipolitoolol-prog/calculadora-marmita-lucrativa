@@ -3,6 +3,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
+    { "source": "/diagnostico", "destination": "/diagnostico.html" },
     { "source": "/login", "destination": "/login.html" },
     { "source": "/cadastrar", "destination": "/cadastrar.html" },
     { "source": "/postres/login", "destination": "/login-postres.html" },

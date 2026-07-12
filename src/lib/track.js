@@ -2,6 +2,7 @@
 
 export const TRACKED_PAGES = {
   home: '/',
+  diagnostico: '/diagnostico',
   postres: '/postres',
   'upsell-paletas': '/upsell-paletas-premium',
   'upsell-postres': '/postres/upsell',
@@ -16,6 +17,7 @@ export const TRACKED_PAGES = {
 
 const PAGE_LINES = {
   home: 'paletas',
+  diagnostico: 'paletas',
   postres: 'postres',
   'upsell-paletas': 'paletas',
   'upsell-postres': 'postres',

@@ -2,6 +2,7 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
 const htmlRewrites = {
+  '/diagnostico': '/diagnostico.html',
   '/upsell-paletas-premium': '/upsell-paletas-premium.html',
   '/postres/upsell': '/postres-upsell.html',
   '/upsell-postres-premium': '/postres-upsell.html',
@@ -43,6 +44,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
+        diagnostico: resolve(__dirname, 'diagnostico.html'),
         login: resolve(__dirname, 'login.html'),
         cadastrar: resolve(__dirname, 'cadastrar.html'),
         cadastrarPostres: resolve(__dirname, 'cadastrar-postres.html'),
