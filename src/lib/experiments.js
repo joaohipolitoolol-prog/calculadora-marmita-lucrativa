@@ -58,6 +58,22 @@ export async function loadExperiments() {
 /**
  * @param {{ paletas?: { entry?: { enabled?: boolean, quizPercent?: number } } }} patch
  */
+export function applyExperimentsLocal(patch = {}) {
+  cache = normalizeExperiments({
+    paletas: {
+      entry: {
+        ...cache.paletas.entry,
+        ...(patch.paletas?.entry || {}),
+      },
+    },
+    updatedAt: Date.now(),
+  });
+  return cache;
+}
+
+/**
+ * @param {{ paletas?: { entry?: { enabled?: boolean, quizPercent?: number } } }} patch
+ */
 export async function saveExperiments(patch = {}) {
   const next = normalizeExperiments({
     paletas: {

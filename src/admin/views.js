@@ -998,9 +998,22 @@ function renderApiWarnings(apiWarnings = []) {
     analyticsApi: t('warn.analyticsApi'),
   };
 
-  const items = apiWarnings
-    .map((warning) => labels[warning.id] || warning.message || warning.id)
-    .filter(Boolean);
+  const seen = new Set();
+  const items = [];
+  for (const warning of apiWarnings) {
+    const key =
+      warning.message === 'firebaseAdmin' || warning.id === 'firebaseAdmin'
+        ? 'firebaseAdmin'
+        : warning.id;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const text =
+      labels[key] ||
+      labels[warning.message] ||
+      warning.message ||
+      warning.id;
+    if (text) items.push(text);
+  }
 
   if (!items.length) return '';
 

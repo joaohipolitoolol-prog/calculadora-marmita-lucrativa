@@ -116,3 +116,19 @@ export async function saveContentSettings(patch) {
     return { ok: false, settings: cache, error: err };
   }
 }
+
+/** Update in-memory cache only (after server-side save). */
+export function applyContentSettingsLocal(patch) {
+  const mergedLines = { ...cache.lines };
+  for (const [lineId, flags] of Object.entries(patch || {})) {
+    mergedLines[lineId] = {
+      ...mergedLines[lineId],
+      ...flags,
+    };
+  }
+  cache = normalizeContentSettings({
+    lines: mergedLines,
+    updatedAt: Date.now(),
+  });
+  return cache;
+}

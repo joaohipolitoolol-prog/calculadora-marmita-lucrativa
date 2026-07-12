@@ -36,3 +36,10 @@ export async function fetchAdminAnalytics(idToken, line = 'all') {
 export async function deleteUserAccount(idToken, uid) {
   return adminFetch(idToken, '/api/admin/delete-user', { body: { uid } });
 }
+
+export async function saveAdminSettings(idToken, payload) {
+  return adminFetch(idToken, '/api/admin/settings', {
+    method: 'POST',
+    body: payload,
+  });
+}

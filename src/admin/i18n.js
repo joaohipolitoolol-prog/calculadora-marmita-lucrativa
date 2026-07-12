@@ -217,6 +217,10 @@ const STRINGS = {
     'content.saving': 'Guardando…',
     'content.allSaved': 'Cambios guardados',
     'content.dirty': 'Cambios sin guardar',
+    'content.saveBlocked':
+      'No se pudo guardar: permiso o bloqueador. Desactiva AdBlock en este sitio o marca isAdmin en tu usuario.',
+    'content.saveNeedServer':
+      'Falta FIREBASE_SERVICE_ACCOUNT en Vercel. Sin eso el servidor no puede guardar ni listar usuarios.',
     'content.abLiveOff': 'Ahora: 100% LP (experimento apagado)',
     'content.abLiveOn': 'Ahora: {quiz}% quiz · {lp}% LP',
     'content.unsavedLeave': 'Hay cambios sin guardar. ¿Salir de todos modos?',
@@ -498,6 +502,10 @@ const STRINGS = {
     'content.saving': 'Salvando…',
     'content.allSaved': 'Alterações salvas',
     'content.dirty': 'Alterações sem salvar',
+    'content.saveBlocked':
+      'Não foi possível salvar: permissão ou bloqueador. Desativa o AdBlock neste site ou marca isAdmin no teu usuário.',
+    'content.saveNeedServer':
+      'Falta FIREBASE_SERVICE_ACCOUNT na Vercel. Sem isso o servidor não salva nem lista usuários.',
     'content.abLiveOff': 'Agora: 100% LP (experimento desligado)',
     'content.abLiveOn': 'Agora: {quiz}% quiz · {lp}% LP',
     'content.unsavedLeave': 'Há alterações sem salvar. Sair mesmo assim?',

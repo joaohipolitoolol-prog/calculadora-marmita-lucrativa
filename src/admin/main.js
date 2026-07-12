@@ -16,6 +16,7 @@ import {
   deleteUserAccount,
   fetchAdminAnalytics,
   fetchAdminUsers,
+  saveAdminSettings,
   syncAdminUsers,
 } from '../lib/admin-api.js';
 import { sendWelcomeEmail } from '../lib/send-welcome.js';
@@ -38,10 +39,12 @@ import {
 import {
   loadContentSettings,
   saveContentSettings,
+  applyContentSettingsLocal,
 } from '../lib/content-settings.js';
 import {
   loadExperiments,
   saveExperiments,
+  applyExperimentsLocal,
 } from '../lib/experiments.js';
 import { TTS_VOICE } from '../lib/tts-config.js';
 import { confirmDialog, copyText, escapeHtml, showToast } from './helpers.js';
@@ -214,6 +217,14 @@ function isFirebaseAdminError(message) {
 }
 
 function setApiWarning(id, message) {
+  // Collapse duplicate firebaseAdmin warnings into one banner
+  if (message === 'firebaseAdmin' || id === 'firebaseAdmin') {
+    state.apiWarnings = state.apiWarnings.filter(
+      (w) => w.id !== 'firebaseAdmin' && w.message !== 'firebaseAdmin',
+    );
+    state.apiWarnings.push({ id: 'firebaseAdmin', message: 'firebaseAdmin' });
+    return;
+  }
   state.apiWarnings = state.apiWarnings.filter((w) => w.id !== id);
   if (message) state.apiWarnings.push({ id, message });
 }
@@ -493,30 +504,69 @@ function bindEvents() {
     }
     if (status) status.textContent = t('content.saving');
 
-    const [expResult, contentResult] = await Promise.all([
-      saveExperiments({
-        paletas: {
-          entry: {
-            enabled: draft.ab.enabled,
-            quizPercent: draft.ab.quizPercent,
+    try {
+      const token = await state.currentAdminUser.getIdToken();
+      await saveAdminSettings(token, {
+        experiments: {
+          paletas: {
+            entry: {
+              enabled: draft.ab.enabled,
+              quizPercent: draft.ab.quizPercent,
+            },
           },
         },
-      }),
-      saveContentSettings(draft.lines),
-    ]);
+        content: { lines: draft.lines },
+      });
 
-    if (expResult.ok && contentResult.ok) {
+      applyExperimentsLocal({ paletas: { entry: draft.ab } });
+      applyContentSettingsLocal(draft.lines);
+
       state.contentDraft = null;
       showToast(t('content.allSaved'));
-      // Bust any intermediate caches by reloading experiments from Firestore
-      await loadExperiments();
-      await loadContentSettings();
       paint();
       return;
+    } catch (apiErr) {
+      console.warn('[admin] settings API, trying client write', apiErr);
+
+      const [expResult, contentResult] = await Promise.all([
+        saveExperiments({
+          paletas: {
+            entry: {
+              enabled: draft.ab.enabled,
+              quizPercent: draft.ab.quizPercent,
+            },
+          },
+        }),
+        saveContentSettings(draft.lines),
+      ]);
+
+      if (expResult.ok && contentResult.ok) {
+        state.contentDraft = null;
+        showToast(t('content.allSaved'));
+        paint();
+        return;
+      }
+
+      state.contentDraft = draft;
+      const detail = String(
+        apiErr?.message ||
+          expResult.error?.code ||
+          expResult.error?.message ||
+          contentResult.error?.message ||
+          '',
+      );
+      const needsServer =
+        /firebase admin|no configurado|503/i.test(detail);
+      const blocked = /permission|insufficient|forbidden|blocked/i.test(detail);
+      showToast(
+        needsServer
+          ? t('content.saveNeedServer')
+          : blocked
+            ? t('content.saveBlocked')
+            : t('toast.saveError'),
+      );
     }
 
-    state.contentDraft = draft;
-    showToast(t('toast.saveError'));
     if (btn) {
       btn.disabled = false;
       btn.textContent = t('content.saveAll');
