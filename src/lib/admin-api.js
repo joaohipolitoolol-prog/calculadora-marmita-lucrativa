@@ -28,8 +28,11 @@ export async function createAdminUser(idToken, payload) {
   return adminFetch(idToken, '/api/admin/users', { method: 'POST', body: payload });
 }
 
-export async function fetchAdminAnalytics(idToken, line = 'all') {
-  const qs = line && line !== 'all' ? `?line=${encodeURIComponent(line)}` : '';
+export async function fetchAdminAnalytics(idToken, line = 'all', range = 'today') {
+  const params = new URLSearchParams();
+  if (line && line !== 'all') params.set('line', line);
+  if (range && range !== 'today') params.set('range', range);
+  const qs = params.toString() ? `?${params.toString()}` : '';
   return adminFetch(idToken, `/api/admin/analytics${qs}`, { method: 'GET' });
 }
 

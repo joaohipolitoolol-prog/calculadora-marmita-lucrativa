@@ -77,6 +77,8 @@ const state = {
   apiWarnings: [],
   contentDraft: null,
   funnelDraft: null,
+  dateRange: 'today',
+  emailFilter: 'paletas',
   settingsLoadError: null,
 };
 
@@ -128,6 +130,8 @@ function paint() {
     apiWarnings: state.apiWarnings,
     contentDraft: state.contentDraft,
     funnelDraft: state.funnelDraft,
+    dateRange: state.dateRange,
+    emailFilter: state.emailFilter,
     settingsLoadError: state.settingsLoadError,
   });
   bindEvents();
@@ -305,7 +309,11 @@ async function loadUsers() {
 async function loadAnalytics() {
   try {
     const token = await state.currentAdminUser.getIdToken();
-    state.analyticsCache = await fetchAdminAnalytics(token, state.lineFilter);
+    state.analyticsCache = await fetchAdminAnalytics(
+      token,
+      state.lineFilter,
+      state.dateRange || 'today',
+    );
     setApiWarning('analytics', null);
   } catch (error) {
     console.warn('[admin] analytics API:', error);
@@ -318,6 +326,7 @@ async function loadAnalytics() {
       ctas: [],
       whatsapp: [],
       events: [],
+      range: state.dateRange,
     };
     setApiWarning(
       'analytics',
@@ -461,6 +470,118 @@ function bindEvents() {
       state.lineFilter = btn.dataset.lineFilter || 'all';
       await loadAnalytics();
       paint();
+    });
+  });
+
+  root.querySelectorAll('[data-date-range]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      state.dateRange = btn.dataset.dateRange || 'today';
+      await loadAnalytics();
+      paint();
+    });
+  });
+
+  root.querySelector('[data-funnel-refresh]')?.addEventListener('click', async () => {
+    const btn = root.querySelector('[data-funnel-refresh]');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = t('funnel.refreshing');
+    }
+    await loadAnalytics();
+    paint();
+    showToast(t('funnel.refreshed'));
+  });
+
+  // Persist collapse open/closed
+  root.querySelectorAll('details[data-collapse-id]').forEach((el) => {
+    const id = el.dataset.collapseId;
+    const key = `admin_collapse_${id}`;
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved === '1') el.open = true;
+      if (saved === '0') el.open = false;
+    } catch {
+      /* ignore */
+    }
+    el.addEventListener('toggle', () => {
+      try {
+        localStorage.setItem(key, el.open ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+    });
+  });
+
+  root.querySelectorAll('[data-email-filter]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.emailFilter = btn.dataset.emailFilter || 'paletas';
+      paint();
+    });
+  });
+
+  root.querySelector('[data-email-send-form]')?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const email = root.querySelector('[data-email-to]')?.value?.trim();
+    const name = root.querySelector('[data-email-name]')?.value?.trim() || '';
+    const line = root.querySelector('[data-email-line]')?.value || 'paletas';
+    if (!email) return;
+    const btn = event.target.querySelector('button[type="submit"]');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = t('emails.sending');
+    }
+    try {
+      const token = await state.currentAdminUser.getIdToken();
+      await sendWelcomeEmail(token, { email, name, line });
+      showToast(t('emails.sent'));
+    } catch (error) {
+      showToast(error?.message || t('emails.sendError'));
+    }
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = t('emails.send');
+    }
+  });
+
+  root.querySelectorAll('[data-email-send-user]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const email = btn.dataset.email;
+      const name = btn.dataset.name || '';
+      const line = btn.dataset.line || 'paletas';
+      if (!email) return;
+      btn.disabled = true;
+      try {
+        const token = await state.currentAdminUser.getIdToken();
+        await sendWelcomeEmail(token, { email, name, line });
+        showToast(t('emails.sent'));
+      } catch (error) {
+        showToast(error?.message || t('emails.sendError'));
+      }
+      btn.disabled = false;
+    });
+  });
+
+  root.querySelectorAll('[data-copy-html-tpl]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.copyHtmlTpl;
+      const store = root.querySelector(`[data-email-html-store="${id}"]`);
+      const html = store?.value || store?.textContent || '';
+      if (!html) return;
+      await copyText(html);
+      showToast(t('emails.copied'));
+    });
+  });
+
+  root.querySelectorAll('[data-email-preview]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.emailPreview;
+      const store = root.querySelector(`[data-email-html-store="${id}"]`);
+      const frame = root.querySelector(`[data-email-preview-frame="${id}"]`);
+      if (!store || !frame) return;
+      frame.classList.toggle('hidden');
+      if (!frame.classList.contains('hidden')) {
+        frame.srcdoc = store.value || store.textContent || '';
+      }
     });
   });
 

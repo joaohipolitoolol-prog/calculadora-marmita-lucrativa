@@ -4,6 +4,7 @@ import { getContentSettings } from '../lib/content-settings.js';
 import { getExperiments } from '../lib/experiments.js';
 import { getAdminAllowlist } from '../lib/admin-access.js';
 import { WHATSAPP_NUMBERS } from '../lib/whatsapp-numbers.js';
+import { EMAIL_TEMPLATES, HOTMART_WEBHOOK_URL } from './email-templates.js';
 import { ICONS } from './icons.js';
 import { escapeHtml, formatDate, formatDateTime, getUserInitial } from './helpers.js';
 import {
@@ -554,6 +555,49 @@ function renderQuizStepsChart(steps) {
     .join('');
 }
 
+function renderCollapsibleCard({ id, title, hint = '', body, collapsed = true, accent = false }) {
+  const open = collapsed ? '' : 'open';
+  return `
+    <details class="admin-card ${accent ? 'admin-card-accent' : ''} admin-collapse" data-collapse-id="${escapeHtml(id)}" ${open}>
+      <summary class="admin-card-head admin-collapse-summary">
+        <div>
+          <h2>${title}</h2>
+          ${hint ? `<p class="admin-hint">${hint}</p>` : ''}
+        </div>
+        <span class="admin-collapse-chevron" aria-hidden="true"></span>
+      </summary>
+      <div class="admin-card-body">${body}</div>
+    </details>`;
+}
+
+function renderRangeFilter(activeRange = 'today') {
+  const ranges = [
+    ['today', t('funnel.rangeToday')],
+    ['yesterday', t('funnel.rangeYesterday')],
+    ['7d', t('funnel.range7d')],
+    ['30d', t('funnel.range30d')],
+    ['all', t('funnel.rangeAll')],
+  ];
+  return `
+    <div class="admin-funnel-toolbar">
+      <div class="admin-line-filter admin-range-filter" role="group" aria-label="Range">
+        ${ranges
+          .map(
+            ([id, label]) => `
+          <button type="button" class="admin-line-chip ${activeRange === id ? 'active' : ''}" data-date-range="${id}">
+            ${escapeHtml(label)}
+          </button>`
+          )
+          .join('')}
+      </div>
+      <button type="button" class="admin-btn sm ghost" data-funnel-refresh>
+        ${ICONS.sync} ${t('funnel.refresh')}
+      </button>
+    </div>
+    <p class="admin-hint admin-funnel-note">${t('funnel.periodVsTotal')} · ${t('funnel.dataNote')}</p>
+  `;
+}
+
 function renderAbConfigCard(entry, dirty) {
   const quizPct = Number(entry.quizPercent) || 0;
   const lpPct = 100 - quizPct;
@@ -561,16 +605,10 @@ function renderAbConfigCard(entry, dirty) {
     ? t('content.abLiveOn', { quiz: String(quizPct), lp: String(lpPct) })
     : t('content.abLiveOff');
 
-  return `
-    <div class="admin-card admin-card-accent" data-funnel-ab-config>
-      <div class="admin-card-head">
-        <div>
-          <h2>${t('content.abTitle')}</h2>
-          <p class="admin-hint">${t('content.abHint')}</p>
+  const body = `
+        <div class="admin-collapse-live">
+          <span class="admin-status-pill ${entry.enabled ? 'is-on' : ''}" data-ab-live-pill>${escapeHtml(liveLabel)}</span>
         </div>
-        <span class="admin-status-pill ${entry.enabled ? 'is-on' : ''}" data-ab-live-pill>${escapeHtml(liveLabel)}</span>
-      </div>
-      <div class="admin-card-body">
         <label class="admin-toggle-row">
           <span>
             ${t('content.abEnabled')}
@@ -610,19 +648,26 @@ function renderAbConfigCard(entry, dirty) {
           </p>
         </label>
         <p class="admin-hint">${t('content.abOverrides')}</p>
-      </div>
-    </div>
-    <div class="admin-save-bar ${dirty ? 'is-dirty' : ''}" data-funnel-save-bar>
-      <div class="admin-save-bar-copy">
-        <strong data-funnel-save-status>${dirty ? t('content.dirty') : t('funnel.saveAbHint')}</strong>
-      </div>
-      <button type="button" class="admin-btn primary admin-save-bar-btn" data-funnel-save-ab ${dirty ? '' : 'disabled'}>
-        ${t('funnel.saveAb')}
-      </button>
-    </div>`;
+        <div class="admin-save-bar ${dirty ? 'is-dirty' : ''}" data-funnel-save-bar>
+          <div class="admin-save-bar-copy">
+            <strong data-funnel-save-status>${dirty ? t('content.dirty') : t('funnel.saveAbHint')}</strong>
+          </div>
+          <button type="button" class="admin-btn primary admin-save-bar-btn" data-funnel-save-ab ${dirty ? '' : 'disabled'}>
+            ${t('funnel.saveAb')}
+          </button>
+        </div>`;
+
+  return renderCollapsibleCard({
+    id: 'ab-config',
+    title: t('content.abTitle'),
+    hint: t('content.abHint'),
+    body,
+    collapsed: true,
+    accent: true,
+  });
 }
 
-export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft = null) {
+export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft = null, dateRange = 'today') {
   if (!analytics) {
     return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">${t('analytics.loading')}</p></div></div>`;
   }
@@ -638,6 +683,7 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
   const abandon = funnel.abandon || { today: 0, total: 0 };
   const showPaletasQuiz = lineFilter === 'paletas' || lineFilter === 'all';
   const isPostresOnly = lineFilter === 'postres';
+  const range = analytics.range || dateRange || 'today';
 
   const home = pageMetric(pages, 'home');
   const quiz = pageMetric(pages, 'diagnostico');
@@ -646,8 +692,8 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
   const welcomeStep = quizSteps.find((s) => s.id === 'welcome');
   const offerStep = quizSteps.find((s) => s.id === 'offer');
   const completePct =
-    welcomeStep?.total > 0
-      ? Math.round(((offerStep?.total || 0) / welcomeStep.total) * 1000) / 10
+    (welcomeStep?.today || 0) > 0
+      ? Math.round(((offerStep?.today || 0) / welcomeStep.today) * 1000) / 10
       : 0;
 
   const experiments = getExperiments();
@@ -671,10 +717,20 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
     return true;
   });
 
+  const abResultsBody = abEntry
+    ? `
+        <div class="admin-ab-grid">
+          ${renderAbArmColumn('LP', abEntry.lp)}
+          ${renderAbArmColumn('Quiz', abEntry.quiz)}
+        </div>
+        <p class="admin-hint admin-ab-note">${t('analytics.abNote')}</p>`
+    : `<p class="admin-hint">${t('analytics.abEmpty')}</p>`;
+
   return `
     ${renderLineFilter(lineFilter)}
+    ${renderRangeFilter(range)}
     <div class="admin-funnel-kpis">
-      <div class="admin-funnel-kpi">
+      <div class="admin-funnel-kpi" title="${escapeHtml(t('funnel.periodVsTotal'))}">
         <span>${isPostresOnly ? t('funnel.lpPages') : t('funnel.kpiViews')}</span>
         <strong><span class="admin-metric today">${lpKpi.today}</span> / ${lpKpi.total}</strong>
       </div>
@@ -682,13 +738,15 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
         <span>${t('funnel.kpiQuiz')}</span>
         <strong><span class="admin-metric today">${quizKpi.today}</span> / ${quizKpi.total}</strong>
       </div>
-      <div class="admin-funnel-kpi">
+      <div class="admin-funnel-kpi" title="${escapeHtml(t('funnel.kpiCheckoutHint'))}">
         <span>${t('funnel.kpiCheckout')}</span>
-        <strong><span class="admin-metric today">${kpis.checkoutToday || 0}</span> / ${kpis.checkoutTotal || kpis.checkoutToday || 0}</strong>
+        <strong><span class="admin-metric today">${kpis.checkoutToday || 0}</span> / ${kpis.checkoutTotal || 0}</strong>
+        <small>${t('funnel.kpiCheckoutHint')}</small>
       </div>
-      <div class="admin-funnel-kpi">
+      <div class="admin-funnel-kpi" title="${escapeHtml(t('funnel.kpiWaHint'))}">
         <span>${t('funnel.kpiWa')}</span>
-        <strong><span class="admin-metric today">${kpis.whatsappToday || 0}</span> / ${kpis.whatsappTotal || kpis.whatsappToday || 0}</strong>
+        <strong><span class="admin-metric today">${kpis.whatsappToday || 0}</span> / ${kpis.whatsappTotal || 0}</strong>
+        <small>${t('funnel.kpiWaHint')}</small>
       </div>
     </div>
 
@@ -705,30 +763,36 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
       showPaletasQuiz
         ? `
       ${renderAbConfigCard(entry, dirty)}
-      ${renderAbEntryCard(abEntry)}
+      ${renderCollapsibleCard({
+        id: 'ab-results',
+        title: t('analytics.abTitle'),
+        hint: t('analytics.abHint'),
+        body: abResultsBody,
+        collapsed: true,
+        accent: true,
+      })}
       <div class="admin-grid-2">
-        <div class="admin-card">
-          <div class="admin-card-head">
-            <div>
-              <h2>${t('funnel.quizSteps')}</h2>
-              <p class="admin-hint">${t('funnel.quizStepsHint')}</p>
-            </div>
-          </div>
-          <div class="admin-card-body admin-quiz-steps">${renderQuizStepsChart(quizSteps)}</div>
-        </div>
-        <div class="admin-card">
-          <div class="admin-card-head"><h2>${t('funnel.dwell')}</h2></div>
-          <div class="admin-card-body">
+        ${renderCollapsibleCard({
+          id: 'quiz-steps',
+          title: t('funnel.quizSteps'),
+          hint: t('funnel.quizStepsHint'),
+          body: `<div class="admin-quiz-steps">${renderQuizStepsChart(quizSteps)}</div>`,
+          collapsed: false,
+        })}
+        ${renderCollapsibleCard({
+          id: 'dwell',
+          title: t('funnel.dwell'),
+          body: `
             <div class="admin-dwell-grid">
               <div class="admin-dwell-cell">
                 <span>${t('funnel.dwellLp')}</span>
                 <strong>${formatDuration(dwell.home?.avgSecondsToday || dwell.home?.avgSeconds || 0)}</strong>
-                <small>${dwell.home?.todaySessions || 0} hoy · ${dwell.home?.sessions || 0} total</small>
+                <small>${dwell.home?.todaySessions || 0} período · ${dwell.home?.sessions || 0} total</small>
               </div>
               <div class="admin-dwell-cell">
                 <span>${t('funnel.dwellQuiz')}</span>
                 <strong>${formatDuration(dwell.diagnostico?.avgSecondsToday || dwell.diagnostico?.avgSeconds || 0)}</strong>
-                <small>${dwell.diagnostico?.todaySessions || 0} hoy · ${dwell.diagnostico?.sessions || 0} total</small>
+                <small>${dwell.diagnostico?.todaySessions || 0} período · ${dwell.diagnostico?.sessions || 0} total</small>
               </div>
               <div class="admin-dwell-cell accent-warn">
                 <span>${t('funnel.abandon')}</span>
@@ -738,11 +802,11 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
               <div class="admin-dwell-cell accent-green">
                 <span>${t('funnel.completeRate')}</span>
                 <strong>${completePct}%</strong>
-                <small>${offerStep?.total || 0} / ${welcomeStep?.total || 0} ${t('funnel.quizSteps').toLowerCase()}</small>
+                <small>${offerStep?.today || 0} / ${welcomeStep?.today || 0}</small>
               </div>
-            </div>
-          </div>
-        </div>
+            </div>`,
+          collapsed: false,
+        })}
       </div>`
         : ''
     }
@@ -754,49 +818,47 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
     }
 
     <div class="admin-grid-2">
-      <div class="admin-card">
-        <div class="admin-card-head"><h2>${t('funnel.ctaClicks')}</h2></div>
-        <div class="admin-card-body">
-          ${
-            ctas.length
-              ? ctas
-                  .slice(0, 10)
-                  .map(
-                    (c) => `
+      ${renderCollapsibleCard({
+        id: 'cta-clicks',
+        title: t('funnel.ctaClicks'),
+        body: ctas.length
+          ? ctas
+              .slice(0, 10)
+              .map(
+                (c) => `
             <div class="admin-traffic-row">
               <div><strong>${escapeHtml(c.key)}</strong><span>${escapeHtml(c.line || '—')}</span></div>
               <span class="admin-metric today">${c.today || 0}</span> / ${c.total || 0}
             </div>`
-                  )
-                  .join('')
-              : `<p class="admin-table-empty">—</p>`
-          }
-        </div>
-      </div>
-      <div class="admin-card">
-        <div class="admin-card-head"><h2>${t('analytics.whatsapp')}</h2></div>
-        <div class="admin-card-body">
-          ${
-            whatsapp.length
-              ? whatsapp
-                  .slice(0, 8)
-                  .map(
-                    (w) => `
+              )
+              .join('')
+          : `<p class="admin-table-empty">—</p>`,
+        collapsed: true,
+      })}
+      ${renderCollapsibleCard({
+        id: 'wa-clicks',
+        title: t('analytics.whatsapp'),
+        hint: t('funnel.kpiWaHint'),
+        body: whatsapp.length
+          ? whatsapp
+              .slice(0, 8)
+              .map(
+                (w) => `
             <div class="admin-traffic-row">
               <div><strong>${escapeHtml(w.key)}</strong><span>${escapeHtml(w.purpose || w.line || '—')}</span></div>
               <span class="admin-metric today">${w.today || 0}</span> / ${w.total || 0}
             </div>`
-                  )
-                  .join('')
-              : `<p class="admin-table-empty">—</p>`
-          }
-        </div>
-      </div>
+              )
+              .join('')
+          : `<p class="admin-table-empty">—</p>`,
+        collapsed: true,
+      })}
     </div>
 
-    <div class="admin-card">
-      <div class="admin-card-head"><h2>${t('funnel.lpPages')}</h2></div>
-      <div class="admin-card-body flush">
+    ${renderCollapsibleCard({
+      id: 'entry-pages',
+      title: t('funnel.lpPages'),
+      body: `
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead><tr><th>${t('analytics.page')}</th><th>${t('analytics.path')}</th><th>${t('analytics.today')}</th><th>${t('analytics.total')}</th></tr></thead>
@@ -818,9 +880,9 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
               }
             </tbody>
           </table>
-        </div>
-      </div>
-    </div>
+        </div>`,
+      collapsed: true,
+    })}
   `;
 }
 
@@ -1217,6 +1279,141 @@ export function renderContentView(draft = null) {
   `;
 }
 
+export function renderEmailsView(users = [], emailFilter = 'paletas') {
+  const templates = Object.values(EMAIL_TEMPLATES);
+  const filtered = users.filter((u) => {
+    if (!u.email) return false;
+    if (emailFilter === 'postres') return u.hasPostres || u.hasPostresPremium;
+    if (emailFilter === 'pending') return profileStatus(u) === 'pending_kit';
+    return u.hasKit || u.hasPremium;
+  }).slice(0, 40);
+
+  return `
+    <div class="admin-content-stack">
+      ${renderCollapsibleCard({
+        id: 'emails-hotmart',
+        title: t('emails.hotmartTitle'),
+        hint: t('emails.hotmartHint'),
+        collapsed: false,
+        accent: true,
+        body: `
+          <ol class="admin-emails-steps">
+            <li>${t('emails.hotmartStep1')}</li>
+            <li>
+              ${t('emails.hotmartStep2')}
+              <div class="admin-emails-webhook">
+                <code>${escapeHtml(HOTMART_WEBHOOK_URL)}</code>
+                <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(HOTMART_WEBHOOK_URL)}">${t('emails.copyWebhook')}</button>
+              </div>
+            </li>
+            <li>${t('emails.hotmartStep3')}</li>
+            <li>${t('emails.hotmartStep4')}</li>
+            <li>${t('emails.hotmartStep5')}</li>
+            <li>${t('emails.hotmartStep6')}</li>
+          </ol>
+          <p class="admin-hint">${t('emails.hotmartNote')}</p>
+        `,
+      })}
+
+      ${renderCollapsibleCard({
+        id: 'emails-send',
+        title: t('emails.sendTitle'),
+        hint: t('emails.sendHint'),
+        collapsed: false,
+        body: `
+          <form class="admin-emails-send-form" data-email-send-form>
+            <label class="admin-field">
+              <span>${t('emails.email')}</span>
+              <input type="email" name="email" required placeholder="cliente@email.com" data-email-to>
+            </label>
+            <label class="admin-field">
+              <span>${t('emails.name')}</span>
+              <input type="text" name="name" placeholder="María" data-email-name>
+            </label>
+            <label class="admin-field">
+              <span>${t('emails.line')}</span>
+              <select data-email-line>
+                <option value="paletas">Paletas</option>
+                <option value="postres">Postres</option>
+              </select>
+            </label>
+            <button type="submit" class="admin-btn primary">${t('emails.send')}</button>
+          </form>
+        `,
+      })}
+
+      ${renderCollapsibleCard({
+        id: 'emails-templates',
+        title: t('emails.templates'),
+        hint: t('emails.templatesHint'),
+        collapsed: true,
+        body: templates
+          .map((tpl) => {
+            const html = tpl.html();
+            return `
+            <div class="admin-email-tpl" data-email-tpl="${tpl.id}">
+              <div class="admin-email-tpl-head">
+                <strong>${t(tpl.labelKey)}</strong>
+                <div class="admin-email-tpl-actions">
+                  <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(tpl.subject)}">${t('emails.subject')}</button>
+                  <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(tpl.plain)}">${t('emails.plain')}</button>
+                  <button type="button" class="admin-btn sm ghost" data-copy-html-tpl="${tpl.id}">${t('emails.html')}</button>
+                  <button type="button" class="admin-btn sm" data-email-preview="${tpl.id}">${t('emails.preview')}</button>
+                </div>
+              </div>
+              <pre class="admin-email-subject">${escapeHtml(tpl.subject)}</pre>
+              <textarea class="hidden" data-email-html-store="${tpl.id}" readonly hidden>${escapeHtml(html)}</textarea>
+              <iframe class="admin-email-preview hidden" data-email-preview-frame="${tpl.id}" title="preview" sandbox=""></iframe>
+            </div>`;
+          })
+          .join(''),
+      })}
+
+      ${renderCollapsibleCard({
+        id: 'emails-bulk',
+        title: t('emails.bulkTitle'),
+        hint: t('emails.bulkHint'),
+        collapsed: true,
+        body: `
+          <div class="admin-line-filter" role="group">
+            <button type="button" class="admin-line-chip ${emailFilter === 'paletas' ? 'active' : ''}" data-email-filter="paletas">Paletas kit</button>
+            <button type="button" class="admin-line-chip ${emailFilter === 'postres' ? 'active' : ''}" data-email-filter="postres">Postres kit</button>
+            <button type="button" class="admin-line-chip ${emailFilter === 'pending' ? 'active' : ''}" data-email-filter="pending">${t('filter.pending_kit')}</button>
+          </div>
+          <div class="admin-table-wrap" style="margin-top:12px">
+            <table class="admin-table">
+              <thead><tr><th>${t('table.user')}</th><th>${t('table.products')}</th><th></th></tr></thead>
+              <tbody>
+                ${
+                  filtered.length
+                    ? filtered
+                        .map(
+                          (u) => `
+                  <tr>
+                    <td>
+                      <strong>${escapeHtml(u.displayName || t('table.noName'))}</strong>
+                      <div class="admin-muted">${escapeHtml(u.email || '')}</div>
+                    </td>
+                    <td>${renderProductPills(u)}</td>
+                    <td class="col-actions">
+                      <button type="button" class="admin-btn sm primary" data-email-send-user="${u.id}" data-email="${escapeHtml(u.email || '')}" data-name="${escapeHtml(u.displayName || '')}" data-line="${u.hasPostres && !u.hasKit ? 'postres' : 'paletas'}">
+                        ${t('emails.sendToUser')}
+                      </button>
+                    </td>
+                  </tr>`
+                        )
+                        .join('')
+                    : `<tr><td colspan="3" class="admin-table-empty">${t('emails.noUsers')}</td></tr>`
+                }
+              </tbody>
+            </table>
+          </div>
+        `,
+      })}
+    </div>
+  `;
+}
+
 export function renderChannelsView(kiwifySubTab, kiwifyContent, analytics) {
   const waClicks = Object.fromEntries((analytics?.whatsapp || []).map((w) => [w.key, w.today || 0]));
 
@@ -1381,6 +1578,8 @@ export function renderShell(props) {
     apiWarnings = [],
     contentDraft = null,
     funnelDraft = null,
+    dateRange = 'today',
+    emailFilter = 'paletas',
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -1390,10 +1589,13 @@ export function renderShell(props) {
       content = renderUsersView(users, selectedIds, userFilter, userSearch);
       break;
     case 'funnel':
-      content = renderFunnelView(analytics, lineFilter, funnelDraft);
+      content = renderFunnelView(analytics, lineFilter, funnelDraft, dateRange);
       break;
     case 'analytics':
       content = renderAnalyticsView(analytics, lineFilter, users);
+      break;
+    case 'emails':
+      content = renderEmailsView(users, emailFilter);
       break;
     case 'codes':
       content = renderCodesView(codes);

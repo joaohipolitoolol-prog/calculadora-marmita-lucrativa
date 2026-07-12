@@ -1,23 +1,47 @@
 import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
 import { PAGE_META, todayKey } from '../../server/lib/analytics-schema.js';
-import { publicAbEntry, rate } from '../../server/lib/analytics-ab.js';
 import {
+  AB_METRICS,
+  AB_VARIANTS,
+  emptyAbEntry,
+  publicAbEntry,
+  rate,
+} from '../../server/lib/analytics-ab.js';
+import {
+  QUIZ_STEP_IDS,
   buildStepDropoff,
   publicDwell,
   publicQuizSteps,
 } from '../../server/lib/analytics-funnel.js';
 
+const RANGE_DAYS = {
+  today: 1,
+  yesterday: 1,
+  '7d': 7,
+  '30d': 30,
+  all: 30,
+};
+
 /** Last N UTC day keys (YYYY-MM-DD), newest first — avoids Firestore orderBy(__name__) index. */
-function lastDayKeys(n = 14) {
+function lastDayKeys(n = 14, offset = 0) {
   const keys = [];
   const anchor = todayKey();
   const base = new Date(`${anchor}T00:00:00.000Z`);
   for (let i = 0; i < n; i++) {
     const d = new Date(base);
-    d.setUTCDate(base.getUTCDate() - i);
+    d.setUTCDate(base.getUTCDate() - (i + offset));
     keys.push(d.toISOString().slice(0, 10));
   }
   return keys;
+}
+
+function resolveRangeKeys(range) {
+  const r = String(range || 'today');
+  if (r === 'yesterday') return lastDayKeys(1, 1);
+  if (r === '7d') return lastDayKeys(7);
+  if (r === '30d') return lastDayKeys(30);
+  if (r === 'all') return null; // use summary totals
+  return lastDayKeys(1); // today
 }
 
 function mapCounterObject(obj = {}) {
@@ -64,6 +88,165 @@ function buildAbPayload(entry) {
   };
 }
 
+/** Sum daily AB counters into summary-shaped entry (period → today, all-time → total). */
+function abEntryFromDays(dayDocs, summaryEntry) {
+  const out = emptyAbEntry();
+  // totals from summary (all-time)
+  const summary = publicAbEntry(summaryEntry || {});
+  for (const variant of AB_VARIANTS) {
+    for (const metric of AB_METRICS) {
+      out[variant][metric].total = summary[variant][metric].total;
+      out[variant][metric].today = 0;
+    }
+  }
+  for (const day of dayDocs) {
+    const entry = day.ab?.paletas?.entry || {};
+    for (const variant of AB_VARIANTS) {
+      const arm = entry[variant] || {};
+      for (const metric of AB_METRICS) {
+        out[variant][metric].today += Number(arm[metric]) || 0;
+      }
+    }
+  }
+  return out;
+}
+
+function quizStepsFromDays(dayDocs, summarySteps) {
+  const totals = {};
+  for (const id of QUIZ_STEP_IDS) {
+    totals[id] = {
+      today: 0,
+      total: Number(summarySteps?.[id]?.total) || 0,
+    };
+  }
+  for (const day of dayDocs) {
+    const steps = day.quiz_steps || {};
+    for (const id of QUIZ_STEP_IDS) {
+      totals[id].today += Number(steps[id]) || 0;
+    }
+  }
+  return totals;
+}
+
+function dwellFromDays(dayDocs, summaryDwell) {
+  const out = {};
+  const pages = new Set([
+    ...Object.keys(summaryDwell || {}),
+    ...dayDocs.flatMap((d) => Object.keys(d.dwell || {})),
+  ]);
+  for (const page of pages) {
+    const sum = summaryDwell?.[page] || {};
+    let sessions = 0;
+    let seconds = 0;
+    for (const day of dayDocs) {
+      const cell = day.dwell?.[page];
+      if (!cell) continue;
+      sessions += Number(cell.sessions) || 0;
+      seconds += Number(cell.seconds) || 0;
+    }
+    out[page] = {
+      sessions: Number(sum.sessions) || 0,
+      seconds: Number(sum.seconds) || 0,
+      todaySessions: sessions,
+      todaySeconds: seconds,
+    };
+  }
+  return out;
+}
+
+function abandonFromDays(dayDocs, summaryAbandon) {
+  let today = 0;
+  for (const day of dayDocs) {
+    today += Number(day.quiz_abandon) || 0;
+  }
+  return {
+    today,
+    total: Number(summaryAbandon?.total) || 0,
+  };
+}
+
+function sumDailyPages(dayDocs, summaryPages, line) {
+  const keys = new Set([
+    ...Object.keys(summaryPages || {}),
+    ...dayDocs.flatMap((d) => Object.keys(d.pages || {})),
+  ]);
+  const items = [];
+  for (const key of keys) {
+    const meta = summaryPages?.[key] || PAGE_META[key] || {};
+    const pageLine = meta.line || PAGE_META[key]?.line || null;
+    if (line && line !== 'all' && pageLine && pageLine !== line) continue;
+    let period = 0;
+    for (const day of dayDocs) {
+      period += Number(day.pages?.[key]) || 0;
+    }
+    items.push({
+      key,
+      label: meta.label || PAGE_META[key]?.label || key,
+      path: meta.path || PAGE_META[key]?.path || null,
+      line: pageLine,
+      today: period,
+      total: Number(meta.total) || 0,
+    });
+  }
+  return items.sort((a, b) => (b.today || 0) - (a.today || 0));
+}
+
+function sumDailyEvent(dayDocs, eventKey) {
+  let n = 0;
+  for (const day of dayDocs) {
+    n += Number(day.events?.[eventKey]) || 0;
+  }
+  return n;
+}
+
+function sumDailyWhatsapp(dayDocs, summaryWa, line) {
+  const keys = new Set([
+    ...Object.keys(summaryWa || {}),
+    ...dayDocs.flatMap((d) => Object.keys(d.whatsapp || {})),
+  ]);
+  const items = [];
+  for (const key of keys) {
+    const meta = summaryWa?.[key] || {};
+    if (line && line !== 'all' && meta.line && meta.line !== line) continue;
+    let period = 0;
+    for (const day of dayDocs) {
+      period += Number(day.whatsapp?.[key]) || 0;
+    }
+    items.push({
+      key,
+      line: meta.line || null,
+      purpose: meta.purpose || null,
+      today: period,
+      total: Number(meta.total) || 0,
+    });
+  }
+  return items.sort((a, b) => (b.today || 0) - (a.today || 0));
+}
+
+function sumDailyCtas(dayDocs, summaryCtas, line) {
+  const keys = new Set([
+    ...Object.keys(summaryCtas || {}),
+    ...dayDocs.flatMap((d) => Object.keys(d.ctas || {})),
+  ]);
+  const items = [];
+  for (const key of keys) {
+    const meta = summaryCtas?.[key] || {};
+    if (line && line !== 'all' && meta.line && meta.line !== line) continue;
+    let period = 0;
+    for (const day of dayDocs) {
+      period += Number(day.ctas?.[key]) || 0;
+    }
+    items.push({
+      key,
+      line: meta.line || null,
+      kind: meta.kind || null,
+      today: period,
+      total: Number(meta.total) || 0,
+    });
+  }
+  return items.sort((a, b) => (b.today || 0) - (a.today || 0));
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -77,18 +260,23 @@ export default async function handler(req, res) {
     }
 
     const line = String(req.query?.line || 'all');
+    const range = ['today', 'yesterday', '7d', '30d', 'all'].includes(String(req.query?.range || ''))
+      ? String(req.query.range)
+      : 'today';
+
     const firestore = firebaseAdmin.firestore();
     const summarySnap = await firestore.doc('analytics/summary').get();
     const summary = summarySnap.exists
       ? summarySnap.data()
       : { pages: {}, events: {}, lines: {}, ctas: {}, whatsapp: {} };
 
-    const dayKeys = lastDayKeys(14);
+    // Always load 30 days for history + range aggregation
+    const fetchKeys = lastDayKeys(Math.max(RANGE_DAYS[range] || 30, 30));
     const daySnaps = await firestore.getAll(
-      ...dayKeys.map((id) => firestore.doc(`analytics_daily/${id}`)),
+      ...fetchKeys.map((id) => firestore.doc(`analytics_daily/${id}`)),
     );
 
-    const history = daySnaps
+    const allDays = daySnaps
       .filter((docSnap) => docSnap.exists)
       .map((docSnap) => {
         const data = docSnap.data() || {};
@@ -101,43 +289,107 @@ export default async function handler(req, res) {
           ctas: data.ctas || {},
           whatsapp: data.whatsapp || {},
           ab: data.ab || null,
+          quiz_steps: data.quiz_steps || {},
+          dwell: data.dwell || {},
+          quiz_abandon: data.quiz_abandon || 0,
         };
       });
 
-    let pages = mapCounterObject(summary.pages || {});
-    pages = filterByLine(pages, line);
+    const rangeKeys = resolveRangeKeys(range);
+    const rangeDays = rangeKeys
+      ? allDays.filter((d) => rangeKeys.includes(d.date))
+      : allDays;
+
+    const useSummaryPeriod = range === 'all';
+
+    let pages;
+    let ctas;
+    let whatsapp;
+    let checkoutPeriod;
+    let whatsappPeriod;
+    let abRaw;
+    let quizStepsRaw;
+    let dwellRaw;
+    let abandonRaw;
+
+    if (useSummaryPeriod) {
+      pages = filterByLine(mapCounterObject(summary.pages || {}), line).map((p) => ({
+        ...p,
+        today: p.total,
+      }));
+      ctas = filterByLine(mapCounterObject(summary.ctas || {}), line)
+        .map((c) => ({ ...c, today: c.total }))
+        .sort((a, b) => (b.today || 0) - (a.today || 0));
+      whatsapp = filterByLine(mapCounterObject(summary.whatsapp || {}), line)
+        .map((w) => ({ ...w, today: w.total }))
+        .sort((a, b) => (b.today || 0) - (a.today || 0));
+      const events = mapCounterObject(summary.events || {});
+      checkoutPeriod = events.find((e) => e.key === 'checkout_click')?.total || 0;
+      whatsappPeriod = events.find((e) => e.key === 'whatsapp_click')?.total || 0;
+      abRaw = publicAbEntry(summary.ab?.paletas?.entry || {});
+      for (const v of AB_VARIANTS) {
+        for (const m of AB_METRICS) {
+          abRaw[v][m].today = abRaw[v][m].total;
+        }
+      }
+      quizStepsRaw = summary.quiz_steps || {};
+      for (const id of QUIZ_STEP_IDS) {
+        if (!quizStepsRaw[id]) quizStepsRaw[id] = { today: 0, total: 0 };
+        quizStepsRaw[id] = {
+          today: Number(quizStepsRaw[id].total) || 0,
+          total: Number(quizStepsRaw[id].total) || 0,
+        };
+      }
+      dwellRaw = summary.dwell || {};
+      for (const page of Object.keys(dwellRaw)) {
+        const cell = dwellRaw[page];
+        dwellRaw[page] = {
+          ...cell,
+          todaySessions: Number(cell.sessions) || 0,
+          todaySeconds: Number(cell.seconds) || 0,
+        };
+      }
+      abandonRaw = {
+        today: Number(summary.quiz_abandon?.total) || 0,
+        total: Number(summary.quiz_abandon?.total) || 0,
+      };
+    } else {
+      pages = sumDailyPages(rangeDays, summary.pages || {}, line);
+      ctas = sumDailyCtas(rangeDays, summary.ctas || {}, line);
+      whatsapp = sumDailyWhatsapp(rangeDays, summary.whatsapp || {}, line);
+      checkoutPeriod = sumDailyEvent(rangeDays, 'checkout_click');
+      whatsappPeriod = sumDailyEvent(rangeDays, 'whatsapp_click');
+      abRaw = abEntryFromDays(rangeDays, summary.ab?.paletas?.entry || {});
+      quizStepsRaw = quizStepsFromDays(rangeDays, summary.quiz_steps || {});
+      dwellRaw = dwellFromDays(rangeDays, summary.dwell || {});
+      abandonRaw = abandonFromDays(rangeDays, summary.quiz_abandon || {});
+    }
 
     const events = mapCounterObject(summary.events || {});
     const lines = mapCounterObject(summary.lines || {});
-    let ctas = mapCounterObject(summary.ctas || {});
-    ctas = filterByLine(ctas, line).sort((a, b) => (b.today || 0) - (a.today || 0));
-    let whatsapp = mapCounterObject(summary.whatsapp || {});
-    whatsapp = filterByLine(whatsapp, line).sort((a, b) => (b.today || 0) - (a.today || 0));
+    const eventTotal = (key) => events.find((e) => e.key === key)?.total || 0;
+    const eventToday = (key) => events.find((e) => e.key === key)?.today || 0;
 
     const todayTotal = pages.reduce((sum, page) => sum + (page.today || 0), 0);
     const allTimeTotal = pages.reduce((sum, page) => sum + (page.total || 0), 0);
 
-    const eventToday = (key) => events.find((e) => e.key === key)?.today || 0;
-    const eventTotal = (key) => events.find((e) => e.key === key)?.total || 0;
-
-    const filteredHistory = history.map((day) => {
+    const filteredHistory = allDays.slice(0, 14).map((day) => {
       if (!line || line === 'all') return day;
       const lineTotal = day.lines?.[line] || 0;
       return { ...day, total: lineTotal, lineTotal };
     });
 
-    const abEntry = buildAbPayload(summary.ab?.paletas?.entry || {});
+    const abEntry = buildAbPayload(abRaw);
     const funnel = {
-      quizSteps: buildStepDropoff(publicQuizSteps(summary.quiz_steps || {})),
-      dwell: publicDwell(summary.dwell || {}),
-      abandon: {
-        today: Number(summary.quiz_abandon?.today) || 0,
-        total: Number(summary.quiz_abandon?.total) || 0,
-      },
+      quizSteps: buildStepDropoff(publicQuizSteps(quizStepsRaw)),
+      dwell: publicDwell(dwellRaw),
+      abandon: abandonRaw,
     };
 
     return res.status(200).json({
       line,
+      range,
+      fetchedAt: new Date().toISOString(),
       pages,
       events,
       lines,
@@ -155,14 +407,19 @@ export default async function handler(req, res) {
       kpis: {
         pageViewsToday: todayTotal,
         pageViewsTotal: allTimeTotal,
-        whatsappToday: eventToday('whatsapp_click'),
+        whatsappToday: whatsappPeriod,
         whatsappTotal: eventTotal('whatsapp_click'),
-        checkoutToday: eventToday('checkout_click'),
+        checkoutToday: checkoutPeriod,
         checkoutTotal: eventTotal('checkout_click'),
         ctaToday: eventToday('cta_click'),
         registerToday: eventToday('register'),
         loginToday: eventToday('login'),
         appOpenToday: eventToday('app_open'),
+      },
+      legend: {
+        checkout: 'checkout_click',
+        whatsapp: 'whatsapp_click',
+        note: 'Checkout = clicks al boton Hotmart. WhatsApp = clicks a wa.me (soporte app/aviso), no CTA de LP Paletas.',
       },
     });
   } catch (error) {
