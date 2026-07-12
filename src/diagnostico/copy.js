@@ -59,7 +59,7 @@ export const DIAGNOSES = {
     badge: 'Bloqueo principal',
     title: 'No sabes cuánto cobrar sin perder dinero',
     body: 'No es falta de ganas. Es miedo a poner un precio bajo… o a poner uno tan alto que nadie compre.',
-    need: 'Necesitas una forma simple de calcular el precio de cada paleta — con costo, ganancia y un número que te dé seguridad al publicarlo.',
+    need: 'Necesitas una forma simple de calcular el precio de cada paleta: con costo, ganancia y un número que te dé seguridad al publicarlo.',
     bridge:
       'No necesitas adivinar precios. Necesitas una calculadora clara y un menú listo para WhatsApp.',
     kitFocus: ['precios', 'menu'],
@@ -76,7 +76,7 @@ export const DIAGNOSES = {
     badge: 'Bloqueo principal',
     title: 'Dudas de que alguien te compre',
     body: 'Es normal. Quien nunca vendió (o vendió poco) piensa que “nadie va a querer”. El problema casi nunca es el producto: es no saber cómo pedir el pedido.',
-    need: 'Necesitas mensajes listos, un menú claro y un plan de primeros pedidos — para publicar sin sentir que estás “molestando”.',
+    need: 'Necesitas mensajes listos, un menú claro y un plan de primeros pedidos, para publicar sin sentir que estás “molestando”.',
     bridge:
       'No necesitas aparecer en videos. Necesitas un mensaje claro y un producto atractivo que se venda solo en el chat.',
     kitFocus: ['mensajes', 'pedidos'],
@@ -93,7 +93,7 @@ export const DIAGNOSES = {
     badge: 'Bloqueo principal',
     title: 'No sabes qué preparar (ni si saldrá bien)',
     body: 'Si no tienes una receta confiable, cada intento se siente como un riesgo. Y el miedo a “desperdiciar ingredientes” te frena antes de empezar.',
-    need: 'Necesitas pocas recetas claras y atractivas — no un libro interminable — para empezar con seguridad y repetir lo que funciona.',
+    need: 'Necesitas pocas recetas claras y atractivas, no un libro interminable, para empezar con seguridad y repetir lo que funciona.',
     bridge:
       'No necesitas decenas de recetas. Necesitas un producto atractivo, fácil de repetir y listo para fotografiar.',
     kitFocus: ['recetas'],
@@ -112,7 +112,7 @@ export const DIAGNOSES = {
     body: 'Usar el chat es fácil. Vender en el chat es otra cosa: menú, mensaje, precio, cómo responder y cómo pedir el pedido sin incomodarte.',
     need: 'Necesitas un sistema simple: menú editable, mensajes listos y un flujo de primeros pedidos pensado para WhatsApp.',
     bridge:
-      'No necesitas una tienda online. Necesitas publicar bien en WhatsApp — con menú, precio y mensaje listos.',
+      'No necesitas una tienda online. Necesitas publicar bien en WhatsApp, con menú, precio y mensaje listos.',
     kitFocus: ['menu', 'mensajes'],
     focusLabel: 'Menú + mensajes WhatsApp',
     path: [
@@ -215,9 +215,9 @@ function experienceTone(exp) {
     return {
       affirmTitle: 'Bien. Ya diste el primer paso.',
       affirmBody:
-        'Intentarlo una vez ya te pone por delante. Ahora falta corregir el punto exacto que te frenó — no empezar otra vez desde cero.',
+        'Intentarlo una vez ya te pone por delante. Ahora falta corregir el punto exacto que te frenó, no empezar otra vez desde cero.',
       resultLead: 'Como ya intentaste vender,',
-      profile: 'Emprendedora que ya probó — y ahora necesita el punto exacto',
+      profile: 'Emprendedora que ya probó y ahora necesita el punto exacto',
     };
   }
   return {
@@ -384,7 +384,7 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
       title: '¿Dónde te resultaría más fácil ofrecer tus primeras paletas?',
       body:
         answers.blocker === 'whatsapp' || answers.blocker === 'ventas'
-          ? 'Perfecto — vamos a anclar el plan al canal donde te sientes más cómoda.'
+          ? 'Perfecto. Vamos a anclar el plan al canal donde te sientes más cómoda.'
           : 'Sin presión. Elige lo que se sienta más natural para ti.',
       options: [
         {
@@ -423,7 +423,7 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
       body:
         answers.blocker === 'empezar' || answers.blocker === 'precio'
           ? 'Esto nos ayuda a recomendar un comienzo sin arriesgar de más.'
-          : 'No preguntamos cuánto dinero tienes — solo cómo quieres arrancar.',
+          : 'No preguntamos cuánto dinero tienes, solo cómo quieres arrancar.',
       options: [
         {
           value: 'home',
@@ -458,7 +458,7 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
       key: 'victory',
       icon: 'heart',
       title: '¿Qué sería una buena primera victoria para ti?',
-      body: 'Una meta cercana — no una promesa grande.',
+      body: 'Una meta cercana, no una promesa grande.',
       options: [
         {
           value: 'recover',
@@ -570,7 +570,7 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
       type: 'trust',
       icon: 'shield',
       title: 'Mujeres como tú ya empezaron',
-      body: 'Pequeñas victorias reales por WhatsApp — sin aparecer en videos.',
+      body: 'Pequeñas victorias reales por WhatsApp, sin aparecer en videos.',
       points: [
         {
           icon: 'home',
@@ -611,7 +611,7 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
         },
         {
           q: '¿Y si no sé cocinar bien?',
-          a: 'Las recetas son paso a paso. Empezamos simple — no necesitas ser chef.',
+          a: 'Las recetas son paso a paso. Empezamos simple, no necesitas ser chef.',
         },
         {
           q: '¿Y si me equivoco en el precio?',
