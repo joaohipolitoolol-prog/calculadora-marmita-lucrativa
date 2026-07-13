@@ -28,6 +28,7 @@ import {
 import {
   trackMetaInitiateCheckout,
   trackMetaCustom,
+  markCheckoutPending,
 } from '../lib/meta-pixel.js';
 import { trackEvent, trackCheckout } from '../lib/track.js';
 import { withAbCheckoutParam } from '../lib/ab-entry.js';
@@ -370,6 +371,7 @@ export function createDiagnostico(root) {
 
     els.stage.querySelectorAll('[data-checkout]').forEach((el) => {
       el.addEventListener('click', () => {
+        markCheckoutPending('paletas');
         trackCheckout('kit', {
           page: 'diagnostico',
           line: 'paletas',
@@ -378,7 +380,7 @@ export function createDiagnostico(root) {
         trackMetaInitiateCheckout({
           value: MAIN_PRICE,
           contentName: KIT_NAME,
-          contentIds: ['kit', `diag_${state.diagnosisId}`],
+          contentIds: ['paletas_kit', `diag_${state.diagnosisId}`],
         });
       });
     });
