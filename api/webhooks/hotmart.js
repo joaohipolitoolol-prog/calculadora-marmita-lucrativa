@@ -193,6 +193,8 @@ export default async function handler(req, res) {
       email: buyer.email,
       name: buyer.name,
       line: resolved.line,
+      tier: resolved.tier,
+      product: resolved.product,
     });
 
     if (resolved.line === 'paletas' && abVariant) {

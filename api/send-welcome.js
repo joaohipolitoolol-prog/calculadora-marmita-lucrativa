@@ -9,18 +9,18 @@ export default async function handler(req, res) {
   try {
     await verifyAdminRequest(req);
 
-    const { email, name, line = 'paletas' } = req.body || {};
+    const { email, name, line = 'paletas', tier = 'kit', product = null } = req.body || {};
     if (!email) {
       return res.status(400).json({ error: 'email es obligatorio' });
     }
 
-    const result = await sendWelcomeEmailServer({ email, name, line });
+    const result = await sendWelcomeEmailServer({ email, name, line, tier, product });
     if (!result.ok) {
       const status = result.error?.includes('RESEND_API_KEY') ? 503 : 500;
       return res.status(status).json({ error: result.error });
     }
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, id: result.id || null, product: result.product });
   } catch (error) {
     const message = error?.message || 'Error interno';
     const status = message === 'Unauthorized' ? 401 : message === 'Forbidden' ? 403 : 500;

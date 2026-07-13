@@ -21,6 +21,7 @@ import {
   syncAdminUsers,
 } from '../lib/admin-api.js';
 import { sendWelcomeEmail } from '../lib/send-welcome.js';
+import { getAdminEmailTemplate } from './email-templates.js';
 import { isFirebaseConfigured } from '../lib/firebase.js';
 import { PRODUCT_BY_ID } from '../lib/products.js';
 import {
@@ -79,6 +80,7 @@ const state = {
   funnelDraft: null,
   dateRange: 'today',
   emailFilter: 'paletas',
+  emailProduct: 'paletas_kit',
   settingsLoadError: null,
 };
 
@@ -132,6 +134,7 @@ function paint() {
     funnelDraft: state.funnelDraft,
     dateRange: state.dateRange,
     emailFilter: state.emailFilter,
+    emailProduct: state.emailProduct,
     settingsLoadError: state.settingsLoadError,
   });
   bindEvents();
@@ -519,11 +522,65 @@ function bindEvents() {
     });
   });
 
+  root.querySelectorAll('[data-email-product]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.emailProduct = btn.dataset.emailProduct || 'paletas_kit';
+      paint();
+    });
+  });
+
+  function refreshEmailPreview() {
+    const frame = root.querySelector('[data-email-preview-live]');
+    const store = root.querySelector('[data-email-html-live]');
+    if (!frame || !store) return;
+    const name = root.querySelector('[data-email-preview-name]')?.value?.trim() || 'María';
+    const built = getAdminEmailTemplate(state.emailProduct || 'paletas_kit', name);
+    store.value = built.html;
+    const subjectEl = root.querySelector('[data-email-live-subject]');
+    if (subjectEl) subjectEl.textContent = built.subject;
+    frame.srcdoc = built.html;
+  }
+
+  // Initial live preview fill
+  if (state.activeTab === 'emails') {
+    const frame = root.querySelector('[data-email-preview-live]');
+    const store = root.querySelector('[data-email-html-live]');
+    if (frame && store) {
+      frame.srcdoc = store.value || '';
+    }
+  }
+
+  root.querySelector('[data-email-preview-name]')?.addEventListener('input', () => {
+    refreshEmailPreview();
+  });
+
+  root.querySelectorAll('[data-email-device]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const device = btn.dataset.emailDevice || 'mobile';
+      root.querySelectorAll('[data-email-device]').forEach((b) => {
+        b.classList.toggle('active', b === btn);
+      });
+      const wrap = root.querySelector('[data-email-device-frame]');
+      if (wrap) wrap.dataset.emailDeviceFrame = device;
+    });
+  });
+
+  root.querySelector('[data-copy-html-live]')?.addEventListener('click', async () => {
+    const store = root.querySelector('[data-email-html-live]');
+    const html = store?.value || '';
+    if (!html) return;
+    await copyText(html);
+    showToast(t('emails.copied'));
+  });
+
   root.querySelector('[data-email-send-form]')?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const email = root.querySelector('[data-email-to]')?.value?.trim();
     const name = root.querySelector('[data-email-name]')?.value?.trim() || '';
-    const line = root.querySelector('[data-email-line]')?.value || 'paletas';
+    const product =
+      root.querySelector('[data-email-product-field]')?.value ||
+      state.emailProduct ||
+      'paletas_kit';
     if (!email) return;
     const btn = event.target.querySelector('button[type="submit"]');
     if (btn) {
@@ -532,7 +589,7 @@ function bindEvents() {
     }
     try {
       const token = await state.currentAdminUser.getIdToken();
-      await sendWelcomeEmail(token, { email, name, line });
+      await sendWelcomeEmail(token, { email, name, product });
       showToast(t('emails.sent'));
     } catch (error) {
       showToast(error?.message || t('emails.sendError'));
@@ -547,41 +604,17 @@ function bindEvents() {
     btn.addEventListener('click', async () => {
       const email = btn.dataset.email;
       const name = btn.dataset.name || '';
-      const line = btn.dataset.line || 'paletas';
+      const product = btn.dataset.product || 'paletas_kit';
       if (!email) return;
       btn.disabled = true;
       try {
         const token = await state.currentAdminUser.getIdToken();
-        await sendWelcomeEmail(token, { email, name, line });
+        await sendWelcomeEmail(token, { email, name, product });
         showToast(t('emails.sent'));
       } catch (error) {
         showToast(error?.message || t('emails.sendError'));
       }
       btn.disabled = false;
-    });
-  });
-
-  root.querySelectorAll('[data-copy-html-tpl]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const id = btn.dataset.copyHtmlTpl;
-      const store = root.querySelector(`[data-email-html-store="${id}"]`);
-      const html = store?.value || store?.textContent || '';
-      if (!html) return;
-      await copyText(html);
-      showToast(t('emails.copied'));
-    });
-  });
-
-  root.querySelectorAll('[data-email-preview]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.emailPreview;
-      const store = root.querySelector(`[data-email-html-store="${id}"]`);
-      const frame = root.querySelector(`[data-email-preview-frame="${id}"]`);
-      if (!store || !frame) return;
-      frame.classList.toggle('hidden');
-      if (!frame.classList.contains('hidden')) {
-        frame.srcdoc = store.value || store.textContent || '';
-      }
     });
   });
 
@@ -927,7 +960,12 @@ function bindEvents() {
         updates[`premiumPending.${product.group}`] = false;
       }
       await updateUserProfile(uid, updates);
-      if (productId === 'paletas_kit' || productId === 'postres_kit') {
+      if (
+        productId === 'paletas_kit' ||
+        productId === 'postres_kit' ||
+        productId === 'paletas_premium' ||
+        productId === 'postres_premium'
+      ) {
         const user = state.usersCache.find((u) => u.id === uid);
         if (user?.email) {
           try {
@@ -935,6 +973,7 @@ function bindEvents() {
             await sendWelcomeEmail(token, {
               email: user.email,
               name: user.displayName,
+              product: productId,
               line: product.group,
             });
           } catch {
@@ -970,7 +1009,13 @@ function bindEvents() {
         updates.lastGrantAt = new Date().toISOString();
       }
       await updateUserProfile(uid, updates);
-      if ((productId === 'paletas_kit' || productId === 'postres_kit') && active) {
+      if (
+        active &&
+        (productId === 'paletas_kit' ||
+          productId === 'postres_kit' ||
+          productId === 'paletas_premium' ||
+          productId === 'postres_premium')
+      ) {
         const user = state.usersCache.find((u) => u.id === uid);
         if (user?.email) {
           try {
@@ -978,6 +1023,7 @@ function bindEvents() {
             await sendWelcomeEmail(token, {
               email: user.email,
               name: user.displayName,
+              product: productId,
               line: product.group,
             });
           } catch {
@@ -1123,6 +1169,7 @@ function bindEvents() {
         await sendWelcomeEmail(token, {
           email: btn.dataset.email,
           name: btn.dataset.name,
+          product: btn.dataset.product || null,
           line: btn.dataset.line || 'paletas',
         });
         showToast(t('toast.emailResent'));

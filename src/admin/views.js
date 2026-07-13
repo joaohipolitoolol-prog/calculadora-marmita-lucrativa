@@ -4,7 +4,11 @@ import { getContentSettings } from '../lib/content-settings.js';
 import { getExperiments } from '../lib/experiments.js';
 import { getAdminAllowlist } from '../lib/admin-access.js';
 import { WHATSAPP_NUMBERS } from '../lib/whatsapp-numbers.js';
-import { EMAIL_TEMPLATES, HOTMART_WEBHOOK_URL } from './email-templates.js';
+import {
+  HOTMART_WEBHOOK_URL,
+  getAdminEmailTemplate,
+  listEmailTemplates,
+} from './email-templates.js';
 import { ICONS } from './icons.js';
 import { escapeHtml, formatDate, formatDateTime, getUserInitial } from './helpers.js';
 import {
@@ -336,12 +340,12 @@ export function renderUserDrawer(user) {
           }
           ${
             canResendPaletas
-              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}" data-line="paletas">${ICONS.mailSend} ${t('drawer.resendEmail')}</button>`
+              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}" data-product="paletas_kit" data-line="paletas">${ICONS.mailSend} ${t('drawer.resendEmail')}</button>`
               : ''
           }
           ${
             canResendPostres
-              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}" data-line="postres">${ICONS.mailSend} ${t('drawer.resendEmailPostres')}</button>`
+              ? `<button type="button" class="admin-btn ghost" data-resend-email="${user.id}" data-email="${escapeHtml(user.email)}" data-name="${escapeHtml(user.displayName || '')}" data-product="postres_kit" data-line="postres">${ICONS.mailSend} ${t('drawer.resendEmailPostres')}</button>`
               : ''
           }
           ${
@@ -1279,22 +1283,123 @@ export function renderContentView(draft = null) {
   `;
 }
 
-export function renderEmailsView(users = [], emailFilter = 'paletas') {
-  const templates = Object.values(EMAIL_TEMPLATES);
-  const filtered = users.filter((u) => {
-    if (!u.email) return false;
-    if (emailFilter === 'postres') return u.hasPostres || u.hasPostresPremium;
-    if (emailFilter === 'pending') return profileStatus(u) === 'pending_kit';
-    return u.hasKit || u.hasPremium;
-  }).slice(0, 40);
+export function renderEmailsView(users = [], emailFilter = 'paletas', emailProduct = 'paletas_kit') {
+  const templates = listEmailTemplates();
+  const activeProduct = templates.some((t) => t.id === emailProduct)
+    ? emailProduct
+    : 'paletas_kit';
+  const previewName = 'María';
+  const active = getAdminEmailTemplate(activeProduct, previewName);
+
+  const lineForUser = (u) => {
+    if (emailFilter === 'postres') return 'postres';
+    if (u.hasPostres && !u.hasKit) return 'postres';
+    return 'paletas';
+  };
+  const productForUser = (u) => {
+    const line = lineForUser(u);
+    if (line === 'postres') {
+      return u.hasPostresPremium && !u.hasPostres ? 'postres_premium' : 'postres_kit';
+    }
+    return u.hasPremium && !u.hasKit ? 'paletas_premium' : 'paletas_kit';
+  };
+
+  const filtered = users
+    .filter((u) => {
+      if (!u.email) return false;
+      if (emailFilter === 'postres') return u.hasPostres || u.hasPostresPremium;
+      if (emailFilter === 'pending') return profileStatus(u) === 'pending_kit';
+      if (emailFilter === 'premium') return u.hasPremium || u.hasPostresPremium;
+      return u.hasKit || u.hasPremium;
+    })
+    .slice(0, 40);
 
   return `
     <div class="admin-content-stack">
+      <div class="admin-email-studio">
+        <div class="admin-email-studio-controls">
+          <div class="admin-card admin-card-accent">
+            <div class="admin-card-head">
+              <div>
+                <h2>${t('emails.studioTitle')}</h2>
+                <p class="admin-hint">${t('emails.studioHint')}</p>
+              </div>
+            </div>
+            <div class="admin-card-body">
+              <div class="admin-line-filter" role="group" aria-label="Templates">
+                ${templates
+                  .map(
+                    (tpl) => `
+                  <button type="button" class="admin-line-chip ${activeProduct === tpl.id ? 'active' : ''}" data-email-product="${tpl.id}">
+                    ${t(tpl.labelKey)}
+                  </button>`
+                  )
+                  .join('')}
+              </div>
+
+              <div class="admin-email-subject-bar">
+                <span>${t('emails.subject')}</span>
+                <strong data-email-live-subject>${escapeHtml(active.subject)}</strong>
+              </div>
+
+              <div class="admin-email-tpl-actions" style="margin:12px 0">
+                <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(active.subject)}">${t('emails.copySubject')}</button>
+                <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(active.plain)}">${t('emails.copyPlain')}</button>
+                <button type="button" class="admin-btn sm ghost" data-copy-html-live>${t('emails.copyHtml')}</button>
+              </div>
+
+              <textarea class="hidden" data-email-html-live hidden readonly>${escapeHtml(active.html)}</textarea>
+
+              <form class="admin-emails-send-form" data-email-send-form>
+                <label class="admin-field">
+                  <span>${t('emails.previewName')}</span>
+                  <input type="text" value="${escapeHtml(previewName)}" data-email-preview-name placeholder="María">
+                </label>
+                <label class="admin-field">
+                  <span>${t('emails.email')}</span>
+                  <input type="email" name="email" required placeholder="cliente@email.com" data-email-to>
+                </label>
+                <label class="admin-field">
+                  <span>${t('emails.name')}</span>
+                  <input type="text" name="name" placeholder="María" data-email-name>
+                </label>
+                <input type="hidden" data-email-product-field value="${escapeHtml(activeProduct)}">
+                <button type="submit" class="admin-btn primary">${t('emails.send')}</button>
+              </form>
+              <p class="admin-hint" style="margin-top:10px">${t('emails.sendExactHint')}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-email-studio-preview">
+          <div class="admin-card">
+            <div class="admin-card-head">
+              <div>
+                <h2>${t('emails.preview')}</h2>
+                <p class="admin-hint">${t('emails.previewLiveHint')}</p>
+              </div>
+              <div class="admin-email-device" role="group">
+                <button type="button" class="admin-line-chip active" data-email-device="mobile">Mobile</button>
+                <button type="button" class="admin-line-chip" data-email-device="desktop">Desktop</button>
+              </div>
+            </div>
+            <div class="admin-card-body admin-email-preview-wrap" data-email-device-frame="mobile">
+              <iframe
+                class="admin-email-preview-frame"
+                data-email-preview-live
+                title="Email preview"
+                sandbox=""
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+
       ${renderCollapsibleCard({
         id: 'emails-hotmart',
         title: t('emails.hotmartTitle'),
         hint: t('emails.hotmartHint'),
-        collapsed: false,
+        collapsed: true,
         accent: true,
         body: `
           <ol class="admin-emails-steps">
@@ -1316,68 +1421,15 @@ export function renderEmailsView(users = [], emailFilter = 'paletas') {
       })}
 
       ${renderCollapsibleCard({
-        id: 'emails-send',
-        title: t('emails.sendTitle'),
-        hint: t('emails.sendHint'),
-        collapsed: false,
-        body: `
-          <form class="admin-emails-send-form" data-email-send-form>
-            <label class="admin-field">
-              <span>${t('emails.email')}</span>
-              <input type="email" name="email" required placeholder="cliente@email.com" data-email-to>
-            </label>
-            <label class="admin-field">
-              <span>${t('emails.name')}</span>
-              <input type="text" name="name" placeholder="María" data-email-name>
-            </label>
-            <label class="admin-field">
-              <span>${t('emails.line')}</span>
-              <select data-email-line>
-                <option value="paletas">Paletas</option>
-                <option value="postres">Postres</option>
-              </select>
-            </label>
-            <button type="submit" class="admin-btn primary">${t('emails.send')}</button>
-          </form>
-        `,
-      })}
-
-      ${renderCollapsibleCard({
-        id: 'emails-templates',
-        title: t('emails.templates'),
-        hint: t('emails.templatesHint'),
-        collapsed: true,
-        body: templates
-          .map((tpl) => {
-            const html = tpl.html();
-            return `
-            <div class="admin-email-tpl" data-email-tpl="${tpl.id}">
-              <div class="admin-email-tpl-head">
-                <strong>${t(tpl.labelKey)}</strong>
-                <div class="admin-email-tpl-actions">
-                  <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(tpl.subject)}">${t('emails.subject')}</button>
-                  <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(tpl.plain)}">${t('emails.plain')}</button>
-                  <button type="button" class="admin-btn sm ghost" data-copy-html-tpl="${tpl.id}">${t('emails.html')}</button>
-                  <button type="button" class="admin-btn sm" data-email-preview="${tpl.id}">${t('emails.preview')}</button>
-                </div>
-              </div>
-              <pre class="admin-email-subject">${escapeHtml(tpl.subject)}</pre>
-              <textarea class="hidden" data-email-html-store="${tpl.id}" readonly hidden>${escapeHtml(html)}</textarea>
-              <iframe class="admin-email-preview hidden" data-email-preview-frame="${tpl.id}" title="preview" sandbox=""></iframe>
-            </div>`;
-          })
-          .join(''),
-      })}
-
-      ${renderCollapsibleCard({
         id: 'emails-bulk',
         title: t('emails.bulkTitle'),
         hint: t('emails.bulkHint'),
         collapsed: true,
         body: `
           <div class="admin-line-filter" role="group">
-            <button type="button" class="admin-line-chip ${emailFilter === 'paletas' ? 'active' : ''}" data-email-filter="paletas">Paletas kit</button>
-            <button type="button" class="admin-line-chip ${emailFilter === 'postres' ? 'active' : ''}" data-email-filter="postres">Postres kit</button>
+            <button type="button" class="admin-line-chip ${emailFilter === 'paletas' ? 'active' : ''}" data-email-filter="paletas">Paletas</button>
+            <button type="button" class="admin-line-chip ${emailFilter === 'postres' ? 'active' : ''}" data-email-filter="postres">Postres</button>
+            <button type="button" class="admin-line-chip ${emailFilter === 'premium' ? 'active' : ''}" data-email-filter="premium">Premium</button>
             <button type="button" class="admin-line-chip ${emailFilter === 'pending' ? 'active' : ''}" data-email-filter="pending">${t('filter.pending_kit')}</button>
           </div>
           <div class="admin-table-wrap" style="margin-top:12px">
@@ -1387,8 +1439,9 @@ export function renderEmailsView(users = [], emailFilter = 'paletas') {
                 ${
                   filtered.length
                     ? filtered
-                        .map(
-                          (u) => `
+                        .map((u) => {
+                          const product = productForUser(u);
+                          return `
                   <tr>
                     <td>
                       <strong>${escapeHtml(u.displayName || t('table.noName'))}</strong>
@@ -1396,12 +1449,12 @@ export function renderEmailsView(users = [], emailFilter = 'paletas') {
                     </td>
                     <td>${renderProductPills(u)}</td>
                     <td class="col-actions">
-                      <button type="button" class="admin-btn sm primary" data-email-send-user="${u.id}" data-email="${escapeHtml(u.email || '')}" data-name="${escapeHtml(u.displayName || '')}" data-line="${u.hasPostres && !u.hasKit ? 'postres' : 'paletas'}">
+                      <button type="button" class="admin-btn sm primary" data-email-send-user="${u.id}" data-email="${escapeHtml(u.email || '')}" data-name="${escapeHtml(u.displayName || '')}" data-product="${product}">
                         ${t('emails.sendToUser')}
                       </button>
                     </td>
-                  </tr>`
-                        )
+                  </tr>`;
+                        })
                         .join('')
                     : `<tr><td colspan="3" class="admin-table-empty">${t('emails.noUsers')}</td></tr>`
                 }
@@ -1580,6 +1633,7 @@ export function renderShell(props) {
     funnelDraft = null,
     dateRange = 'today',
     emailFilter = 'paletas',
+    emailProduct = 'paletas_kit',
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -1595,7 +1649,7 @@ export function renderShell(props) {
       content = renderAnalyticsView(analytics, lineFilter, users);
       break;
     case 'emails':
-      content = renderEmailsView(users, emailFilter);
+      content = renderEmailsView(users, emailFilter, emailProduct);
       break;
     case 'codes':
       content = renderCodesView(codes);

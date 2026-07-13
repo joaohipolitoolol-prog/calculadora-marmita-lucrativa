@@ -2344,6 +2344,77 @@ body {
   margin-bottom: 12px;
 }
 
+.admin-email-studio {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.admin-email-subject-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fafafa;
+  border: 1px solid var(--admin-border, #ece7ea);
+}
+
+.admin-email-subject-bar span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--admin-muted);
+}
+
+.admin-email-subject-bar strong {
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: var(--admin-text);
+}
+
+.admin-email-preview-wrap {
+  display: flex;
+  justify-content: center;
+  background: #efe8e2;
+  padding: 16px;
+  min-height: 520px;
+}
+
+.admin-email-preview-frame {
+  width: 100%;
+  max-width: 560px;
+  min-height: 640px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  transition: max-width 0.2s ease;
+}
+
+.admin-email-preview-wrap[data-email-device-frame='mobile'] .admin-email-preview-frame {
+  max-width: 390px;
+}
+
+.admin-email-preview-wrap[data-email-device-frame='desktop'] .admin-email-preview-frame {
+  max-width: 560px;
+}
+
+.admin-email-device {
+  display: flex;
+  gap: 6px;
+}
+
+@media (max-width: 980px) {
+  .admin-email-studio {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-emails-steps {
   margin: 0;
   padding-left: 20px;
@@ -2375,47 +2446,12 @@ body {
   max-width: 420px;
 }
 
-.admin-email-tpl {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--admin-border, #ece7ea);
-}
-
-.admin-email-tpl:last-child {
-  border-bottom: 0;
-}
-
-.admin-email-tpl-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
 .admin-email-tpl-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.admin-email-subject {
-  margin: 0;
-  font-size: 0.8rem;
-  white-space: pre-wrap;
-  color: var(--admin-muted);
-}
-
-.admin-email-preview {
-  width: 100%;
-  min-height: 320px;
-  margin-top: 10px;
-  border: 1px solid var(--admin-border, #ece7ea);
-  border-radius: 10px;
-  background: #fff;
-}
-
-.admin-email-preview.hidden,
 .hidden {
   display: none !important;
 }

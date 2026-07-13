@@ -81,6 +81,8 @@ export default async function handler(req, res) {
       email: normalizedEmail,
       name,
       line: mapped.line,
+      tier: mapped.tier,
+      product,
     });
 
     await logRef.set({
