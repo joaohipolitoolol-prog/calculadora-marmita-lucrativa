@@ -559,6 +559,65 @@ function renderQuizStepsChart(steps) {
     .join('');
 }
 
+function formatLeadWhen(iso) {
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return escapeHtml(String(iso));
+    return escapeHtml(
+      d.toLocaleString(undefined, {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    );
+  } catch {
+    return escapeHtml(String(iso));
+  }
+}
+
+function formatLeadAnswers(answers = {}) {
+  const parts = ['experience', 'blocker', 'channel', 'start', 'victory']
+    .map((k) => answers[k])
+    .filter(Boolean);
+  return parts.length ? escapeHtml(parts.join(' · ')) : '—';
+}
+
+export function renderDiagnosticoLeadsTable(leads) {
+  if (!leads?.length) {
+    return `<p class="admin-table-empty">${t('funnel.leadsEmpty')}</p>`;
+  }
+  const rows = leads
+    .map((lead) => {
+      const name = lead.skipped || !lead.name
+        ? `<em class="admin-lead-skipped">${t('funnel.leadsSkipped')}</em>`
+        : `<strong>${escapeHtml(lead.name)}</strong>`;
+      return `
+      <tr>
+        <td>${name}</td>
+        <td><code>${escapeHtml(lead.diagnosisId || '—')}</code></td>
+        <td class="admin-lead-answers">${formatLeadAnswers(lead.answers)}</td>
+        <td>${formatLeadWhen(lead.createdAt)}</td>
+      </tr>`;
+    })
+    .join('');
+  return `
+    <div class="admin-table-wrap">
+      <table class="admin-table admin-leads-table">
+        <thead>
+          <tr>
+            <th>${t('funnel.leadsColName')}</th>
+            <th>${t('funnel.leadsColDiag')}</th>
+            <th>${t('funnel.leadsColAnswers')}</th>
+            <th>${t('funnel.leadsColWhen')}</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
 function renderCollapsibleCard({ id, title, hint = '', body, collapsed = true, accent = false }) {
   const open = collapsed ? '' : 'open';
   return `
@@ -671,7 +730,13 @@ function renderAbConfigCard(entry, dirty) {
   });
 }
 
-export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft = null, dateRange = 'today') {
+export function renderFunnelView(
+  analytics,
+  lineFilter = 'paletas',
+  funnelDraft = null,
+  dateRange = 'today',
+  diagnosticoLeads = null,
+) {
   if (!analytics) {
     return `<div class="admin-card"><div class="admin-card-body"><p class="admin-table-empty">${t('analytics.loading')}</p></div></div>`;
   }
@@ -811,7 +876,14 @@ export function renderFunnelView(analytics, lineFilter = 'paletas', funnelDraft 
             </div>`,
           collapsed: false,
         })}
-      </div>`
+      </div>
+      ${renderCollapsibleCard({
+        id: 'quiz-leads',
+        title: t('funnel.leads'),
+        hint: t('funnel.leadsHint'),
+        body: renderDiagnosticoLeadsTable(diagnosticoLeads),
+        collapsed: false,
+      })}`
         : ''
     }
 
@@ -1842,6 +1914,7 @@ export function renderShell(props) {
     contentDraft = null,
     funnelDraft = null,
     dateRange = 'today',
+    diagnosticoLeads = null,
     emailFilter = 'paletas',
     emailProduct = 'paletas_kit',
     emailDevice = 'mobile',
@@ -1859,7 +1932,13 @@ export function renderShell(props) {
       content = renderUsersView(users, selectedIds, userFilter, userSearch);
       break;
     case 'funnel':
-      content = renderFunnelView(analytics, lineFilter, funnelDraft, dateRange);
+      content = renderFunnelView(
+        analytics,
+        lineFilter,
+        funnelDraft,
+        dateRange,
+        diagnosticoLeads,
+      );
       break;
     case 'analytics':
       content = renderAnalyticsView(analytics, lineFilter, users);

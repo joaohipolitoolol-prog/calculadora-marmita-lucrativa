@@ -147,19 +147,22 @@ export function publicDwell(raw = {}) {
   return out;
 }
 
+/**
+ * Drop % and bar width use the period count (`.today`), which matches the
+ * highlighted number in the admin UI. `.total` stays as historical context.
+ */
 export function buildStepDropoff(steps) {
   const list = steps || [];
   if (!list.length) return [];
-  const maxTotal = Math.max(...list.map((s) => s.total || 0), 1);
+  const maxPeriod = Math.max(...list.map((s) => s.today || 0), 1);
   return list.map((step, i) => {
-    const prev = i > 0 ? list[i - 1].total || 0 : step.total || 0;
+    const curr = Number(step.today) || 0;
+    const prev = i > 0 ? Number(list[i - 1].today) || 0 : curr;
     const drop =
-      i > 0 && prev > 0
-        ? Math.round(((prev - (step.total || 0)) / prev) * 1000) / 10
-        : 0;
+      i > 0 && prev > 0 ? Math.round(((prev - curr) / prev) * 1000) / 10 : 0;
     return {
       ...step,
-      pctOfMax: Math.round(((step.total || 0) / maxTotal) * 100),
+      pctOfMax: Math.round((curr / maxPeriod) * 100),
       dropFromPrev: Math.max(0, drop),
     };
   });

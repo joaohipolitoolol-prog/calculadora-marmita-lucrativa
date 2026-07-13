@@ -15,6 +15,7 @@ import {
   createAdminUser,
   deleteUserAccount,
   fetchAdminAnalytics,
+  fetchAdminDiagnosticoLeads,
   fetchAdminEmailActivity,
   fetchAdminSettings,
   fetchAdminUsers,
@@ -68,6 +69,7 @@ const state = {
   usersCache: [],
   codesCache: [],
   analyticsCache: null,
+  diagnosticoLeads: null,
   activeTab: 'dashboard',
   kiwifySubTab: 'urls',
   userSearch: '',
@@ -148,6 +150,7 @@ function paint() {
     contentDraft: state.contentDraft,
     funnelDraft: state.funnelDraft,
     dateRange: state.dateRange,
+    diagnosticoLeads: state.diagnosticoLeads,
     emailFilter: state.emailFilter,
     emailProduct: state.emailProduct,
     emailDevice: state.emailDevice,
@@ -339,6 +342,13 @@ async function loadAnalytics() {
       state.dateRange || 'today',
     );
     setApiWarning('analytics', null);
+    try {
+      const leadData = await fetchAdminDiagnosticoLeads(token, 80);
+      state.diagnosticoLeads = leadData.leads || [];
+    } catch (leadErr) {
+      console.warn('[admin] diagnostico leads:', leadErr);
+      state.diagnosticoLeads = state.diagnosticoLeads || [];
+    }
   } catch (error) {
     console.warn('[admin] analytics API:', error);
     state.analyticsCache = {

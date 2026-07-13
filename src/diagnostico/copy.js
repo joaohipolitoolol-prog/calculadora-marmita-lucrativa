@@ -496,7 +496,7 @@ export function buildScreen(id, answers, diagnosisId, meta = {}) {
       placeholder: 'Tu nombre',
       cta: 'Ver mi diagnóstico',
       skip: 'Prefiero seguir sin nombre',
-      micro: 'Opcional · Solo se usa en este diagnóstico',
+      micro: 'Opcional · Nos ayuda a personalizar tu diagnóstico',
     },
 
     loading: {

@@ -84,5 +84,10 @@ service cloud.firestore {
       allow read: if isAdmin();
       allow write: if false;
     }
+
+    // Server-only (Admin SDK via /api/diagnostico/lead and /api/admin/diagnostico-leads).
+    match /diagnostico_leads/{leadId} {
+      allow read, write: if false;
+    }
   }
 }

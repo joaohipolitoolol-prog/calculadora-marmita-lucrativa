@@ -2445,6 +2445,24 @@ body {
   margin-bottom: 8px;
 }
 
+.admin-leads-table td,
+.admin-leads-table th {
+  white-space: nowrap;
+}
+
+.admin-leads-table .admin-lead-answers {
+  white-space: normal;
+  max-width: 280px;
+  font-size: 0.82rem;
+  color: var(--admin-muted, #6b5a60);
+}
+
+.admin-lead-skipped {
+  color: var(--admin-muted, #6b5a60);
+  font-style: italic;
+  font-weight: 500;
+}
+
 .admin-funnel-kpi small {
   font-size: 0.65rem;
   line-height: 1.3;

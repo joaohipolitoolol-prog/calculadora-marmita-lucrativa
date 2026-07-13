@@ -66,6 +66,7 @@ export function createDiagnostico(root) {
     trackedProgress50: false,
     trackedComplete: false,
     trackedViewOffer: false,
+    leadSaved: false,
   };
 
   const els = {
@@ -353,13 +354,16 @@ export function createDiagnostico(root) {
       nameForm.addEventListener('submit', (e) => {
         e.preventDefault();
         if (state.transitioning) return;
-        state.answers.name = formatFirstName(input?.value || '');
+        const name = formatFirstName(input?.value || '');
+        state.answers.name = name;
+        saveDiagnosticoLead({ skipped: !name });
         goNext();
       });
 
       els.stage.querySelector('[data-name-skip]')?.addEventListener('click', () => {
         if (state.transitioning) return;
         state.answers.name = '';
+        saveDiagnosticoLead({ skipped: true });
         goNext();
       });
     }
@@ -386,6 +390,39 @@ export function createDiagnostico(root) {
       .split(/\s+/)[0];
     if (!part) return '';
     return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+  }
+
+  function saveDiagnosticoLead({ skipped }) {
+    if (state.leadSaved) return;
+    state.leadSaved = true;
+    const diagnosisId = computeDiagnosis(state.answers);
+    const payload = {
+      name: skipped ? '' : state.answers.name || '',
+      skipped: Boolean(skipped),
+      diagnosisId,
+      answers: {
+        experience: state.answers.experience || '',
+        blocker: state.answers.blocker || '',
+        channel: state.answers.channel || '',
+        start: state.answers.start || '',
+        victory: state.answers.victory || '',
+      },
+    };
+    try {
+      const body = JSON.stringify(payload);
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        const blob = new Blob([body], { type: 'application/json' });
+        if (navigator.sendBeacon('/api/diagnostico/lead', blob)) return;
+      }
+    } catch {
+      /* fall through */
+    }
+    fetch('/api/diagnostico/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {});
   }
 
   async function runLoading() {

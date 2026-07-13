@@ -55,3 +55,8 @@ export async function fetchAdminEmailActivity(idToken, limit = 60) {
   const qs = limit ? `?limit=${encodeURIComponent(limit)}` : '';
   return adminFetch(idToken, `/api/admin/email-activity${qs}`, { method: 'GET' });
 }
+
+export async function fetchAdminDiagnosticoLeads(idToken, limit = 80) {
+  const qs = limit ? `?limit=${encodeURIComponent(limit)}` : '';
+  return adminFetch(idToken, `/api/admin/diagnostico-leads${qs}`, { method: 'GET' });
+}
