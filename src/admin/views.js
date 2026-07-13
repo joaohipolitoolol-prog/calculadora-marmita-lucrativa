@@ -1290,6 +1290,7 @@ export function renderEmailsView(users = [], emailFilter = 'paletas', emailProdu
     : 'paletas_kit';
   const previewName = 'María';
   const active = getAdminEmailTemplate(activeProduct, previewName);
+  const fromLabel = active.meta?.brandLine || 'Paletas para WhatsApp';
 
   const lineForUser = (u) => {
     if (emailFilter === 'postres') return 'postres';
@@ -1317,82 +1318,74 @@ export function renderEmailsView(users = [], emailFilter = 'paletas', emailProdu
   return `
     <div class="admin-content-stack">
       <div class="admin-email-studio">
-        <div class="admin-email-studio-controls">
-          <div class="admin-card admin-card-accent">
-            <div class="admin-card-head">
-              <div>
-                <h2>${t('emails.studioTitle')}</h2>
-                <p class="admin-hint">${t('emails.studioHint')}</p>
-              </div>
+        <aside class="admin-email-rail">
+          <div class="admin-email-rail-head">
+            <h2>${t('emails.studioTitle')}</h2>
+            <p>${t('emails.studioHint')}</p>
+          </div>
+
+          <div class="admin-email-tpl-list" role="list">
+            ${templates
+              .map(
+                (tpl) => `
+              <button type="button" class="admin-email-tpl-card ${activeProduct === tpl.id ? 'active' : ''}" data-email-product="${tpl.id}" role="listitem">
+                <span class="admin-email-tpl-dot" style="background:${escapeHtml(tpl.meta?.accent || '#E8437A')}"></span>
+                <span class="admin-email-tpl-copy">
+                  <strong>${t(tpl.labelKey)}</strong>
+                  <small>${escapeHtml(tpl.subject)}</small>
+                </span>
+              </button>`
+              )
+              .join('')}
+          </div>
+
+          <div class="admin-email-rail-actions">
+            <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(active.subject)}">${t('emails.copySubject')}</button>
+            <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(active.plain)}">${t('emails.copyPlain')}</button>
+            <button type="button" class="admin-btn sm ghost" data-copy-html-live>${t('emails.copyHtml')}</button>
+          </div>
+
+          <textarea class="hidden" data-email-html-live hidden readonly>${escapeHtml(active.html)}</textarea>
+
+          <form class="admin-emails-send-form admin-email-send-panel" data-email-send-form>
+            <p class="admin-email-send-label">${t('emails.sendTitle')}</p>
+            <label class="admin-field">
+              <span>${t('emails.previewName')}</span>
+              <input type="text" value="${escapeHtml(previewName)}" data-email-preview-name placeholder="María">
+            </label>
+            <label class="admin-field">
+              <span>${t('emails.email')}</span>
+              <input type="email" name="email" required placeholder="cliente@email.com" data-email-to>
+            </label>
+            <label class="admin-field">
+              <span>${t('emails.name')}</span>
+              <input type="text" name="name" placeholder="María" data-email-name>
+            </label>
+            <input type="hidden" data-email-product-field value="${escapeHtml(activeProduct)}">
+            <button type="submit" class="admin-btn primary">${t('emails.send')}</button>
+          </form>
+        </aside>
+
+        <section class="admin-email-client">
+          <div class="admin-email-client-bar">
+            <div class="admin-email-client-meta">
+              <div><span>De</span><strong data-email-live-from>${escapeHtml(fromLabel)}</strong></div>
+              <div><span>${t('emails.subject')}</span><strong data-email-live-subject>${escapeHtml(active.subject)}</strong></div>
             </div>
-            <div class="admin-card-body">
-              <div class="admin-line-filter" role="group" aria-label="Templates">
-                ${templates
-                  .map(
-                    (tpl) => `
-                  <button type="button" class="admin-line-chip ${activeProduct === tpl.id ? 'active' : ''}" data-email-product="${tpl.id}">
-                    ${t(tpl.labelKey)}
-                  </button>`
-                  )
-                  .join('')}
-              </div>
-
-              <div class="admin-email-subject-bar">
-                <span>${t('emails.subject')}</span>
-                <strong data-email-live-subject>${escapeHtml(active.subject)}</strong>
-              </div>
-
-              <div class="admin-email-tpl-actions" style="margin:12px 0">
-                <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(active.subject)}">${t('emails.copySubject')}</button>
-                <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(active.plain)}">${t('emails.copyPlain')}</button>
-                <button type="button" class="admin-btn sm ghost" data-copy-html-live>${t('emails.copyHtml')}</button>
-              </div>
-
-              <textarea class="hidden" data-email-html-live hidden readonly>${escapeHtml(active.html)}</textarea>
-
-              <form class="admin-emails-send-form" data-email-send-form>
-                <label class="admin-field">
-                  <span>${t('emails.previewName')}</span>
-                  <input type="text" value="${escapeHtml(previewName)}" data-email-preview-name placeholder="María">
-                </label>
-                <label class="admin-field">
-                  <span>${t('emails.email')}</span>
-                  <input type="email" name="email" required placeholder="cliente@email.com" data-email-to>
-                </label>
-                <label class="admin-field">
-                  <span>${t('emails.name')}</span>
-                  <input type="text" name="name" placeholder="María" data-email-name>
-                </label>
-                <input type="hidden" data-email-product-field value="${escapeHtml(activeProduct)}">
-                <button type="submit" class="admin-btn primary">${t('emails.send')}</button>
-              </form>
-              <p class="admin-hint" style="margin-top:10px">${t('emails.sendExactHint')}</p>
+            <div class="admin-email-device" role="group">
+              <button type="button" class="admin-line-chip active" data-email-device="mobile">Mobile</button>
+              <button type="button" class="admin-line-chip" data-email-device="desktop">Desktop</button>
             </div>
           </div>
-        </div>
-
-        <div class="admin-email-studio-preview">
-          <div class="admin-card">
-            <div class="admin-card-head">
-              <div>
-                <h2>${t('emails.preview')}</h2>
-                <p class="admin-hint">${t('emails.previewLiveHint')}</p>
-              </div>
-              <div class="admin-email-device" role="group">
-                <button type="button" class="admin-line-chip active" data-email-device="mobile">Mobile</button>
-                <button type="button" class="admin-line-chip" data-email-device="desktop">Desktop</button>
-              </div>
-            </div>
-            <div class="admin-card-body admin-email-preview-wrap" data-email-device-frame="mobile">
-              <iframe
-                class="admin-email-preview-frame"
-                data-email-preview-live
-                title="Email preview"
-                sandbox=""
-              ></iframe>
-            </div>
+          <div class="admin-email-preview-wrap" data-email-device-frame="mobile">
+            <iframe
+              class="admin-email-preview-frame"
+              data-email-preview-live
+              title="Email preview"
+              sandbox=""
+            ></iframe>
           </div>
-        </div>
+        </section>
       </div>
 
       ${renderCollapsibleCard({

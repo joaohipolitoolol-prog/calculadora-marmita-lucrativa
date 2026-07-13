@@ -558,6 +558,8 @@ function bindEvents() {
     store.value = built.html;
     const subjectEl = root.querySelector('[data-email-live-subject]');
     if (subjectEl) subjectEl.textContent = built.subject;
+    const fromEl = root.querySelector('[data-email-live-from]');
+    if (fromEl && built.meta?.brandLine) fromEl.textContent = built.meta.brandLine;
     frame.srcdoc = built.html;
   }
 
