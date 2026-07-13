@@ -228,6 +228,7 @@ export default async function handler(req, res) {
         status: 'duplicate',
         ab: abVariant,
         emailSent: false,
+        lockId: claim.transactionId || null,
         createdAt: FieldValue.serverTimestamp(),
       });
       return res.status(200).json({
@@ -237,6 +238,21 @@ export default async function handler(req, res) {
         transaction: productInfo.transaction || null,
         product: resolved.product,
         firstEvent: claim.existing?.firstEvent || null,
+      });
+    }
+
+    if (claim.skippedLock) {
+      console.warn('[hotmart] processed WITHOUT lock — missing transaction and fallback', {
+        email: buyer.email,
+        product: resolved.product,
+        event,
+      });
+    }
+    if (claim.usedFallback) {
+      console.warn('[hotmart] lock used email|product|day fallback (no transaction id)', {
+        email: buyer.email,
+        product: resolved.product,
+        lockId: claim.transactionId,
       });
     }
 
