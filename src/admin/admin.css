@@ -592,6 +592,12 @@ body {
   border-color: rgba(245, 158, 11, 0.2);
 }
 
+.admin-pill.danger {
+  background: #fde8e8;
+  color: #a11b1b;
+  border-color: rgba(185, 28, 28, 0.2);
+}
+
 .admin-pill.muted {
   background: var(--gray-light);
   color: var(--gray);
@@ -2005,6 +2011,11 @@ body {
   color: var(--admin-accent);
 }
 
+.admin-status-pill.is-warn {
+  background: #fff3d6;
+  color: #8a6200;
+}
+
 .admin-save-bar {
   position: sticky;
   bottom: 12px;
@@ -2738,6 +2749,118 @@ body {
   font-size: 0.9rem;
   line-height: 1.55;
   color: var(--admin-text);
+}
+
+.admin-email-tabs {
+  margin-bottom: 4px;
+}
+
+.admin-email-auto-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  border: 1px solid var(--admin-border);
+}
+
+.admin-email-auto-banner.is-ready {
+  background: #eef8f1;
+  border-color: #c5e5cf;
+}
+
+.admin-email-auto-banner.is-warn {
+  background: #fff8eb;
+  border-color: #f0dfb8;
+}
+
+.admin-email-auto-banner strong {
+  font-size: 0.95rem;
+}
+
+.admin-email-auto-banner span {
+  font-size: 0.78rem;
+  color: var(--admin-muted);
+  word-break: break-all;
+}
+
+.admin-email-cfg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.admin-email-cfg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.admin-email-cfg span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--admin-muted);
+}
+
+.admin-email-cfg small {
+  font-size: 0.72rem;
+  color: var(--admin-muted);
+  line-height: 1.35;
+}
+
+.admin-email-send-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.admin-email-bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  background: #faf7f5;
+}
+
+.admin-email-bulk-template {
+  min-width: 220px;
+  flex: 1;
+}
+
+.admin-email-bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-email-send-inline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.admin-email-send-inline .admin-btn {
+  height: 42px;
+}
+
+@media (max-width: 800px) {
+  .admin-email-cfg-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .admin-emails-steps li + li {

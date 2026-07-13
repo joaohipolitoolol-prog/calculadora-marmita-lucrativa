@@ -195,6 +195,7 @@ export default async function handler(req, res) {
       line: resolved.line,
       tier: resolved.tier,
       product: resolved.product,
+      source: 'hotmart_webhook',
     });
 
     if (resolved.line === 'paletas' && abVariant) {

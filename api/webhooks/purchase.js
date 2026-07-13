@@ -83,6 +83,7 @@ export default async function handler(req, res) {
       line: mapped.line,
       tier: mapped.tier,
       product,
+      source: 'purchase_webhook',
     });
 
     await logRef.set({

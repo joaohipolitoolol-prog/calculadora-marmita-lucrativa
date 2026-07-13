@@ -15,6 +15,7 @@ import {
   createAdminUser,
   deleteUserAccount,
   fetchAdminAnalytics,
+  fetchAdminEmailActivity,
   fetchAdminSettings,
   fetchAdminUsers,
   saveAdminSettings,
@@ -89,6 +90,11 @@ const state = {
   emailFilter: 'paletas',
   emailProduct: 'paletas_kit',
   emailDevice: 'mobile',
+  emailSubTab: 'auto',
+  emailActivity: null,
+  emailSelectedIds: new Set(),
+  emailUserSearch: '',
+  emailBulkProduct: 'auto',
   settingsLoadError: null,
 };
 
@@ -145,6 +151,11 @@ function paint() {
     emailFilter: state.emailFilter,
     emailProduct: state.emailProduct,
     emailDevice: state.emailDevice,
+    emailSubTab: state.emailSubTab,
+    emailActivity: state.emailActivity,
+    emailSelectedIds: state.emailSelectedIds,
+    emailUserSearch: state.emailUserSearch,
+    emailBulkProduct: state.emailBulkProduct,
     settingsLoadError: state.settingsLoadError,
   });
   bindEvents();
@@ -348,6 +359,23 @@ async function loadAnalytics() {
   }
 }
 
+async function loadEmailActivity() {
+  try {
+    const token = await state.currentAdminUser.getIdToken();
+    state.emailActivity = await fetchAdminEmailActivity(token);
+    setApiWarning('emailActivity', null);
+  } catch (error) {
+    console.warn('[admin] email activity:', error);
+    if (!state.emailActivity) {
+      state.emailActivity = { config: null, stats: null, activity: [] };
+    }
+    setApiWarning(
+      'emailActivity',
+      isFirebaseAdminError(error?.message) ? 'firebaseAdmin' : error?.message || 'emailActivity'
+    );
+  }
+}
+
 async function refreshAll() {
   await loadUsers();
   if (state.activeTab === 'codes') {
@@ -364,6 +392,9 @@ async function refreshAll() {
     state.activeTab === 'funnel'
   ) {
     await loadAnalytics();
+  }
+  if (state.activeTab === 'emails') {
+    await loadEmailActivity();
   }
   paint();
 }
@@ -486,6 +517,9 @@ function bindEvents() {
       ) {
         await loadAnalytics();
       }
+      if (state.activeTab === 'emails') {
+        await loadEmailActivity();
+      }
       paint();
     });
   });
@@ -551,6 +585,135 @@ function bindEvents() {
     });
   });
 
+  root.querySelectorAll('[data-email-sub]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      state.emailSubTab = btn.dataset.emailSub || 'auto';
+      if (state.emailSubTab === 'auto') {
+        await loadEmailActivity();
+      }
+      paint();
+    });
+  });
+
+  root.querySelector('[data-email-refresh-activity]')?.addEventListener('click', async () => {
+    const btn = root.querySelector('[data-email-refresh-activity]');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = t('emails.refreshing');
+    }
+    await loadEmailActivity();
+    paint();
+  });
+
+  function emailProductForUser(u) {
+    if (state.emailFilter === 'postres' || (u.hasPostres && !u.hasKit && !u.hasPremium)) {
+      return u.hasPostresPremium && !u.hasPostres ? 'postres_premium' : 'postres_kit';
+    }
+    if (u.hasPostres && !u.hasKit) {
+      return u.hasPostresPremium ? 'postres_premium' : 'postres_kit';
+    }
+    return u.hasPremium && !u.hasKit ? 'paletas_premium' : 'paletas_kit';
+  }
+
+  let emailSearchTimer = null;
+  root.querySelector('[data-email-user-search]')?.addEventListener('input', (event) => {
+    const value = event.target.value || '';
+    clearTimeout(emailSearchTimer);
+    emailSearchTimer = setTimeout(() => {
+      state.emailUserSearch = value;
+      paint();
+    }, 200);
+  });
+
+  root.querySelector('[data-email-bulk-product]')?.addEventListener('change', (event) => {
+    state.emailBulkProduct = event.target.value || 'auto';
+  });
+
+  root.querySelectorAll('[data-email-select]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const id = input.dataset.emailSelect;
+      if (!id) return;
+      if (input.checked) state.emailSelectedIds.add(id);
+      else state.emailSelectedIds.delete(id);
+      paint();
+    });
+  });
+
+  const selectVisible = () => {
+    root.querySelectorAll('[data-email-select]').forEach((input) => {
+      const id = input.dataset.emailSelect;
+      if (id) state.emailSelectedIds.add(id);
+    });
+    paint();
+  };
+
+  root.querySelector('[data-email-select-visible]')?.addEventListener('click', selectVisible);
+  root.querySelector('[data-email-toggle-visible]')?.addEventListener('change', (event) => {
+    if (event.target.checked) selectVisible();
+    else {
+      root.querySelectorAll('[data-email-select]').forEach((input) => {
+        const id = input.dataset.emailSelect;
+        if (id) state.emailSelectedIds.delete(id);
+      });
+      paint();
+    }
+  });
+
+  root.querySelector('[data-email-clear-selection]')?.addEventListener('click', () => {
+    state.emailSelectedIds.clear();
+    paint();
+  });
+
+  root.querySelector('[data-email-send-selected]')?.addEventListener('click', async () => {
+    const ids = [...state.emailSelectedIds];
+    const targets = ids
+      .map((id) => state.usersCache.find((u) => u.id === id))
+      .filter((u) => u?.email);
+    if (!targets.length) return;
+
+    const btn = root.querySelector('[data-email-send-selected]');
+    const forced =
+      state.emailBulkProduct && state.emailBulkProduct !== 'auto'
+        ? state.emailBulkProduct
+        : null;
+    let ok = 0;
+    let fail = 0;
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = t('emails.bulkProgress')
+        .replace('{done}', '0')
+        .replace('{total}', String(targets.length));
+    }
+
+    const token = await state.currentAdminUser.getIdToken();
+    for (let i = 0; i < targets.length; i += 1) {
+      const u = targets[i];
+      const product = forced || emailProductForUser(u);
+      if (btn) {
+        btn.textContent = t('emails.bulkProgress')
+          .replace('{done}', String(i + 1))
+          .replace('{total}', String(targets.length));
+      }
+      try {
+        await sendWelcomeEmail(token, {
+          email: u.email,
+          name: u.displayName || '',
+          product,
+        });
+        ok += 1;
+      } catch {
+        fail += 1;
+      }
+    }
+
+    showToast(
+      t('emails.bulkDone').replace('{ok}', String(ok)).replace('{fail}', String(fail))
+    );
+    state.emailSelectedIds.clear();
+    await loadEmailActivity();
+    paint();
+  });
+
   function fitEmailPreviewFrame(frame) {
     if (!frame) return;
     const apply = () => {
@@ -589,7 +752,7 @@ function bindEvents() {
     fitEmailPreviewFrame(frame);
   }
 
-  if (state.activeTab === 'emails') {
+  if (state.activeTab === 'emails' && state.emailSubTab === 'templates') {
     refreshEmailPreview();
   }
 
@@ -630,6 +793,7 @@ function bindEvents() {
       const token = await state.currentAdminUser.getIdToken();
       await sendWelcomeEmail(token, { email, name, product });
       showToast(t('emails.sent'));
+      await loadEmailActivity();
     } catch (error) {
       showToast(error?.message || t('emails.sendError'));
     }
@@ -643,13 +807,18 @@ function bindEvents() {
     btn.addEventListener('click', async () => {
       const email = btn.dataset.email;
       const name = btn.dataset.name || '';
-      const product = btn.dataset.product || 'paletas_kit';
+      const forced =
+        state.emailBulkProduct && state.emailBulkProduct !== 'auto'
+          ? state.emailBulkProduct
+          : null;
+      const product = forced || btn.dataset.product || 'paletas_kit';
       if (!email) return;
       btn.disabled = true;
       try {
         const token = await state.currentAdminUser.getIdToken();
         await sendWelcomeEmail(token, { email, name, product });
         showToast(t('emails.sent'));
+        await loadEmailActivity();
       } catch (error) {
         showToast(error?.message || t('emails.sendError'));
       }

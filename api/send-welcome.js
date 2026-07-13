@@ -14,7 +14,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'email es obligatorio' });
     }
 
-    const result = await sendWelcomeEmailServer({ email, name, line, tier, product });
+    const result = await sendWelcomeEmailServer({
+      email,
+      name,
+      line,
+      tier,
+      product,
+      source: 'admin_manual',
+    });
     if (!result.ok) {
       const status = result.error?.includes('RESEND_API_KEY') ? 503 : 500;
       return res.status(status).json({ error: result.error });

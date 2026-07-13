@@ -4,12 +4,13 @@ import {
   normalizeEmailProduct,
 } from './welcome-email.js';
 import { BRAND_NAME } from '../../src/site/brand.js';
+import { getFirebaseAdmin, FieldValue } from './firebase-admin.js';
 
 /**
  * Send purchase/welcome email via Resend.
  * Safe to call from admin API or purchase webhooks.
  *
- * @param {{ email: string, name?: string, line?: string, tier?: string, product?: string }} opts
+ * @param {{ email: string, name?: string, line?: string, tier?: string, product?: string, source?: string }} opts
  */
 export async function sendWelcomeEmailServer({
   email,
@@ -17,6 +18,7 @@ export async function sendWelcomeEmailServer({
   line = 'paletas',
   tier = 'kit',
   product = null,
+  source = 'unknown',
 } = {}) {
   if (!email) {
     return { ok: false, error: 'email es obligatorio' };
@@ -30,18 +32,39 @@ export async function sendWelcomeEmailServer({
   const from = process.env.RESEND_FROM_EMAIL || `${BRAND_NAME} <onboarding@resend.dev>`;
   const productId = normalizeEmailProduct({ product, line, tier });
   const built = buildTransactionalEmail(name, siteUrl, { product: productId });
+  const to = String(email).trim().toLowerCase();
 
   const { error, data } = await resend.emails.send({
     from,
-    to: String(email).trim().toLowerCase(),
+    to,
     subject: built.subject,
     html: built.html,
     text: built.plain,
   });
 
-  if (error) {
-    return { ok: false, error: error.message || 'Error al enviar email', product: productId };
+  const result = error
+    ? { ok: false, error: error.message || 'Error al enviar email', product: productId }
+    : { ok: true, id: data?.id || null, product: productId };
+
+  try {
+    const firebaseAdmin = getFirebaseAdmin();
+    if (firebaseAdmin) {
+      await firebaseAdmin.firestore().collection('email_send_log').add({
+        email: to,
+        name: String(name || '').trim() || null,
+        product: productId,
+        line: built.line,
+        tier: built.tier,
+        source: String(source || 'unknown'),
+        ok: Boolean(result.ok),
+        error: result.ok ? null : result.error || null,
+        resendId: result.id || null,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+  } catch (logErr) {
+    console.warn('[email] send log failed', logErr?.message || logErr);
   }
 
-  return { ok: true, id: data?.id || null, product: productId };
+  return result;
 }

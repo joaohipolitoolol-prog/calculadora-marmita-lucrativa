@@ -1288,7 +1288,13 @@ export function renderEmailsView(
   emailFilter = 'paletas',
   emailProduct = 'paletas_kit',
   emailDevice = 'mobile',
+  emailSubTab = 'auto',
+  emailActivity = null,
+  emailSelectedIds = new Set(),
+  emailUserSearch = '',
+  emailBulkProduct = 'auto',
 ) {
+  const sub = ['auto', 'send', 'templates'].includes(emailSubTab) ? emailSubTab : 'auto';
   const templates = listEmailTemplates();
   const activeProduct = templates.some((t) => t.id === emailProduct)
     ? emailProduct
@@ -1298,31 +1304,302 @@ export function renderEmailsView(
   const active = getAdminEmailTemplate(activeProduct, previewName);
   const fromLabel = active.meta?.brandLine || 'Paletas para WhatsApp';
 
-  const lineForUser = (u) => {
-    if (emailFilter === 'postres') return 'postres';
-    if (u.hasPostres && !u.hasKit) return 'postres';
-    return 'paletas';
-  };
   const productForUser = (u) => {
-    const line = lineForUser(u);
-    if (line === 'postres') {
+    if (emailFilter === 'postres' || (u.hasPostres && !u.hasKit && !u.hasPremium)) {
       return u.hasPostresPremium && !u.hasPostres ? 'postres_premium' : 'postres_kit';
+    }
+    if (u.hasPostres && !u.hasKit) {
+      return u.hasPostresPremium ? 'postres_premium' : 'postres_kit';
     }
     return u.hasPremium && !u.hasKit ? 'paletas_premium' : 'paletas_kit';
   };
 
+  const q = String(emailUserSearch || '').trim().toLowerCase();
   const filtered = users
     .filter((u) => {
       if (!u.email) return false;
       if (emailFilter === 'postres') return u.hasPostres || u.hasPostresPremium;
       if (emailFilter === 'pending') return profileStatus(u) === 'pending_kit';
       if (emailFilter === 'premium') return u.hasPremium || u.hasPostresPremium;
+      if (emailFilter === 'all') return true;
       return u.hasKit || u.hasPremium;
     })
-    .slice(0, 40);
+    .filter((u) => {
+      if (!q) return true;
+      return (
+        String(u.email || '').toLowerCase().includes(q) ||
+        String(u.displayName || '').toLowerCase().includes(q)
+      );
+    })
+    .slice(0, 80);
 
-  return `
-    <div class="admin-content-stack">
+  const selectedCount = [...emailSelectedIds].filter((id) =>
+    users.some((u) => u.id === id && u.email)
+  ).length;
+
+  const tabs = `
+    <div class="admin-tabs admin-email-tabs" role="tablist">
+      <button type="button" class="admin-tab ${sub === 'auto' ? 'active' : ''}" data-email-sub="auto">${t('emails.tabAuto')}</button>
+      <button type="button" class="admin-tab ${sub === 'send' ? 'active' : ''}" data-email-sub="send">${t('emails.tabSend')}</button>
+      <button type="button" class="admin-tab ${sub === 'templates' ? 'active' : ''}" data-email-sub="templates">${t('emails.tabTemplates')}</button>
+    </div>
+  `;
+
+  const cfg = emailActivity?.config;
+  const stats = emailActivity?.stats;
+  const activity = emailActivity?.activity || [];
+
+  const cfgPill = (ok, warn = false) =>
+    ok
+      ? `<span class="admin-status-pill is-on">${t('emails.cfgOk')}</span>`
+      : `<span class="admin-status-pill ${warn ? 'is-warn' : ''}">${t('emails.cfgMissing')}</span>`;
+
+  const statusCell = (row) => {
+    if (row.emailSent) {
+      return `<span class="admin-pill active">${t('emails.statusSent')}</span>`;
+    }
+    if (row.emailError) {
+      return `<span class="admin-pill danger" title="${escapeHtml(row.emailError)}">${t('emails.statusFail')}</span>`;
+    }
+    return `<span class="admin-pill">${t('emails.statusPending')}</span>`;
+  };
+
+  let body = '';
+
+  if (sub === 'auto') {
+    body = `
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('emails.autoTitle')}</h2>
+            <p>${t('emails.autoHint')}</p>
+          </div>
+          <button type="button" class="admin-btn sm ghost" data-email-refresh-activity>${t('emails.refreshActivity')}</button>
+        </div>
+        <div class="admin-card-body">
+          <div class="admin-email-auto-banner ${cfg?.autoReady ? 'is-ready' : 'is-warn'}">
+            <strong>${cfg?.autoReady ? t('emails.autoReady') : t('emails.autoNotReady')}</strong>
+            <span>${escapeHtml(cfg?.webhookUrl || HOTMART_WEBHOOK_URL)}</span>
+          </div>
+          <div class="admin-email-cfg-grid">
+            <div class="admin-email-cfg">
+              <span>${t('emails.cfgResend')}</span>
+              ${cfgPill(Boolean(cfg?.resendConfigured))}
+            </div>
+            <div class="admin-email-cfg">
+              <span>${t('emails.cfgHottok')}</span>
+              ${cfgPill(Boolean(cfg?.hottokConfigured))}
+            </div>
+            <div class="admin-email-cfg">
+              <span>${t('emails.cfgFrom')}</span>
+              ${cfgPill(Boolean(cfg?.from?.configured) && !cfg?.from?.isDevFrom, Boolean(cfg?.from?.isDevFrom))}
+              ${
+                cfg?.from?.isDevFrom
+                  ? `<small>${t('emails.cfgFromDev')}</small>`
+                  : cfg?.from?.fromLabel
+                    ? `<small>${escapeHtml(cfg.from.fromLabel)}</small>`
+                    : ''
+              }
+            </div>
+          </div>
+          <div class="admin-funnel-kpis" style="margin-top:16px">
+            <div class="admin-funnel-kpi"><strong>${stats?.last24h ?? '—'}</strong><span>${t('emails.stat24h')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.sentOk ?? '—'}</strong><span>${t('emails.statOk')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.failed ?? '—'}</strong><span>${t('emails.statFail')}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('emails.activityTitle')}</h2>
+            <p>${t('emails.activityHint')}</p>
+          </div>
+        </div>
+        <div class="admin-card-body flush">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>${t('emails.colWhen')}</th>
+                  <th>${t('emails.colEmail')}</th>
+                  <th>${t('emails.colProduct')}</th>
+                  <th>${t('emails.colSource')}</th>
+                  <th>${t('emails.colStatus')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${
+                  activity.length
+                    ? activity
+                        .map(
+                          (row) => `
+                  <tr>
+                    <td>${formatDateTime(row.createdAt)}</td>
+                    <td>
+                      <strong>${escapeHtml(row.email || '—')}</strong>
+                      ${row.emailError ? `<div class="admin-muted">${escapeHtml(row.emailError)}</div>` : ''}
+                    </td>
+                    <td>${escapeHtml(productLabel(row.product))}</td>
+                    <td>${row.kind === 'manual' ? t('emails.sourceManual') : t('emails.sourcePurchase')}</td>
+                    <td>${statusCell(row)}</td>
+                  </tr>`
+                        )
+                        .join('')
+                    : `<tr><td colspan="5" class="admin-table-empty">${t('emails.noActivity')}</td></tr>`
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      ${renderCollapsibleCard({
+        id: 'emails-hotmart',
+        title: t('emails.hotmartTitle'),
+        hint: t('emails.hotmartHint'),
+        collapsed: true,
+        accent: true,
+        body: `
+          <ol class="admin-emails-steps">
+            <li>${t('emails.hotmartStep1')}</li>
+            <li>
+              ${t('emails.hotmartStep2')}
+              <div class="admin-emails-webhook">
+                <code>${escapeHtml(HOTMART_WEBHOOK_URL)}</code>
+                <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(HOTMART_WEBHOOK_URL)}">${t('emails.copyWebhook')}</button>
+              </div>
+            </li>
+            <li>${t('emails.hotmartStep3')}</li>
+            <li>${t('emails.hotmartStep4')}</li>
+            <li>${t('emails.hotmartStep5')}</li>
+            <li>${t('emails.hotmartStep6')}</li>
+          </ol>
+          <p class="admin-hint">${t('emails.hotmartNote')}</p>
+        `,
+      })}
+    `;
+  } else if (sub === 'send') {
+    body = `
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('emails.bulkTitle')}</h2>
+            <p>${t('emails.bulkHint')}</p>
+          </div>
+        </div>
+        <div class="admin-card-body">
+          <div class="admin-email-send-toolbar">
+            <div class="admin-line-filter" role="group">
+              <button type="button" class="admin-line-chip ${emailFilter === 'all' ? 'active' : ''}" data-email-filter="all">All</button>
+              <button type="button" class="admin-line-chip ${emailFilter === 'paletas' ? 'active' : ''}" data-email-filter="paletas">Paletas</button>
+              <button type="button" class="admin-line-chip ${emailFilter === 'postres' ? 'active' : ''}" data-email-filter="postres">Postres</button>
+              <button type="button" class="admin-line-chip ${emailFilter === 'premium' ? 'active' : ''}" data-email-filter="premium">Premium</button>
+              <button type="button" class="admin-line-chip ${emailFilter === 'pending' ? 'active' : ''}" data-email-filter="pending">${t('filter.pending_kit')}</button>
+            </div>
+            <div class="admin-search">${ICONS.search}<input type="search" data-email-user-search placeholder="${t('emails.searchUsers')}" value="${escapeHtml(emailUserSearch)}" autocomplete="off"></div>
+          </div>
+
+          <div class="admin-email-bulk-bar">
+            <label class="admin-field admin-email-bulk-template">
+              <span>${t('emails.templateForSend')}</span>
+              <select data-email-bulk-product>
+                <option value="auto" ${emailBulkProduct === 'auto' ? 'selected' : ''}>${t('emails.templateAuto')}</option>
+                ${templates
+                  .map(
+                    (tpl) =>
+                      `<option value="${tpl.id}" ${emailBulkProduct === tpl.id ? 'selected' : ''}>${t(tpl.labelKey)}</option>`
+                  )
+                  .join('')}
+              </select>
+            </label>
+            <div class="admin-email-bulk-actions">
+              <span class="admin-muted">${selectedCount} ${t('emails.selectedCount')}</span>
+              <button type="button" class="admin-btn sm ghost" data-email-select-visible>${t('emails.selectAll')}</button>
+              <button type="button" class="admin-btn sm ghost" data-email-clear-selection>${t('emails.clearSelection')}</button>
+              <button type="button" class="admin-btn sm primary" data-email-send-selected ${selectedCount ? '' : 'disabled'}>${t('emails.sendSelected')}</button>
+            </div>
+          </div>
+
+          <div class="admin-table-wrap" style="margin-top:12px">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th class="col-check"><input type="checkbox" data-email-toggle-visible aria-label="${t('emails.selectAll')}"></th>
+                  <th>${t('table.user')}</th>
+                  <th>${t('table.products')}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${
+                  filtered.length
+                    ? filtered
+                        .map((u) => {
+                          const product = productForUser(u);
+                          const checked = emailSelectedIds.has(u.id) ? 'checked' : '';
+                          return `
+                  <tr>
+                    <td class="col-check">
+                      <input type="checkbox" data-email-select="${u.id}" ${checked}>
+                    </td>
+                    <td>
+                      <strong>${escapeHtml(u.displayName || t('table.noName'))}</strong>
+                      <div class="admin-muted">${escapeHtml(u.email || '')}</div>
+                    </td>
+                    <td>${renderProductPills(u)}</td>
+                    <td class="col-actions">
+                      <button type="button" class="admin-btn sm primary" data-email-send-user="${u.id}" data-email="${escapeHtml(u.email || '')}" data-name="${escapeHtml(u.displayName || '')}" data-product="${product}">
+                        ${t('emails.sendToUser')}
+                      </button>
+                    </td>
+                  </tr>`;
+                        })
+                        .join('')
+                    : `<tr><td colspan="4" class="admin-table-empty">${t('emails.noUsers')}</td></tr>`
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <div>
+            <h2>${t('emails.sendTitle')}</h2>
+            <p>${t('emails.sendHint')}</p>
+          </div>
+        </div>
+        <div class="admin-card-body">
+          <form class="admin-emails-send-form admin-email-send-inline" data-email-send-form>
+            <label class="admin-field">
+              <span>${t('emails.email')}</span>
+              <input type="email" name="email" required placeholder="cliente@email.com" data-email-to>
+            </label>
+            <label class="admin-field">
+              <span>${t('emails.name')}</span>
+              <input type="text" name="name" placeholder="María" data-email-name>
+            </label>
+            <label class="admin-field">
+              <span>${t('emails.templateForSend')}</span>
+              <select data-email-product-field>
+                ${templates
+                  .map(
+                    (tpl) =>
+                      `<option value="${tpl.id}" ${activeProduct === tpl.id ? 'selected' : ''}>${t(tpl.labelKey)}</option>`
+                  )
+                  .join('')}
+              </select>
+            </label>
+            <button type="submit" class="admin-btn primary">${t('emails.send')}</button>
+          </form>
+        </div>
+      </div>
+    `;
+  } else {
+    body = `
       <div class="admin-email-studio">
         <aside class="admin-email-rail">
           <div class="admin-email-rail-head">
@@ -1353,23 +1630,10 @@ export function renderEmailsView(
 
           <textarea class="hidden" data-email-html-live hidden readonly>${escapeHtml(active.html)}</textarea>
 
-          <form class="admin-emails-send-form admin-email-send-panel" data-email-send-form>
-            <p class="admin-email-send-label">${t('emails.sendTitle')}</p>
-            <label class="admin-field">
-              <span>${t('emails.previewName')}</span>
-              <input type="text" value="${escapeHtml(previewName)}" data-email-preview-name placeholder="María">
-            </label>
-            <label class="admin-field">
-              <span>${t('emails.email')}</span>
-              <input type="email" name="email" required placeholder="cliente@email.com" data-email-to>
-            </label>
-            <label class="admin-field">
-              <span>${t('emails.name')}</span>
-              <input type="text" name="name" placeholder="María" data-email-name>
-            </label>
-            <input type="hidden" data-email-product-field value="${escapeHtml(activeProduct)}">
-            <button type="submit" class="admin-btn primary">${t('emails.send')}</button>
-          </form>
+          <label class="admin-field" style="margin-top:12px">
+            <span>${t('emails.previewName')}</span>
+            <input type="text" value="${escapeHtml(previewName)}" data-email-preview-name placeholder="María">
+          </label>
         </aside>
 
         <section class="admin-email-client">
@@ -1398,75 +1662,13 @@ export function renderEmailsView(
           </div>
         </section>
       </div>
+    `;
+  }
 
-      ${renderCollapsibleCard({
-        id: 'emails-hotmart',
-        title: t('emails.hotmartTitle'),
-        hint: t('emails.hotmartHint'),
-        collapsed: true,
-        accent: true,
-        body: `
-          <ol class="admin-emails-steps">
-            <li>${t('emails.hotmartStep1')}</li>
-            <li>
-              ${t('emails.hotmartStep2')}
-              <div class="admin-emails-webhook">
-                <code>${escapeHtml(HOTMART_WEBHOOK_URL)}</code>
-                <button type="button" class="admin-btn sm ghost" data-copy="${encodeURIComponent(HOTMART_WEBHOOK_URL)}">${t('emails.copyWebhook')}</button>
-              </div>
-            </li>
-            <li>${t('emails.hotmartStep3')}</li>
-            <li>${t('emails.hotmartStep4')}</li>
-            <li>${t('emails.hotmartStep5')}</li>
-            <li>${t('emails.hotmartStep6')}</li>
-          </ol>
-          <p class="admin-hint">${t('emails.hotmartNote')}</p>
-        `,
-      })}
-
-      ${renderCollapsibleCard({
-        id: 'emails-bulk',
-        title: t('emails.bulkTitle'),
-        hint: t('emails.bulkHint'),
-        collapsed: true,
-        body: `
-          <div class="admin-line-filter" role="group">
-            <button type="button" class="admin-line-chip ${emailFilter === 'paletas' ? 'active' : ''}" data-email-filter="paletas">Paletas</button>
-            <button type="button" class="admin-line-chip ${emailFilter === 'postres' ? 'active' : ''}" data-email-filter="postres">Postres</button>
-            <button type="button" class="admin-line-chip ${emailFilter === 'premium' ? 'active' : ''}" data-email-filter="premium">Premium</button>
-            <button type="button" class="admin-line-chip ${emailFilter === 'pending' ? 'active' : ''}" data-email-filter="pending">${t('filter.pending_kit')}</button>
-          </div>
-          <div class="admin-table-wrap" style="margin-top:12px">
-            <table class="admin-table">
-              <thead><tr><th>${t('table.user')}</th><th>${t('table.products')}</th><th></th></tr></thead>
-              <tbody>
-                ${
-                  filtered.length
-                    ? filtered
-                        .map((u) => {
-                          const product = productForUser(u);
-                          return `
-                  <tr>
-                    <td>
-                      <strong>${escapeHtml(u.displayName || t('table.noName'))}</strong>
-                      <div class="admin-muted">${escapeHtml(u.email || '')}</div>
-                    </td>
-                    <td>${renderProductPills(u)}</td>
-                    <td class="col-actions">
-                      <button type="button" class="admin-btn sm primary" data-email-send-user="${u.id}" data-email="${escapeHtml(u.email || '')}" data-name="${escapeHtml(u.displayName || '')}" data-product="${product}">
-                        ${t('emails.sendToUser')}
-                      </button>
-                    </td>
-                  </tr>`;
-                        })
-                        .join('')
-                    : `<tr><td colspan="3" class="admin-table-empty">${t('emails.noUsers')}</td></tr>`
-                }
-              </tbody>
-            </table>
-          </div>
-        `,
-      })}
+  return `
+    <div class="admin-content-stack">
+      ${tabs}
+      ${body}
     </div>
   `;
 }
@@ -1643,6 +1845,11 @@ export function renderShell(props) {
     emailFilter = 'paletas',
     emailProduct = 'paletas_kit',
     emailDevice = 'mobile',
+    emailSubTab = 'auto',
+    emailActivity = null,
+    emailSelectedIds = new Set(),
+    emailUserSearch = '',
+    emailBulkProduct = 'auto',
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -1658,7 +1865,17 @@ export function renderShell(props) {
       content = renderAnalyticsView(analytics, lineFilter, users);
       break;
     case 'emails':
-      content = renderEmailsView(users, emailFilter, emailProduct, emailDevice);
+      content = renderEmailsView(
+        users,
+        emailFilter,
+        emailProduct,
+        emailDevice,
+        emailSubTab,
+        emailActivity,
+        emailSelectedIds,
+        emailUserSearch,
+        emailBulkProduct,
+      );
       break;
     case 'codes':
       content = renderCodesView(codes);

@@ -50,3 +50,8 @@ export async function saveAdminSettings(idToken, payload) {
 export async function fetchAdminSettings(idToken) {
   return adminFetch(idToken, '/api/admin/settings', { method: 'GET' });
 }
+
+export async function fetchAdminEmailActivity(idToken, limit = 60) {
+  const qs = limit ? `?limit=${encodeURIComponent(limit)}` : '';
+  return adminFetch(idToken, `/api/admin/email-activity${qs}`, { method: 'GET' });
+}
