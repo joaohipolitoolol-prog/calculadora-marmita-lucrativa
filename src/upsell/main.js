@@ -20,7 +20,7 @@ import {
 import { MAIN_PRICE } from '../landing/config.js';
 import { BRAND_KIT } from '../site/brand.js';
 import { fireThankYouPurchase } from '../lib/landing-checkout.js';
-import { markCheckoutPending } from '../lib/meta-pixel.js';
+import { markCheckoutPending, trackMetaInitiateCheckout } from '../lib/meta-pixel.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'paletas' });
@@ -36,15 +36,14 @@ fireThankYouPurchase({
 const isPlaceholder = (url) =>
   !url || url.includes('COLOCAR_LINK') || url === '#';
 
-function trackInitiateCheckout(value, contentName) {
+function trackInitiateCheckout(value, contentName, contentIds) {
   markCheckoutPending('paletas');
-  if (typeof window.fbq === 'function') {
-    window.fbq('track', 'InitiateCheckout', {
-      value,
-      currency: UPSELL_CURRENCY === 'BRL' ? 'BRL' : 'USD',
-      content_name: contentName,
-    });
-  }
+  trackMetaInitiateCheckout({
+    value,
+    currency: UPSELL_CURRENCY === 'BRL' ? 'BRL' : 'USD',
+    contentName,
+    contentIds,
+  });
 }
 
 document.querySelectorAll('[data-scroll-top]').forEach((el) => {
@@ -74,7 +73,8 @@ document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
     }
     trackInitiateCheckout(
       UPSELL_CURRENCY === 'BRL' ? UPSELL_PRICE_BRL : UPSELL_PRICE_USD,
-      'Pack Premium de Combos para WhatsApp'
+      'Pack Premium de Combos para WhatsApp',
+      ['paletas_premium']
     );
     try {
       localStorage.setItem('premium_pending_paletas', '1');
@@ -158,7 +158,9 @@ if (downsellModal) {
     link.dataset.checkout = 'downsell';
     link.dataset.track = link.dataset.track || 'downsell_checkout';
     link.addEventListener('click', () => {
-      trackInitiateCheckout(DOWNSELL_PRICE_USD, 'Mini Pack de Combos para WhatsApp');
+      trackInitiateCheckout(DOWNSELL_PRICE_USD, 'Mini Pack de Combos para WhatsApp', [
+        'paletas_downsell',
+      ]);
     });
   });
 }

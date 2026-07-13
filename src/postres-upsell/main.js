@@ -18,7 +18,7 @@ import {
 } from './config.js';
 import { MAIN_PRICE, PRODUCT_NAME } from '../postres/config.js';
 import { fireThankYouPurchase } from '../lib/landing-checkout.js';
-import { markCheckoutPending } from '../lib/meta-pixel.js';
+import { markCheckoutPending, trackMetaInitiateCheckout } from '../lib/meta-pixel.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'postres' });
@@ -34,15 +34,14 @@ fireThankYouPurchase({
 const isPlaceholder = (url) =>
   !url || url.includes('COLOCAR_LINK') || url === '#';
 
-function trackInitiateCheckout(value, contentName) {
+function trackInitiateCheckout(value, contentName, contentIds) {
   markCheckoutPending('postres');
-  if (typeof window.fbq === 'function') {
-    window.fbq('track', 'InitiateCheckout', {
-      value,
-      currency: 'USD',
-      content_name: contentName,
-    });
-  }
+  trackMetaInitiateCheckout({
+    value,
+    currency: 'USD',
+    contentName,
+    contentIds,
+  });
 }
 
 document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
@@ -64,7 +63,7 @@ document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
       e.preventDefault();
       return;
     }
-    trackInitiateCheckout(UPSELL_PRICE_USD, UPSELL_NAME);
+    trackInitiateCheckout(UPSELL_PRICE_USD, UPSELL_NAME, ['postres_premium']);
     try {
       localStorage.setItem('premium_pending_postres', '1');
     } catch {
@@ -147,7 +146,9 @@ if (downsellModal) {
     link.dataset.checkout = 'downsell';
     link.dataset.track = link.dataset.track || 'downsell_checkout';
     link.addEventListener('click', () => {
-      trackInitiateCheckout(DOWNSELL_PRICE_USD, `${UPSELL_NAME} (downsell)`);
+      trackInitiateCheckout(DOWNSELL_PRICE_USD, `${UPSELL_NAME} (downsell)`, [
+        'postres_downsell',
+      ]);
     });
   });
 }

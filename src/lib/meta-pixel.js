@@ -4,26 +4,67 @@ function canTrack() {
   return typeof window !== 'undefined' && typeof window.fbq === 'function';
 }
 
+function productSessionKey(prefix, contentIds = [], contentName = '') {
+  const id = (contentIds[0] || contentName || 'kit').replace(/\W+/g, '_');
+  return `${prefix}_${id}`;
+}
+
+function alreadyFired(key) {
+  try {
+    return Boolean(sessionStorage.getItem(key));
+  } catch {
+    return false;
+  }
+}
+
+function markFired(key, eventId) {
+  try {
+    sessionStorage.setItem(key, eventId || '1');
+  } catch {
+    /* ignore */
+  }
+}
+
 /** Custom events (QuizStart, QuizComplete, ViewOffer, …) */
 export function trackMetaCustom(eventName, params = {}) {
   if (!canTrack() || !eventName) return;
   window.fbq('trackCustom', eventName, params);
 }
 
+/**
+ * Fire InitiateCheckout once per product id per browser session.
+ * Stops spam-clicks / back-button from inflating Meta IC.
+ */
 export function trackMetaInitiateCheckout({
   value,
   currency = 'USD',
   contentName,
   contentIds = [],
+  eventId,
 } = {}) {
-  if (!canTrack() || value == null) return;
-  window.fbq('track', 'InitiateCheckout', {
-    value: Number(value),
-    currency,
-    content_name: contentName,
-    content_ids: contentIds.length ? contentIds : undefined,
-    content_type: 'product',
-  });
+  if (!canTrack() || value == null) return false;
+  const key = productSessionKey('fb_ic', contentIds, contentName);
+  if (alreadyFired(key)) return false;
+
+  const id =
+    eventId ||
+    `${key}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+
+  markFired(key, id);
+
+  window.fbq(
+    'track',
+    'InitiateCheckout',
+    {
+      value: Number(value),
+      currency,
+      content_name: contentName,
+      content_ids: contentIds.length ? contentIds : undefined,
+      content_type: 'product',
+    },
+    { eventID: id }
+  );
+  return true;
 }
 
 /**
@@ -38,22 +79,14 @@ export function trackMetaPurchaseOnce({
   eventId,
 } = {}) {
   if (!canTrack() || value == null) return false;
-  const key = `fb_purchase_${(contentIds[0] || contentName || 'kit').replace(/\W+/g, '_')}`;
-  try {
-    if (sessionStorage.getItem(key)) return false;
-  } catch {
-    /* ignore */
-  }
+  const key = productSessionKey('fb_purchase', contentIds, contentName);
+  if (alreadyFired(key)) return false;
 
   const id =
     eventId ||
     `${key}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
-  try {
-    sessionStorage.setItem(key, id);
-  } catch {
-    /* ignore */
-  }
+  markFired(key, id);
 
   window.fbq(
     'track',
