@@ -1,6 +1,6 @@
 /**
  * Transactional purchase emails — single source for Resend + admin preview.
- * Visual: product photography, soft brand palette, one clear CTA.
+ * One job: confirm purchase → one photo → one CTA to access.
  */
 
 import { getWhatsAppUrl, defaultNumberIdForLine } from './whatsapp-numbers.js';
@@ -14,30 +14,27 @@ export const EMAIL_PRODUCTS = [
   'postres_premium',
 ];
 
+/** Stack that looks good even when web fonts are stripped. */
 const FONT =
-  "'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+  "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
 const PRODUCT_META = {
   paletas_kit: {
     line: 'paletas',
     tier: 'kit',
     labelKey: 'emails.paletasKit',
-    accent: '#E8437A',
-    accentSoft: '#FFECF3',
-    ink: '#3D2228',
-    muted: '#6B5560',
+    accent: '#D94878',
+    ink: '#2A1A1E',
+    muted: '#6E5A61',
+    lineSoft: '#EFE4E8',
     productName: BRAND_KIT,
     brandLine: BRAND_NAME,
     badge: 'Compra confirmada',
     title: 'Tu acceso ya está listo',
-    lead: 'Recetas, precios y mensajes para vender paletas por WhatsApp.',
-    hero: '/email/paletas-hero.jpg',
-    heroAlt: 'Paletas de fresa en vaso listas para vender',
-    flavors: [
-      { src: '/email/sabor-fresa.jpg', label: 'Fresa' },
-      { src: '/email/sabor-mango.jpg', label: 'Mango' },
-      { src: '/email/sabor-chocolate.jpg', label: 'Chocolate' },
-    ],
+    lead:
+      'Recetas, precios y mensajes listos para vender paletas por WhatsApp. Entra con el mismo correo de la compra.',
+    hero: '/email/paletas-variedad.jpg',
+    heroAlt: 'Paletas de mango, fresa y chocolate listas para vender',
     bullets: [
       'Calculadora de costo, precio y ganancia',
       'Recetas claras para empezar hoy',
@@ -48,20 +45,20 @@ const PRODUCT_META = {
     line: 'paletas',
     tier: 'premium',
     labelKey: 'emails.paletasPremium',
-    accent: '#E8437A',
-    accentSoft: '#FFF0F5',
-    ink: '#3D2228',
-    muted: '#6B5560',
+    accent: '#D94878',
+    ink: '#2A1A1E',
+    muted: '#6E5A61',
+    lineSoft: '#EFE4E8',
     productName: 'Paletas Premium',
     brandLine: BRAND_NAME,
     badge: 'Premium activado',
     title: 'Tu Premium ya está activo',
-    lead: '20 recetas premium y combos rentables ya están en tu acceso.',
+    lead:
+      'Las 20 recetas premium y los combos rentables ya están en tu acceso. Ábrelo con el mismo correo de la compra.',
     hero: '/email/paletas-resultado.jpg',
-    heroAlt: 'Paletas listas para fotografiar y vender',
-    flavors: [],
+    heroAlt: 'Paletas gourmet listas para fotografiar y vender',
     bullets: [
-      '20 recetas premium en la app',
+      '20 recetas premium dentro de la app',
       'Combos rentables en Vender',
       'Mismo correo de la compra',
     ],
@@ -70,22 +67,18 @@ const PRODUCT_META = {
     line: 'postres',
     tier: 'kit',
     labelKey: 'emails.postresKit',
-    accent: '#EC3F7A',
-    accentSoft: '#FFE8F0',
-    ink: '#3D2228',
-    muted: '#6B5560',
+    accent: '#D94878',
+    ink: '#2A1A1E',
+    muted: '#6E5A61',
+    lineSoft: '#EFE4E8',
     productName: 'Kit Postres en Vaso',
     brandLine: 'Postres en Vaso',
     badge: 'Compra confirmada',
     title: 'Tu acceso ya está listo',
-    lead: 'Recetas en vaso, precios y mensajes para vender por WhatsApp.',
+    lead:
+      'Recetas en vaso, precios y mensajes para vender por WhatsApp. Entra con el mismo correo de la compra.',
     hero: '/email/postres-hero.jpg',
     heroAlt: 'Postres en vaso — fresa, oreo y chocolate',
-    flavors: [
-      { src: '/email/postre-fresa.jpg', label: 'Fresa' },
-      { src: '/email/postre-oreo.jpg', label: 'Oreo' },
-      { src: '/email/postre-chocolate.jpg', label: 'Chocolate' },
-    ],
     bullets: [
       'Recetas en vaso listas para fotografiar',
       'Calcula ganancia por porción',
@@ -96,18 +89,18 @@ const PRODUCT_META = {
     line: 'postres',
     tier: 'premium',
     labelKey: 'emails.postresPremium',
-    accent: '#EC3F7A',
-    accentSoft: '#FFE8F0',
-    ink: '#3D2228',
-    muted: '#6B5560',
+    accent: '#D94878',
+    ink: '#2A1A1E',
+    muted: '#6E5A61',
+    lineSoft: '#EFE4E8',
     productName: 'Postres Premium',
     brandLine: 'Postres en Vaso',
     badge: 'Premium activado',
     title: 'Tu Premium ya está activo',
-    lead: 'El contenido premium ya está incluido en tu acceso.',
+    lead:
+      'El contenido premium ya está incluido en tu acceso. Ábrelo con el mismo correo de la compra.',
     hero: '/email/postres-premium.jpg',
     heroAlt: 'Postres premium en vaso',
-    flavors: [],
     bullets: [
       'Más recetas dentro de la app',
       'Ideas listas para vender más',
@@ -203,8 +196,12 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
   const isPremium = meta.tier === 'premium';
 
   const subject = isPremium
-    ? `${meta.productName} activado — entra a tu acceso`
-    : `${meta.productName} — crea tu acceso`;
+    ? `${meta.productName}: tu acceso ya está activo`
+    : `${meta.productName}: crea tu acceso`;
+
+  const preheader = isPremium
+    ? 'Abre tu acceso con el mismo correo de la compra.'
+    : 'Un clic para crear tu cuenta y empezar a vender.';
 
   const plain = [
     greeting,
@@ -215,7 +212,7 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
     '',
     meta.lead,
     '',
-    'El acceso no está dentro de Hotmart. Entra por nuestra app.',
+    'Importante: el acceso es en nuestra app, no dentro de Hotmart.',
     '',
     `${isPremium ? 'Abrir acceso' : 'Crear acceso'}: ${primaryHref}`,
     isPremium ? `Primera vez: ${links.register}` : `Ya tienes cuenta: ${links.app}`,
@@ -227,35 +224,13 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
     `— ${meta.brandLine}`,
   ].join('\n');
 
-  const flavors = meta.flavors || [];
-  const flavorsHtml =
-    flavors.length === 3
-      ? `
-          <tr>
-            <td style="padding:28px 24px 8px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  ${flavors
-                    .map(
-                      (f) => `
-                  <td width="33.33%" align="center" style="padding:0 6px;vertical-align:top;">
-                    <img src="${base}${f.src}" width="96" height="96" alt="${esc(f.label)}" style="display:block;width:96px;height:96px;border:0;border-radius:12px;object-fit:cover;margin:0 auto;">
-                    <p style="margin:8px 0 0;font-family:${FONT};font-size:12px;font-weight:700;color:${meta.ink};">${esc(f.label)}</p>
-                  </td>`
-                    )
-                    .join('')}
-                </tr>
-              </table>
-            </td>
-          </tr>`
-      : '';
-
   const bulletsHtml = meta.bullets
     .map(
       (b, i) => `
                 <tr>
-                  <td style="padding:${i === 0 ? '0' : '10px'} 0 0;font-family:${FONT};font-size:14px;line-height:1.5;color:${meta.ink};">
-                    <span style="color:${meta.accent};font-weight:800;">${i + 1}.</span> ${esc(b)}
+                  <td width="28" valign="top" style="padding:${i === 0 ? '0' : '12px'} 0 0;font-family:${FONT};font-size:16px;line-height:1.45;color:${meta.accent};font-weight:700;">✓</td>
+                  <td style="padding:${i === 0 ? '0' : '12px'} 0 0;font-family:${FONT};font-size:15px;line-height:1.45;color:${meta.ink};">
+                    ${esc(b)}
                   </td>
                 </tr>`
     )
@@ -268,45 +243,46 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="x-apple-disable-message-reformatting">
   <meta name="color-scheme" content="light only">
+  <meta name="supported-color-schemes" content="light">
   <title>${esc(subject)}</title>
   <!--[if mso]><style>body,table,td{font-family:Arial,sans-serif!important}</style><![endif]-->
 </head>
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:${FONT};color:${meta.ink};-webkit-text-size-adjust:100%;">
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;opacity:0;color:transparent;">
-    ${esc(meta.lead)}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+<body style="margin:0;padding:0;background:#f0eeed;font-family:${FONT};color:${meta.ink};-webkit-text-size-adjust:100%;">
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;opacity:0;color:transparent;font-size:1px;line-height:1px;">
+    ${esc(preheader)}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;border-collapse:collapse;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0eeed;border-collapse:collapse;">
     <tr>
-      <td align="center" style="padding:0;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background:#ffffff;border-collapse:collapse;">
+      <td align="center" style="padding:28px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-collapse:collapse;border-radius:12px;overflow:hidden;">
 
-          <!-- Brand text only -->
+          <!-- Brand wordmark (no icon) -->
           <tr>
-            <td style="padding:28px 24px 12px;text-align:center;border-bottom:1px solid #f0e4ea;">
-              <p style="margin:0;font-family:${FONT};font-size:15px;font-weight:800;letter-spacing:0.02em;color:${meta.accent};">
+            <td align="center" style="padding:22px 28px 18px;">
+              <p style="margin:0;font-family:${FONT};font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${meta.ink};">
                 ${esc(meta.brandLine)}
               </p>
             </td>
           </tr>
 
-          <!-- Hero full bleed -->
+          <!-- Product photo -->
           <tr>
             <td style="padding:0;line-height:0;font-size:0;">
-              <img src="${heroUrl}" width="600" alt="${esc(meta.heroAlt)}" style="display:block;width:100%;max-width:600px;height:auto;border:0;">
+              <img src="${heroUrl}" width="560" alt="${esc(meta.heroAlt)}" style="display:block;width:100%;max-width:560px;height:auto;border:0;">
             </td>
           </tr>
 
-          <!-- Body -->
+          <!-- Copy + CTA -->
           <tr>
-            <td style="padding:28px 24px 8px;">
-              <p style="margin:0 0 6px;font-family:${FONT};font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:${meta.accent};">
+            <td style="padding:28px 28px 8px;">
+              <p style="margin:0 0 14px;font-family:${FONT};font-size:12px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:${meta.accent};">
                 ${esc(meta.badge)}
               </p>
-              <p style="margin:0 0 8px;font-family:${FONT};font-size:15px;color:${meta.muted};">
+              <p style="margin:0 0 6px;font-family:${FONT};font-size:15px;line-height:1.4;color:${meta.muted};">
                 ${greeting}
               </p>
-              <h1 style="margin:0 0 12px;font-family:${FONT};font-size:26px;line-height:1.25;font-weight:800;color:${meta.ink};">
+              <h1 style="margin:0 0 12px;font-family:${FONT};font-size:24px;line-height:1.28;font-weight:700;color:${meta.ink};">
                 ${esc(meta.title)}
               </h1>
               <p style="margin:0;font-family:${FONT};font-size:15px;line-height:1.6;color:${meta.muted};">
@@ -315,63 +291,75 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
             </td>
           </tr>
 
-          <!-- CTA -->
           <tr>
-            <td style="padding:20px 24px 8px;">
+            <td align="center" style="padding:22px 28px 6px;">
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
                 <tr>
-                  <td align="center" bgcolor="${meta.accent}" style="background:${meta.accent};border-radius:8px;">
-                    <a href="${primaryHref}" style="display:inline-block;padding:14px 28px;font-family:${FONT};font-size:15px;font-weight:800;color:#ffffff;text-decoration:none;">
+                  <td align="center" bgcolor="${meta.accent}" style="background:${meta.accent};border-radius:10px;">
+                    <a href="${primaryHref}" style="display:inline-block;padding:15px 32px;font-family:${FONT};font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:10px;">
                       ${esc(ctaLabel(product))}
                     </a>
                   </td>
                 </tr>
               </table>
-              <p style="margin:14px 0 0;text-align:center;font-family:${FONT};font-size:13px;line-height:1.5;color:${meta.muted};">
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:10px 28px 4px;">
+              <p style="margin:0;text-align:center;font-family:${FONT};font-size:13px;line-height:1.55;color:${meta.muted};">
                 ${
                   isPremium
-                    ? `¿Primera vez? <a href="${links.register}" style="color:${meta.accent};font-weight:700;">Crea tu cuenta</a>`
-                    : `Usa el mismo correo de la compra · <a href="${links.app}" style="color:${meta.accent};font-weight:700;">Ya tengo cuenta</a>`
+                    ? `¿Primera vez? <a href="${links.register}" style="color:${meta.accent};font-weight:700;text-decoration:underline;">Crea tu cuenta</a>`
+                    : `¿Ya tienes cuenta? <a href="${links.app}" style="color:${meta.accent};font-weight:700;text-decoration:underline;">Entra aquí</a>`
                 }
               </p>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:12px 24px 4px;">
-              <p style="margin:0;padding:12px 14px;background:#fff8f3;border:1px solid #f5e6d8;font-family:${FONT};font-size:13px;line-height:1.5;color:#5c473e;">
-                El acceso es en nuestra app, <strong>no dentro de Hotmart</strong>. Entra con el botón de arriba.
+              <p style="margin:10px 0 0;text-align:center;font-family:${FONT};font-size:12px;line-height:1.5;color:#8a7a80;">
+                El acceso es en nuestra app — no dentro de Hotmart.
               </p>
             </td>
           </tr>
 
-          ${flavorsHtml}
-
+          <!-- Includes -->
           <tr>
-            <td style="padding:24px 24px 8px;">
-              <p style="margin:0 0 12px;font-family:${FONT};font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:${meta.accent};">
-                Incluye
-              </p>
+            <td style="padding:28px 28px 8px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                ${bulletsHtml}
+                <tr>
+                  <td style="border-top:1px solid ${meta.lineSoft};padding-top:24px;">
+                    <p style="margin:0 0 14px;font-family:${FONT};font-size:12px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:${meta.ink};">
+                      Qué incluye
+                    </p>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      ${bulletsHtml}
+                    </table>
+                  </td>
+                </tr>
               </table>
             </td>
           </tr>
 
+          <!-- Support -->
           <tr>
-            <td style="padding:24px 24px 32px;text-align:center;border-top:1px solid #f0e4ea;">
-              <p style="margin:0 0 10px;font-family:${FONT};font-size:13px;color:${meta.muted};">
-                ¿Dudas con el acceso? Escríbenos por WhatsApp.
-              </p>
-              <a href="${waUrl}" style="font-family:${FONT};font-size:13px;font-weight:800;color:#128C7E;text-decoration:underline;">
-                Abrir WhatsApp
-              </a>
+            <td style="padding:28px 28px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="border-top:1px solid ${meta.lineSoft};padding-top:22px;text-align:center;">
+                    <p style="margin:0 0 8px;font-family:${FONT};font-size:13px;line-height:1.5;color:${meta.muted};">
+                      ¿Dudas con el acceso?
+                    </p>
+                    <a href="${waUrl}" style="font-family:${FONT};font-size:14px;font-weight:700;color:#0E7A6B;text-decoration:underline;">
+                      Escribir por WhatsApp
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
+          <!-- Footer -->
           <tr>
-            <td style="padding:0 24px 28px;text-align:center;">
-              <p style="margin:0;font-family:${FONT};font-size:11px;line-height:1.5;color:#a09086;">
+            <td style="padding:28px 28px 26px;text-align:center;">
+              <p style="margin:0;font-family:${FONT};font-size:11px;line-height:1.55;color:#9a8b91;">
                 Puedes responder este correo.<br>
                 ${esc(meta.brandLine)}
               </p>
