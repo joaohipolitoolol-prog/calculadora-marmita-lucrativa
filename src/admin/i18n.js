@@ -629,7 +629,6 @@ const STRINGS = {
     'emails.studioTitle': 'Templates',
     'emails.studioHint': 'O preview é o HTML exato que o Resend envia.',
     'emails.previewLiveHint': 'Prévia ao vivo',
-    'meta.emails.sub': 'Templates de compra, preview e envio',
     'emails.previewName': 'Nome no preview',
     'emails.copySubject': 'Copiar assunto',
     'emails.copyPlain': 'Copiar texto',
