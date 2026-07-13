@@ -9,6 +9,19 @@ import {
 } from './meta-pixel.js';
 import { withAbCheckoutParam } from './ab-entry.js';
 
+function cameFromHotmart() {
+  try {
+    return /hotmart\.com/i.test(document.referrer || '');
+  } catch {
+    return false;
+  }
+}
+
+/** Purchase só após clique em checkout neste browser ou retorno Hotmart. */
+export function canFireThankYouPurchase(line = 'paletas') {
+  return hasCheckoutPending(line) || cameFromHotmart();
+}
+
 export function bindScrollToOffer(selector = '[data-scroll-offer]') {
   document.querySelectorAll(selector).forEach((link) => {
     link.addEventListener('click', (e) => {
@@ -115,6 +128,7 @@ export function fireThankYouPurchase({
   contentName,
   contentIds,
 } = {}) {
+  if (!canFireThankYouPurchase(line)) return false;
   const fired = trackMetaPurchaseOnce({
     value,
     contentName,

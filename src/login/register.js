@@ -4,7 +4,7 @@ import { UPSELL_PRICE_USD as PALETAS_PREMIUM_PRICE } from '../upsell/config.js';
 import { UPSELL_PRICE_USD as POSTRES_PREMIUM_PRICE } from '../postres-upsell/config.js';
 import { register, guardAuthPage } from '../lib/auth.js';
 import { BRAND_KIT } from '../site/brand.js';
-import { trackMetaPurchaseOnce } from '../lib/meta-pixel.js';
+import { trackMetaPurchaseOnce, hasCheckoutPending } from '../lib/meta-pixel.js';
 import { purchaseFlagsFromSearch } from '../lib/purchase-flags.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { defaultNumberIdForLine, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
@@ -56,14 +56,24 @@ if (purchaseFlags && purchaseBanner) {
   }
 }
 
-if (purchaseFlags?.hasKit) {
+function shouldFireRegisterPurchase(line) {
+  return hasCheckoutPending(line) || (() => {
+    try {
+      return /hotmart\.com/i.test(document.referrer || '');
+    } catch {
+      return false;
+    }
+  })();
+}
+
+if (purchaseFlags?.hasKit && shouldFireRegisterPurchase('paletas')) {
   trackMetaPurchaseOnce({
     value: MAIN_PRICE,
     contentName: BRAND_KIT,
     contentIds: ['paletas_kit'],
   });
 }
-if (purchaseFlags?.hasPostres) {
+if (purchaseFlags?.hasPostres && shouldFireRegisterPurchase('postres')) {
   trackMetaPurchaseOnce({
     value: POSTRES_PRICE,
     contentName: POSTRES_NAME,
@@ -71,20 +81,24 @@ if (purchaseFlags?.hasPostres) {
   });
 }
 if (purchaseFlags?.hasPremium) {
-  trackMetaPurchaseOnce({
-    value: PALETAS_PREMIUM_PRICE,
-    contentName: 'Pack Premium Paletas',
-    contentIds: ['paletas_premium'],
-  });
+  if (shouldFireRegisterPurchase('paletas')) {
+    trackMetaPurchaseOnce({
+      value: PALETAS_PREMIUM_PRICE,
+      contentName: 'Pack Premium Paletas',
+      contentIds: ['paletas_premium'],
+    });
+  }
   localStorage.setItem('kit_premium_paletas_v1', '1');
   localStorage.setItem('paletas_premium', '1');
 }
 if (purchaseFlags?.hasPostresPremium) {
-  trackMetaPurchaseOnce({
-    value: POSTRES_PREMIUM_PRICE,
-    contentName: 'Pack Premium Postres',
-    contentIds: ['postres_premium'],
-  });
+  if (shouldFireRegisterPurchase('postres')) {
+    trackMetaPurchaseOnce({
+      value: POSTRES_PREMIUM_PRICE,
+      contentName: 'Pack Premium Postres',
+      contentIds: ['postres_premium'],
+    });
+  }
   localStorage.setItem('kit_premium_postres_v1', '1');
 }
 
