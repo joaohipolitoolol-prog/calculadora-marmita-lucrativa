@@ -89,5 +89,10 @@ service cloud.firestore {
     match /diagnostico_leads/{leadId} {
       allow read, write: if false;
     }
+
+    // Server-only — Hotmart transaction dedupe (Admin SDK).
+    match /purchase_transactions/{txId} {
+      allow read, write: if false;
+    }
   }
 }

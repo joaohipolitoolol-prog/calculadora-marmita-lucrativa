@@ -292,6 +292,7 @@ export default async function handler(req, res) {
           quiz_steps: data.quiz_steps || {},
           dwell: data.dwell || {},
           quiz_abandon: data.quiz_abandon || 0,
+          sales: data.sales || 0,
         };
       });
 
@@ -301,6 +302,16 @@ export default async function handler(req, res) {
       : allDays;
 
     const useSummaryPeriod = range === 'all';
+
+    // Paid sales (webhook deduped) — not checkout clicks
+    let salesToday = Number(summary.sales?.today) || 0;
+    let salesTotal = Number(summary.sales?.total) || 0;
+    if (!useSummaryPeriod && rangeDays.length) {
+      salesToday = rangeDays.reduce((sum, d) => sum + (Number(d.sales) || 0), 0);
+    }
+    if (useSummaryPeriod) {
+      salesToday = salesTotal;
+    }
 
     let pages;
     let ctas;
@@ -411,6 +422,8 @@ export default async function handler(req, res) {
         whatsappTotal: eventTotal('whatsapp_click'),
         checkoutToday: checkoutPeriod,
         checkoutTotal: eventTotal('checkout_click'),
+        salesToday,
+        salesTotal,
         ctaToday: eventToday('cta_click'),
         registerToday: eventToday('register'),
         loginToday: eventToday('login'),
@@ -418,8 +431,9 @@ export default async function handler(req, res) {
       },
       legend: {
         checkout: 'checkout_click',
+        sales: 'paid_hotmart_transaction',
         whatsapp: 'whatsapp_click',
-        note: 'Checkout = clicks al boton Hotmart. WhatsApp = clicks a wa.me (soporte app/aviso), no CTA de LP Paletas.',
+        note: 'Ventas = compras reales Hotmart (1 por transacción). Checkout = solo clics al botón, NO son compras pagadas.',
       },
     });
   } catch (error) {

@@ -3,7 +3,7 @@
  *
  * URL: POST https://paletasparawhatsapp.vercel.app/api/webhooks/hotmart
  * Auth: header x-hotmart-hottok === HOTMART_HOTTOK
- * Events: PURCHASE_APPROVED, PURCHASE_COMPLETE
+ * Events: PURCHASE_APPROVED, PURCHASE_COMPLETE (deduped by transaction id)
  */
 import {
   findUserUidByEmail,
@@ -15,6 +15,7 @@ import { savePendingPurchase } from '../../server/lib/pending-purchases.js';
 import { sendWelcomeEmailServer } from '../../server/lib/send-welcome-email.js';
 import { bumpAbMetric, normalizeAbVariant } from '../../server/lib/analytics-ab.js';
 import { todayKey } from '../../server/lib/analytics-schema.js';
+import { claimPurchaseTransaction } from '../../server/lib/purchase-idempotency.js';
 
 function getHottok(req) {
   return (
@@ -95,6 +96,47 @@ async function bumpAbPurchase(firestore, variant) {
   });
 }
 
+/** Paid sales counter (deduped transactions) — not checkout clicks. */
+async function bumpPaidSale(firestore, { line, product } = {}) {
+  const day = todayKey();
+  const summaryRef = firestore.doc('analytics/summary');
+  const dailyRef = firestore.doc(`analytics_daily/${day}`);
+
+  await firestore.runTransaction(async (tx) => {
+    const summarySnap = await tx.get(summaryRef);
+    const dailySnap = await tx.get(dailyRef);
+    const summary = summarySnap.exists ? summarySnap.data() : { todayKey: day };
+    const daily = dailySnap.exists
+      ? dailySnap.data()
+      : { pages: {}, events: {}, total: 0, date: day };
+
+    if (summary.todayKey && summary.todayKey !== day) {
+      if (summary.sales) summary.sales.today = 0;
+      summary.todayKey = day;
+    }
+    if (!summary.sales) summary.sales = { total: 0, today: 0 };
+    summary.sales.total = (summary.sales.total || 0) + 1;
+    summary.sales.today = (summary.sales.today || 0) + 1;
+    summary.sales.lastAt = FieldValue.serverTimestamp();
+    if (line) {
+      if (!summary.salesByLine) summary.salesByLine = {};
+      if (!summary.salesByLine[line]) summary.salesByLine[line] = { total: 0, today: 0 };
+      summary.salesByLine[line].total = (summary.salesByLine[line].total || 0) + 1;
+      summary.salesByLine[line].today = (summary.salesByLine[line].today || 0) + 1;
+    }
+
+    daily.sales = (daily.sales || 0) + 1;
+    if (product) {
+      if (!daily.salesByProduct) daily.salesByProduct = {};
+      daily.salesByProduct[product] = (daily.salesByProduct[product] || 0) + 1;
+    }
+    daily.date = day;
+
+    tx.set(summaryRef, summary, { merge: true });
+    tx.set(dailyRef, daily, { merge: true });
+  });
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -161,6 +203,43 @@ export default async function handler(req, res) {
       });
     }
 
+    // Same Hotmart sale often sends PURCHASE_APPROVED + PURCHASE_COMPLETE.
+    // Process grant/email/AB once per transaction id.
+    const claim = await claimPurchaseTransaction(firestore, {
+      transaction: productInfo.transaction,
+      provider: 'hotmart',
+      email: buyer.email,
+      product: resolved.product,
+      line: resolved.line,
+      tier: resolved.tier,
+      event: event || null,
+      ab: abVariant,
+    });
+
+    if (!claim.claim) {
+      await logRef.set({
+        provider: 'hotmart',
+        email: buyer.email,
+        product: resolved.product,
+        line: resolved.line,
+        tier: resolved.tier,
+        event: event || null,
+        transaction: productInfo.transaction || null,
+        status: 'duplicate',
+        ab: abVariant,
+        emailSent: false,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+      return res.status(200).json({
+        ok: true,
+        duplicate: true,
+        status: 'already_processed',
+        transaction: productInfo.transaction || null,
+        product: resolved.product,
+        firstEvent: claim.existing?.firstEvent || null,
+      });
+    }
+
     const uid = await findUserUidByEmail(buyer.email);
     let grantStatus = 'pending';
 
@@ -204,6 +283,12 @@ export default async function handler(req, res) {
       } catch (abErr) {
         console.warn('[hotmart] ab purchase bump failed', abErr);
       }
+    }
+
+    try {
+      await bumpPaidSale(firestore, { line: resolved.line, product: resolved.product });
+    } catch (saleErr) {
+      console.warn('[hotmart] paid sale bump failed', saleErr);
     }
 
     await logRef.set({

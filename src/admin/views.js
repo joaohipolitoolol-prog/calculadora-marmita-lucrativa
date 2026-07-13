@@ -125,6 +125,15 @@ export function renderStatsGrid(stats, analytics) {
   const kpis = analytics?.kpis || {};
   return `
     <div class="admin-stats">
+      <div class="admin-stat accent-green">
+        <span class="admin-stat-label">${t('stat.salesToday')}</span>
+        <span class="admin-stat-value">${kpis.salesToday ?? 0}</span>
+        <span class="admin-stat-hint">${t('stat.salesTodayHint')}</span>
+      </div>
+      <div class="admin-stat">
+        <span class="admin-stat-label">${t('stat.salesTotal')}</span>
+        <span class="admin-stat-value">${kpis.salesTotal ?? 0}</span>
+      </div>
       <div class="admin-stat">
         <span class="admin-stat-label">${t('stat.users')}</span>
         <span class="admin-stat-value">${stats.total}</span>
@@ -152,6 +161,7 @@ export function renderStatsGrid(stats, analytics) {
       <div class="admin-stat accent-purple">
         <span class="admin-stat-label">${t('stat.checkoutToday')}</span>
         <span class="admin-stat-value">${kpis.checkoutToday || 0}</span>
+        <span class="admin-stat-hint">${t('stat.checkoutTodayHint')}</span>
       </div>
       <div class="admin-stat">
         <span class="admin-stat-label">${t('stat.appOpenToday')}</span>
@@ -812,6 +822,11 @@ export function renderFunnelView(
         <strong><span class="admin-metric today">${kpis.checkoutToday || 0}</span> / ${kpis.checkoutTotal || 0}</strong>
         <small>${t('funnel.kpiCheckoutHint')}</small>
       </div>
+      <div class="admin-funnel-kpi" title="${escapeHtml(t('stat.salesTodayHint'))}">
+        <span>${t('stat.salesToday')}</span>
+        <strong><span class="admin-metric today">${kpis.salesToday || 0}</span> / ${kpis.salesTotal || 0}</strong>
+        <small>${t('stat.salesTodayHint')}</small>
+      </div>
       <div class="admin-funnel-kpi" title="${escapeHtml(t('funnel.kpiWaHint'))}">
         <span>${t('funnel.kpiWa')}</span>
         <strong><span class="admin-metric today">${kpis.whatsappToday || 0}</span> / ${kpis.whatsappTotal || 0}</strong>
@@ -1427,6 +1442,9 @@ export function renderEmailsView(
       : `<span class="admin-status-pill ${warn ? 'is-warn' : ''}">${t('emails.cfgMissing')}</span>`;
 
   const statusCell = (row) => {
+    if (row.status === 'duplicate') {
+      return `<span class="admin-pill" title="Hotmart envió APPROVED + COMPLETE; solo contamos 1 venta">${t('emails.statusDup')}</span>`;
+    }
     if (row.emailSent) {
       return `<span class="admin-pill active">${t('emails.statusSent')}</span>`;
     }
@@ -1475,7 +1493,8 @@ export function renderEmailsView(
             </div>
           </div>
           <div class="admin-funnel-kpis" style="margin-top:16px">
-            <div class="admin-funnel-kpi"><strong>${stats?.last24h ?? '—'}</strong><span>${t('emails.stat24h')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.salesUnique24h ?? '—'}</strong><span>${t('emails.statSales')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.duplicates ?? '—'}</strong><span>${t('emails.statDup')}</span></div>
             <div class="admin-funnel-kpi"><strong>${stats?.sentOk ?? '—'}</strong><span>${t('emails.statOk')}</span></div>
             <div class="admin-funnel-kpi"><strong>${stats?.failed ?? '—'}</strong><span>${t('emails.statFail')}</span></div>
           </div>

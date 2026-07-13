@@ -119,6 +119,14 @@ export default async function handler(req, res) {
         }
         resetAbToday(summary);
         resetFunnelToday(summary);
+        if (summary.sales && typeof summary.sales === 'object') {
+          summary.sales.today = 0;
+        }
+        if (summary.salesByLine) {
+          for (const cell of Object.values(summary.salesByLine)) {
+            if (cell && typeof cell === 'object') cell.today = 0;
+          }
+        }
         summary.todayKey = day;
       }
 

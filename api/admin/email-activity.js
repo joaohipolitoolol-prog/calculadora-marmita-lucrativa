@@ -42,6 +42,23 @@ function mapWebhookDoc(doc) {
   };
 }
 
+/** Unique paid sales in a list (skip duplicate webhook echoes). */
+function uniqueSalesFromActivity(rows) {
+  const seen = new Set();
+  let count = 0;
+  for (const row of rows) {
+    if (row.kind !== 'purchase') continue;
+    if (row.status === 'duplicate' || row.status === 'missing_email' || row.status === 'unknown_product') {
+      continue;
+    }
+    const key = row.transaction || row.id;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    count += 1;
+  }
+  return count;
+}
+
 function mapManualDoc(doc) {
   const d = doc.data() || {};
   return {
@@ -132,8 +149,11 @@ export default async function handler(req, res) {
       stats: {
         totalShown: activity.length,
         last24h: last24h.length,
+        salesUnique: uniqueSalesFromActivity(activity),
+        salesUnique24h: uniqueSalesFromActivity(last24h),
+        duplicates: activity.filter((r) => r.status === 'duplicate').length,
         sentOk: activity.filter((r) => r.emailSent).length,
-        failed: activity.filter((r) => r.emailError || (!r.emailSent && r.kind === 'purchase')).length,
+        failed: activity.filter((r) => r.emailError || (!r.emailSent && r.kind === 'purchase' && r.status !== 'duplicate')).length,
       },
       activity,
     });
