@@ -6,7 +6,7 @@
  */
 
 import { getWhatsAppUrl, defaultNumberIdForLine } from './whatsapp-numbers.js';
-import { BRAND_KIT, BRAND_NAME, BRAND_SHORT } from '../site/brand.js';
+import { BRAND_KIT, BRAND_NAME } from '../site/brand.js';
 import { SITE_URL as DEFAULT_SITE } from '../site/config.js';
 
 export const EMAIL_PRODUCTS = [
@@ -21,53 +21,89 @@ const PRODUCT_META = {
     line: 'paletas',
     tier: 'kit',
     labelKey: 'emails.paletasKit',
-    emoji: '🍓',
-    accent: '#ff4f8b',
-    accent2: '#ff7a1a',
+    accent: '#E8437A',
+    accentDeep: '#C2185B',
     productName: BRAND_KIT,
-    badge: 'Compra confirmada',
-    title: '¡Tu kit está listo!',
-    hero: '/paletas/kit-inside-cards.png',
-    heroAlt: 'Kit Paletas para WhatsApp — recetas, precios y mensajes',
+    brandLine: BRAND_NAME,
+    badge: 'Pago confirmado',
+    title: 'Tu kit ya está listo',
+    subtitle: 'Recetas, precios y mensajes para vender por WhatsApp — empieza hoy.',
+    hero: '/paletas/authority-mujer-paletas.png',
+    heroAlt: 'Emprendedora vendiendo paletas por WhatsApp',
+    thumbs: [
+      { src: '/paletas/kit-inside-cards.png', label: 'Calculadora' },
+      { src: '/paletas/authority-mujer-paletas.png', label: 'Recetas' },
+      { src: '/icons/icon-192.png', label: 'Mensajes' },
+    ],
+    features: [
+      { title: 'Precios claros', body: 'Calcula costo y ganancia sin adivinar' },
+      { title: 'Recetas listas', body: 'Sabores atractivos y fáciles de repetir' },
+      { title: 'Mensajes WA', body: 'Copia, pega y publica tu menú' },
+    ],
   },
   paletas_premium: {
     line: 'paletas',
     tier: 'premium',
     labelKey: 'emails.paletasPremium',
-    emoji: '✨',
-    accent: '#d97706',
-    accent2: '#ff7a1a',
+    accent: '#D97706',
+    accentDeep: '#B45309',
     productName: 'Paletas Premium + Combos',
+    brandLine: BRAND_NAME,
     badge: 'Premium activado',
-    title: '¡Tu Premium está activo!',
-    hero: '/paletas/authority-mujer-paletas.png',
-    heroAlt: 'Paletas premium listas para vender',
+    title: 'Tu Premium ya está activo',
+    subtitle: '20 recetas premium y combos rentables ya están en tu acceso.',
+    hero: '/paletas/kit-inside-cards.png',
+    heroAlt: 'Contenido premium del kit de paletas',
+    thumbs: [],
+    features: [
+      { title: '20 premium', body: 'Recetas extras en la pestaña Recetas' },
+      { title: 'Combos', body: 'Packs listos en Vender → Combos' },
+      { title: 'Mismo acceso', body: 'Entra con el correo de la compra' },
+    ],
   },
   postres_kit: {
     line: 'postres',
     tier: 'kit',
     labelKey: 'emails.postresKit',
-    emoji: '🍨',
     accent: '#EC3F7A',
-    accent2: '#ff7a1a',
+    accentDeep: '#BE185D',
     productName: 'Kit Postres en Vaso',
-    badge: 'Compra confirmada',
-    title: '¡Tu kit de Postres está listo!',
-    hero: '/postres/kit-inside-cards.png',
-    heroAlt: 'Kit Postres en Vaso — recetas y precios',
+    brandLine: 'Postres en Vaso',
+    badge: 'Pago confirmado',
+    title: 'Tu kit de Postres está listo',
+    subtitle: 'Recetas en vaso, precios y mensajes para vender por WhatsApp.',
+    hero: '/postres/hero-variedad-postres.png',
+    heroAlt: 'Variedad de postres en vaso',
+    thumbs: [
+      { src: '/postres/postre-fresa.png', label: 'Fresa' },
+      { src: '/postres/postre-oreo.png', label: 'Oreo' },
+      { src: '/postres/postre-chocolate.png', label: 'Chocolate' },
+    ],
+    features: [
+      { title: 'Recetas en vaso', body: 'Presentación lista para fotografiar' },
+      { title: 'Precios', body: 'Calcula ganancia por porción' },
+      { title: 'WhatsApp', body: 'Mensajes listos para pedir' },
+    ],
   },
   postres_premium: {
     line: 'postres',
     tier: 'premium',
     labelKey: 'emails.postresPremium',
-    emoji: '✨',
     accent: '#EC3F7A',
-    accent2: '#f59e0b',
+    accentDeep: '#BE185D',
     productName: 'Postres Premium',
+    brandLine: 'Postres en Vaso',
     badge: 'Premium activado',
-    title: '¡Tu Premium de Postres está activo!',
+    title: 'Tu Premium de Postres está activo',
+    subtitle: 'El contenido premium ya está incluido en tu acceso.',
     hero: '/postres/upsell-postres-premium.png',
     heroAlt: 'Postres premium en vaso',
+    thumbs: [],
+    features: [
+      { title: 'Más recetas', body: 'Opciones premium dentro de la app' },
+      { title: 'Combos', body: 'Ideas listas para vender más' },
+      { title: 'Mismo acceso', body: 'Entra con el correo de la compra' },
+    ],
   },
 };
 
@@ -135,7 +171,7 @@ function stepsFor(product) {
       ? [
           'Entra a la app con el mismo correo de la compra',
           'Abre Recetas y mira las opciones premium',
-          'Usa los combos y mensajes listos para vender',
+          'Usa los mensajes listos para vender',
         ]
       : [
           'Entra a la app con el mismo correo de la compra',
@@ -143,23 +179,15 @@ function stepsFor(product) {
           'En Vender → abre Combos rentables',
         ];
   }
-  return meta.line === 'postres'
-    ? [
-        'Crea tu cuenta con el correo de la compra',
-        'Entra a la calculadora y elige 3 recetas',
-        'Copia mensajes listos en Vender',
-      ]
-    : [
-        'Crea tu cuenta con el correo de la compra',
-        'Calcula precios y elige 3 recetas',
-        'Copia mensajes listos en Vender',
-      ];
+  return [
+    'Crea tu cuenta con el correo de esta compra',
+    'Entra a la app y calcula tus primeros precios',
+    'Elige 3 recetas y copia un mensaje para WhatsApp',
+  ];
 }
 
 function ctaLabel(product) {
-  const meta = PRODUCT_META[product];
-  if (meta.tier === 'premium') return 'Abrir mi acceso Premium →';
-  return 'Crear mi acceso →';
+  return PRODUCT_META[product].tier === 'premium' ? 'Abrir mi acceso' : 'Crear mi acceso';
 }
 
 function waMessage(product) {
@@ -184,7 +212,8 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
   const meta = PRODUCT_META[product];
   const base = String(siteUrl || DEFAULT_SITE).replace(/\/$/, '');
   const links = linksFor(product, base);
-  const greeting = name ? `Hola ${esc(name)},` : 'Hola,';
+  const firstName = String(name || '').trim().split(/\s+/)[0] || '';
+  const greeting = firstName ? `Hola ${esc(firstName)},` : 'Hola,';
   const logoUrl = `${base}/icons/icon-192.png`;
   const heroUrl = `${base}${meta.hero}`;
   const waId = defaultNumberIdForLine(meta.line, 'support');
@@ -195,11 +224,11 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
 
   const subject = isPremium
     ? meta.line === 'postres'
-      ? 'Tu Postres Premium está activo — entra aquí ✨'
-      : 'Tu Paletas Premium está activo — entra aquí ✨'
+      ? 'Tu Postres Premium está activo — entra aquí'
+      : 'Tu Paletas Premium está activo — entra aquí'
     : meta.line === 'postres'
-      ? 'Tu Kit Postres en Vaso está listo — crea tu acceso aquí 🍨'
-      : `Tu ${BRAND_KIT} está listo — crea tu acceso aquí 🍓`;
+      ? 'Tu Kit Postres está listo — crea tu acceso'
+      : `Tu ${BRAND_KIT} está listo — crea tu acceso`;
 
   const plain = [
     `${greeting}`,
@@ -210,28 +239,79 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
     '',
     'IMPORTANTE: el acceso NO está dentro de Hotmart. Es en nuestra app.',
     '',
-    isPremium ? `Entra aquí: ${primaryHref}` : `Crea tu acceso aquí: ${primaryHref}`,
-    isPremium ? '' : `¿Ya tienes cuenta? ${links.app}`,
+    `${isPremium ? 'Entra aquí' : 'Crea tu acceso'}: ${primaryHref}`,
+    isPremium ? `¿Primera vez? ${links.register}` : `¿Ya tienes cuenta? ${links.app}`,
     '',
     'Pasos:',
     ...steps.map((s, i) => `${i + 1}. ${s}`),
     '',
-    `WhatsApp soporte: ${waUrl}`,
+    `WhatsApp: ${waUrl}`,
     '',
-    `— ${BRAND_NAME}`,
+    `— ${meta.brandLine}`,
   ]
     .filter((line, i, arr) => !(line === '' && arr[i - 1] === ''))
     .join('\n');
 
+  const thumbs = meta.thumbs || [];
+  const thumbsHtml =
+    thumbs.length === 3
+      ? `
+          <tr>
+            <td style="padding:0 24px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  ${thumbs
+                    .map(
+                      (th) => `
+                  <td width="33.33%" style="padding:4px;vertical-align:top;text-align:center;">
+                    <img src="${base}${th.src}" width="150" alt="${esc(th.label)}" style="display:block;width:100%;max-width:150px;height:96px;object-fit:cover;border:0;border-radius:12px;margin:0 auto;">
+                    <p style="margin:8px 0 0;font-size:11px;font-weight:700;color:#8a746a;letter-spacing:0.04em;text-transform:uppercase;">${esc(th.label)}</p>
+                  </td>`
+                    )
+                    .join('')}
+                </tr>
+              </table>
+            </td>
+          </tr>`
+      : '';
+
+  const featuresHtml = `
+          <tr>
+            <td style="padding:8px 24px 4px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F4;border-radius:16px;">
+                <tr>
+                  <td style="padding:18px 16px;">
+                    <p style="margin:0 0 12px;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:${meta.accent};">Qué incluye</p>
+                    ${meta.features
+                      .map(
+                        (f, i) => `
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${i < meta.features.length - 1 ? 'margin-bottom:12px;' : ''}">
+                      <tr>
+                        <td width="28" valign="top" style="padding-top:2px;">
+                          <span style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:999px;background:${meta.accent};color:#fff;font-size:11px;font-weight:800;">${i + 1}</span>
+                        </td>
+                        <td style="padding-left:8px;">
+                          <p style="margin:0;font-size:14px;font-weight:800;color:#2A1810;line-height:1.3;">${esc(f.title)}</p>
+                          <p style="margin:2px 0 0;font-size:13px;color:#7A655C;line-height:1.4;">${esc(f.body)}</p>
+                        </td>
+                      </tr>
+                    </table>`
+                      )
+                      .join('')}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>`;
+
   const stepsHtml = steps
     .map(
       (s, i) => `
-      <tr>
-        <td style="padding:0 0 10px;vertical-align:top;width:28px;">
-          <span style="display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:999px;background:${meta.accent};color:#fff;font-size:12px;font-weight:800;">${i + 1}</span>
-        </td>
-        <td style="padding:0 0 10px 8px;font-size:14px;line-height:1.5;color:#5c2e1f;">${esc(s)}</td>
-      </tr>`
+                    <tr>
+                      <td style="padding:0 0 10px;font-size:14px;line-height:1.45;color:#4A342C;">
+                        <strong style="color:${meta.accent};">${i + 1}.</strong> ${esc(s)}
+                      </td>
+                    </tr>`
     )
     .join('');
 
@@ -240,98 +320,103 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light only">
   <meta name="supported-color-schemes" content="light">
   <title>${esc(subject)}</title>
-  <!--[if mso]><style>body,table,td{font-family:Arial,sans-serif!important}</style><![endif]-->
+  <!--[if mso]><style>body,table,td{font-family:Arial,Helvetica,sans-serif!important}</style><![endif]-->
 </head>
-<body style="margin:0;padding:0;background:#fff5f0;font-family:'Nunito',Segoe UI,Helvetica,Arial,sans-serif;color:#3d2218;-webkit-text-size-adjust:100%;">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
-    ${isPremium ? 'Tu complemento ya está en tu acceso.' : 'Crea tu cuenta y entra al kit en menos de 1 minuto.'}
+<body style="margin:0;padding:0;background:#F3EEE8;font-family:Georgia,'Times New Roman',serif;color:#2A1810;-webkit-text-size-adjust:100%;">
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
+    ${esc(meta.subtitle)}
   </div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff5f0;padding:24px 12px;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3EEE8;">
     <tr>
-      <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid rgba(92,46,31,0.08);box-shadow:0 8px 28px rgba(61,34,24,0.08);">
+      <td align="center" style="padding:28px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border-radius:4px;overflow:hidden;border:1px solid #E8DFD6;">
 
-          <!-- Header / logo -->
+          <!-- Brand bar -->
           <tr>
-            <td style="padding:22px 24px 8px;text-align:center;background:linear-gradient(180deg,#fff8f3 0%,#ffffff 100%);">
-              <img src="${logoUrl}" width="56" height="56" alt="${esc(BRAND_SHORT)}" style="display:inline-block;border:0;border-radius:14px;">
-              <p style="margin:10px 0 0;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:${meta.accent};">
-                ${esc(meta.line === 'postres' ? 'Postres en Vaso' : BRAND_NAME)}
-              </p>
-            </td>
-          </tr>
-
-          <!-- Hero image -->
-          <tr>
-            <td style="padding:8px 16px 0;">
-              <img src="${heroUrl}" width="528" alt="${esc(meta.heroAlt)}" style="display:block;width:100%;max-width:528px;height:auto;border:0;border-radius:16px;">
-            </td>
-          </tr>
-
-          <!-- Title -->
-          <tr>
-            <td style="padding:20px 28px 8px;text-align:center;">
-              <span style="display:inline-block;background:#ffe8f0;color:${meta.accent};font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:6px 14px;border-radius:999px;">${esc(meta.badge)}</span>
-              <h1 style="font-size:26px;line-height:1.25;margin:14px 0 8px;color:#3d2218;font-weight:800;">
-                ${esc(meta.title)} ${meta.emoji}
-              </h1>
-              <p style="font-size:15px;line-height:1.55;margin:0;color:#7a655c;">
-                ${greeting} ${
-                  isPremium
-                    ? `tu <strong style="color:#3d2218;">${esc(meta.productName)}</strong> ya está incluido en tu acceso.`
-                    : `gracias por tu compra de <strong style="color:#3d2218;">${esc(meta.productName)}</strong>.`
-                }
-              </p>
-            </td>
-          </tr>
-
-          <!-- Important box -->
-          <tr>
-            <td style="padding:12px 24px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fff3e8;border-radius:14px;border:1px solid rgba(255,122,26,0.28);">
+            <td style="background:${meta.accentDeep};padding:14px 24px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="padding:14px 16px;font-size:13px;line-height:1.55;color:#5c2e1f;">
-                    <strong>Importante:</strong> tu producto <u>no está dentro de Hotmart</u>.
-                    El acceso es en nuestra app${isPremium ? ' (mismo correo de la compra)' : '. Crea tu cuenta con el mismo correo de la compra'}.
+                  <td style="vertical-align:middle;">
+                    <img src="${logoUrl}" width="36" height="36" alt="" style="display:inline-block;border:0;border-radius:8px;vertical-align:middle;">
+                    <span style="display:inline-block;vertical-align:middle;margin-left:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#FFFFFF;">
+                      ${esc(meta.brandLine)}
+                    </span>
+                  </td>
+                  <td align="right" style="vertical-align:middle;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.85);">
+                    ${esc(meta.badge)}
                   </td>
                 </tr>
               </table>
+            </td>
+          </tr>
+
+          <!-- Full-bleed hero -->
+          <tr>
+            <td style="padding:0;line-height:0;font-size:0;">
+              <img src="${heroUrl}" width="560" alt="${esc(meta.heroAlt)}" style="display:block;width:100%;max-width:560px;height:auto;border:0;">
+            </td>
+          </tr>
+
+          <!-- Headline -->
+          <tr>
+            <td style="padding:28px 28px 8px;text-align:left;">
+              <p style="margin:0 0 10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#7A655C;">
+                ${greeting}
+              </p>
+              <h1 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.2;font-weight:700;color:#1F120C;letter-spacing:-0.02em;">
+                ${esc(meta.title)}
+              </h1>
+              <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;color:#5C473E;">
+                ${esc(meta.subtitle)}
+              </p>
             </td>
           </tr>
 
           <!-- CTA -->
           <tr>
-            <td style="padding:8px 24px 4px;text-align:center;">
-              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+            <td style="padding:20px 28px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
-                  <td style="border-radius:999px;background:linear-gradient(135deg,${meta.accent},${meta.accent2});">
-                    <a href="${primaryHref}" style="display:inline-block;padding:15px 32px;font-size:15px;font-weight:800;color:#ffffff;text-decoration:none;border-radius:999px;">
-                      ${esc(ctaLabel(product))}
+                  <td align="center" style="border-radius:4px;background:${meta.accentDeep};">
+                    <a href="${primaryHref}" style="display:block;padding:16px 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;font-weight:800;color:#FFFFFF;text-decoration:none;letter-spacing:0.01em;">
+                      ${esc(ctaLabel(product))} →
                     </a>
                   </td>
                 </tr>
               </table>
-              <p style="font-size:12px;color:#7a655c;margin:14px 0 0;line-height:1.5;">
+              <p style="margin:14px 0 0;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:#8A746A;">
                 ${
                   isPremium
-                    ? `¿Primera vez? <a href="${links.register}" style="color:${meta.accent};font-weight:700;text-decoration:none;">Crea tu cuenta aquí</a>`
-                    : `¿Ya tienes cuenta? <a href="${links.app}" style="color:${meta.accent};font-weight:700;text-decoration:none;">Abrir la app</a>
-                       · <a href="${links.membros}" style="color:${meta.accent};font-weight:700;text-decoration:none;">Descargar PDFs</a>`
+                    ? `¿Primera vez? <a href="${links.register}" style="color:${meta.accentDeep};font-weight:700;text-decoration:underline;">Crea tu cuenta</a>`
+                    : `Usa el <strong>mismo correo</strong> de la compra · <a href="${links.app}" style="color:${meta.accentDeep};font-weight:700;text-decoration:underline;">Ya tengo cuenta</a>`
                 }
               </p>
             </td>
           </tr>
 
+          <!-- Hotmart note — quiet -->
+          <tr>
+            <td style="padding:12px 28px 4px;">
+              <p style="margin:0;padding:12px 14px;background:#FFF8F0;border-left:3px solid ${meta.accent};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;color:#5C473E;">
+                El acceso <strong>no está en Hotmart</strong>. Entra por el botón de arriba a nuestra app.
+              </p>
+            </td>
+          </tr>
+
+          ${thumbsHtml}
+          ${featuresHtml}
+
           <!-- Steps -->
           <tr>
-            <td style="padding:20px 28px 8px;">
-              <p style="font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:${meta.accent2};margin:0 0 12px;">
+            <td style="padding:16px 28px 8px;">
+              <p style="margin:0 0 10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:${meta.accent};">
                 Empieza en 3 pasos
               </p>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
                 ${stepsHtml}
               </table>
             </td>
@@ -339,15 +424,15 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
 
           <!-- WhatsApp -->
           <tr>
-            <td style="padding:8px 24px 24px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e8fff3;border-radius:14px;border:1px solid rgba(16,140,80,0.22);">
+            <td style="padding:12px 28px 28px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F0FDF4;border-radius:4px;border:1px solid #BBF7D0;">
                 <tr>
-                  <td style="padding:18px 16px;text-align:center;">
-                    <p style="font-size:14px;line-height:1.5;margin:0 0 14px;color:#1a5c38;">
-                      ¿No encuentras el acceso o tienes dudas? Escríbenos por WhatsApp y te ayudamos al momento.
+                  <td style="padding:18px 16px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+                    <p style="margin:0 0 12px;font-size:13px;line-height:1.45;color:#166534;">
+                      ¿Dudas con el acceso? Te ayudamos por WhatsApp.
                     </p>
-                    <a href="${waUrl}" style="display:inline-block;background:#25D366;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;padding:12px 24px;border-radius:999px;">
-                      Hablar por WhatsApp →
+                    <a href="${waUrl}" style="display:inline-block;background:#16A34A;color:#FFFFFF;text-decoration:none;font-weight:800;font-size:13px;padding:11px 20px;border-radius:4px;">
+                      Escribir por WhatsApp
                     </a>
                   </td>
                 </tr>
@@ -357,9 +442,11 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
 
           <!-- Footer -->
           <tr>
-            <td style="padding:0 24px 24px;text-align:center;font-size:12px;line-height:1.5;color:#9a857c;">
-              También puedes responder este correo. Estamos para ayudarte.<br>
-              <span style="color:#b5a49c;">${esc(BRAND_NAME)} · Email de compra (transaccional)</span>
+            <td style="padding:0 28px 24px;border-top:1px solid #F0E8E0;">
+              <p style="margin:18px 0 0;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:11px;line-height:1.55;color:#A09086;">
+                Puedes responder este correo.<br>
+                ${esc(meta.brandLine)} · Email de compra
+              </p>
             </td>
           </tr>
         </table>

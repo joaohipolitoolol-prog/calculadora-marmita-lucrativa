@@ -75,6 +75,13 @@ const state = {
   selectedUserIds: new Set(),
   detailUserId: null,
   sidebarOpen: false,
+  sidebarCollapsed: (() => {
+    try {
+      return localStorage.getItem('admin_sidebar_collapsed') === '1';
+    } catch {
+      return false;
+    }
+  })(),
   apiWarnings: [],
   contentDraft: null,
   funnelDraft: null,
@@ -128,6 +135,7 @@ function paint() {
     kiwifyContent: renderKiwifyContent(),
     user: state.currentAdminUser,
     sidebarOpen: state.sidebarOpen,
+    sidebarCollapsed: state.sidebarCollapsed,
     lineFilter: state.lineFilter,
     apiWarnings: state.apiWarnings,
     contentDraft: state.contentDraft,
@@ -387,6 +395,18 @@ function bindEvents() {
   document.getElementById('admin-menu-toggle')?.addEventListener('click', () => {
     state.sidebarOpen = true;
     paint();
+  });
+
+  root.querySelectorAll('[data-toggle-sidebar-collapse]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+      try {
+        localStorage.setItem('admin_sidebar_collapsed', state.sidebarCollapsed ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+      paint();
+    });
   });
 
   root.querySelectorAll('[data-admin-lang]').forEach((btn) => {

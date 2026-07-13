@@ -109,7 +109,7 @@ body {
   position: fixed;
   inset: 0 auto 0 0;
   z-index: 40;
-  transition: transform var(--transition);
+  transition: width 0.2s ease, transform 0.22s ease;
   color: var(--admin-text);
 }
 
@@ -134,6 +134,106 @@ body {
   flex-direction: column;
   min-height: 100vh;
   background: var(--admin-bg);
+  transition: margin-left 0.2s ease;
+}
+
+.admin-layout.sidebar-collapsed .admin-sidebar,
+.admin-sidebar.is-collapsed {
+  width: 72px;
+}
+
+.admin-layout.sidebar-collapsed .admin-main {
+  margin-left: 72px;
+}
+
+.admin-sidebar.is-collapsed .admin-brand-text,
+.admin-sidebar.is-collapsed .admin-nav-item span,
+.admin-sidebar.is-collapsed .admin-nav-badge,
+.admin-sidebar.is-collapsed .admin-user-meta,
+.admin-sidebar.is-collapsed .admin-foot-link span,
+.admin-sidebar.is-collapsed .admin-foot-logout span,
+.admin-sidebar.is-collapsed .admin-lang-switch {
+  display: none;
+}
+
+.admin-sidebar.is-collapsed .admin-brand {
+  justify-content: center;
+  padding: 14px 8px;
+}
+
+.admin-sidebar.is-collapsed .admin-sidebar-top {
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-sidebar.is-collapsed .admin-nav {
+  padding: 10px 8px;
+  align-items: center;
+}
+
+.admin-sidebar.is-collapsed .admin-nav-item {
+  justify-content: center;
+  padding: 10px;
+  width: 48px;
+}
+
+.admin-sidebar.is-collapsed .admin-sidebar-foot {
+  align-items: center;
+  padding: 10px 8px;
+}
+
+.admin-sidebar.is-collapsed .admin-foot-user {
+  justify-content: center;
+  padding: 4px;
+}
+
+.admin-sidebar.is-collapsed .admin-foot-actions {
+  flex-direction: column;
+}
+
+.admin-sidebar-collapse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--admin-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-collapse:hover {
+  color: var(--admin-text);
+  background: #f3f4f6;
+}
+
+.admin-collapse-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--admin-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-collapse-btn:hover {
+  color: var(--admin-text);
+  background: #f3f4f6;
+}
+
+@media (min-width: 901px) {
+  .admin-collapse-btn {
+    display: inline-flex;
+  }
 }
 
 /* ── Sidebar brand ── */
@@ -845,11 +945,30 @@ body {
 }
 
 .admin-sidebar-top {
-  display: contents;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-sidebar-top .admin-brand {
+  border-bottom: none;
+  flex: 1;
+  min-width: 0;
 }
 
 .admin-sidebar-close {
   display: none;
+}
+
+.admin-sidebar.is-collapsed .admin-sidebar-top {
+  flex-direction: column;
+  padding: 8px 0 10px;
+}
+
+.admin-sidebar.is-collapsed .admin-sidebar-collapse {
+  margin: 0 auto;
 }
 
 .admin-lang-switch {
@@ -1602,6 +1721,32 @@ body {
   .admin-sidebar {
     transform: translateX(-100%);
     z-index: 50;
+    width: 248px !important;
+  }
+
+  .admin-layout.sidebar-collapsed .admin-main {
+    margin-left: 0 !important;
+  }
+
+  .admin-sidebar.is-collapsed .admin-brand-text,
+  .admin-sidebar.is-collapsed .admin-nav-item span,
+  .admin-sidebar.is-collapsed .admin-nav-badge,
+  .admin-sidebar.is-collapsed .admin-user-meta,
+  .admin-sidebar.is-collapsed .admin-foot-link span,
+  .admin-sidebar.is-collapsed .admin-foot-logout span,
+  .admin-sidebar.is-collapsed .admin-lang-switch {
+    display: revert;
+  }
+
+  .admin-sidebar.is-collapsed .admin-nav-item {
+    justify-content: flex-start;
+    padding: 9px 12px;
+    width: 100%;
+  }
+
+  .admin-sidebar-collapse,
+  .admin-collapse-btn {
+    display: none !important;
   }
 
   .admin-sidebar.open {

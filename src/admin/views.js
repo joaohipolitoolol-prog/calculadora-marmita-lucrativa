@@ -1533,19 +1533,22 @@ function renderLangSwitcher() {
   `;
 }
 
-export function renderSidebar(activeTab, users, user, sidebarOpen) {
+export function renderSidebar(activeTab, users, user, sidebarOpen, sidebarCollapsed = false) {
   const stats = getStats(users);
   const pendingBadge = stats.pending > 0 ? `<span class="admin-nav-badge">${stats.pending}</span>` : '';
   const orphanBadge = stats.orphans > 0 ? `<span class="admin-nav-badge warn">${stats.orphans}</span>` : '';
   const navItems = getNavItems();
 
   return `
-    <aside class="admin-sidebar ${sidebarOpen ? 'open' : ''}" aria-label="Admin navigation">
+    <aside class="admin-sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'is-collapsed' : ''}" aria-label="Admin navigation">
       <div class="admin-sidebar-top">
         <div class="admin-brand">
           <img class="admin-brand-mark" src="/favicon.svg?v=5" width="34" height="34" alt="" decoding="async">
           <div class="admin-brand-text"><strong>${t('sidebar.brand')}</strong><span>${t('sidebar.sub')}</span></div>
         </div>
+        <button type="button" class="admin-sidebar-collapse" data-toggle-sidebar-collapse aria-label="${sidebarCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}" title="${sidebarCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}">
+          ${sidebarCollapsed ? ICONS.chevronRight : ICONS.chevronLeft}
+        </button>
         <button type="button" class="admin-sidebar-close" data-close-sidebar aria-label="${t('sidebar.close')}">${ICONS.close}</button>
       </div>
       <nav class="admin-nav">
@@ -1554,7 +1557,7 @@ export function renderSidebar(activeTab, users, user, sidebarOpen) {
             let badge = '';
             if (item.id === 'users') badge = pendingBadge || orphanBadge;
             return `
-          <button type="button" class="admin-nav-item ${activeTab === item.id ? 'active' : ''}" data-tab="${item.id}">
+          <button type="button" class="admin-nav-item ${activeTab === item.id ? 'active' : ''}" data-tab="${item.id}" title="${escapeHtml(item.label)}">
             ${ICONS[item.icon]}<span>${item.label}</span>${badge}
           </button>`;
           })
@@ -1627,6 +1630,7 @@ export function renderShell(props) {
     kiwifyContent,
     user,
     sidebarOpen,
+    sidebarCollapsed = false,
     lineFilter = 'all',
     apiWarnings = [],
     contentDraft = null,
@@ -1665,14 +1669,18 @@ export function renderShell(props) {
   }
 
   document.body.classList.toggle('admin-sidebar-open', Boolean(sidebarOpen));
+  document.body.classList.toggle('admin-sidebar-collapsed', Boolean(sidebarCollapsed));
 
   return `
-    <div class="admin-layout">
+    <div class="admin-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}">
       <div class="admin-sidebar-overlay ${sidebarOpen ? 'visible' : ''}" data-close-sidebar></div>
-      ${renderSidebar(activeTab, users, user, sidebarOpen)}
+      ${renderSidebar(activeTab, users, user, sidebarOpen, sidebarCollapsed)}
       <div class="admin-main">
         <header class="admin-header">
           <button type="button" class="admin-menu-btn" id="admin-menu-toggle" aria-label="Menu">${ICONS.menu}</button>
+          <button type="button" class="admin-collapse-btn" data-toggle-sidebar-collapse aria-label="${sidebarCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}" title="${sidebarCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}">
+            ${sidebarCollapsed ? ICONS.chevronRight : ICONS.chevronLeft}
+          </button>
           <div class="admin-header-titles"><h1>${meta.title}</h1><p>${meta.subtitle}</p></div>
         </header>
         <main class="admin-content">
