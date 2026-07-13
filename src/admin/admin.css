@@ -2606,13 +2606,13 @@ body {
 }
 
 .admin-email-client {
-  background: #ebe4df;
+  background: #f3f0ee;
   border: 1px solid var(--admin-border);
   border-radius: 14px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 640px;
+  min-height: 0;
   box-shadow: var(--admin-shadow);
 }
 
@@ -2625,6 +2625,7 @@ body {
   background: #fff;
   border-bottom: 1px solid var(--admin-border);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .admin-email-client-meta {
@@ -2662,27 +2663,60 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.55), transparent 40%),
-    linear-gradient(180deg, #f3ebe6 0%, #e8dfd8 100%);
-  padding: 20px 16px 28px;
+  background: #ebe6e2;
+  padding: 24px 16px 32px;
   flex: 1;
   overflow: auto;
+  min-height: 560px;
 }
 
-.admin-email-preview-frame {
+.admin-email-device-shell {
   width: 100%;
   max-width: 390px;
-  min-height: 720px;
-  border: 0;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 18px 50px rgba(61, 34, 40, 0.18);
+  background: #111;
+  border-radius: 28px;
+  padding: 10px 10px 14px;
+  box-shadow: 0 22px 50px rgba(30, 20, 24, 0.28);
   transition: max-width 0.2s ease;
 }
 
+.admin-email-preview-wrap[data-email-device-frame='desktop'] .admin-email-device-shell {
+  max-width: 640px;
+  border-radius: 16px;
+  padding: 0;
+  background: transparent;
+  box-shadow: 0 16px 40px rgba(30, 20, 24, 0.16);
+}
+
+.admin-email-device-top {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 10px;
+}
+
+.admin-email-preview-wrap[data-email-device-frame='desktop'] .admin-email-device-top {
+  display: none;
+}
+
+.admin-email-device-speaker {
+  width: 72px;
+  height: 5px;
+  border-radius: 999px;
+  background: #333;
+}
+
+.admin-email-preview-frame {
+  display: block;
+  width: 100%;
+  height: 640px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+  overflow: hidden;
+}
+
 .admin-email-preview-wrap[data-email-device-frame='desktop'] .admin-email-preview-frame {
-  max-width: 540px;
+  border-radius: 12px;
 }
 
 .admin-email-device {
@@ -2695,12 +2729,6 @@ body {
   .admin-email-studio {
     grid-template-columns: 1fr;
     min-height: 0;
-  }
-}
-
-@media (max-width: 980px) {
-  .admin-email-studio {
-    grid-template-columns: 1fr;
   }
 }
 

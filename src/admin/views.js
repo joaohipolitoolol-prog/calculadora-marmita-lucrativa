@@ -1283,11 +1283,17 @@ export function renderContentView(draft = null) {
   `;
 }
 
-export function renderEmailsView(users = [], emailFilter = 'paletas', emailProduct = 'paletas_kit') {
+export function renderEmailsView(
+  users = [],
+  emailFilter = 'paletas',
+  emailProduct = 'paletas_kit',
+  emailDevice = 'mobile',
+) {
   const templates = listEmailTemplates();
   const activeProduct = templates.some((t) => t.id === emailProduct)
     ? emailProduct
     : 'paletas_kit';
+  const device = emailDevice === 'desktop' ? 'desktop' : 'mobile';
   const previewName = 'María';
   const active = getAdminEmailTemplate(activeProduct, previewName);
   const fromLabel = active.meta?.brandLine || 'Paletas para WhatsApp';
@@ -1373,17 +1379,22 @@ export function renderEmailsView(users = [], emailFilter = 'paletas', emailProdu
               <div><span>${t('emails.subject')}</span><strong data-email-live-subject>${escapeHtml(active.subject)}</strong></div>
             </div>
             <div class="admin-email-device" role="group">
-              <button type="button" class="admin-line-chip active" data-email-device="mobile">Mobile</button>
-              <button type="button" class="admin-line-chip" data-email-device="desktop">Desktop</button>
+              <button type="button" class="admin-line-chip ${device === 'mobile' ? 'active' : ''}" data-email-device="mobile">Mobile</button>
+              <button type="button" class="admin-line-chip ${device === 'desktop' ? 'active' : ''}" data-email-device="desktop">Desktop</button>
             </div>
           </div>
-          <div class="admin-email-preview-wrap" data-email-device-frame="mobile">
-            <iframe
-              class="admin-email-preview-frame"
-              data-email-preview-live
-              title="Email preview"
-              sandbox=""
-            ></iframe>
+          <div class="admin-email-preview-wrap" data-email-device-frame="${device}">
+            <div class="admin-email-device-shell" data-email-device-shell>
+              <div class="admin-email-device-top" aria-hidden="true">
+                <span class="admin-email-device-speaker"></span>
+              </div>
+              <iframe
+                class="admin-email-preview-frame"
+                data-email-preview-live
+                title="Email preview"
+                sandbox="allow-same-origin allow-popups"
+              ></iframe>
+            </div>
           </div>
         </section>
       </div>
@@ -1631,6 +1642,7 @@ export function renderShell(props) {
     dateRange = 'today',
     emailFilter = 'paletas',
     emailProduct = 'paletas_kit',
+    emailDevice = 'mobile',
   } = props;
   const meta = getViewMeta()[activeTab] || getViewMeta().dashboard;
   let content = '';
@@ -1646,7 +1658,7 @@ export function renderShell(props) {
       content = renderAnalyticsView(analytics, lineFilter, users);
       break;
     case 'emails':
-      content = renderEmailsView(users, emailFilter, emailProduct);
+      content = renderEmailsView(users, emailFilter, emailProduct, emailDevice);
       break;
     case 'codes':
       content = renderCodesView(codes);

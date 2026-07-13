@@ -88,6 +88,7 @@ const state = {
   dateRange: 'today',
   emailFilter: 'paletas',
   emailProduct: 'paletas_kit',
+  emailDevice: 'mobile',
   settingsLoadError: null,
 };
 
@@ -143,6 +144,7 @@ function paint() {
     dateRange: state.dateRange,
     emailFilter: state.emailFilter,
     emailProduct: state.emailProduct,
+    emailDevice: state.emailDevice,
     settingsLoadError: state.settingsLoadError,
   });
   bindEvents();
@@ -549,6 +551,28 @@ function bindEvents() {
     });
   });
 
+  function fitEmailPreviewFrame(frame) {
+    if (!frame) return;
+    const apply = () => {
+      try {
+        const doc = frame.contentDocument;
+        if (!doc?.body) return;
+        const h = Math.max(
+          doc.body.scrollHeight || 0,
+          doc.documentElement?.scrollHeight || 0,
+          480,
+        );
+        frame.style.height = `${h + 8}px`;
+      } catch {
+        frame.style.height = '720px';
+      }
+    };
+    frame.addEventListener('load', apply, { once: true });
+    // Images loading later can grow height
+    setTimeout(apply, 250);
+    setTimeout(apply, 900);
+  }
+
   function refreshEmailPreview() {
     const frame = root.querySelector('[data-email-preview-live]');
     const store = root.querySelector('[data-email-html-live]');
@@ -560,16 +584,13 @@ function bindEvents() {
     if (subjectEl) subjectEl.textContent = built.subject;
     const fromEl = root.querySelector('[data-email-live-from]');
     if (fromEl && built.meta?.brandLine) fromEl.textContent = built.meta.brandLine;
+    frame.style.height = '640px';
     frame.srcdoc = built.html;
+    fitEmailPreviewFrame(frame);
   }
 
-  // Initial live preview fill
   if (state.activeTab === 'emails') {
-    const frame = root.querySelector('[data-email-preview-live]');
-    const store = root.querySelector('[data-email-html-live]');
-    if (frame && store) {
-      frame.srcdoc = store.value || '';
-    }
+    refreshEmailPreview();
   }
 
   root.querySelector('[data-email-preview-name]')?.addEventListener('input', () => {
@@ -578,12 +599,8 @@ function bindEvents() {
 
   root.querySelectorAll('[data-email-device]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const device = btn.dataset.emailDevice || 'mobile';
-      root.querySelectorAll('[data-email-device]').forEach((b) => {
-        b.classList.toggle('active', b === btn);
-      });
-      const wrap = root.querySelector('[data-email-device-frame]');
-      if (wrap) wrap.dataset.emailDeviceFrame = device;
+      state.emailDevice = btn.dataset.emailDevice || 'mobile';
+      paint();
     });
   });
 
