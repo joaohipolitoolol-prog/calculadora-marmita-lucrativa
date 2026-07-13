@@ -79,7 +79,7 @@ export function markCheckoutPending(line = 'paletas') {
   }
 }
 
-export function hasCheckoutPending(line = 'paletas', maxAgeMs = 24 * 60 * 60 * 1000) {
+export function hasCheckoutPending(line = 'paletas', maxAgeMs = 2 * 60 * 60 * 1000) {
   try {
     const raw = sessionStorage.getItem(`pending_purchase_${line}`);
     if (!raw) return false;

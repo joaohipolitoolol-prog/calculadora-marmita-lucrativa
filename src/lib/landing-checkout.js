@@ -9,17 +9,12 @@ import {
 } from './meta-pixel.js';
 import { withAbCheckoutParam } from './ab-entry.js';
 
-function cameFromHotmart() {
-  try {
-    return /hotmart\.com/i.test(document.referrer || '');
-  } catch {
-    return false;
-  }
-}
-
-/** Purchase só após clique em checkout neste browser ou retorno Hotmart. */
+/**
+ * Purchase só se a pessoa clicou checkout neste browser.
+ * Referrer Hotmart sozinho NÃO basta (evita falso positivo ao sair do checkout sem pagar).
+ */
 export function canFireThankYouPurchase(line = 'paletas') {
-  return hasCheckoutPending(line) || cameFromHotmart();
+  return hasCheckoutPending(line);
 }
 
 export function bindScrollToOffer(selector = '[data-scroll-offer]') {

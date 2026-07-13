@@ -57,13 +57,9 @@ if (purchaseFlags && purchaseBanner) {
 }
 
 function shouldFireRegisterPurchase(line) {
-  return hasCheckoutPending(line) || (() => {
-    try {
-      return /hotmart\.com/i.test(document.referrer || '');
-    } catch {
-      return false;
-    }
-  })();
+  // Mesma regra do thank-you: só após clique em checkout neste browser.
+  // Link ?compra=1&src=hotmart sozinho NÃO dispara Purchase no Meta.
+  return hasCheckoutPending(line);
 }
 
 if (purchaseFlags?.hasKit && shouldFireRegisterPurchase('paletas')) {
