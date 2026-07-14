@@ -2,9 +2,14 @@
  * Meta Conversions API (server-side Purchase).
  * Browser Purchase is disabled — client thank-you + pending-checkout caused false sales.
  *
+ * DISABLED BY DEFAULT. Opt-in only when you trust Hotmart APPROVED webhooks as the
+ * sole truth and have REMOVED Hotmart's own Meta Pixel / CAPI (otherwise duplicate
+ * / false sales from checkout-page pixel).
+ *
  * Env:
+ *   META_CAPI_PURCHASE_ENABLED=1   (required to send)
+ *   META_CAPI_ACCESS_TOKEN         (required to send)
  *   META_PIXEL_ID (default in code)
- *   META_CAPI_ACCESS_TOKEN (required to send; without it this is a no-op)
  *   META_CAPI_TEST_EVENT_CODE (optional, Events Manager test)
  */
 import { createHash } from 'crypto';
@@ -34,6 +39,13 @@ function sha256(value) {
   return createHash('sha256').update(String(value).trim().toLowerCase()).digest('hex');
 }
 
+function capiPurchaseEnabled() {
+  const flag = String(process.env.META_CAPI_PURCHASE_ENABLED || '')
+    .trim()
+    .toLowerCase();
+  return flag === '1' || flag === 'true' || flag === 'yes';
+}
+
 /**
  * @param {{
  *   product?: string,
@@ -46,6 +58,14 @@ function sha256(value) {
  * }} opts
  */
 export async function sendMetaCapiPurchase(opts = {}) {
+  if (!capiPurchaseEnabled()) {
+    return {
+      ok: false,
+      skipped: true,
+      reason: 'META_CAPI_PURCHASE_ENABLED off (Hotmart Pixel is the usual false-sale source)',
+    };
+  }
+
   const token = process.env.META_CAPI_ACCESS_TOKEN;
   if (!token) {
     return { ok: false, skipped: true, reason: 'META_CAPI_ACCESS_TOKEN missing' };
