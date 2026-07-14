@@ -180,6 +180,23 @@ async function fetchEntryConfig() {
 }
 
 /**
+ * Clear sticky quiz when the entry experiment is off so / is reachable again.
+ */
+function clearStickyIfExperimentOff(entry) {
+  if (entry?.enabled) return false;
+  try {
+    const sticky = localStorage.getItem(AB_STORAGE_KEY);
+    if (sticky === 'quiz') {
+      localStorage.setItem(AB_STORAGE_KEY, 'lp');
+      return true;
+    }
+  } catch {
+    /* ignore */
+  }
+  return false;
+}
+
+/**
  * Resolve entry variant for `/`. May redirect to /diagnostico.
  * @returns {Promise<{ variant: 'lp'|'quiz', quizPercent: number, source: string, redirected: boolean }>}
  */
@@ -205,9 +222,23 @@ export async function resolvePaletasEntryAb() {
     return { variant: 'lp', quizPercent: 0, source: 'override', redirected: false };
   }
 
+  const entry = await fetchEntryConfig();
+  const experimentOn = Boolean(entry?.enabled);
+
+  // Experiment off → never force quiz (fixes sticky lock when A/B is disabled)
+  if (!experimentOn) {
+    clearStickyIfExperimentOff(entry);
+    revealLanding();
+    return {
+      variant: 'lp',
+      quizPercent: Number(entry.quizPercent) || 0,
+      source: 'disabled',
+      redirected: false,
+    };
+  }
+
   const sticky = readStickyVariant();
   if (sticky) {
-    // Already assigned earlier — do not re-count assign
     if (sticky === 'quiz') {
       window.location.replace('/diagnostico');
       return { variant: 'quiz', quizPercent: 0, source: 'sticky', redirected: true };
@@ -216,7 +247,6 @@ export async function resolvePaletasEntryAb() {
     return { variant: 'lp', quizPercent: 0, source: 'sticky', redirected: false };
   }
 
-  const entry = await fetchEntryConfig();
   const variant = assignVariant(entry);
   writeStickyVariant(variant);
   trackAbAssignOnce(variant, 'assign');

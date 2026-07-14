@@ -49,16 +49,13 @@
         }
         var sticky = null;
         try { sticky = localStorage.getItem(KEY); } catch (e) {}
-        if (sticky === 'quiz') {
-          location.replace('/diagnostico');
-          return;
-        }
         if (sticky === 'lp') {
           document.documentElement.classList.add('ab-ready');
           return;
         }
+        /* sticky=quiz OR first visit: wait for JS + /api/experiments.
+           Do NOT hard-redirect quiz here — experiment may be disabled. */
         document.documentElement.classList.add('ab-pending');
-        /* Failsafe: never leave visitor on blank screen if JS bundle fails */
         setTimeout(function () {
           var root = document.documentElement;
           if (root.classList.contains('ab-pending')) {
