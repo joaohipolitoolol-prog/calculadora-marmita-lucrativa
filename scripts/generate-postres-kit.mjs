@@ -10,6 +10,8 @@ import {
   PLAN_7_DIAS_POSTRES,
   LISTA_COMPRAS_POSTRES,
   CHECKLIST_POSTRES,
+  METODO_3_BASES,
+  MENU_12_NOMBRES,
 } from '../src/data/kit-postres.js';
 
 function esc(s) {
@@ -94,10 +96,19 @@ mkdirSync('public/postres-premium/produto', { recursive: true });
 writeFileSync(
   'public/postres/produto/Kit_Postres_en_Vaso.html',
   shell(
-    'Kit Principal · Postres en Vaso',
+    'Kit Principal · Mini Postres Fríos Sin Horno',
     `
-<div class="cover"><div class="badge">Kit Principal</div><div style="font-size:48pt">🍨</div><h1>Postres en Vaso</h1><p>${base.length} recetas nativas + método para vender por WhatsApp. Usa Imprimir para guardar PDF.</p></div>
-<h2>Recetas del kit</h2>${recipeCards(base)}
+<div class="cover"><div class="badge">Mini Postres Fríos</div><div style="font-size:48pt">🧁</div><h1>3 bases → 12 sabores</h1><p>${esc(METODO_3_BASES.lead)} Incluye el menú de ${MENU_12_NOMBRES.length} + ampliación. Sin horno. Usa Imprimir para PDF.</p></div>
+<h2>El método</h2>
+${METODO_3_BASES.bases
+  .map(
+    (b) =>
+      `<article class="card"><h3>${esc(b.nombre)}</h3><p>${esc(b.sabores.join(' · '))}</p></article>`
+  )
+  .join('')}
+<article class="card"><h3>Pasos</h3><ol>${METODO_3_BASES.pasos.map((p) => `<li>${esc(p)}</li>`).join('')}</ol></article>
+<h2>Menú 12 (empieza aquí)</h2>${recipeCards(base.filter((r) => r.menuPrincipal))}
+<h2>Ampliación del kit</h2>${recipeCards(base.filter((r) => !r.menuPrincipal))}
 `
   )
 );
@@ -110,9 +121,9 @@ const byCat = MENSAJES_POSTRES.reduce((a, m) => {
 writeFileSync(
   'public/postres/produto/Mensajes_Postres.html',
   shell(
-    'Mensajes WhatsApp · Postres',
+    'Mensajes WhatsApp · Mini Postres',
     `
-<div class="cover"><div class="badge">Vender</div><h1>Mensajes listos</h1><p>Copia, pega y adapta precios y zona.</p></div>
+<div class="cover"><div class="badge">Vender</div><h1>Mensajes listos</h1><p>Mini postres fríos por WhatsApp. Copia, pega y adapta precios y zona.</p></div>
 ${Object.entries(byCat)
   .map(
     ([cat, msgs]) =>
@@ -126,9 +137,9 @@ ${Object.entries(byCat)
 writeFileSync(
   'public/postres/produto/Plan_7_Dias_Postres.html',
   shell(
-    'Plan 7 días · Postres',
+    'Plan 7 días · Mini Postres',
     `
-<div class="cover"><div class="badge">Plan</div><h1>7 días para vender</h1><p>De la primera tanda al ajuste de precios.</p></div>
+<div class="cover"><div class="badge">Plan</div><h1>7 días para vender</h1><p>De 1 base y 3 sabores al menú completo.</p></div>
 ${PLAN_7_DIAS_POSTRES.map(
   (d) => `<article class="card"><h3>Día ${d.dia}: ${esc(d.titulo)}</h3><div class="meta"><span>${esc(d.duracion)}</span><span>${esc(d.meta)}</span></div><ol>${d.tareas.map((t) => `<li>${esc(t)}</li>`).join('')}</ol></article>`
 ).join('')}
@@ -150,12 +161,16 @@ ${CHECKLIST_POSTRES.map((t) => `<label class="check"><input type="checkbox"><spa
 writeFileSync(
   'public/postres/produto/Menu_Editable_Postres.html',
   shell(
-    'Menú editable · Postres',
+    'Menú editable · Mini Postres',
     `
-<div class="cover"><div class="badge">Menú</div><h1>Menú para WhatsApp</h1><p>Edita precios y copia el bloque.</p></div>
+<div class="cover"><div class="badge">Menú</div><h1>Catálogo para WhatsApp</h1><p>Empieza con el Menú 12. Edita precios y copia.</p></div>
 <article class="card" contenteditable="true">
-<strong>🍨 POSTRES EN VASO</strong><br><br>
-${base.map((r) => `• ${esc(r.nombre)}, $[PRECIO]<br>`).join('')}
+<strong>🧁 MINI POSTRES FRÍOS SIN HORNO</strong><br>
+<em>3 bases · sin horno</em><br><br>
+${base
+  .filter((r) => r.menuPrincipal)
+  .map((r) => `• ${esc(r.nombre)}, $[PRECIO]<br>`)
+  .join('')}
 <br>Combos y encargos disponibles.<br>Escríbeme para apartar 💬
 </article>
 <p class="tip">Toca el menú para editar precios, luego selecciona y copia.</p>

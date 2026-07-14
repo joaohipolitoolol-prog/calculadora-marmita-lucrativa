@@ -4400,6 +4400,17 @@ body.onboarding-open {
   line-height: 1;
 }
 
+.kit-nav-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.kit-nav-wrap .kit-nav {
+  margin: 0;
+}
+
 .kit-nav {
   display: flex;
   gap: 6px;
@@ -4416,6 +4427,63 @@ body.onboarding-open {
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
   scroll-padding-inline: 8px;
+}
+
+.kit-nav--more {
+  background: var(--surface);
+}
+
+.kit-nav-more-btn {
+  color: var(--pink) !important;
+}
+
+.kit-nav-more-btn.is-open {
+  background: var(--pink-soft) !important;
+  box-shadow: none !important;
+}
+
+.menu-item-fav {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--brown-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.menu-item-fav svg {
+  width: 18px;
+  height: 18px;
+}
+
+.menu-item-fav.is-on {
+  color: var(--pink);
+}
+
+.menu-item-fav.is-on svg {
+  fill: currentColor;
+}
+
+.menu-list-fav-hint {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: var(--brown-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.menu-list-fav-hint svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--pink);
 }
 
 .kit-nav.is-dragging {

@@ -220,9 +220,64 @@ function setKitSection(id) {
   if (id === 'premium' || PREMIUM_SUB_SECTIONS.some((s) => s.id === id)) {
     kitSection = 'premium';
     premiumSubSection = id === 'premium' ? premiumSubSection || 'combos' : id;
+    kitMoreOpen = true;
     return;
   }
   kitSection = id;
+  if (KIT_VENDER_MORE_IDS.has(id)) kitMoreOpen = true;
+}
+
+const KIT_VENDER_PRIMARY = [
+  { id: 'menu', label: 'Menú WhatsApp' },
+  { id: 'mensajes', label: 'Textos listos' },
+  { id: 'pedidos', label: 'Pedidos' },
+  { id: 'plan', label: 'Plan 7 días' },
+];
+
+const KIT_VENDER_MORE_BASE = [
+  { id: 'crecimiento', label: 'Semanas 2-4' },
+  { id: 'lista', label: 'Lista compras' },
+  { id: 'checklist', label: 'Checklist' },
+  { id: 'tecnicas', label: 'Tips', needsExtras: true },
+  { id: 'premium', label: 'Premium', premium: true },
+  { id: 'ayuda', label: 'Ayuda' },
+];
+
+const KIT_VENDER_MORE_IDS = new Set(KIT_VENDER_MORE_BASE.map((s) => s.id));
+
+function favoriteKey(lineId, uid) {
+  return `recipe_favs_${lineId || 'paletas'}_${uid || 'local'}_v1`;
+}
+
+function loadFavoriteKeys(lineId = lineBrand().id) {
+  try {
+    const raw = localStorage.getItem(favoriteKey(lineId, currentUser?.uid));
+    const list = JSON.parse(raw || '[]');
+    return Array.isArray(list) ? list.filter((k) => typeof k === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveFavoriteKeys(keys, lineId = lineBrand().id) {
+  try {
+    localStorage.setItem(favoriteKey(lineId, currentUser?.uid), JSON.stringify(keys));
+  } catch {
+    /* ignore */
+  }
+}
+
+function isRecipeFavorite(recipeKey, lineId = lineBrand().id) {
+  return loadFavoriteKeys(lineId).includes(recipeKey);
+}
+
+function toggleRecipeFavorite(recipeKey, lineId = lineBrand().id) {
+  const keys = loadFavoriteKeys(lineId);
+  const idx = keys.indexOf(recipeKey);
+  if (idx >= 0) keys.splice(idx, 1);
+  else keys.push(recipeKey);
+  saveFavoriteKeys(keys, lineId);
+  return keys.includes(recipeKey);
 }
 let menuWaDraft = null;
 let menuPremiumDraft = null;
@@ -238,6 +293,7 @@ try {
 let recipeCatalog = 'base';
 let recipeFilter = 'all';
 let kitUnlocked = true;
+let kitMoreOpen = false;
 let userProfile = null;
 let ownedLines = [PRODUCT_LINE_BY_ID.paletas];
 let activeLine = PRODUCT_LINE_BY_ID.paletas;
@@ -282,8 +338,10 @@ function kitContentForLine() {
       upsellPrice: POSTRES_UPSELL_PRICE,
       upsellName: POSTRES_UPSELL_NAME,
       upsellPath: '/postres/upsell',
-      recipeTitle: 'Recetas de mini postres fríos',
-      premiumRecipeTitle: 'Recetas premium · Postres',
+      recipeTitle: 'Mini Postres · 3 bases → 12 sabores',
+      premiumRecipeTitle: 'Recetas premium · Mini Postres',
+      recipeLead:
+        'Dominas 3 bases sin horno. Empieza con el Menú 12; el resto del kit es ampliación cuando ya vendas.',
     };
   }
   return {
@@ -487,8 +545,10 @@ const RECIPE_FILTERS_PALETAS = [
 
 const RECIPE_FILTERS_POSTRES = [
   { id: 'all', label: 'Todas' },
-  { id: 'cremoso', label: 'Cremosos' },
-  { id: 'frutal', label: 'Frutales' },
+  { id: 'menu', label: 'Menú 12' },
+  { id: 'crema', label: 'Base crema' },
+  { id: 'chocolate', label: 'Base chocolate' },
+  { id: 'frutal', label: 'Base frutal' },
 ];
 
 function recipeFiltersForLine(catalog = recipeCatalog) {
@@ -496,9 +556,22 @@ function recipeFiltersForLine(catalog = recipeCatalog) {
   const kit = kitContentForLine();
   const recipes =
     catalog === 'premium' ? kit.recipesPremium || [] : kit.recipes || [];
-  if (!recipes.length) return all;
-  const present = new Set(recipes.map((r) => recipeTipoSlug(r.tipo)));
-  return all.filter((f) => f.id === 'all' || present.has(f.id));
+  const base = !recipes.length
+    ? all
+    : all.filter((f) => {
+        if (f.id === 'all') return true;
+        if (f.id === 'menu') return recipes.some((r) => r.menuPrincipal);
+        if (lineBrand().id === 'postres') {
+          return recipes.some((r) => r.base === f.id);
+        }
+        const present = new Set(recipes.map((r) => recipeTipoSlug(r.tipo)));
+        return present.has(f.id);
+      });
+  const favCount = loadFavoriteKeys().length;
+  if (favCount > 0) {
+    return [{ id: 'favs', label: `Esta semana (${favCount})` }, ...base];
+  }
+  return base;
 }
 
 function ensureValidRecipeFilter() {
@@ -582,9 +655,15 @@ function applyRecipeListFilters() {
   let visible = 0;
 
   document.querySelectorAll('#menu-list .menu-item').forEach((item) => {
-    const tipoOk = recipeFilter === 'all' || item.dataset.tipo === recipeFilter;
+    const favOk = recipeFilter !== 'favs' || item.dataset.fav === '1';
+    const tipoOk =
+      recipeFilter === 'all' ||
+      recipeFilter === 'favs' ||
+      (recipeFilter === 'menu'
+        ? item.dataset.menu === '1'
+        : item.dataset.tipo === recipeFilter);
     const searchOk = !q || (item.dataset.search || '').includes(q);
-    const show = tipoOk && searchOk;
+    const show = favOk && tipoOk && searchOk;
     item.style.display = show ? '' : 'none';
     if (show) visible += 1;
   });
@@ -601,9 +680,13 @@ function applyRecipeListFilters() {
 
   const countEl = document.getElementById('menu-list-count');
   if (countEl) {
-    countEl.textContent = isFiltering
-      ? `${visible} receta${visible === 1 ? '' : 's'} encontrada${visible === 1 ? '' : 's'}`
-      : `${document.querySelectorAll('#menu-list .menu-item').length} recetas · toca una semana para ver`;
+    if (recipeFilter === 'favs' && !q) {
+      countEl.textContent = `${visible} sabor${visible === 1 ? '' : 'es'} de esta semana`;
+    } else {
+      countEl.textContent = isFiltering
+        ? `${visible} receta${visible === 1 ? '' : 's'} encontrada${visible === 1 ? '' : 's'}`
+        : `${document.querySelectorAll('#menu-list .menu-item').length} recetas · toca una semana para ver`;
+    }
   }
   document.getElementById('menu-empty')?.classList.toggle('hidden', visible > 0);
 
@@ -1255,7 +1338,7 @@ function renderTopbarSub() {
   if (activeView === 'profile') return 'Ajustes';
   if (activeView === 'menuWeb') return 'Link para clientes';
   if (activeView === 'kit') {
-    const labels = { recetas: 'Recetas', archivos: 'Archivos', vender: 'Vender' };
+    const labels = { recetas: 'Recetas', archivos: 'Descargas', vender: 'Vender' };
     return labels[kitHubTab] || '';
   }
   return '';
@@ -1398,7 +1481,7 @@ function renderTabBar() {
 
 const KIT_HUB_TABS = [
   { id: 'recetas', label: 'Recetas', icon: 'book' },
-  { id: 'archivos', label: 'Archivos', icon: 'folder' },
+  { id: 'archivos', label: 'Descargas', icon: 'folder' },
   { id: 'vender', label: 'Vender', icon: 'message' },
 ];
 
@@ -1546,7 +1629,7 @@ function renderHome() {
     { id: 'results', icon: 'chart', label: 'Ver ganancia', desc: `${money(r.profitPerUnit)} por ${brand.unitSingular}` },
     { id: 'kit', kitHub: 'recetas', icon: 'book', label: 'Recetas', desc: 'Sabores y combos' },
     { id: 'kit', kitHub: 'vender', kitSection: 'pedidos', icon: 'list', label: 'Pedidos', desc: 'Anota ventas de WhatsApp' },
-    { id: 'kit', kitHub: 'vender', icon: 'message', label: 'Vender', desc: 'Mensajes WhatsApp' },
+    { id: 'kit', kitHub: 'vender', icon: 'message', label: 'Vender', desc: 'Menú y textos WhatsApp' },
   ];
 
   const currencyMenu = CURRENCIES.map(
@@ -2582,6 +2665,8 @@ function renderScenarioList() {
 function recipeTipoSlug(tipo) {
   const map = {
     Frutal: 'frutal',
+    Crema: 'crema',
+    Chocolate: 'chocolate',
     Cremosa: 'cremosa',
     Cremoso: 'cremoso',
     Rellena: 'rellena',
@@ -2591,12 +2676,18 @@ function recipeTipoSlug(tipo) {
   return map[tipo] || String(tipo || 'default').toLowerCase();
 }
 
+function recipeFilterSlug(item) {
+  if (lineBrand().id === 'postres' && item.base) return item.base;
+  return recipeTipoSlug(item.tipo);
+}
+
 function recipeSearchBlob(item) {
   return [
     item.dia,
     item.num,
     item.nombre,
     item.tipo,
+    item.base,
     item.dificultad,
     item.consejo,
     item.tip,
@@ -2610,6 +2701,8 @@ function recipeSearchBlob(item) {
 
 function recipeMatchesFilter(item, filter) {
   if (filter === 'all') return true;
+  if (filter === 'menu') return Boolean(item.menuPrincipal);
+  if (lineBrand().id === 'postres' && item.base) return item.base === filter;
   return recipeTipoSlug(item.tipo) === filter;
 }
 
@@ -2631,6 +2724,7 @@ function renderRecipeItem(item, label, { premium = false, lineId, audioEnabled =
   const recipeKey = recipeStableKey(item, { lineId, premium });
   const emoji = resolveRecipeEmoji(lineId || lineBrand().id, item);
   const allergens = inferAllergens(item);
+  const fav = isRecipeFavorite(recipeKey, lineId || lineBrand().id);
   const playBtn = audioEnabled
     ? `<button type="button" class="menu-item-play" data-recipe-play="${escapeHtml(recipeKey)}" aria-label="Escuchar receta en modo audio guiado" aria-pressed="false">
           <span class="menu-item-play-icon menu-item-play-icon--play" aria-hidden="true">${ICONS.play}</span>
@@ -2638,23 +2732,25 @@ function renderRecipeItem(item, label, { premium = false, lineId, audioEnabled =
           <span class="menu-item-play-icon menu-item-play-icon--load" aria-hidden="true">${ICONS.loader}</span>
         </button>`
     : '';
+  const favBtn = `<button type="button" class="menu-item-fav${fav ? ' is-on' : ''}" data-recipe-fav="${escapeHtml(recipeKey)}" aria-label="${fav ? 'Quitar de esta semana' : 'Guardar para esta semana'}" aria-pressed="${fav ? 'true' : 'false'}">${ICONS.star}</button>`;
   const allergenRow = allergens.length
     ? `<p class="menu-item-allergens"><strong>Puede contener:</strong> ${allergens.map((a) => escapeHtml(a)).join(' · ')}. Avisa siempre a tu cliente.</p>`
     : `<p class="menu-item-allergens menu-item-allergens--soft">Revisa ingredientes y avisa alérgenos (lácteos, gluten, frutos secos) antes de vender.</p>`;
 
   return `
-    <details class="menu-item ${premium ? 'menu-item--premium' : ''}" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}" data-recipe-key="${escapeHtml(recipeKey)}">
+    <details class="menu-item ${premium ? 'menu-item--premium' : ''}" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeFilterSlug(item)}" data-menu="${item.menuPrincipal ? '1' : '0'}" data-recipe-key="${escapeHtml(recipeKey)}" data-fav="${fav ? '1' : '0'}">
       <summary class="menu-item-summary">
         <span class="menu-item-emoji" aria-hidden="true">${emoji}</span>
         <div class="menu-item-summary-main">
           <div class="menu-item-head">
             <span class="menu-item-day">${escapeHtml(label)}</span>
-            <span class="menu-item-type menu-item-type--${recipeTipoSlug(item.tipo)}">${escapeHtml(item.tipo)}</span>
+            <span class="menu-item-type menu-item-type--${recipeFilterSlug(item)}">${escapeHtml(item.tipo)}${item.menuPrincipal ? ' · Menú' : ''}</span>
             ${premium ? '<span class="menu-item-premium-badge">Premium</span>' : ''}
           </div>
           <span class="menu-item-name">${escapeHtml(item.nombre)}</span>
           <span class="menu-item-preview">${escapeHtml(item.ingredientes?.[0] || '')}${item.ingredientes?.length > 1 ? ' · +' + (item.ingredientes.length - 1) + ' más' : ''}</span>
         </div>
+        ${favBtn}
         ${playBtn}
         <span class="menu-item-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
       </summary>
@@ -2724,11 +2820,12 @@ function renderMenuByWeek(recipes, { premium = false, lineId, audioEnabled = tru
 function renderRecipeListTools(recipeCount, { premium = false, audioEnabled = true } = {}) {
   const audioHint = audioEnabled
     ? `<p class="menu-list-audio-hint">${ICONS.volume} Modo audio guiado, toca play en una receta</p>`
-    : `<p class="menu-list-audio-hint menu-list-audio-hint--off">${ICONS.volume} Audio guiado temporalmente no disponible</p>`;
+    : '';
   return `
     <div class="menu-list-tools">
       <div class="menu-list-tools-main">
         <p class="menu-list-count" id="menu-list-count">${recipeCount} recetas${premium ? ' premium' : ''}</p>
+        <p class="menu-list-fav-hint">${ICONS.star} Toca la estrella para marcar sabores de esta semana</p>
         ${audioHint}
       </div>
       <div class="menu-list-actions">
@@ -2765,7 +2862,7 @@ function renderRecipeCatalogToggle() {
     <div class="catalog-toggle" role="tablist" aria-label="Catálogo">
       <button type="button" class="catalog-btn ${recipeCatalog === 'base' ? 'active' : ''}" data-recipe-catalog="base" role="tab" aria-selected="${recipeCatalog === 'base'}">
         <strong>Kit</strong>
-        <em>${baseCount} recetas</em>
+        <em>${lineBrand().id === 'postres' ? '3→12 + más' : `${baseCount} recetas`}</em>
       </button>
       <button type="button" class="catalog-btn catalog-btn--premium ${recipeCatalog === 'premium' ? 'active' : ''}" data-recipe-catalog="premium" role="tab" aria-selected="${recipeCatalog === 'premium'}">
         <strong>Premium${locked ? ' 🔒' : ''}</strong>
@@ -2783,6 +2880,15 @@ function renderCatalogLead(isPremium, recipes) {
       <div class="catalog-lead catalog-lead--premium">
         <strong>Complemento premium</strong>
         <p>Sabores de ticket alto para subir el precio. ${escapeHtml(summary)}.</p>
+      </div>
+    `;
+  }
+  if (brand.id === 'postres') {
+    const menuCount = (recipes || []).filter((r) => r.menuPrincipal).length;
+    return `
+      <div class="catalog-lead">
+        <strong>Método · ${escapeHtml(brand.short)}</strong>
+        <p>3 bases sin horno → ${menuCount || 12} sabores del menú. Filtra por <strong>Menú 12</strong> o por base. ${escapeHtml(summary)}.</p>
       </div>
     `;
   }
@@ -2851,7 +2957,7 @@ function renderBonus() {
       ${isAudioGuidePausedByAdmin() ? '<p class="menu-audio-paused-note">El audio guiado está pausado por el equipo. Las recetas siguen disponibles en texto.</p>' : ''}
       ${renderRecipeListTools(recipes.length, { premium: isPremium, audioEnabled })}
       <div class="menu-list ${isPremium ? 'menu-list--premium' : ''}" id="menu-list">${renderMenuByWeek(recipes, { premium: isPremium, lineId, audioEnabled })}</div>
-      <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada.</p>`;
+      <p class="menu-empty hidden" id="menu-empty">Ninguna receta encontrada. Prueba otra búsqueda o marca sabores con la estrella.</p>`;
   }
 
   return `
@@ -2890,30 +2996,32 @@ function renderMenuWhatsApp() {
 
 function renderKitSectionNav() {
   const kit = kitContentForLine();
-  const sections = [
-    { id: 'menu', label: 'Menú' },
-    { id: 'mensajes', label: 'Mensajes' },
-    { id: 'pedidos', label: 'Pedidos' },
-    { id: 'plan', label: 'Plan' },
-    { id: 'crecimiento', label: 'Crece' },
-    { id: 'lista', label: 'Compras' },
-    { id: 'checklist', label: 'Checklist' },
-    ...(kit.kitExtras ? [{ id: 'tecnicas', label: 'Tips' }] : []),
-    { id: 'premium', label: 'Premium', premium: true },
-    { id: 'ayuda', label: 'Ayuda' },
-  ];
+  const moreSections = KIT_VENDER_MORE_BASE.filter((s) => !s.needsExtras || kit.kitExtras);
+  if (KIT_VENDER_MORE_IDS.has(kitSection) || kitSection === 'premium') {
+    kitMoreOpen = true;
+  }
+
+  const renderChip = (s) => `
+    <button type="button" class="kit-nav-btn ${kitSection === s.id ? 'active' : ''}" data-kit-section="${s.id}" role="tab" aria-selected="${kitSection === s.id}">
+      ${escapeHtml(s.label)}${s.premium && !hasPremiumAccess() ? ' 🔒' : ''}
+    </button>
+  `;
 
   return `
-    <div class="kit-nav" id="kit-section-nav" role="tablist" aria-label="Herramientas para vender">
-      ${sections
-        .map(
-          (s) => `
-            <button type="button" class="kit-nav-btn ${kitSection === s.id ? 'active' : ''}" data-kit-section="${s.id}" role="tab" aria-selected="${kitSection === s.id}">
-              ${escapeHtml(s.label)}${s.premium && !hasPremiumAccess() ? ' 🔒' : ''}
-            </button>
-          `
-        )
-        .join('')}
+    <div class="kit-nav-wrap">
+      <div class="kit-nav" id="kit-section-nav" role="tablist" aria-label="Herramientas para vender">
+        ${KIT_VENDER_PRIMARY.map(renderChip).join('')}
+        <button type="button" class="kit-nav-btn kit-nav-more-btn ${kitMoreOpen ? 'is-open' : ''}" data-kit-more-toggle aria-expanded="${kitMoreOpen ? 'true' : 'false'}">
+          Más ${kitMoreOpen ? '▴' : '▾'}
+        </button>
+      </div>
+      ${
+        kitMoreOpen
+          ? `<div class="kit-nav kit-nav--more" id="kit-section-nav-more" role="tablist" aria-label="Más herramientas">
+              ${moreSections.map(renderChip).join('')}
+            </div>`
+          : ''
+      }
     </div>
     ${kitSection === 'premium' && hasPremiumAccess() ? renderPremiumSubNav() : ''}
   `;
@@ -3823,8 +3931,9 @@ function bindEvents() {
 
   enableHorizontalDragScroll(document.getElementById('recipe-filters'));
   enableHorizontalDragScroll(document.getElementById('kit-section-nav'));
+  enableHorizontalDragScroll(document.getElementById('kit-section-nav-more'));
   enableHorizontalDragScroll(document.querySelector('.kit-premium-nav'));
-  document.querySelector('#kit-section-nav .kit-nav-btn.active')?.scrollIntoView({
+  document.querySelector('#kit-section-nav .kit-nav-btn.active, #kit-section-nav-more .kit-nav-btn.active')?.scrollIntoView({
     inline: 'center',
     block: 'nearest',
     behavior: 'smooth',
@@ -3903,6 +4012,34 @@ function bindEvents() {
         return;
       }
       setKitSection(section);
+      render();
+    });
+  });
+
+  root.querySelectorAll('[data-kit-more-toggle]').forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      if (btn.dataset.dragMoved) {
+        event.preventDefault();
+        event.stopPropagation();
+        delete btn.dataset.dragMoved;
+        return;
+      }
+      kitMoreOpen = !kitMoreOpen;
+      render();
+    });
+  });
+
+  root.querySelectorAll('[data-recipe-fav]').forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const key = btn.dataset.recipeFav;
+      if (!key) return;
+      const on = toggleRecipeFavorite(key);
+      showToast(on ? 'Guardado en Esta semana' : 'Quitado de Esta semana');
+      if (!on && recipeFilter === 'favs' && loadFavoriteKeys().length === 0) {
+        recipeFilter = 'all';
+      }
       render();
     });
   });

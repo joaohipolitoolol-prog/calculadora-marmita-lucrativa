@@ -1,26 +1,31 @@
 import { ICONS } from './icons.js';
 
 /** Bumped when flow/copy changes so users see the updated tutorial once. */
-export const ONBOARDING_KEY = 'kit_onboarding_v2';
+export const ONBOARDING_KEY = 'kit_onboarding_v4_mini';
 
 function buildSlides(brand) {
   const unit = brand?.unitSingular || 'unidad';
   const units = brand?.unitPlural || 'unidades';
   const kitName = brand?.kitName || brand?.short || 'tu kit';
   const emoji = brand?.emoji || '🍓';
+  const isMini = brand?.id === 'postres';
 
   return [
     {
       icon: 'logo',
       title: kitName,
-      body: `Recetas, precios y mensajes para vender ${units} desde casa, todo en la app.`,
+      body: isMini
+        ? `Método de <strong>3 bases → 12 sabores</strong> sin horno, precios y mensajes para vender ${units} por WhatsApp.`
+        : `Recetas, precios y mensajes para vender ${units} desde casa, todo en la app.`,
       highlight: 'Usa la barra de abajo: Inicio, Precios, Kit y Perfil.',
     },
     {
       icon: 'calc',
       title: 'Calcula en Precios',
       body: `En <strong>Precios</strong>, modo <strong>Rápido</strong>: pon el precio de venta y los costos de cada ${unit}.`,
-      highlight: 'Toma unos 2 minutos. El modo Completo es opcional.',
+      highlight: isMini
+        ? 'Calcula antes de producir. Evita comprar ingredientes a ciegas.'
+        : 'Toma unos 2 minutos. El modo Completo es opcional.',
     },
     {
       icon: 'chart',
@@ -30,15 +35,19 @@ function buildSlides(brand) {
     },
     {
       icon: 'strawberry',
-      title: 'Abre el Kit',
-      body: 'En la pestaña <strong>Kit</strong> están las <strong>Recetas</strong>, los <strong>Archivos</strong> y <strong>Vender</strong> (menú, mensajes, plan).',
-      highlight: 'Toca un archivo para abrirlo dentro de la app.',
+      title: isMini ? 'Menú 12 en el Kit' : 'Abre el Kit',
+      body: isMini
+        ? 'En <strong>Kit → Recetas</strong> filtra por <strong>Menú 12</strong> o por base (crema, chocolate, frutal). También hay Descargas y Vender.'
+        : 'En la pestaña <strong>Kit</strong> están las <strong>Recetas</strong>, las <strong>Descargas</strong> (PDF) y <strong>Vender</strong>.',
+      highlight: isMini
+        ? 'Empieza con 3 o 4 sabores; el resto es ampliación.'
+        : 'En Descargas toca “Kit completo” para bajar el PDF.',
     },
     {
       icon: 'message',
       title: 'Vende por WhatsApp',
-      body: 'En <strong>Kit → Vender → Menú</strong> armas tu carta y copias el texto. También hay mensajes, plan de 7 días y checklist.',
-      highlight: 'Copia el menú y publícalo en tu estado.',
+      body: 'En <strong>Kit → Vender</strong> armas tu <strong>Menú WhatsApp</strong> y copias <strong>Textos listos</strong>. También hay plan de 7 días.',
+      highlight: 'Usa “Más” si necesitas checklist, compras o ayuda.',
     },
   ];
 }

@@ -47,6 +47,9 @@ export const ICONS = {
   ),
   logOut: svg('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>'),
   download: svg('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'),
+  star: svg(
+    '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
+  ),
   sun: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>'),
   moon: svg('<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'),
   user: svg('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
@@ -68,7 +71,7 @@ export const VIEW_META = {
   profile: { label: 'Perfil', icon: 'user', tab: true },
   results: { label: 'Resultados', icon: 'chart', tab: false },
   bonus: { label: 'Recetas', icon: 'strawberry', tab: false },
-  files: { label: 'Archivos', icon: 'folder', tab: false },
+  files: { label: 'Descargas', icon: 'folder', tab: false },
   account: { label: 'Vender', icon: 'message', tab: false },
   document: { label: 'Documento', icon: 'folder', tab: false },
   menuWeb: { label: 'Menú', icon: 'list', tab: false },

@@ -182,7 +182,7 @@ export const POSTRES_DOWNLOADS = [
     href: '/postres/produto/Kit_Postres_en_Vaso.html',
     downloadHref: '/postres/produto/Kit_Postres_en_Vaso.html',
     title: 'Kit Principal',
-    desc: '30 recetas',
+    desc: '3 bases → 12 + ampliación',
     icon: '📘',
     accent: '#EC3F7A',
     featured: true,
