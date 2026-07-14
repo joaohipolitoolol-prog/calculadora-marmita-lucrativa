@@ -21,17 +21,17 @@ export const AUTH_LINE_UI = {
   postres: {
     registerPath: '/postres/cadastrar',
     loginPath: '/postres/login',
-    ogImage: '/postres/postre-fresa.webp',
+    ogImage: '/minipostres/hero/hero-desire.webp?v=1',
     registerPageTitle: 'Crear cuenta',
     loginPageTitle: 'Entrar',
     metaDescription:
-      'Crea tu cuenta y accede a recetas, calculadora y mensajes para vender postres en vaso por WhatsApp.',
+      'Crea tu cuenta y accede al método de 3 bases, calculadora y catálogo de mini postres fríos para WhatsApp.',
     registerSub:
-      'Usa el mismo correo con el que compraste Postres en Vaso. Liberamos tu acceso en minutos.',
-    loginSub: 'Entra con el correo de tu compra para ver recetas, precios y mensajes de postres.',
-    footerCta: 'Ver kit Postres',
-    kitHint: 'Te avisaremos por correo cuando tu kit de postres esté listo.',
-    purchaseBanner: 'Compra Postres confirmada',
+      'Usa el mismo correo con el que compraste Mini Postres. Liberamos tu acceso en minutos.',
+    loginSub: 'Entra con el correo de tu compra para ver el método, precios y catálogo.',
+    footerCta: 'Ver Mini Postres',
+    kitHint: 'Te avisaremos por correo cuando tu acceso a Mini Postres esté listo.',
+    purchaseBanner: 'Compra Mini Postres confirmada',
   },
 };
 

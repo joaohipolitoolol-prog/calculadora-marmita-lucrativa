@@ -1,7 +1,31 @@
-/** Meta Pixel helpers, InitiateCheckout / Purchase with session dedupe. */
+/** Meta Pixel helpers, InitiateCheckout / Purchase with browser dedupe (localStorage). */
 
 function canTrack() {
   return typeof window !== 'undefined' && typeof window.fbq === 'function';
+}
+
+function storageGet(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function storageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    /* ignore */
+  }
+}
+
+function storageRemove(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* ignore */
+  }
 }
 
 function productSessionKey(prefix, contentIds = [], contentName = '') {
@@ -10,19 +34,11 @@ function productSessionKey(prefix, contentIds = [], contentName = '') {
 }
 
 function alreadyFired(key) {
-  try {
-    return Boolean(sessionStorage.getItem(key));
-  } catch {
-    return false;
-  }
+  return Boolean(storageGet(key));
 }
 
 function markFired(key, eventId) {
-  try {
-    sessionStorage.setItem(key, eventId || '1');
-  } catch {
-    /* ignore */
-  }
+  storageSet(key, eventId || '1');
 }
 
 /** Custom events (QuizStart, QuizComplete, ViewOffer, …) */
@@ -32,8 +48,8 @@ export function trackMetaCustom(eventName, params = {}) {
 }
 
 /**
- * Fire InitiateCheckout once per product id per browser session.
- * Stops spam-clicks / back-button from inflating Meta IC.
+ * Fire InitiateCheckout once per product id per browser (localStorage).
+ * Survives Hotmart opening a new tab; stops spam-clicks from inflating Meta IC.
  */
 export function trackMetaInitiateCheckout({
   value,
@@ -68,7 +84,7 @@ export function trackMetaInitiateCheckout({
 }
 
 /**
- * Fire Purchase once per product id per browser session.
+ * Fire Purchase once per product id per browser (localStorage).
  * Use on thank-you / upsell / aviso / register?compra=1&src=hotmart.
  */
 export function trackMetaPurchaseOnce({
@@ -103,31 +119,23 @@ export function trackMetaPurchaseOnce({
   return true;
 }
 
-/** Mark that the user left for Hotmart, unlocks URL grants on return. */
+export function hasMetaPurchaseFired(contentIds = [], contentName = '') {
+  return alreadyFired(productSessionKey('fb_purchase', contentIds, contentName));
+}
+
+/** Mark that the user left for Hotmart; unlocks thank-you Purchase in any tab (2h). */
 export function markCheckoutPending(line = 'paletas') {
-  try {
-    sessionStorage.setItem(`pending_purchase_${line}`, String(Date.now()));
-  } catch {
-    /* ignore */
-  }
+  storageSet(`pending_purchase_${line}`, String(Date.now()));
 }
 
 export function hasCheckoutPending(line = 'paletas', maxAgeMs = 2 * 60 * 60 * 1000) {
-  try {
-    const raw = sessionStorage.getItem(`pending_purchase_${line}`);
-    if (!raw) return false;
-    const ts = Number(raw);
-    if (!Number.isFinite(ts)) return true;
-    return Date.now() - ts <= maxAgeMs;
-  } catch {
-    return false;
-  }
+  const raw = storageGet(`pending_purchase_${line}`);
+  if (!raw) return false;
+  const ts = Number(raw);
+  if (!Number.isFinite(ts)) return true;
+  return Date.now() - ts <= maxAgeMs;
 }
 
 export function clearCheckoutPending(line = 'paletas') {
-  try {
-    sessionStorage.removeItem(`pending_purchase_${line}`);
-  } catch {
-    /* ignore */
-  }
+  storageRemove(`pending_purchase_${line}`);
 }

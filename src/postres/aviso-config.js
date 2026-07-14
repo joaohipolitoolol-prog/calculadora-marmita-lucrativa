@@ -3,7 +3,7 @@
 import { getWhatsAppDisplay, getWhatsAppNumber, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
 import { authLoginPath, authRegisterPath } from '../login/auth-lines.js';
 
-export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
+export const PRODUCT_NAME = 'Mini Postres Fríos Sin Horno';
 
 /** Preferir upsell; aviso fica como fallback / suporte */
 export const ACCESS_URL = authRegisterPath('postres', { compra: '1', src: 'hotmart' });
@@ -20,6 +20,6 @@ export const WHATSAPP_MESSAGE = `¡Hola! 👋 Acabo de comprar ${PRODUCT_NAME}.
 
 Tengo una duda sobre el acceso al material.
 
-Gracias 🍨`;
+Gracias 🧁`;
 
 export const WHATSAPP_URL = getWhatsAppUrl(WHATSAPP_NUMBER_ID, WHATSAPP_MESSAGE);

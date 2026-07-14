@@ -81,7 +81,7 @@ function lineWhatsApp(purpose = 'support') {
   const message =
     purpose === 'support'
       ? lineId === 'postres'
-        ? '¡Hola! Necesito ayuda con Postres en Vaso.'
+        ? '¡Hola! Necesito ayuda con Mini Postres Fríos.'
         : WHATSAPP_SUPPORT_MESSAGE
       : WHATSAPP_PURCHASE_MESSAGE;
   return {
@@ -282,7 +282,7 @@ function kitContentForLine() {
       upsellPrice: POSTRES_UPSELL_PRICE,
       upsellName: POSTRES_UPSELL_NAME,
       upsellPath: '/postres/upsell',
-      recipeTitle: 'Recetas de postres en vaso',
+      recipeTitle: 'Recetas de mini postres fríos',
       premiumRecipeTitle: 'Recetas premium · Postres',
     };
   }

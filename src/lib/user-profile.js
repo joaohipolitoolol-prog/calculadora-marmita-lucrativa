@@ -176,7 +176,13 @@ export function hasPaletasAccess(profile) {
 
 export function hasPostresAccess(profile) {
   if (!profile) return false;
-  return Boolean(profile.hasPostres || profile.hasPostresPremium || profile.isAdmin);
+  return Boolean(
+    profile.hasPostres ||
+      profile.hasPostresPremium ||
+      profile.hasMinipostres ||
+      profile.hasMinipostresPremium ||
+      profile.isAdmin
+  );
 }
 
 export function hasPremiumAccess(profile) {

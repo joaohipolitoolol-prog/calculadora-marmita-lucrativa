@@ -187,6 +187,14 @@ export function readRememberedLineId() {
 
 export function profileOwnsLine(profile, line) {
   if (!profile || !line) return false;
+  if (line.id === 'postres') {
+    return Boolean(
+      profile.hasPostres ||
+        profile.hasPostresPremium ||
+        profile.hasMinipostres ||
+        profile.hasMinipostresPremium
+    );
+  }
   return Boolean(profile[line.mainField] || profile[line.premiumField]);
 }
 

@@ -4,7 +4,7 @@ import { UPSELL_PRICE_USD as PALETAS_PREMIUM_PRICE } from '../upsell/config.js';
 import { UPSELL_PRICE_USD as POSTRES_PREMIUM_PRICE } from '../postres-upsell/config.js';
 import { register, guardAuthPage } from '../lib/auth.js';
 import { BRAND_KIT } from '../site/brand.js';
-import { trackMetaPurchaseOnce, hasCheckoutPending, clearCheckoutPending } from '../lib/meta-pixel.js';
+import { trackMetaPurchaseOnce, hasCheckoutPending, clearCheckoutPending, hasMetaPurchaseFired } from '../lib/meta-pixel.js';
 import { purchaseFlagsFromSearch } from '../lib/purchase-flags.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { defaultNumberIdForLine, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
@@ -101,11 +101,20 @@ if (purchaseFlags?.hasPostresPremium) {
   localStorage.setItem('kit_premium_postres_v1', '1');
 }
 
-// Clear pending after all line purchases were considered (Meta still session-deduped by content id).
-if (firePaletasPurchase && (purchaseFlags?.hasKit || purchaseFlags?.hasPremium)) {
+// Clear pending only after a Purchase was recorded (or already fired this browser).
+// Avoid clearing when fbq was missing / track failed — keeps upsell recovery path.
+if (
+  firePaletasPurchase &&
+  (purchaseFlags?.hasKit || purchaseFlags?.hasPremium) &&
+  (hasMetaPurchaseFired(['paletas_kit']) || hasMetaPurchaseFired(['paletas_premium']))
+) {
   clearCheckoutPending('paletas');
 }
-if (firePostresPurchase && (purchaseFlags?.hasPostres || purchaseFlags?.hasPostresPremium)) {
+if (
+  firePostresPurchase &&
+  (purchaseFlags?.hasPostres || purchaseFlags?.hasPostresPremium) &&
+  (hasMetaPurchaseFired(['postres_kit']) || hasMetaPurchaseFired(['postres_premium']))
+) {
   clearCheckoutPending('postres');
 }
 

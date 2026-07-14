@@ -32,7 +32,7 @@
     },
     {
       "source": "/minipostres/gracias",
-      "destination": "/postresaviso",
+      "destination": "/postres/upsell",
       "permanent": true
     },
     {
