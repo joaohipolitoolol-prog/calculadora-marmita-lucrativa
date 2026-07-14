@@ -5,7 +5,7 @@ import { UPSELL_PRICE_USD as POSTRES_PREMIUM_PRICE } from '../postres-upsell/con
 import { register, guardAuthPage } from '../lib/auth.js';
 import { BRAND_KIT } from '../site/brand.js';
 import { trackMetaPurchaseOnce, hasCheckoutPending, clearCheckoutPending, hasMetaPurchaseFired } from '../lib/meta-pixel.js';
-import { purchaseFlagsFromSearch } from '../lib/purchase-flags.js';
+import { purchaseIntentFromSearch, isPostPurchaseUiIntent } from '../lib/purchase-flags.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { defaultNumberIdForLine, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
 import {
@@ -26,7 +26,8 @@ const registerWaSupport = document.getElementById('register-wa-support');
 
 const params = new URLSearchParams(window.location.search);
 const authLine = applyAuthBrand(getAuthProductLine());
-const purchaseFlags = purchaseFlagsFromSearch(window.location.search);
+const purchaseIntent = purchaseIntentFromSearch(window.location.search);
+const postPurchaseUi = isPostPurchaseUiIntent(window.location.search);
 
 trackCurrentPage({ line: authLine?.id });
 bindTrackClicks({
@@ -47,39 +48,39 @@ initPasswordToggles();
 initConfigAlert();
 guardAuthPage();
 
-if (purchaseFlags && purchaseBanner) {
+if (postPurchaseUi && purchaseBanner) {
   purchaseBanner.hidden = false;
-  purchaseBanner.textContent = `✓ Compra ${authLine.short} confirmada`;
+  purchaseBanner.textContent = `Usa el mismo correo de Hotmart · liberamos el acceso al confirmar el pago`;
   const sub = document.querySelector('.auth-sub');
   if (sub) {
-    sub.textContent = `Usa el mismo correo con el que compraste ${authLine.short}. Liberamos tu acceso en minutos.`;
+    sub.textContent = `Si acabas de comprar ${authLine.short}, crea la cuenta con ese correo. El kit se activa solo cuando Hotmart confirma el pago.`;
   }
 }
 
 function shouldFireRegisterPurchase(line) {
-  // Mesma regra do thank-you: só após clique em checkout neste browser.
-  // Link ?compra=1&src=hotmart sozinho NÃO dispara Purchase no Meta.
-  return hasCheckoutPending(line);
+  // Sólo tras clic a checkout en este browser + intent pós-compra en URL.
+  // ?compra=1&src=hotmart solo NO libera kit ni Purchase.
+  return hasCheckoutPending(line) && Boolean(purchaseIntent);
 }
 
 const firePaletasPurchase = shouldFireRegisterPurchase('paletas');
 const firePostresPurchase = shouldFireRegisterPurchase('postres');
 
-if (purchaseFlags?.hasKit && firePaletasPurchase) {
+if (purchaseIntent?.hasKit && firePaletasPurchase) {
   trackMetaPurchaseOnce({
     value: MAIN_PRICE,
     contentName: BRAND_KIT,
     contentIds: ['paletas_kit'],
   });
 }
-if (purchaseFlags?.hasPostres && firePostresPurchase) {
+if (purchaseIntent?.hasPostres && firePostresPurchase) {
   trackMetaPurchaseOnce({
     value: POSTRES_PRICE,
     contentName: POSTRES_NAME,
     contentIds: ['postres_kit'],
   });
 }
-if (purchaseFlags?.hasPremium) {
+if (purchaseIntent?.hasPremium) {
   if (firePaletasPurchase) {
     trackMetaPurchaseOnce({
       value: PALETAS_PREMIUM_PRICE,
@@ -87,10 +88,8 @@ if (purchaseFlags?.hasPremium) {
       contentIds: ['paletas_premium'],
     });
   }
-  localStorage.setItem('kit_premium_paletas_v1', '1');
-  localStorage.setItem('paletas_premium', '1');
 }
-if (purchaseFlags?.hasPostresPremium) {
+if (purchaseIntent?.hasPostresPremium) {
   if (firePostresPurchase) {
     trackMetaPurchaseOnce({
       value: POSTRES_PREMIUM_PRICE,
@@ -98,21 +97,19 @@ if (purchaseFlags?.hasPostresPremium) {
       contentIds: ['postres_premium'],
     });
   }
-  localStorage.setItem('kit_premium_postres_v1', '1');
 }
 
 // Clear pending only after a Purchase was recorded (or already fired this browser).
-// Avoid clearing when fbq was missing / track failed — keeps upsell recovery path.
 if (
   firePaletasPurchase &&
-  (purchaseFlags?.hasKit || purchaseFlags?.hasPremium) &&
+  (purchaseIntent?.hasKit || purchaseIntent?.hasPremium) &&
   (hasMetaPurchaseFired(['paletas_kit']) || hasMetaPurchaseFired(['paletas_premium']))
 ) {
   clearCheckoutPending('paletas');
 }
 if (
   firePostresPurchase &&
-  (purchaseFlags?.hasPostres || purchaseFlags?.hasPostresPremium) &&
+  (purchaseIntent?.hasPostres || purchaseIntent?.hasPostresPremium) &&
   (hasMetaPurchaseFired(['postres_kit']) || hasMetaPurchaseFired(['postres_premium']))
 ) {
   clearCheckoutPending('postres');
@@ -130,12 +127,13 @@ registerForm?.addEventListener('submit', async (event) => {
 
   try {
     await register(data.get('name'), data.get('email'), data.get('password'), { accessCode });
-    const bought = Boolean(purchaseFlags) || Boolean(accessCode);
     showAlert(
       formAlert,
-      bought
-        ? '¡Cuenta creada! Tu kit ya está activo. Entra y empieza a usar.'
-        : '¡Cuenta creada! Entra a la app; el acceso se libera con tu compra.',
+      accessCode
+        ? '¡Cuenta creada! Tu acceso con código ya está activo.'
+        : postPurchaseUi
+          ? '¡Cuenta creada! Si Hotmart ya confirmó el pago, tu kit se libera en minutos.'
+          : '¡Cuenta creada! Entra a la app; el acceso se libera con tu compra.',
       'success'
     );
     setTimeout(() => {

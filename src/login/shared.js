@@ -1,5 +1,5 @@
 import { isFirebaseConfigured } from '../lib/firebase.js';
-import { purchaseFlagsFromSearch } from '../lib/purchase-flags.js';
+import { isPostPurchaseUiIntent } from '../lib/purchase-flags.js';
 import {
   resolveLineFromSearch,
   resolveLineFromPathname,
@@ -103,8 +103,8 @@ export function applyAuthBrand(line = getAuthProductLine()) {
   if (cardIcon) cardIcon.textContent = brand.emoji;
 
   const sub = document.querySelector('.auth-sub');
-  const trustedPurchase = Boolean(purchaseFlagsFromSearch(window.location.search));
-  if (sub && !trustedPurchase) {
+  const postPurchaseUi = isPostPurchaseUiIntent(window.location.search);
+  if (sub && !postPurchaseUi) {
     sub.textContent = isRegister ? brand.registerSub : brand.loginSub;
   }
 
@@ -112,9 +112,9 @@ export function applyAuthBrand(line = getAuthProductLine()) {
   if (hint && isRegister) hint.textContent = brand.kitHint;
 
   const purchaseBanner = document.getElementById('purchase-banner');
-  if (purchaseBanner && trustedPurchase) {
+  if (purchaseBanner && postPurchaseUi) {
     purchaseBanner.hidden = false;
-    purchaseBanner.textContent = `✓ ${brand.purchaseBanner}`;
+    purchaseBanner.textContent = `Usa el correo de Hotmart · el acceso se libera al confirmar el pago`;
   }
 
   document.querySelectorAll('.auth-switch a, .auth-footer a').forEach((a) => {

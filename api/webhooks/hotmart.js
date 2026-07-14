@@ -185,10 +185,11 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || {};
-    const event = String(body.event || body.status || '').toUpperCase();
+    // Only Hotmart purchase-complete events. Empty event must NOT grant access.
+    const event = String(body.event || '').toUpperCase();
 
-    if (event && !APPROVED_EVENTS.has(event) && !['APPROVED', 'COMPLETED', 'COMPLETE'].includes(event)) {
-      return res.status(200).json({ ok: true, ignored: true, event });
+    if (!APPROVED_EVENTS.has(event)) {
+      return res.status(200).json({ ok: true, ignored: true, event: event || null });
     }
 
     const buyer = parseBuyer(body);

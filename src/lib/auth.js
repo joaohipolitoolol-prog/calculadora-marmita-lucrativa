@@ -3,7 +3,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { loadAdminAllowlist } from './admin-access.js';
 import { createUserProfile, isAdminEmail, syncAdminFlag, touchUserActivity, updateUserProfile } from './user-profile.js';
 import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
-import { purchaseFlagsFromSearch, resolveProductFlags } from './purchase-flags.js';
+import { resolveProductFlags } from './purchase-flags.js';
 import { rememberActiveLine, resolveLineFromSearch, premiumStorageKey, LEGACY_PREMIUM_STORAGE_KEY } from './product-lines.js';
 import { claimPendingPurchases } from './claim-pending.js';
 import { trackEvent } from './track.js';
@@ -163,29 +163,11 @@ async function applyAccessCodeToUser(uid, accessCode) {
   return grants;
 }
 
-/** OR-merge purchase flags onto an existing profile (2nd product buy). */
+/** URL never grants products. Real unlock = webhook pending + claim / access code / admin. */
 export async function applyPurchaseGrantsFromUrl(uid, search) {
-  const flags = purchaseFlagsFromSearch(search);
-  if (!flags) return null;
-
-  const updates = {};
-  for (const [key, value] of Object.entries(flags)) {
-    if (value) updates[key] = true;
-  }
-  if (!Object.keys(updates).length) return null;
-
-  if (isDemoMode()) {
-    const users = readDemoUsers();
-    const idx = users.findIndex((u) => u.uid === uid);
-    if (idx >= 0) {
-      users[idx] = { ...users[idx], ...updates };
-      writeDemoUsers(users);
-    }
-    return updates;
-  }
-
-  await updateUserProfile(uid, updates);
-  return updates;
+  void uid;
+  void search;
+  return null;
 }
 
 function rememberLineFromUrl(search) {
@@ -211,7 +193,6 @@ export async function login(email, password, options = {}) {
         throw new Error('Correo o contraseña incorrectos.');
       }
       setDemoSession(user, rememberMe);
-      await applyPurchaseGrantsFromUrl(user.uid, search);
       const refreshed = readDemoUsers().find((u) => u.uid === user.uid) || user;
       setDemoSession(refreshed, rememberMe);
       if (refreshed.hasPremium) setPremiumLocal('paletas', true);
@@ -233,14 +214,10 @@ export async function login(email, password, options = {}) {
     const result = await signInWithEmailAndPassword(auth, email.trim(), password);
     await loadAdminAllowlist();
     await syncAdminFlag(result.user.uid, result.user.email);
-    await applyPurchaseGrantsFromUrl(result.user.uid, search);
     await claimPendingForUser(result.user);
     const line = resolveLineFromSearch(search);
     await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
     await trackEvent('login', { page: 'login', line: line?.id || undefined, uid: result.user.uid });
-    const grants = purchaseFlagsFromSearch(search);
-    if (grants?.hasPremium) setPremiumLocal('paletas', true);
-    if (grants?.hasPostresPremium) setPremiumLocal('postres', true);
     return result.user;
   } catch (error) {
     setAuthBusy(false);
@@ -383,8 +360,13 @@ export function redirectIfAuthenticated(user, target) {
   if (line) rememberActiveLine(line.id);
 
   if (params.get('compra') === '1') {
-    // Existing session hitting purchase URL, merge grants then go to app.
-    applyPurchaseGrantsFromUrl(user.uid, window.location.search).finally(() => {
+    // Existing session on thank-you URL: claim Hotmart pending by email, then app.
+    const run = async () => {
+      try {
+        await claimPendingForUser(user);
+      } catch {
+        /* ignore */
+      }
       const next = new URLSearchParams();
       next.set('compra', '1');
       if (params.get('premium') === '1') next.set('premium', '1');
@@ -394,7 +376,8 @@ export function redirectIfAuthenticated(user, target) {
       if (params.get('donuts') === '1') next.set('donuts', '1');
       if (line?.id || params.get('line')) next.set('line', line?.id || params.get('line'));
       window.location.replace(`/app?${next.toString()}`);
-    });
+    };
+    run();
     return;
   }
   const next = params.get('next');
