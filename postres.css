@@ -53,7 +53,10 @@
   box-shadow: 0 10px 30px rgba(236, 63, 122, 0.48);
 }
 
-/* Hero product, landscape como Paletas */
+.postres-theme .hero-cta-stack {
+  margin-bottom: 18px;
+}
+
 .postres-theme .hero-product-mock {
   max-width: 560px;
   margin: 6px auto 14px;
@@ -96,6 +99,133 @@
 .postres-theme .inside-banner__img {
   border-color: rgba(236, 63, 122, 0.12);
   box-shadow: 0 14px 32px rgba(42, 23, 18, 0.1);
+}
+
+/* Product preview + clarity */
+.postres-theme .product-preview {
+  padding-top: 28px;
+  padding-bottom: 8px;
+  background: #fff;
+}
+
+.postres-theme .product-preview .section-text {
+  max-width: 42ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.postres-theme .preview-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 8px;
+  padding: 0;
+  max-width: 520px;
+}
+
+.postres-theme .preview-tags li {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--pink-dark);
+  background: rgba(236, 63, 122, 0.1);
+  border: 1px solid rgba(236, 63, 122, 0.2);
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
+.postres-theme .hero .subheadline {
+  max-width: 36ch;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.postres-theme .hero-bullets {
+  max-width: 28ch;
+  margin-bottom: 18px;
+}
+
+.postres-theme .hero-bullets li {
+  font-size: 0.98rem;
+}
+
+.postres-theme .hero-cta-note-secondary {
+  max-width: 34ch;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.45;
+}
+
+.postres-theme .product-clear {
+  background: #fff;
+}
+
+.postres-theme .product-clear .access-num {
+  background: var(--pink);
+}
+
+.postres-theme .kit-note {
+  max-width: 40ch;
+  margin: 20px auto 0;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  line-height: 1.5;
+}
+
+.postres-theme .offer-summary {
+  text-align: left;
+}
+
+.postres-theme .purchase-sticky-btn {
+  max-width: 265px;
+  font-size: 0.88rem;
+  line-height: 1.25;
+  padding: 12px 14px;
+}
+
+@media (max-width: 479px) {
+  .postres-theme .hero h1 {
+    font-size: clamp(1.7rem, 7.2vw, 2.15rem);
+    line-height: 1.18;
+  }
+
+  .postres-theme .hero .subheadline {
+    font-size: 1rem;
+  }
+
+  .postres-theme .hero-bullets li {
+    font-size: 0.95rem;
+  }
+
+  .postres-theme .btn-large {
+    font-size: 1rem;
+    padding-inline: 18px;
+  }
+
+  .postres-theme .preview-tags li {
+    font-size: 0.82rem;
+    min-height: 34px;
+    padding: 7px 12px;
+  }
+
+  .postres-theme .purchase-sticky-btn {
+    max-width: 210px;
+    font-size: 0.8rem;
+    padding: 11px 10px;
+  }
+
+  .postres-theme .purchase-sticky-kit {
+    font-size: 0.68rem;
+  }
 }
 
 /* Cards / borders com rosa Postres */

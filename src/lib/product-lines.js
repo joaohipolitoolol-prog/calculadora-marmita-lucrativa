@@ -12,7 +12,7 @@ export const PRODUCT_LINES = [
   {
     id: 'paletas',
     name: 'Paletas para WhatsApp',
-    kitName: 'Kit Paletas para WhatsApp',
+    kitName: 'Kit Digital 2 Bases, Paletas',
     short: 'Paletas',
     emoji: '🍓',
     unitSingular: 'paleta',
@@ -35,7 +35,7 @@ export const PRODUCT_LINES = [
   {
     id: 'postres',
     name: 'Mini Postres Fríos Sin Horno',
-    kitName: 'Mini Postres Fríos Sin Horno',
+    kitName: 'Kit Digital 3 Bases, 12 Postres',
     short: 'Mini Postres',
     emoji: '🧁',
     unitSingular: 'mini postre',

@@ -16,7 +16,6 @@ import {
   bindOfferSticky,
   bindScrollToOffer,
 } from '../lib/landing-checkout.js';
-import { initWaReviewsPrints } from '../lib/wa-reviews.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { initPageDwell } from '../lib/page-dwell.js';
 import { resolvePaletasEntryAb } from '../lib/ab-entry.js';
@@ -69,7 +68,6 @@ async function boot() {
   });
 
   bindOfferSticky(document.getElementById('purchase-sticky'));
-  initWaReviewsPrints();
 
   try {
     initDemo();
