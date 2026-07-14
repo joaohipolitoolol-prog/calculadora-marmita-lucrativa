@@ -127,6 +127,11 @@ export default async function handler(req, res) {
             if (cell && typeof cell === 'object') cell.today = 0;
           }
         }
+        if (summary.salesByProduct) {
+          for (const cell of Object.values(summary.salesByProduct)) {
+            if (cell && typeof cell === 'object') cell.today = 0;
+          }
+        }
         summary.todayKey = day;
       }
 

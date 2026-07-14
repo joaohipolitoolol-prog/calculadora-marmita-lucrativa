@@ -1,0 +1,53 @@
+{
+  "tecnicas": [
+    {
+      "titulo": "Cómo montar capas que se vean en la foto",
+      "pasos": [
+        "Usa vaso transparente 180–220 ml: el producto se vende solo.",
+        "Alterna colores claros y oscuros (galleta → crema → fruta).",
+        "Presiona suave cada capa para que no queden huecos.",
+        "Deja 1 cm libre arriba para decorar sin rebalsar."
+      ]
+    },
+    {
+      "titulo": "Crema firme sin cortarse",
+      "pasos": [
+        "Usa crema muy fría (refrigerador 4–6 horas).",
+        "Bate a velocidad media hasta picos suaves; no pases a mantequilla.",
+        "Si se ve líquida, enfría el bowl 10 minutos y vuelve a batir breve.",
+        "Monta en frío y refrigera el vaso mínimo 1 hora antes de entregar."
+      ]
+    },
+    {
+      "titulo": "Conservación y transporte seguro",
+      "pasos": [
+        "Mantén en refrigerador; no dejes horas a temperatura ambiente.",
+        "Tapa o film + bolsa para transporte.",
+        "Si entregas lejos, usa cooler con hielo o gel pack.",
+        "Avisa al cliente: consumir el mismo día o al día siguiente en frío."
+      ]
+    }
+  ],
+  "errores": [
+    "Cobrar sin calcular vaso + cucharita + tapa + tiempo",
+    "Empezar con demasiados sabores a la vez",
+    "Fotos oscuras o vaso sucio / huellas",
+    "No anotar pedidos y olvidar sabores o cantidades",
+    "Entregar sin tiempo de frío: se desarma en el camino",
+    "No avisar alérgenos (lácteos, gluten, nueces)",
+    "Producir mucha cantidad antes de validar textura y dulzor",
+    "Mezclar dinero de ventas con compras de ingredientes",
+    "Prometer entrega inmediata sin capacidad real",
+    "No pedir feedback a los primeros clientes"
+  ],
+  "fotosTips": [
+    "Luz natural cerca de una ventana; evita flash directo",
+    "Fondo limpio: mesa clara, madera o lienzo neutro",
+    "Muestra las capas: ángulo ligeramente desde arriba",
+    "Incluye cucharita y etiqueta si las usas",
+    "Formato vertical para historias de WhatsApp",
+    "Una foto nítida de 1 vaso vende más que un grupo desordenado",
+    "Limpia el vaso por fuera antes de disparar",
+    "Si hay fruta, deja una pieza entera arriba como remate"
+  ]
+}

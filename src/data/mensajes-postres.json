@@ -1,82 +1,242 @@
 [
   {
-    "categoria": "Estado / Story",
-    "texto": "🍨 Postres en vaso disponibles hoy. Escríbeme para ver sabores y precios."
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "🍨 ¡Hola! Esta semana tengo postres en vaso listos. Sabores: [sabores]. Si quieres reservar, escríbeme por aquí."
   },
   {
-    "categoria": "Estado / Story",
-    "texto": "¿Antojo dulce? Tengo fresa, Oreo, chocolate y maracuyá listos para entregar."
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Menú de postres en vaso 👇 Cremoso y frutal. Pregunta por precios y disponibilidad."
   },
   {
-    "categoria": "Estado / Story",
-    "texto": "Hoy preparé postres en vaso frescos. Quedan pocas unidades — escríbeme antes de que se acaben."
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Preparé postres en vaso frescos hoy. Te comparto menú con sabores y precios. ¿Cuál te llama la atención?"
   },
   {
-    "categoria": "Estado / Story",
-    "texto": "Postres en vaso hechos en casa, con capas que se ven en la foto. ¿Cuál te gustaría probar?"
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Postres en vaso hechos en casa. Menú actualizado: [sabores]. Pedidos por WhatsApp."
   },
   {
-    "categoria": "Estado / Story",
-    "texto": "Nuevos sabores esta semana 🍓 Pregunta por el menú completo de postres en vaso."
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "¿Antojo dulce? Tengo postres en vaso para entrega. Escríbeme y te mando el menú completo."
   },
   {
-    "categoria": "Promoción",
-    "texto": "Promo de fin de semana: 3 postres en vaso por [PRECIO]. Válido hasta el domingo."
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Nueva tanda de postres en vaso 🍨 Sabores: [sabores]. Cantidad limitada según lo que preparé hoy."
   },
   {
-    "categoria": "Promoción",
-    "texto": "Combo familiar: 6 vasos surtidos por [PRECIO]. Ideal para compartir."
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Postres en vaso para este fin de semana. Menú: [sabores]. Puedes apartar con anticipación."
   },
   {
-    "categoria": "Promoción",
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Si buscas un dulce listo para servir, tengo postres en vaso. Te paso menú con precios por unidad y combos."
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Capas que se ven en la foto ✨ Disponibles: [sabores]. ¿Te aparto alguno?"
+  },
+  {
+    "categoria": "A) Mensajes para anunciar menú",
+    "texto": "Menú dulce de la semana: postres en vaso [sabores]. Entrega en [zona] o recogida."
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "🍨 Postres en vaso disponibles hoy. Escríbeme si quieres el menú."
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Algo dulce para hoy 🍮"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Nuevos sabores esta semana"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Postres en vaso caseros — pregunta por disponibilidad"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "¿Postre de qué sabor te provoca?"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Hoy hay fresa, Oreo y más. Menú en el chat."
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Listos para entregar 🍨"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Quedan pocas unidades — escríbeme"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Hechos en casa, con cariño"
+  },
+  {
+    "categoria": "B) Mensajes de estado / story",
+    "texto": "Pedido cerrado cuando se acaben"
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Promo de fin de semana: 3 postres en vaso por [precio]. Válido hasta el domingo."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Combo familiar: 6 vasos surtidos por [precio]. Ideal para compartir."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
     "texto": "Primera compra: lleva 2 vasos y te regalo 1 de fresa. Solo hoy."
   },
   {
-    "categoria": "Promoción",
-    "texto": "Pack para peques: 4 vasos coloridos por [PRECIO]. Sabores suaves y divertidos."
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Pack para peques: 4 vasos coloridos por [precio]. Sabores suaves."
   },
   {
-    "categoria": "Promoción",
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Fin de semana dulce: combo antojo x3 por [precio]. Aparta el tuyo."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Oferta express: 2x1 en un sabor del día. Pregunta cuál está en promo."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Sábado y domingo: envío sin costo en [zona] en pedidos desde [precio]."
+  },
+  {
+    "categoria": "C) Mensajes de promoción de fin de semana",
     "texto": "Últimas unidades del día. Si quieres, aparto las tuyas ahora mismo."
   },
   {
-    "categoria": "Cliente nuevo",
-    "texto": "Hola, gracias por escribir. Te comparto el menú de postres en vaso con sabores y precios 👇"
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Pack oficina: 8 vasos mixtos por [precio]. Ideal para compartir en el trabajo."
   },
   {
-    "categoria": "Cliente nuevo",
-    "texto": "Tenemos cremosos y frutales. ¿Qué tipo te gusta más?"
+    "categoria": "C) Mensajes de promoción de fin de semana",
+    "texto": "Promo parejas: 2 vasos + decoración especial por [precio]."
   },
   {
-    "categoria": "Cliente nuevo",
-    "texto": "Entrego en [ZONA] o puedes recoger. ¿Cuántos vasos necesitas?"
-  },
-  {
-    "categoria": "Pedido",
-    "texto": "Perfecto, tu pedido: [SABORES] — Total: [PRECIO]. ¿Confirmo?"
-  },
-  {
-    "categoria": "Pedido",
-    "texto": "Listo, aparté tus postres. Te aviso cuando estén listos para entregar."
-  },
-  {
-    "categoria": "Pedido",
-    "texto": "Tu pedido está listo para recoger. Estoy en [DIRECCIÓN/LUGAR]."
-  },
-  {
-    "categoria": "Cliente antiguo",
+    "categoria": "D) Mensajes para clientes antiguos",
     "texto": "Hola de nuevo 😊 Esta semana tengo sabores nuevos. ¿Te mando el menú?"
   },
   {
-    "categoria": "Cliente antiguo",
+    "categoria": "D) Mensajes para clientes antiguos",
     "texto": "Hace tiempo que no pides. Tengo tu sabor favorito disponible hoy."
   },
   {
-    "categoria": "Cliente antiguo",
+    "categoria": "D) Mensajes para clientes antiguos",
     "texto": "Gracias por confiar en mis postres. Esta semana hay promo especial para clientes frecuentes."
   },
   {
-    "categoria": "Encomienda",
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "¡Hola! Armé tandas nuevas: [sabores]. ¿Te aparto tu usual?"
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Cliente especial: 10% en tu próximo pedido si confirmas hoy."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "¿Seguimos con el mismo sabor de siempre o quieres probar uno nuevo?"
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Guardé un vaso de tu favorito por si quieres pasarlo a buscar."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Tu opinión me ayuda: ¿repetirías el último postre? Dime y lo dejo fijo en el menú."
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Esta semana cierro pedidos el viernes. ¿Te anoto alguno?"
+  },
+  {
+    "categoria": "D) Mensajes para clientes antiguos",
+    "texto": "Gracias por el pedido anterior. Cuando quieras, aquí estoy con menú fresco."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Quedan pocas unidades de [sabores]. Si quieres, las aparto ahora."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Últimos vasos del día. Después cierro hasta la próxima tanda."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Se están acabando más rápido de lo esperado. ¿Te reservo?"
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Solo quedan 4 vasos. Prioridad a quien confirme primero."
+  },
+  {
+    "categoria": "E) Mensajes de últimas unidades",
+    "texto": "Cierro pedidos en 1 hora. Última chance de [sabores]."
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Perfecto, tu pedido: [sabores] — Total: [precio]. ¿Confirmo?"
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Listo, aparté tus postres. Te aviso cuando estén listos para entregar."
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Tu pedido está listo para recoger. Estoy en [direccion]."
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
+    "texto": "Confirma por favor: cantidad, sabores y si es entrega en [zona] o recogida."
+  },
+  {
+    "categoria": "F) Mensajes para pedidos",
     "texto": "Acepto pedidos con 24h de anticipación. ¿Para qué día y cuántos vasos necesitas?"
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Los vasos van refrigerados. Mejor consumir el mismo día o al día siguiente en frío."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Contienen lácteos y algunos sabores llevan galleta (gluten). Si hay alergia, avísame antes."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "El precio por vaso es [precio]. Combos salen un poco menos por unidad."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Entrego en [zona] o puedes pasar a recoger. ¿Qué te queda mejor?"
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "No es un local: trabajo desde casa con pedidos por WhatsApp. Eso permite precio y frescura."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Puedo armar surtido: me dices cuántos de cada sabor y te cotizo."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Para fiestas o encargos grandes, pídelo con al menos 48h de anticipación."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Pago al confirmar o al entregar, como te quede más fácil. Lo coordinamos."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Sí, puedo adaptar dulzor o fruta si avisas con tiempo. Lo revisamos antes."
+  },
+  {
+    "categoria": "G) Respuestas a preguntas frecuentes",
+    "texto": "Incluyo cucharita. Tapa y empaque extra si es para transporte largo."
   }
 ]

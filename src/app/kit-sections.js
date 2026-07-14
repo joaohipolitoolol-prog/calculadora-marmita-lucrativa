@@ -6,7 +6,7 @@ export function renderSectionExportBtn({ href }) {
   return `<a class="lista-pdf-btn" href="${href}" target="_blank" rel="noopener" title="Ver HTML" aria-label="Ver HTML">${ICONS.download}</a>`;
 }
 
-export function renderMensajesList(mensajes, { formatMessage, resolveText } = {}) {
+export function renderMensajesList(mensajes, { formatMessage, resolveText, whatsAppShareUrl } = {}) {
   const grouped = mensajes.reduce((acc, msg, idx) => {
     if (!acc[msg.categoria]) acc[msg.categoria] = [];
     acc[msg.categoria].push({ ...msg, idx });
@@ -17,10 +17,14 @@ export function renderMensajesList(mensajes, { formatMessage, resolveText } = {}
   const resolve =
     resolveText ||
     ((msg) => fmt(msg.texto));
+  const waUrl =
+    typeof whatsAppShareUrl === 'function'
+      ? whatsAppShareUrl
+      : () => '#';
 
   return `
     <div class="kit-mensajes-page">
-      <p class="mensajes-hint">Edita el texto, guarda tu versión y cópialo cuando quieras pegarlo en WhatsApp.</p>
+      <p class="mensajes-hint">Completa sabores, precio y zona arriba. Edita si quieres, copia o ábrelo directo en WhatsApp.</p>
       ${Object.entries(grouped)
         .map(
           ([cat, items]) => `
@@ -39,6 +43,9 @@ export function renderMensajesList(mensajes, { formatMessage, resolveText } = {}
                       <button type="button" class="btn btn-sm btn-secondary copy-msg" data-copy-index="${msg.idx}">
                         ${ICONS.copy}<span>Copiar</span>
                       </button>
+                      <a class="btn btn-sm btn-wa wa-msg" href="${escapeHtml(waUrl(text))}" target="_blank" rel="noopener noreferrer" data-wa-index="${msg.idx}">
+                        ${ICONS.message}<span>WhatsApp</span>
+                      </a>
                       <button type="button" class="btn btn-sm btn-primary save-msg" data-save-index="${msg.idx}">
                         ${ICONS.save}<span>Guardar</span>
                       </button>

@@ -10,6 +10,7 @@ import mensajesData from './mensajes-postres.json';
 import mensajesPremiumData from './mensajes-postres-premium.json';
 import fechasPremiumData from './fechas-postres-premium.json';
 import guiaPremiumData from './guia-postres-premium.json';
+import kitExtrasData from './kit-extras-postres.json';
 
 /** 30 recetas del kit principal */
 export const RECETAS_POSTRES = recetasData;
@@ -31,6 +32,9 @@ export const FECHAS_POSTRES_PREMIUM = fechasPremiumData;
 
 /** Guía de presentación premium */
 export const GUIA_POSTRES_PREMIUM = guiaPremiumData;
+
+/** Técnicas, errores y tips de fotos */
+export const KIT_EXTRAS_POSTRES = kitExtrasData;
 
 export const PLAN_7_DIAS_POSTRES = [
   {
@@ -142,6 +146,21 @@ export const LISTA_COMPRAS_POSTRES = {
     'Piping bag (opcional, para crema)',
   ],
 };
+
+export const CHECKLIST_VENTA_POSTRES = [
+  'Elegir 3 a 5 sabores para empezar',
+  'Comprar ingredientes, vasos y cucharitas',
+  'Calcular costos con la calculadora',
+  'Definir precios con margen estimado',
+  'Armar mi menú para WhatsApp',
+  'Tomar fotos con buena luz (vaso limpio)',
+  'Publicar en estado o historia',
+  'Tener mensajes listos para responder',
+  'Anotar pedidos de forma organizada',
+  'Organizar entrega o recogida',
+  'Informar alérgenos (lácteos, gluten, nueces)',
+  'Pedir feedback a quien prueba',
+];
 
 export const CHECKLIST_POSTRES = [
   'Revisar pedidos del día y cantidades por sabor',

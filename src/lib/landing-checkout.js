@@ -8,6 +8,7 @@ import {
   trackMetaPurchaseOnce,
 } from './meta-pixel.js';
 import { withAbCheckoutParam } from './ab-entry.js';
+import { withAttribution } from './utm.js';
 
 /**
  * Purchase só se a pessoa clicou checkout neste browser.
@@ -45,8 +46,9 @@ export function bindHardCheckoutLinks({
   unsellableMessage = 'Aún no está a la venta.',
 } = {}) {
   const isPlaceholder = !checkoutUrl || /SEU-LINK|COLOCAR_LINK|#/.test(checkoutUrl);
-  const taggedUrl =
+  const withLineTag =
     line === 'paletas' ? withAbCheckoutParam(checkoutUrl) : checkoutUrl;
+  const taggedUrl = withAttribution(withLineTag);
 
   document.querySelectorAll('[data-checkout-offer], [data-checkout-sticky], [data-checkout-hard]').forEach((link) => {
     if (!isSellable || isPlaceholder) {
@@ -85,13 +87,41 @@ export function bindHardCheckoutLinks({
         contentName,
         contentIds,
       });
-      // Postres historically used preventDefault + location; keep navigation reliable.
-      if (line === 'postres') {
+      // Force navigation with fresh attribution for non-paletas funnels.
+      if (line === 'postres' || line === 'minipostres') {
         e.preventDefault();
-        window.location.href = taggedUrl;
+        window.location.href = withAttribution(withLineTag);
       }
     });
   });
+}
+
+/**
+ * Sticky bar: visible after scrollRatio of page height, hidden when #offer is in view.
+ */
+export function bindScrollRevealSticky(stickyEl, { offerId = 'oferta', scrollRatio = 0.2 } = {}) {
+  if (!stickyEl) return;
+  const offer = document.getElementById(offerId);
+
+  const update = () => {
+    const doc = document.documentElement;
+    const scrollable = Math.max(doc.scrollHeight - window.innerHeight, 1);
+    const scrolledEnough = window.scrollY / scrollable >= scrollRatio;
+
+    let offerVisible = false;
+    if (offer) {
+      const rect = offer.getBoundingClientRect();
+      offerVisible = rect.top < window.innerHeight * 0.85 && rect.bottom > 80;
+    }
+
+    const visible = scrolledEnough && !offerVisible;
+    stickyEl.classList.toggle('visible', visible);
+    stickyEl.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  };
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
+  update();
 }
 
 /** Sticky appears only after the offer section (reduces premature IC). */

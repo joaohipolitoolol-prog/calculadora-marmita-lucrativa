@@ -5,6 +5,10 @@
 
 import { CHECKOUT_URL as PALETAS_CHECKOUT, MAIN_PRICE_LABEL as PALETAS_PRICE } from '../landing/config.js';
 import { CHECKOUT_URL as POSTRES_CHECKOUT, MAIN_PRICE_LABEL as POSTRES_PRICE } from '../postres/config.js';
+import {
+  CHECKOUT_URL as MINIPOSTRES_CHECKOUT,
+  MAIN_PRICE_LABEL as MINIPOSTRES_PRICE,
+} from '../minipostres/config.js';
 
 export const ACTIVE_LINE_STORAGE_KEY = 'active_product_line_v1';
 
@@ -75,6 +79,29 @@ export const PRODUCT_LINES = [
     favicon: '/favicon.svg?v=5',
     enabled: false,
     sellable: false,
+  },
+  {
+    id: 'minipostres',
+    name: 'Mini Postres Fríos Sin Horno',
+    kitName: 'Mini Postres Fríos Sin Horno',
+    short: 'Mini Postres',
+    emoji: '🧁',
+    unitSingular: 'mini postre',
+    unitPlural: 'mini postres',
+    unitLabel: 'Mini postres por día',
+    landingPath: '/minipostres',
+    upsellPath: '/minipostres',
+    checkoutUrl: MINIPOSTRES_CHECKOUT,
+    priceLabel: MINIPOSTRES_PRICE,
+    mainField: 'hasMinipostres',
+    premiumField: 'hasMinipostresPremium',
+    queryKey: 'minipostres',
+    premiumQueryKey: 'minipostres_premium',
+    accent: '#EC3F7A',
+    favicon: '/favicon.svg?v=5',
+    /** Landing live; sellable only when real Hotmart URL is configured */
+    enabled: true,
+    sellable: !/COLOCAR_LINK|SEU-LINK|^#$/i.test(String(MINIPOSTRES_CHECKOUT || '')),
   },
 ];
 

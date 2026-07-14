@@ -2152,6 +2152,219 @@ body {
 
 /* ── Inbox (Overview) ── */
 
+.admin-insights {
+  margin-bottom: 18px;
+  padding: 18px 18px 16px;
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-border);
+  background: linear-gradient(180deg, #fff 0%, #fafbfc 100%);
+  box-shadow: var(--admin-shadow);
+}
+
+.admin-insights-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-insights-head h2 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.admin-insights-head p {
+  margin-top: 2px;
+  font-size: 0.8rem;
+  color: var(--admin-muted);
+  font-weight: 600;
+}
+
+.admin-insights-headline {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 10px;
+  max-width: 62ch;
+}
+
+.admin-insights-bullets {
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.admin-insights-bullets li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 0.88rem;
+  color: var(--admin-text);
+  font-weight: 600;
+}
+
+.admin-insights-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--admin-accent);
+}
+
+.admin-insights-suggest {
+  margin-bottom: 14px;
+  padding: 12px 12px 10px;
+  border-radius: 8px;
+  background: var(--admin-accent-soft);
+  border: 1px solid rgba(232, 67, 122, 0.12);
+}
+
+.admin-insights-suggest h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--admin-accent);
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.admin-insights-suggest ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.admin-insights-suggest li {
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.35;
+  padding-left: 10px;
+  border-left: 3px solid transparent;
+}
+
+.admin-insights-suggest li.severity-high {
+  border-left-color: var(--admin-accent);
+}
+
+.admin-insights-suggest li.severity-med {
+  border-left-color: var(--admin-warn);
+}
+
+.admin-insights-suggest li.severity-low {
+  border-left-color: #94a3b8;
+}
+
+.admin-insights-ab {
+  border-top: 1px solid var(--admin-border);
+  padding-top: 12px;
+}
+
+.admin-insights-ab-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.admin-insights-ab-head strong {
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-insights-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.admin-insights-badge.win {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--admin-success);
+}
+
+.admin-insights-badge.tie {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--admin-warn);
+}
+
+.admin-insights-badge.early,
+.admin-insights-badge.none {
+  background: #eef2f7;
+  color: var(--admin-muted);
+}
+
+.admin-insights-ab-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.admin-insights-ab-arm {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border);
+  background: #fff;
+}
+
+.admin-insights-ab-arm.is-winner {
+  border-color: rgba(5, 150, 105, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(5, 150, 105, 0.12);
+}
+
+.admin-insights-ab-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--admin-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-insights-ab-metrics {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-insights-ab-metrics span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.admin-insights-ab-metrics em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--admin-muted);
+}
+
+@media (max-width: 640px) {
+  .admin-insights-ab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-insights-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .admin-attention {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));

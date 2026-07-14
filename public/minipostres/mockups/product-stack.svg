@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700">
+  <rect width="900" height="700" fill="#FFF8F2"/>
+  <rect x="80" y="80" width="280" height="520" rx="36" fill="#2F2725"/>
+  <rect x="98" y="110" width="244" height="440" rx="12" fill="#FFF8F2"/>
+  <text x="220" y="160" text-anchor="middle" font-family="system-ui" font-size="18" fill="#D94F70">Mini Postres</text>
+  <rect x="120" y="190" width="200" height="80" rx="12" fill="#F2DFC8"/>
+  <rect x="120" y="290" width="200" height="80" rx="12" fill="#F2DFC8"/>
+  <rect x="120" y="390" width="200" height="80" rx="12" fill="#F2DFC8"/>
+  <rect x="420" y="120" width="180" height="240" rx="12" fill="#FFFFFF" stroke="#E8D5C4"/>
+  <text x="510" y="250" text-anchor="middle" font-size="16" fill="#4A2B25">PDF</text>
+  <rect x="620" y="120" width="180" height="240" rx="12" fill="#FFFFFF" stroke="#E8D5C4"/>
+  <text x="710" y="250" text-anchor="middle" font-size="16" fill="#4A2B25">Catálogo</text>
+  <rect x="420" y="390" width="380" height="180" rx="12" fill="#FFFFFF" stroke="#E8D5C4"/>
+  <text x="610" y="490" text-anchor="middle" font-size="16" fill="#4A2B25">Calculadora · Lista · Guías</text>
+</svg>

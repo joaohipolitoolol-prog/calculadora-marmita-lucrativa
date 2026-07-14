@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="848" height="488" viewBox="0 0 848 488">
+  <rect width="848" height="488" fill="#FFF8F2"/>
+  <g transform="translate(24,24)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#4A2B25"/>
+        <rect x="54" y="80" width="72" height="30" fill="#C9854B"/>
+        <rect x="54" y="52" width="72" height="28" fill="#F2DFC8"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Tarta alemana</text>
+      </g><g transform="translate(224,24)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#D94F70"/>
+        <rect x="54" y="80" width="72" height="30" fill="#FFF8F2"/>
+        <rect x="54" y="52" width="72" height="28" fill="#B92F4B"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Fresa cremosa</text>
+      </g><g transform="translate(424,24)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#E8D44D"/>
+        <rect x="54" y="80" width="72" height="30" fill="#FFF8F2"/>
+        <rect x="54" y="52" width="72" height="28" fill="#C9854B"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Limón</text>
+      </g><g transform="translate(624,24)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#2F2725"/>
+        <rect x="54" y="80" width="72" height="30" fill="#F2DFC8"/>
+        <rect x="54" y="52" width="72" height="28" fill="#4A2B25"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Oreo</text>
+      </g><g transform="translate(24,224)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#4A2B25"/>
+        <rect x="54" y="80" width="72" height="30" fill="#6B3F36"/>
+        <rect x="54" y="52" width="72" height="28" fill="#C9854B"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Chocolate</text>
+      </g><g transform="translate(224,224)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#E8A317"/>
+        <rect x="54" y="80" width="72" height="30" fill="#FFF8F2"/>
+        <rect x="54" y="52" width="72" height="28" fill="#C9854B"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Maracuyá</text>
+      </g><g transform="translate(424,224)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#C9854B"/>
+        <rect x="54" y="80" width="72" height="30" fill="#F2DFC8"/>
+        <rect x="54" y="52" width="72" height="28" fill="#8B5A2B"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Dulce de leche</text>
+      </g><g transform="translate(624,224)">
+        <rect width="180" height="180" rx="20" fill="#FFF" stroke="#E8D5C4"/>
+        <rect x="50" y="40" width="80" height="110" rx="10" fill="#FFFFFF" stroke="#E8D5C4"/>
+        <rect x="54" y="110" width="72" height="34" fill="#F2DFC8"/>
+        <rect x="54" y="80" width="72" height="30" fill="#FFFFFF"/>
+        <rect x="54" y="52" width="72" height="28" fill="#C9854B"/>
+        <text x="90" y="170" text-anchor="middle" font-size="12" fill="#6E5D59" font-family="system-ui">Coco</text>
+      </g>
+  <text x="50%" y="476" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#4A2B25">Mini postres fríos · placeholder</text>
+</svg>

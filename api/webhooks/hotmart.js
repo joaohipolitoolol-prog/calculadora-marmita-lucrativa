@@ -112,6 +112,16 @@ async function bumpPaidSale(firestore, { line, product } = {}) {
 
     if (summary.todayKey && summary.todayKey !== day) {
       if (summary.sales) summary.sales.today = 0;
+      if (summary.salesByLine) {
+        for (const cell of Object.values(summary.salesByLine)) {
+          if (cell && typeof cell === 'object') cell.today = 0;
+        }
+      }
+      if (summary.salesByProduct) {
+        for (const cell of Object.values(summary.salesByProduct)) {
+          if (cell && typeof cell === 'object') cell.today = 0;
+        }
+      }
       summary.todayKey = day;
     }
     if (!summary.sales) summary.sales = { total: 0, today: 0 };
@@ -124,8 +134,22 @@ async function bumpPaidSale(firestore, { line, product } = {}) {
       summary.salesByLine[line].total = (summary.salesByLine[line].total || 0) + 1;
       summary.salesByLine[line].today = (summary.salesByLine[line].today || 0) + 1;
     }
+    if (product) {
+      if (!summary.salesByProduct) summary.salesByProduct = {};
+      if (!summary.salesByProduct[product]) {
+        summary.salesByProduct[product] = { total: 0, today: 0 };
+      }
+      summary.salesByProduct[product].total =
+        (summary.salesByProduct[product].total || 0) + 1;
+      summary.salesByProduct[product].today =
+        (summary.salesByProduct[product].today || 0) + 1;
+    }
 
     daily.sales = (daily.sales || 0) + 1;
+    if (line) {
+      if (!daily.salesByLine) daily.salesByLine = {};
+      daily.salesByLine[line] = (daily.salesByLine[line] || 0) + 1;
+    }
     if (product) {
       if (!daily.salesByProduct) daily.salesByProduct = {};
       daily.salesByProduct[product] = (daily.salesByProduct[product] || 0) + 1;

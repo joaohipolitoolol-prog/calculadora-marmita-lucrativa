@@ -13,6 +13,127 @@ import {
   publicDwell,
   publicQuizSteps,
 } from '../../server/lib/analytics-funnel.js';
+import { buildInsights } from '../../server/lib/insights.js';
+
+const KNOWN_LINES = ['paletas', 'postres', 'donuts', 'minipostres'];
+
+function productToLine(product) {
+  const p = String(product || '').toLowerCase();
+  if (!p) return null;
+  for (const line of KNOWN_LINES) {
+    if (p === line || p.startsWith(`${line}_`)) return line;
+  }
+  return null;
+}
+
+function emptySalesCell() {
+  return { period: 0, total: 0 };
+}
+
+/** Aggregate paid sales by line for a period (+ all-time totals from summary). */
+function buildSalesByLine(summary, dayDocs, useSummaryPeriod) {
+  const out = {};
+  for (const line of KNOWN_LINES) {
+    const cell = summary.salesByLine?.[line];
+    out[line] = {
+      period: 0,
+      total: Number(cell?.total) || 0,
+    };
+  }
+
+  if (useSummaryPeriod) {
+    for (const line of KNOWN_LINES) {
+      out[line].period = out[line].total;
+    }
+    return out;
+  }
+
+  for (const day of dayDocs) {
+    if (day.salesByLine && typeof day.salesByLine === 'object') {
+      for (const [line, n] of Object.entries(day.salesByLine)) {
+        if (!out[line]) out[line] = emptySalesCell();
+        out[line].period += Number(n) || 0;
+      }
+      continue;
+    }
+    // Backfill older daily docs that only have salesByProduct
+    if (day.salesByProduct && typeof day.salesByProduct === 'object') {
+      for (const [product, n] of Object.entries(day.salesByProduct)) {
+        const line = productToLine(product);
+        if (!line) continue;
+        if (!out[line]) out[line] = emptySalesCell();
+        out[line].period += Number(n) || 0;
+      }
+    }
+  }
+
+  // Prefer live summary "today" when daily docs lack per-line breakdown yet
+  if (dayDocs.length === 1) {
+    for (const line of KNOWN_LINES) {
+      const summaryToday = Number(summary.salesByLine?.[line]?.today) || 0;
+      if (summaryToday > out[line].period) out[line].period = summaryToday;
+    }
+  }
+
+  return out;
+}
+
+function buildSalesByProduct(summary, dayDocs, useSummaryPeriod) {
+  const out = {};
+  const ensure = (product) => {
+    if (!out[product]) out[product] = emptySalesCell();
+    return out[product];
+  };
+
+  for (const [product, cell] of Object.entries(summary.salesByProduct || {})) {
+    const row = ensure(product);
+    row.total =
+      cell && typeof cell === 'object'
+        ? Number(cell.total) || 0
+        : Number(cell) || 0;
+  }
+
+  if (useSummaryPeriod) {
+    for (const row of Object.values(out)) {
+      row.period = row.total;
+    }
+    return out;
+  }
+
+  for (const day of dayDocs) {
+    if (!day.salesByProduct || typeof day.salesByProduct !== 'object') continue;
+    for (const [product, n] of Object.entries(day.salesByProduct)) {
+      const row = ensure(product);
+      row.period += Number(n) || 0;
+      if (!row.total) {
+        // Keep total from summary when present; otherwise accumulate seen period as floor
+        row.total = Math.max(row.total, row.period);
+      }
+    }
+  }
+  return out;
+}
+
+function sumCheckoutFromCtas(ctas) {
+  return (ctas || [])
+    .filter(
+      (c) =>
+        c.kind === 'checkout' ||
+        /_(kit|premium)$/i.test(String(c.key || '')),
+    )
+    .reduce((sum, c) => sum + (Number(c.today) || 0), 0);
+}
+
+function pageViewsByLineFromPages(pages) {
+  const out = { paletas: 0, postres: 0, donuts: 0, minipostres: 0 };
+  for (const p of pages || []) {
+    const line = p.line;
+    if (line && out[line] != null) {
+      out[line] += Number(p.today) || 0;
+    }
+  }
+  return out;
+}
 
 const RANGE_DAYS = {
   today: 1,
@@ -293,6 +414,8 @@ export default async function handler(req, res) {
           dwell: data.dwell || {},
           quiz_abandon: data.quiz_abandon || 0,
           sales: data.sales || 0,
+          salesByLine: data.salesByLine || null,
+          salesByProduct: data.salesByProduct || null,
         };
       });
 
@@ -303,7 +426,14 @@ export default async function handler(req, res) {
 
     const useSummaryPeriod = range === 'all';
 
-    // Paid sales (webhook deduped) — not checkout clicks
+    const salesByLine = buildSalesByLine(summary, rangeDays, useSummaryPeriod);
+    const salesByProduct = buildSalesByProduct(
+      summary,
+      rangeDays,
+      useSummaryPeriod,
+    );
+
+    // Paid sales (webhook deduped) — not checkout clicks; filter by line when set
     let salesToday = Number(summary.sales?.today) || 0;
     let salesTotal = Number(summary.sales?.total) || 0;
     if (!useSummaryPeriod && rangeDays.length) {
@@ -312,7 +442,11 @@ export default async function handler(req, res) {
     if (useSummaryPeriod) {
       salesToday = salesTotal;
     }
-
+    if (line && line !== 'all') {
+      const cell = salesByLine[line] || emptySalesCell();
+      salesToday = Number(cell.period) || 0;
+      salesTotal = Number(cell.total) || 0;
+    }
     let pages;
     let ctas;
     let whatsapp;
@@ -368,12 +502,20 @@ export default async function handler(req, res) {
       pages = sumDailyPages(rangeDays, summary.pages || {}, line);
       ctas = sumDailyCtas(rangeDays, summary.ctas || {}, line);
       whatsapp = sumDailyWhatsapp(rangeDays, summary.whatsapp || {}, line);
-      checkoutPeriod = sumDailyEvent(rangeDays, 'checkout_click');
+      checkoutPeriod =
+        line && line !== 'all'
+          ? sumCheckoutFromCtas(ctas)
+          : sumDailyEvent(rangeDays, 'checkout_click');
       whatsappPeriod = sumDailyEvent(rangeDays, 'whatsapp_click');
       abRaw = abEntryFromDays(rangeDays, summary.ab?.paletas?.entry || {});
       quizStepsRaw = quizStepsFromDays(rangeDays, summary.quiz_steps || {});
       dwellRaw = dwellFromDays(rangeDays, summary.dwell || {});
       abandonRaw = abandonFromDays(rangeDays, summary.quiz_abandon || {});
+    }
+
+    // When filtering by line on "all" range, prefer checkout CTAs for that line
+    if (useSummaryPeriod && line && line !== 'all') {
+      checkoutPeriod = sumCheckoutFromCtas(ctas);
     }
 
     const events = mapCounterObject(summary.events || {});
@@ -397,6 +539,46 @@ export default async function handler(req, res) {
       abandon: abandonRaw,
     };
 
+    const kpis = {
+      pageViewsToday: todayTotal,
+      pageViewsTotal: allTimeTotal,
+      whatsappToday: whatsappPeriod,
+      whatsappTotal: eventTotal('whatsapp_click'),
+      checkoutToday: checkoutPeriod,
+      checkoutTotal:
+        line && line !== 'all'
+          ? sumCheckoutFromCtas(
+              filterByLine(mapCounterObject(summary.ctas || {}), line).map((c) => ({
+                ...c,
+                today: c.total,
+              })),
+            )
+          : eventTotal('checkout_click'),
+      salesToday,
+      salesTotal,
+      ctaToday: eventToday('cta_click'),
+      registerToday: eventToday('register'),
+      loginToday: eventToday('login'),
+      appOpenToday: eventToday('app_open'),
+    };
+
+    const insights = buildInsights({
+      line,
+      kpis,
+      salesByLine,
+      abEntry,
+      funnel,
+      pageViewsByLine: pageViewsByLineFromPages(
+        // Unfiltered page views for cross-line insight (postres traffic)
+        useSummaryPeriod
+          ? mapCounterObject(summary.pages || {}).map((p) => ({
+              ...p,
+              today: p.total,
+            }))
+          : sumDailyPages(rangeDays, summary.pages || {}, 'all'),
+      ),
+    });
+
     return res.status(200).json({
       line,
       range,
@@ -415,20 +597,10 @@ export default async function handler(req, res) {
         },
       },
       funnel,
-      kpis: {
-        pageViewsToday: todayTotal,
-        pageViewsTotal: allTimeTotal,
-        whatsappToday: whatsappPeriod,
-        whatsappTotal: eventTotal('whatsapp_click'),
-        checkoutToday: checkoutPeriod,
-        checkoutTotal: eventTotal('checkout_click'),
-        salesToday,
-        salesTotal,
-        ctaToday: eventToday('cta_click'),
-        registerToday: eventToday('register'),
-        loginToday: eventToday('login'),
-        appOpenToday: eventToday('app_open'),
-      },
+      salesByLine,
+      salesByProduct,
+      insights,
+      kpis,
       legend: {
         checkout: 'checkout_click',
         sales: 'paid_hotmart_transaction',

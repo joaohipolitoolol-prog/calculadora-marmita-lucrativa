@@ -14,16 +14,36 @@ import {
 } from '../data/kit-paletas.js';
 import {
   CHECKLIST_POSTRES,
+  CHECKLIST_VENTA_POSTRES,
   LISTA_COMPRAS_POSTRES,
   MENSAJES_POSTRES,
   MENSAJES_POSTRES_PREMIUM,
   FECHAS_POSTRES_PREMIUM,
   GUIA_POSTRES_PREMIUM,
+  KIT_EXTRAS_POSTRES,
   PLAN_7_DIAS_POSTRES,
   RECETAS_POSTRES,
   RECETAS_POSTRES_PREMIUM,
   COMBOS_POSTRES_PREMIUM,
 } from '../data/kit-postres.js';
+import {
+  applyPlaceholders,
+  findUnresolvedPlaceholders,
+  loadMessageVars,
+  saveMessageVars,
+} from '../lib/whatsapp-placeholders.js';
+import { inferAllergens, resolveRecipeVisual } from '../lib/recipe-images.js';
+import {
+  isStarterPackDone,
+  markStarterPackDone,
+  renderStarterPackCard,
+} from './starter-pack.js';
+import {
+  loadPlaybookProgress,
+  renderPlaybooksCrecimiento,
+  savePlaybookProgress,
+  playbooksTaskTotal,
+} from './playbooks.js';
 import {
   calculate,
   cloneInputs,
@@ -240,10 +260,11 @@ function kitContentForLine() {
       plan: PLAN_7_DIAS_POSTRES,
       lista: LISTA_COMPRAS_POSTRES,
       checklist: CHECKLIST_POSTRES,
+      checklistVenta: CHECKLIST_VENTA_POSTRES,
       mensajesPremium: MENSAJES_POSTRES_PREMIUM,
       fechasPremium: FECHAS_POSTRES_PREMIUM,
       guiaPremium: GUIA_POSTRES_PREMIUM,
-      kitExtras: null,
+      kitExtras: KIT_EXTRAS_POSTRES,
       downloads: POSTRES_DOWNLOADS,
       premiumDownloads: POSTRES_PREMIUM_DOWNLOADS,
       upsellCheckout: POSTRES_UPSELL_CHECKOUT,
@@ -619,6 +640,70 @@ function saveListaComprasState(checkedKeys) {
   localStorage.setItem(listaComprasKey(currentUser.uid), JSON.stringify(checkedKeys));
 }
 
+function planProgressKey(uid) {
+  return `kit_plan_${lineBrand().id}_${uid || 'local'}_v1`;
+}
+
+function loadPlanProgress() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(planProgressKey(currentUser.uid)) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function savePlanProgress(map) {
+  try {
+    localStorage.setItem(planProgressKey(currentUser.uid), JSON.stringify(map || {}));
+  } catch {
+    /* ignore */
+  }
+}
+
+function getMessageVars() {
+  return loadMessageVars(lineBrand().id, currentUser?.uid);
+}
+
+function formatWhatsAppMessage(text) {
+  const emoji = lineBrand().emoji || BRAND_EMOJI;
+  const withEmoji = String(text || '')
+    .replace(/🍭/g, emoji)
+    .replace(/🍮/g, emoji);
+  return applyPlaceholders(withEmoji, getMessageVars());
+}
+
+function renderMessageVarsPanel() {
+  const vars = getMessageVars();
+  const brand = lineBrand();
+  return `
+    <div class="section-card msg-vars-card" id="msg-vars-card">
+      <h2>Tus datos para los mensajes</h2>
+      <p class="section-text">Completa una vez. Los corchetes como [sabores] se reemplazan solos antes de copiar.</p>
+      <div class="msg-vars-grid">
+        <label>
+          <span>Sabores</span>
+          <input type="text" data-msg-var="sabores" value="${escapeHtml(vars.sabores)}" placeholder="ej: fresa, Oreo, limón" maxlength="120" autocomplete="off">
+        </label>
+        <label>
+          <span>Precio</span>
+          <input type="text" data-msg-var="precio" value="${escapeHtml(vars.precio)}" placeholder="ej: 2,50" maxlength="40" inputmode="decimal" autocomplete="off">
+        </label>
+        <label>
+          <span>Zona</span>
+          <input type="text" data-msg-var="zona" value="${escapeHtml(vars.zona)}" placeholder="ej: Centro / tu barrio" maxlength="80" autocomplete="off">
+        </label>
+        <label>
+          <span>Dirección / punto</span>
+          <input type="text" data-msg-var="direccion" value="${escapeHtml(vars.direccion)}" placeholder="ej: recogida en..." maxlength="120" autocomplete="off">
+        </label>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" id="msg-vars-save">Guardar y actualizar mensajes</button>
+      <p class="msg-vars-hint">Se guarda en este celular · úsalo también para ${escapeHtml(brand.unitPlural)}.</p>
+    </div>
+  `;
+}
+
 function listaExportHref() {
   const lineId = lineBrand().id;
   if (lineId === 'postres') return '/postres/produto/Lista_Compras_Postres.html';
@@ -801,9 +886,9 @@ function renderPostPurchaseBanner() {
       <div class="welcome-banner-body">
         <strong>¡Bienvenida a tu ${escapeHtml(brand.kitName)}!</strong>
         <ol class="welcome-banner-steps">
-          <li>Calcula tus precios en modo rápido</li>
-          <li>Toca <em>Ver mi ganancia</em></li>
-          <li>Abre <em>Kit</em> en el menú de abajo</li>
+          <li>Sigue el <em>primer pack</em> en Inicio (3 sabores)</li>
+          <li>Calcula tu precio en modo rápido</li>
+          <li>Publica un mensaje listo desde Kit → Mensajes</li>
         </ol>
         <a href="${lineWhatsApp('support').href}" class="welcome-banner-wa" target="_blank" rel="noopener noreferrer" data-wa-id="${lineWhatsApp('support').id}" data-wa-purpose="support">¿Necesitas ayuda? Escríbenos por WhatsApp</a>
       </div>
@@ -1123,7 +1208,7 @@ function resolveMensajeText(msg, source = 'base') {
   const edits = loadMensajesEdits(source);
   const key = String(msg.idx);
   if (Object.prototype.hasOwnProperty.call(edits, key) && String(edits[key]).trim()) {
-    return { text: String(edits[key]), customized: true };
+    return { text: formatWhatsAppMessage(edits[key]), customized: true };
   }
   return { text: formatWhatsAppMessage(msg.texto), customized: false };
 }
@@ -1456,6 +1541,25 @@ function renderHome() {
     <div class="home-page">
       ${renderKitPendingBanner()}
       ${renderPostPurchaseBanner()}
+      ${
+        kitUnlocked && !isStarterPackDone(brand.id, currentUser?.uid)
+          ? renderStarterPackCard({
+              brand,
+              recipes: kitContentForLine().recipes || [],
+              vars: getMessageVars(),
+              whatsAppShareUrl,
+              kitUnlocked,
+            })
+          : kitUnlocked && isStarterPackDone(brand.id, currentUser?.uid)
+            ? `
+        <section class="growth-nudge" aria-label="Siguiente paso">
+          <strong>¿Publicaste y hay silencio?</strong>
+          <p>Semanas 2–4 te enseñan a salir del círculo de amigos y armar rutina.</p>
+          <button type="button" class="btn btn-secondary btn-sm" data-open-crecimiento>Abrir Crece</button>
+        </section>
+      `
+            : ''
+      }
 
       <div class="home-hero ${r.status}">
         <div class="home-hero-top">
@@ -2000,13 +2104,6 @@ function renderCrossSellOffer() {
   return offerCards + soonCards;
 }
 
-function formatWhatsAppMessage(text) {
-  const emoji = lineBrand().emoji || BRAND_EMOJI;
-  return String(text || '')
-    .replace(/🍭/g, emoji)
-    .replace(/🍮/g, emoji);
-}
-
 function render() {
   const shellClass = [
     'app-shell',
@@ -2510,6 +2607,8 @@ function recipeMeta(item) {
 function renderRecipeItem(item, label, { premium = false, lineId, audioEnabled = true } = {}) {
   const meta = recipeMeta(item);
   const recipeKey = recipeStableKey(item, { lineId, premium });
+  const visual = resolveRecipeVisual(lineId || lineBrand().id, item);
+  const allergens = inferAllergens(item);
   const playBtn = audioEnabled
     ? `<button type="button" class="menu-item-play" data-recipe-play="${escapeHtml(recipeKey)}" aria-label="Escuchar receta en modo audio guiado" aria-pressed="false">
           <span class="menu-item-play-icon menu-item-play-icon--play" aria-hidden="true">${ICONS.play}</span>
@@ -2517,9 +2616,25 @@ function renderRecipeItem(item, label, { premium = false, lineId, audioEnabled =
           <span class="menu-item-play-icon menu-item-play-icon--load" aria-hidden="true">${ICONS.loader}</span>
         </button>`
     : '';
+  const thumb =
+    visual.kind === 'img'
+      ? `<span class="menu-item-thumb"><img src="${escapeHtml(visual.src)}" alt="" loading="lazy" width="56" height="56"></span>`
+      : `<span class="menu-item-thumb menu-item-thumb--art" style="--recipe-wash:${escapeHtml(visual.wash)};--recipe-hue:${visual.hue}" aria-hidden="true"><span>${visual.emoji}</span></span>`;
+  const hero =
+    visual.kind === 'img'
+      ? `<div class="menu-item-hero"><img src="${escapeHtml(visual.src)}" alt="${escapeHtml(visual.alt)}" loading="lazy"></div>`
+      : `<div class="menu-item-hero menu-item-hero--art" style="--recipe-wash:${escapeHtml(visual.wash)};--recipe-hue:${visual.hue}">
+           <span class="menu-item-hero-emoji" aria-hidden="true">${visual.emoji}</span>
+           <span class="menu-item-hero-label">${escapeHtml(visual.label)}</span>
+         </div>`;
+  const allergenRow = allergens.length
+    ? `<p class="menu-item-allergens"><strong>Puede contener:</strong> ${allergens.map((a) => escapeHtml(a)).join(' · ')}. Avisa siempre a tu cliente.</p>`
+    : `<p class="menu-item-allergens menu-item-allergens--soft">Revisa ingredientes y avisa alérgenos (lácteos, gluten, frutos secos) antes de vender.</p>`;
+
   return `
     <details class="menu-item ${premium ? 'menu-item--premium' : ''}" data-search="${escapeHtml(recipeSearchBlob(item))}" data-tipo="${recipeTipoSlug(item.tipo)}" data-recipe-key="${escapeHtml(recipeKey)}">
       <summary class="menu-item-summary">
+        ${thumb}
         <div class="menu-item-summary-main">
           <div class="menu-item-head">
             <span class="menu-item-day">${escapeHtml(label)}</span>
@@ -2533,6 +2648,7 @@ function renderRecipeItem(item, label, { premium = false, lineId, audioEnabled =
         <span class="menu-item-chevron" aria-hidden="true">${ICONS.chevronRight}</span>
       </summary>
       <div class="menu-item-body">
+        ${hero}
         <div class="menu-item-meta">
           <span>${escapeHtml(meta.prep)} prep</span>
           <span>${escapeHtml(meta.cold)} frío</span>
@@ -2540,6 +2656,7 @@ function renderRecipeItem(item, label, { premium = false, lineId, audioEnabled =
           <span>${escapeHtml(item.dificultad || '')}</span>
         </div>
         ${item.descripcion ? `<p class="menu-item-desc">${escapeHtml(item.descripcion)}</p>` : ''}
+        ${allergenRow}
         <h4 class="menu-item-section-title" data-recipe-section="ingredients">Ingredientes</h4>
         <ul class="menu-item-ingredients">
           ${(item.ingredientes || []).map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
@@ -2762,14 +2879,15 @@ function renderMenuWhatsApp() {
 }
 
 function renderKitSectionNav() {
-  const lineId = lineBrand().id;
+  const kit = kitContentForLine();
   const sections = [
     { id: 'menu', label: 'Menú' },
     { id: 'mensajes', label: 'Mensajes' },
     { id: 'plan', label: 'Plan' },
+    { id: 'crecimiento', label: 'Crece' },
     { id: 'lista', label: 'Compras' },
     { id: 'checklist', label: 'Checklist' },
-    ...(lineId === 'paletas' ? [{ id: 'tecnicas', label: 'Tips' }] : []),
+    ...(kit.kitExtras ? [{ id: 'tecnicas', label: 'Tips' }] : []),
     { id: 'premium', label: 'Premium', premium: true },
     { id: 'ayuda', label: 'Ayuda' },
   ];
@@ -2852,12 +2970,12 @@ function renderCombosPremium() {
                 <div><dt>Público</dt><dd>${escapeHtml(combo.publico)}</dd></div>
               </dl>
               <div class="combo-card-message">
-                <p>${escapeHtml(combo.mensaje)}</p>
+                <p>${escapeHtml(formatWhatsAppMessage(combo.mensaje))}</p>
                 <div class="message-actions">
                   <button type="button" class="btn btn-sm btn-secondary copy-combo" data-combo-index="${idx}">
                     ${ICONS.copy}<span>Copiar</span>
                   </button>
-                  <a href="${whatsAppShareUrl(combo.mensaje)}" class="btn btn-sm btn-wa" target="_blank" rel="noopener noreferrer">
+                  <a href="${whatsAppShareUrl(formatWhatsAppMessage(combo.mensaje))}" class="btn btn-sm btn-wa" target="_blank" rel="noopener noreferrer">
                     ${ICONS.message}<span>Publicar</span>
                   </a>
                 </div>
@@ -2874,25 +2992,37 @@ function renderCombosPremium() {
 function renderMensajesWhatsApp() {
   const source = 'base';
   const mensajes = kitContentForLine().mensajes || [];
-  return `<div data-mensajes-source="${source}">${renderMensajesList(mensajes, {
-    resolveText: (msg) => {
-      const resolved = resolveMensajeText(msg, source);
-      msg.customized = resolved.customized;
-      return resolved.text;
-    },
-  })}</div>`;
+  return `
+    <div data-mensajes-source="${source}">
+      ${renderMessageVarsPanel()}
+      ${renderMensajesList(mensajes, {
+        whatsAppShareUrl,
+        resolveText: (msg) => {
+          const resolved = resolveMensajeText(msg, source);
+          msg.customized = resolved.customized;
+          return resolved.text;
+        },
+      })}
+    </div>
+  `;
 }
 
 function renderMensajesPremium() {
   const source = 'premium';
   const mensajes = kitContentForLine().mensajesPremium || [];
-  return `<div data-mensajes-source="${source}">${renderMensajesList(mensajes, {
-    resolveText: (msg) => {
-      const resolved = resolveMensajeText(msg, source);
-      msg.customized = resolved.customized;
-      return resolved.text;
-    },
-  })}</div>`;
+  return `
+    <div data-mensajes-source="${source}">
+      ${renderMessageVarsPanel()}
+      ${renderMensajesList(mensajes, {
+        whatsAppShareUrl,
+        resolveText: (msg) => {
+          const resolved = resolveMensajeText(msg, source);
+          msg.customized = resolved.customized;
+          return resolved.text;
+        },
+      })}
+    </div>
+  `;
 }
 
 function renderMenuPremium() {
@@ -2932,6 +3062,11 @@ function renderTecnicasKit() {
 
 function renderPlan7Dias() {
   const plan = kitContentForLine().plan;
+  const progress = loadPlanProgress();
+  const total = plan.reduce((n, day) => n + (day.tareas?.length || 0), 0);
+  const done = Object.values(progress).filter(Boolean).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
   return `
     <div class="section-card">
       <div class="lista-head">
@@ -2939,24 +3074,56 @@ function renderPlan7Dias() {
         ${renderSectionPdfBtn({ href: planExportHref() })}
       </div>
       <p class="section-text">Sigue este paso a paso para organizar tu primera semana de ventas.</p>
+      <div class="plan-progress" aria-live="polite">
+        <strong>${done}/${total}</strong> tareas · ${pct}%
+        <div class="plan-progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+          <span style="width:${pct}%"></span>
+        </div>
+      </div>
       <ol class="plan-list">
-        ${plan.map(
-          (day) => `
+        ${plan
+          .map(
+            (day) => `
             <li class="plan-day">
               <div class="plan-day-head">
                 <span class="plan-day-num">Día ${day.dia}</span>
                 <strong>${escapeHtml(day.titulo)}</strong>
               </div>
               ${day.duracion || day.meta ? `<p class="plan-day-meta">${escapeHtml([day.duracion, day.meta].filter(Boolean).join(' · '))}</p>` : ''}
-              <ul>
-                ${day.tareas.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}
+              <ul class="kit-checklist interactive">
+                ${(day.tareas || [])
+                  .map((t, ti) => {
+                    const key = `${day.dia}:${ti}`;
+                    const checked = Boolean(progress[key]);
+                    return `
+                      <li>
+                        <label class="checklist-label">
+                          <input type="checkbox" data-plan-task="${key}" ${checked ? 'checked' : ''}>
+                          <span>${escapeHtml(t)}</span>
+                        </label>
+                      </li>
+                    `;
+                  })
+                  .join('')}
               </ul>
             </li>
           `
-        ).join('')}
+          )
+          .join('')}
       </ol>
+      <p class="section-text plan-next-hint">¿Ya publicaste y hay silencio? Pasa a <button type="button" class="linkish" data-kit-section="crecimiento">Semanas 2–4 · Crece</button>.</p>
+      <button type="button" class="btn btn-ghost btn-sm" id="reset-plan">Reiniciar plan</button>
     </div>
   `;
+}
+
+function renderCrecimientoPlaybooks() {
+  return renderPlaybooksCrecimiento({
+    lineId: lineBrand().id,
+    vars: getMessageVars(),
+    whatsAppShareUrl,
+    progress: loadPlaybookProgress(lineBrand().id, currentUser?.uid),
+  });
 }
 
 function renderListaCompras() {
@@ -3140,6 +3307,7 @@ function renderKitContent() {
     premium: 'Complemento premium',
     tecnicas: 'Técnicas y tips',
     plan: 'Plan de 7 días',
+    crecimiento: 'Semanas 2–4 · Crece',
     lista: 'Lista de compras',
     checklist: 'Checklist',
     archivos: 'Archivos del kit',
@@ -3162,6 +3330,8 @@ function renderKitContent() {
       return renderTecnicasKit();
     case 'plan':
       return renderPlan7Dias();
+    case 'crecimiento':
+      return renderCrecimientoPlaybooks();
     case 'lista':
       return renderListaCompras();
     case 'checklist':
@@ -3729,8 +3899,16 @@ function bindEvents() {
   root.querySelectorAll('.copy-combo').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = parseNumber(btn.dataset.comboIndex);
-      const text = kitContentForLine().combos[idx]?.mensaje;
+      const text = formatWhatsAppMessage(kitContentForLine().combos[idx]?.mensaje || '');
       if (!text) return;
+      const unresolved = findUnresolvedPlaceholders(text);
+      if (unresolved.length) {
+        showToast(`Completa ${unresolved.join(', ')} en Mensajes (tus datos) antes de copiar.`);
+        kitHubTab = 'vender';
+        setKitSection('mensajes');
+        navigateTo('kit');
+        return;
+      }
       try {
         await navigator.clipboard.writeText(text);
         showToast('¡Mensaje del combo copiado!');
@@ -3744,24 +3922,66 @@ function bindEvents() {
     btn.addEventListener('click', () => navigateTo('calc'));
   });
 
+  document.getElementById('msg-vars-save')?.addEventListener('click', () => {
+    const card = document.getElementById('msg-vars-card');
+    if (!card) return;
+    const next = {
+      sabores: card.querySelector('[data-msg-var="sabores"]')?.value || '',
+      precio: card.querySelector('[data-msg-var="precio"]')?.value || '',
+      zona: card.querySelector('[data-msg-var="zona"]')?.value || '',
+      direccion: card.querySelector('[data-msg-var="direccion"]')?.value || '',
+    };
+    saveMessageVars(lineBrand().id, currentUser?.uid, next);
+    showToast('Datos guardados. Mensajes actualizados.');
+    render();
+  });
+
   root.querySelectorAll('.copy-msg').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const idx = parseNumber(btn.dataset.copyIndex);
       const item = btn.closest('.message-item');
-      const text = item?.querySelector('[data-msg-edit]')?.value?.trim()
-        || (() => {
-            const source = btn.closest('[data-mensajes-source]')?.dataset.mensajesSource;
-            const kit = kitContentForLine();
-            const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
-            return formatWhatsAppMessage(pool?.[idx]?.texto);
-          })();
+      const textarea = item?.querySelector('[data-msg-edit]');
+      const text =
+        textarea?.value?.trim() ||
+        (() => {
+          const source = btn.closest('[data-mensajes-source]')?.dataset.mensajesSource;
+          const kit = kitContentForLine();
+          const pool = source === 'premium' ? kit.mensajesPremium : kit.mensajes;
+          return formatWhatsAppMessage(pool?.[idx]?.texto);
+        })();
       if (!text) return;
+      const unresolved = findUnresolvedPlaceholders(text);
+      if (unresolved.length) {
+        showToast(`Todavía hay ${unresolved.join(', ')}. Completa tus datos arriba.`);
+        document.getElementById('msg-vars-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
       try {
         await navigator.clipboard.writeText(text);
         showToast('¡Mensaje copiado!');
       } catch {
-        showToast('No se pudo copiar. Selecciona el texto manualmente.');
+        if (textarea) {
+          textarea.focus();
+          textarea.select();
+        }
+        showToast('No se pudo copiar. Selecciona el texto y copia manualmente.');
       }
+    });
+  });
+
+  root.querySelectorAll('.wa-msg').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const item = link.closest('.message-item');
+      const text = item?.querySelector('[data-msg-edit]')?.value?.trim() || '';
+      if (!text) return;
+      const unresolved = findUnresolvedPlaceholders(text);
+      if (unresolved.length) {
+        event.preventDefault();
+        showToast(`Completa ${unresolved.join(', ')} antes de abrir WhatsApp.`);
+        document.getElementById('msg-vars-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      link.setAttribute('href', whatsAppShareUrl(text));
     });
   });
 
@@ -3801,6 +4021,143 @@ function bindEvents() {
       showToast('Mensaje restablecido.');
       render();
     });
+  });
+
+  root.querySelectorAll('[data-plan-task]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const map = loadPlanProgress();
+      const key = input.dataset.planTask;
+      if (!key) return;
+      if (input.checked) map[key] = true;
+      else delete map[key];
+      savePlanProgress(map);
+      const plan = kitContentForLine().plan || [];
+      const total = plan.reduce((n, day) => n + (day.tareas?.length || 0), 0);
+      const done = Object.values(map).filter(Boolean).length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      const box = root.querySelector('.plan-progress');
+      if (box) {
+        box.innerHTML = `<strong>${done}/${total}</strong> tareas · ${pct}%
+        <div class="plan-progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+          <span style="width:${pct}%"></span>
+        </div>`;
+      }
+    });
+  });
+
+  document.getElementById('reset-plan')?.addEventListener('click', () => {
+    savePlanProgress({});
+    showToast('Plan reiniciado.');
+    render();
+  });
+
+  root.querySelectorAll('[data-playbook-task]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const map = loadPlaybookProgress(lineBrand().id, currentUser?.uid);
+      const key = input.dataset.playbookTask;
+      if (!key) return;
+      if (input.checked) map[key] = true;
+      else delete map[key];
+      savePlaybookProgress(lineBrand().id, currentUser?.uid, map);
+      const total = playbooksTaskTotal();
+      const done = Object.values(map).filter(Boolean).length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      const box = root.querySelector('[data-playbook-progress]');
+      if (box) {
+        box.innerHTML = `<strong>${done}/${total}</strong> tareas · ${pct}%
+          <div class="plan-progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+            <span style="width:${pct}%"></span>
+          </div>`;
+      }
+    });
+  });
+
+  document.getElementById('reset-playbooks')?.addEventListener('click', () => {
+    savePlaybookProgress(lineBrand().id, currentUser?.uid, {});
+    showToast('Semanas 2–4 reiniciadas.');
+    render();
+  });
+
+  root.querySelectorAll('[data-playbook-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const item = btn.closest('.message-item');
+      const text = item?.querySelector('[data-playbook-edit]')?.value?.trim() || '';
+      if (!text) return;
+      const unresolved = findUnresolvedPlaceholders(text);
+      if (unresolved.length) {
+        showToast(`Completa ${unresolved.join(', ')} en Mensajes (tus datos).`);
+        kitHubTab = 'vender';
+        setKitSection('mensajes');
+        navigateTo('kit');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Mensaje copiado.');
+      } catch {
+        item?.querySelector('[data-playbook-edit]')?.select?.();
+        showToast('No se pudo copiar. Selecciona el texto manualmente.');
+      }
+    });
+  });
+
+  root.querySelectorAll('[data-playbook-wa]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const item = link.closest('.message-item');
+      const text = item?.querySelector('[data-playbook-edit]')?.value?.trim() || '';
+      if (!text) return;
+      const unresolved = findUnresolvedPlaceholders(text);
+      if (unresolved.length) {
+        event.preventDefault();
+        showToast(`Completa ${unresolved.join(', ')} antes de abrir WhatsApp.`);
+        return;
+      }
+      link.setAttribute('href', whatsAppShareUrl(text));
+    });
+  });
+
+  root.querySelector('[data-open-crecimiento]')?.addEventListener('click', () => {
+    kitHubTab = 'vender';
+    setKitSection('crecimiento');
+    navigateTo('kit');
+  });
+
+  document.getElementById('starter-pack-dismiss')?.addEventListener('click', () => {
+    markStarterPackDone(lineBrand().id, currentUser?.uid);
+    render();
+  });
+
+  root.querySelectorAll('[data-starter-goto]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.starterGoto;
+      if (target === 'calc') {
+        navigateTo('calc');
+        return;
+      }
+      if (target === 'recetas') {
+        kitHubTab = 'recetas';
+        navigateTo('kit');
+      }
+    });
+  });
+
+  document.getElementById('starter-pack-copy')?.addEventListener('click', async () => {
+    const preview = root.querySelector('.starter-pack-msg-preview')?.textContent?.trim() || '';
+    if (!preview) return;
+    const unresolved = findUnresolvedPlaceholders(preview);
+    if (unresolved.length) {
+      showToast('Completa precio/zona en Kit → Mensajes para un texto listo.');
+      kitHubTab = 'vender';
+      setKitSection('mensajes');
+      navigateTo('kit');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(preview);
+      showToast('Mensaje del primer pack copiado.');
+    } catch {
+      showToast('No se pudo copiar.');
+    }
   });
 
   root.querySelectorAll('[data-checklist]').forEach((input) => {

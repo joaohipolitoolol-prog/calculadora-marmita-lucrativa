@@ -10,6 +10,8 @@ const htmlRewrites = {
   '/postresaviso': '/postres-aviso.html',
   '/postres/cadastrar': '/cadastrar-postres.html',
   '/postres/login': '/login-postres.html',
+  '/minipostres': '/minipostres.html',
+  '/minipostres/gracias': '/minipostres-gracias.html',
 };
 
 function devHtmlRewrites() {
@@ -30,6 +32,8 @@ function devHtmlRewrites() {
 }
 
 export default defineConfig({
+  // Allow NEXT_PUBLIC_* (spec) alongside Vite's VITE_* for Mini Postres env vars
+  envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   plugins: [devHtmlRewrites()],
   server: {
     proxy: {
@@ -55,6 +59,8 @@ export default defineConfig({
         postres: resolve(__dirname, 'postres.html'),
         postresUpsell: resolve(__dirname, 'postres-upsell.html'),
         postresAviso: resolve(__dirname, 'postres-aviso.html'),
+        minipostres: resolve(__dirname, 'minipostres.html'),
+        minipostresGracias: resolve(__dirname, 'minipostres-gracias.html'),
         admin: resolve(__dirname, 'admin.html'),
         acesso: resolve(__dirname, 'acesso.html'),
         menuPublic: resolve(__dirname, 'm.html'),

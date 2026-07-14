@@ -90,7 +90,7 @@ export const PLAN_7_DIAS = [
     duracion: 'Según demanda',
     meta: 'Responder con claridad y anotar cada pedido',
     tareas: [
-      'Anota cada pedido en la pestaña Pedidos de la calculadora',
+      'Anota cada pedido en el celular o un cuaderno: sabor, cantidad, pago y entrega',
       'Confirma sabores, cantidad y forma de pago',
       'Organiza entrega o punto de recogida',
     ],

@@ -121,6 +121,108 @@ function renderLineFilter(activeLine) {
   `;
 }
 
+function insightWinnerLabel(winner) {
+  if (winner === 'quiz') return t('dashboard.insightsWinnerQuiz');
+  if (winner === 'lp') return t('dashboard.insightsWinnerLp');
+  if (winner === 'tie') return t('dashboard.insightsWinnerTie');
+  if (winner === 'early') return t('dashboard.insightsWinnerEarly');
+  return t('dashboard.insightsWinnerNone');
+}
+
+function insightWinnerClass(winner) {
+  if (winner === 'quiz' || winner === 'lp') return 'win';
+  if (winner === 'tie') return 'tie';
+  if (winner === 'early') return 'early';
+  return 'none';
+}
+
+function formatInsightBullet(bullet) {
+  const params = { ...(bullet.params || {}) };
+  if (params.winner) {
+    params.winner = t(`insight.winner.${params.winner}`) || params.winner;
+  }
+  return t(`insight.bullet.${bullet.id}`, params);
+}
+
+function renderInsightsBlock(analytics) {
+  const insights = analytics?.insights;
+  if (!insights) return '';
+
+  const headline = t(`insight.headline.${insights.headline}`, insights.headlineParams || {});
+  const bullets = Array.isArray(insights.bullets) ? insights.bullets : [];
+  const suggestions = Array.isArray(insights.suggestions) ? insights.suggestions : [];
+  const ab = insights.ab || {};
+  const winner = ab.winner || 'none';
+  const showAb = (Number(ab.lpAssign) || 0) + (Number(ab.quizAssign) || 0) > 0;
+
+  return `
+    <section class="admin-insights" aria-label="${escapeHtml(t('dashboard.insightsTitle'))}">
+      <div class="admin-insights-head">
+        <div>
+          <h2>${t('dashboard.insightsTitle')}</h2>
+          <p>${t('dashboard.insightsSub')}</p>
+        </div>
+        <button type="button" class="admin-btn ghost" data-tab="funnel">${t('dashboard.insightsOpenFunnel')}</button>
+      </div>
+      <p class="admin-insights-headline">${escapeHtml(headline)}</p>
+      ${
+        bullets.length
+          ? `<ul class="admin-insights-bullets">${bullets
+              .map((b) => `<li>${escapeHtml(formatInsightBullet(b))}</li>`)
+              .join('')}</ul>`
+          : ''
+      }
+      ${
+        suggestions.length
+          ? `<div class="admin-insights-suggest">
+              <h3>${t('dashboard.insightsSuggestions')}</h3>
+              <ul>${suggestions
+                .map(
+                  (s) => `
+                <li class="severity-${escapeHtml(s.severity || 'med')}">${escapeHtml(
+                  t(`insight.suggest.${s.id}`, s.params || {}),
+                )}</li>`
+                )
+                .join('')}</ul>
+            </div>`
+          : ''
+      }
+      ${
+        showAb
+          ? `<div class="admin-insights-ab">
+              <div class="admin-insights-ab-head">
+                <strong>${t('dashboard.insightsAbCompare')}</strong>
+                <span class="admin-insights-badge ${insightWinnerClass(winner)}">${escapeHtml(
+                  insightWinnerLabel(winner),
+                )}</span>
+              </div>
+              <div class="admin-insights-ab-grid">
+                <div class="admin-insights-ab-arm ${winner === 'lp' ? 'is-winner' : ''}">
+                  <span class="admin-insights-ab-label">${t('dashboard.insightsWinnerLp')}</span>
+                  <div class="admin-insights-ab-metrics">
+                    <span><em>${t('dashboard.insightsAbAssign')}</em> ${ab.lpAssign || 0}</span>
+                    <span><em>${t('dashboard.insightsAbCheckout')}</em> ${ab.lpCheckout || 0}</span>
+                    <span><em>${t('dashboard.insightsAbPurchase')}</em> ${ab.lpPurchase || 0}</span>
+                    <span><em>${t('dashboard.insightsAbCvr')}</em> ${ab.lpCvr || 0}%</span>
+                  </div>
+                </div>
+                <div class="admin-insights-ab-arm ${winner === 'quiz' ? 'is-winner' : ''}">
+                  <span class="admin-insights-ab-label">${t('dashboard.insightsWinnerQuiz')}</span>
+                  <div class="admin-insights-ab-metrics">
+                    <span><em>${t('dashboard.insightsAbAssign')}</em> ${ab.quizAssign || 0}</span>
+                    <span><em>${t('dashboard.insightsAbCheckout')}</em> ${ab.quizCheckout || 0}</span>
+                    <span><em>${t('dashboard.insightsAbPurchase')}</em> ${ab.quizPurchase || 0}</span>
+                    <span><em>${t('dashboard.insightsAbCvr')}</em> ${ab.quizCvr || 0}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>`
+          : ''
+      }
+    </section>
+  `;
+}
+
 export function renderStatsGrid(stats, analytics) {
   const kpis = analytics?.kpis || {};
   return `
@@ -1096,6 +1198,8 @@ export function renderDashboardView(users, analytics, lineFilter = 'all') {
   const pendingUpsell = users.filter((u) => profileStatus(u) === 'pending_upsell').slice(0, 8);
 
   return `
+    ${renderInsightsBlock(analytics)}
+
     <div class="admin-attention" role="group" aria-label="${escapeHtml(t('inbox.attention'))}">
       <button type="button" class="admin-attention-card danger" data-tab="users" data-set-filter="pending_kit">
         <strong>${stats.pendingKit}</strong>
