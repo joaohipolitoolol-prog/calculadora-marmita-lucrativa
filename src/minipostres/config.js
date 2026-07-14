@@ -83,7 +83,7 @@ export const BUMP_CATALOG_PRICE = parsePrice(
 );
 export const BUMP_CATALOG_PRICE_LABEL = formatUsd(BUMP_CATALOG_PRICE);
 
-export const guaranteeDays = 7;
+export const guaranteeDays = 30;
 export const supportUrl = env(
   'NEXT_PUBLIC_MINIPOSTRES_SUPPORT_URL',
   env('VITE_MINIPOSTRES_SUPPORT_URL', '')
