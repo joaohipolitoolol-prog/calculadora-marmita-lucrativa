@@ -2606,6 +2606,24 @@ body:has(.purchase-sticky.visible) {
   line-height: 1.4;
 }
 
+/* ===== Kit bonuses ===== */
+.kit-bonuses {
+  background: var(--cream);
+}
+
+.kit-bonuses .checklist {
+  margin-top: var(--space-md);
+}
+
+.kit-bonuses .checklist li span:last-child {
+  font-weight: 600;
+}
+
+.kit-bonuses .checklist li strong {
+  font-weight: 800;
+  color: var(--brown);
+}
+
 /* ===== Offer summary ===== */
 .offer-summary {
   list-style: none;

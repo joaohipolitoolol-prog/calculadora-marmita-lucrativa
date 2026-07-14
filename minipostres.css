@@ -357,6 +357,34 @@
   background:
     radial-gradient(circle at 80% 20%, rgba(236, 63, 122, 0.1) 0%, transparent 45%),
     linear-gradient(180deg, var(--pink-light), var(--cream));
+  color: var(--brown);
+}
+
+.minipostres-theme .final-cta h2 {
+  color: var(--brown);
+}
+
+.minipostres-theme .final-cta > .container > p,
+.minipostres-theme .final-cta .cta-note,
+.minipostres-theme .final-cta .final-cta-reassure {
+  color: var(--brown-mid);
+}
+
+.minipostres-theme .final-cta .final-cta-reassure strong {
+  color: var(--brown);
+}
+
+.minipostres-theme .kit-bonuses {
+  background: #fff;
+}
+
+.minipostres-theme .checklist li {
+  background: #FFF7FB;
+  border-color: rgba(236, 63, 122, 0.14);
+}
+
+.minipostres-theme .checklist .check.bonus {
+  background: var(--pink);
 }
 
 .mp-footer {

@@ -183,6 +183,19 @@
   color: var(--brown);
 }
 
+.postres-theme .kit-bonuses {
+  background: #fff;
+}
+
+.postres-theme .checklist li {
+  background: #FFF7FB;
+  border-color: rgba(236, 63, 122, 0.14);
+}
+
+.postres-theme .checklist .check.bonus {
+  background: var(--pink);
+}
+
 /* WhatsApp block */
 .postres-theme .whatsapp-block {
   background: var(--green-light);
