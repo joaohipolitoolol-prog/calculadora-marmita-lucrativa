@@ -66,6 +66,8 @@ if (logo) {
 bindScrollToOffer();
 document.querySelectorAll('[data-scroll-offer]').forEach((link) => {
   if (link.dataset.ctaHero !== undefined) link.textContent = HERO_CTA_LABEL;
+  if (link.dataset.ctaBound === '1') return;
+  link.dataset.ctaBound = '1';
   link.addEventListener('click', () => {
     fireCustom('CTA_Click', { cta: link.dataset.track || 'scroll_offer' });
   });
@@ -92,12 +94,8 @@ if (/COLOCAR_LINK|SEU-LINK|#/.test(CHECKOUT_URL || '') || !SELLABLE) {
   console.info('[minipostres] Checkout no sellable. Define NEXT_PUBLIC_MINIPOSTRES_CHECKOUT_URL con enlace real + backlog de contenido.');
 }
 
-document.querySelectorAll('[data-checkout-offer], [data-checkout-sticky], [data-checkout-hard]').forEach((link) => {
-  link.addEventListener('click', () => {
-    fireCustom('CTA_Click', { cta: link.dataset.track || 'checkout' });
-    fireCustom('InitiateCheckout', { value: MAIN_PRICE });
-  });
-});
+/* Hard CTAs: Meta IC + first-party come from bindHardCheckoutLinks / bindTrackClicks only.
+   Do not fire a second InitiateCheckout custom here — that duplicated on every spam-click. */
 
 document.querySelectorAll('.faq-item').forEach((item) => {
   item.addEventListener('toggle', () => {
