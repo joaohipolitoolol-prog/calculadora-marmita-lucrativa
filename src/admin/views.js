@@ -145,8 +145,53 @@ function formatInsightBullet(bullet) {
 }
 
 function renderInsightsBlock(analytics) {
-  const insights = analytics?.insights;
-  if (!insights) return '';
+  let insights = analytics?.insights;
+  if (!insights && analytics?.kpis) {
+    // Client fallback if API omitted insights (older deploy / partial payload)
+    const k = analytics.kpis;
+    const views = Number(k.pageViewsToday) || 0;
+    const sales = Number(k.salesToday) || 0;
+    const checkout = Number(k.checkoutToday) || 0;
+    insights = {
+      headline: sales > 0 ? 'sales_ok' : views > 0 ? 'traffic_no_sales' : 'quiet_day',
+      headlineParams: { sales, checkout, views },
+      bullets: [
+        {
+          id: 'traffic_snapshot',
+          params: {
+            views,
+            checkout,
+            wa: Number(k.whatsappToday) || 0,
+            sales,
+          },
+        },
+        {
+          id: 'sales_by_line',
+          params: {
+            paletas: Number(analytics.salesByLine?.paletas?.period) || 0,
+            postres: Number(analytics.salesByLine?.postres?.period) || 0,
+            minipostres: Number(analytics.salesByLine?.minipostres?.period) || 0,
+          },
+        },
+      ],
+      suggestions: [],
+      ab: { winner: 'none', lpAssign: 0, quizAssign: 0 },
+    };
+  }
+
+  if (!insights) {
+    return `
+      <section class="admin-insights" aria-label="${escapeHtml(t('dashboard.insightsTitle'))}">
+        <div class="admin-insights-head">
+          <div>
+            <h2>${t('dashboard.insightsTitle')}</h2>
+            <p>${t('dashboard.insightsSub')}</p>
+          </div>
+        </div>
+        <p class="admin-insights-empty">${t('dashboard.insightsLoading')}</p>
+      </section>
+    `;
+  }
 
   const headline = t(`insight.headline.${insights.headline}`, insights.headlineParams || {});
   const bullets = Array.isArray(insights.bullets) ? insights.bullets : [];

@@ -225,7 +225,23 @@ function abEntryFromDays(dayDocs, summaryEntry) {
     for (const variant of AB_VARIANTS) {
       const arm = entry[variant] || {};
       for (const metric of AB_METRICS) {
-        out[variant][metric].today += Number(arm[metric]) || 0;
+        const cell = arm[metric];
+        const n =
+          cell && typeof cell === 'object'
+            ? Number(cell.today ?? cell.total) || 0
+            : Number(cell) || 0;
+        out[variant][metric].today += n;
+      }
+    }
+  }
+  // Same race as sales: summary.today can be ahead of daily doc
+  if (dayDocs.length <= 1) {
+    for (const variant of AB_VARIANTS) {
+      for (const metric of AB_METRICS) {
+        const summaryToday = summary[variant][metric].today;
+        if (summaryToday > out[variant][metric].today) {
+          out[variant][metric].today = summaryToday;
+        }
       }
     }
   }
@@ -243,7 +259,18 @@ function quizStepsFromDays(dayDocs, summarySteps) {
   for (const day of dayDocs) {
     const steps = day.quiz_steps || {};
     for (const id of QUIZ_STEP_IDS) {
-      totals[id].today += Number(steps[id]) || 0;
+      const cell = steps[id];
+      const n =
+        cell && typeof cell === 'object'
+          ? Number(cell.today ?? cell.total) || 0
+          : Number(cell) || 0;
+      totals[id].today += n;
+    }
+  }
+  if (dayDocs.length <= 1) {
+    for (const id of QUIZ_STEP_IDS) {
+      const summaryToday = Number(summarySteps?.[id]?.today) || 0;
+      if (summaryToday > totals[id].today) totals[id].today = summaryToday;
     }
   }
   return totals;
@@ -299,6 +326,11 @@ function sumDailyPages(dayDocs, summaryPages, line) {
     let period = 0;
     for (const day of dayDocs) {
       period += Number(day.pages?.[key]) || 0;
+    }
+    // Prefer live summary.today when daily doc lags (common on "today")
+    if (dayDocs.length <= 1) {
+      const summaryToday = Number(meta.today) || 0;
+      if (summaryToday > period) period = summaryToday;
     }
     items.push({
       key,
@@ -564,6 +596,7 @@ export default async function handler(req, res) {
 
     const insights = buildInsights({
       line,
+      range,
       kpis,
       salesByLine,
       abEntry,

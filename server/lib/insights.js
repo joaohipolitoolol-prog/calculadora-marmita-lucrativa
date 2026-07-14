@@ -22,8 +22,11 @@ function fmtGap(a, b) {
 function avgDwellSeconds(dwell, pageKey) {
   const cell = dwell?.[pageKey];
   if (!cell) return null;
-  if (cell.avgSecondsToday != null && Number(cell.todaySessions) > 0) {
+  if (Number(cell.todaySessions) > 0 && cell.avgSecondsToday != null) {
     return Number(cell.avgSecondsToday) || 0;
+  }
+  if (Number(cell.sessions) > 0 && cell.avgSeconds != null) {
+    return Number(cell.avgSeconds) || 0;
   }
   const sessions = Number(cell.todaySessions ?? cell.sessions) || 0;
   const seconds = Number(cell.todaySeconds ?? cell.seconds) || 0;
@@ -43,6 +46,7 @@ function avgDwellSeconds(dwell, pageKey) {
  */
 export function buildInsights(input = {}) {
   const line = String(input.line || 'all');
+  const range = String(input.range || 'today');
   const kpis = input.kpis || {};
   const salesByLine = input.salesByLine || {};
   const ab = input.abEntry || {};
@@ -51,9 +55,12 @@ export function buildInsights(input = {}) {
 
   const paletasSales = Number(salesByLine.paletas?.period ?? salesByLine.paletas?.today) || 0;
   const postresSales = Number(salesByLine.postres?.period ?? salesByLine.postres?.today) || 0;
+  const minipostresSales =
+    Number(salesByLine.minipostres?.period ?? salesByLine.minipostres?.today) || 0;
   const salesPeriod = Number(kpis.salesToday) || 0;
   const checkoutPeriod = Number(kpis.checkoutToday) || 0;
   const pageViews = Number(kpis.pageViewsToday) || 0;
+  const waPeriod = Number(kpis.whatsappToday) || 0;
 
   const lp = ab.lp || {};
   const quiz = ab.quiz || {};
@@ -77,7 +84,12 @@ export function buildInsights(input = {}) {
 
   bullets.push({
     id: 'sales_by_line',
-    params: { paletas: paletasSales, postres: postresSales },
+    params: { paletas: paletasSales, postres: postresSales, minipostres: minipostresSales },
+  });
+
+  bullets.push({
+    id: 'traffic_snapshot',
+    params: { views: pageViews, checkout: checkoutPeriod, wa: waPeriod, sales: salesPeriod },
   });
 
   if (checkoutPeriod > 0 || salesPeriod > 0) {
@@ -115,23 +127,23 @@ export function buildInsights(input = {}) {
 
   // Headline
   let headline = 'quiet_day';
-  let headlineParams = {};
+  let headlineParams = { range };
 
   if (winner === 'quiz') {
     headline = 'quiz_beats_lp';
-    headlineParams = { quizCvr: fmtPct(quizCvr), lpCvr: fmtPct(lpCvr) };
+    headlineParams = { quizCvr: fmtPct(quizCvr), lpCvr: fmtPct(lpCvr), range };
   } else if (winner === 'lp') {
     headline = 'lp_beats_quiz';
-    headlineParams = { lpCvr: fmtPct(lpCvr), quizCvr: fmtPct(quizCvr) };
+    headlineParams = { lpCvr: fmtPct(lpCvr), quizCvr: fmtPct(quizCvr), range };
   } else if (winner === 'tie' && sampleOk) {
     headline = 'ab_tie';
-    headlineParams = { cvr: fmtPct(lpCvr) };
+    headlineParams = { cvr: fmtPct(lpCvr), range };
   } else if (salesPeriod > 0) {
     headline = 'sales_ok';
-    headlineParams = { sales: salesPeriod, checkout: checkoutPeriod };
+    headlineParams = { sales: salesPeriod, checkout: checkoutPeriod, range };
   } else if (pageViews > 0) {
     headline = 'traffic_no_sales';
-    headlineParams = { views: pageViews };
+    headlineParams = { views: pageViews, range };
   }
 
   // Suggestions
@@ -187,9 +199,11 @@ export function buildInsights(input = {}) {
   }
 
   return {
+    range,
+    generatedAt: new Date().toISOString(),
     headline,
     headlineParams,
-    bullets: bullets.slice(0, 4),
+    bullets: bullets.slice(0, 5),
     suggestions: suggestions.slice(0, 3),
     ab: {
       winner,

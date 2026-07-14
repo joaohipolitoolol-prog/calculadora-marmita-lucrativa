@@ -361,6 +361,8 @@ async function loadAnalytics() {
       whatsapp: [],
       events: [],
       range: state.dateRange,
+      insights: null,
+      salesByLine: {},
     };
     setApiWarning(
       'analytics',
