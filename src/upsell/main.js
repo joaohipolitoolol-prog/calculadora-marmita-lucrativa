@@ -17,21 +17,12 @@ import {
   UPSELL_TIMER_MS,
   UPSELL_TIMER_STORAGE_KEY,
 } from './config.js';
-import { MAIN_PRICE } from '../landing/config.js';
-import { BRAND_KIT } from '../site/brand.js';
-import { fireThankYouPurchase } from '../lib/landing-checkout.js';
-import { markCheckoutPending, trackMetaInitiateCheckout } from '../lib/meta-pixel.js';
+import { clearCheckoutPending, markCheckoutPending, trackMetaInitiateCheckout } from '../lib/meta-pixel.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 
 trackCurrentPage({ line: 'paletas' });
 bindTrackClicks({ page: 'upsell-paletas', line: 'paletas' });
-
-fireThankYouPurchase({
-  line: 'paletas',
-  value: MAIN_PRICE,
-  contentName: BRAND_KIT,
-  contentIds: ['paletas_kit'],
-});
+clearCheckoutPending('paletas');
 
 const isPlaceholder = (url) =>
   !url || url.includes('COLOCAR_LINK') || url === '#';

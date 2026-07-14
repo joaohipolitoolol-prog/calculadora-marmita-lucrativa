@@ -1,21 +1,21 @@
 /** Shared LP checkout binding: soft scroll vs hard Hotmart buy. */
 
-import {
-  clearCheckoutPending,
-  hasCheckoutPending,
-  markCheckoutPending,
-  trackMetaInitiateCheckout,
-  trackMetaPurchaseOnce,
-} from './meta-pixel.js';
+import { markCheckoutPending, trackMetaInitiateCheckout } from './meta-pixel.js';
 import { withAbCheckoutParam } from './ab-entry.js';
 import { withAttribution } from './utm.js';
 
+export {
+  hasCheckoutPending,
+  markCheckoutPending,
+  clearCheckoutPending,
+} from './meta-pixel.js';
+
 /**
- * Purchase só se a pessoa clicou checkout neste browser.
- * Referrer Hotmart sozinho NÃO basta (evita falso positivo ao sair do checkout sem pagar).
+ * Browser thank-you Purchase disabled (false positives).
+ * Kept for API compatibility; always false.
  */
-export function canFireThankYouPurchase(line = 'paletas') {
-  return hasCheckoutPending(line);
+export function canFireThankYouPurchase(_line = 'paletas') {
+  return false;
 }
 
 export function bindScrollToOffer(selector = '[data-scroll-offer]') {
@@ -166,20 +166,8 @@ export function bindOfferSticky(stickyEl, offerId = 'oferta') {
   update();
 }
 
-export function fireThankYouPurchase({
-  line = 'paletas',
-  value,
-  contentName,
-  contentIds,
-} = {}) {
-  if (!canFireThankYouPurchase(line)) return false;
-  const fired = trackMetaPurchaseOnce({
-    value,
-    contentName,
-    contentIds,
-  });
-  if (fired) clearCheckoutPending(line);
-  return fired;
+export function fireThankYouPurchase(_opts = {}) {
+  // Browser Purchase disabled (false positives killed Meta campaigns).
+  // Paid sales report via Hotmart webhook → Meta CAPI.
+  return false;
 }
-
-export { hasCheckoutPending, markCheckoutPending, clearCheckoutPending };

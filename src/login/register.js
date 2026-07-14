@@ -1,11 +1,7 @@
-import { WHATSAPP_NUMBER_ID, WHATSAPP_SUPPORT_LINK, MAIN_PRICE } from '../landing/config.js';
-import { MAIN_PRICE as POSTRES_PRICE, PRODUCT_NAME as POSTRES_NAME } from '../postres/config.js';
-import { UPSELL_PRICE_USD as PALETAS_PREMIUM_PRICE } from '../upsell/config.js';
-import { UPSELL_PRICE_USD as POSTRES_PREMIUM_PRICE } from '../postres-upsell/config.js';
+import { WHATSAPP_NUMBER_ID, WHATSAPP_SUPPORT_LINK } from '../landing/config.js';
 import { register, guardAuthPage } from '../lib/auth.js';
-import { BRAND_KIT } from '../site/brand.js';
-import { trackMetaPurchaseOnce, hasCheckoutPending, clearCheckoutPending, hasMetaPurchaseFired } from '../lib/meta-pixel.js';
-import { purchaseIntentFromSearch, isPostPurchaseUiIntent } from '../lib/purchase-flags.js';
+import { clearCheckoutPending } from '../lib/meta-pixel.js';
+import { isPostPurchaseUiIntent } from '../lib/purchase-flags.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { defaultNumberIdForLine, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
 import {
@@ -26,7 +22,6 @@ const registerWaSupport = document.getElementById('register-wa-support');
 
 const params = new URLSearchParams(window.location.search);
 const authLine = applyAuthBrand(getAuthProductLine());
-const purchaseIntent = purchaseIntentFromSearch(window.location.search);
 const postPurchaseUi = isPostPurchaseUiIntent(window.location.search);
 
 trackCurrentPage({ line: authLine?.id });
@@ -57,63 +52,9 @@ if (postPurchaseUi && purchaseBanner) {
   }
 }
 
-function shouldFireRegisterPurchase(line) {
-  // Sólo tras clic a checkout en este browser + intent pós-compra en URL.
-  // ?compra=1&src=hotmart solo NO libera kit ni Purchase.
-  return hasCheckoutPending(line) && Boolean(purchaseIntent);
-}
-
-const firePaletasPurchase = shouldFireRegisterPurchase('paletas');
-const firePostresPurchase = shouldFireRegisterPurchase('postres');
-
-if (purchaseIntent?.hasKit && firePaletasPurchase) {
-  trackMetaPurchaseOnce({
-    value: MAIN_PRICE,
-    contentName: BRAND_KIT,
-    contentIds: ['paletas_kit'],
-  });
-}
-if (purchaseIntent?.hasPostres && firePostresPurchase) {
-  trackMetaPurchaseOnce({
-    value: POSTRES_PRICE,
-    contentName: POSTRES_NAME,
-    contentIds: ['postres_kit'],
-  });
-}
-if (purchaseIntent?.hasPremium) {
-  if (firePaletasPurchase) {
-    trackMetaPurchaseOnce({
-      value: PALETAS_PREMIUM_PRICE,
-      contentName: 'Pack Premium Paletas',
-      contentIds: ['paletas_premium'],
-    });
-  }
-}
-if (purchaseIntent?.hasPostresPremium) {
-  if (firePostresPurchase) {
-    trackMetaPurchaseOnce({
-      value: POSTRES_PREMIUM_PRICE,
-      contentName: 'Pack Premium Postres',
-      contentIds: ['postres_premium'],
-    });
-  }
-}
-
-// Clear pending only after a Purchase was recorded (or already fired this browser).
-if (
-  firePaletasPurchase &&
-  (purchaseIntent?.hasKit || purchaseIntent?.hasPremium) &&
-  (hasMetaPurchaseFired(['paletas_kit']) || hasMetaPurchaseFired(['paletas_premium']))
-) {
-  clearCheckoutPending('paletas');
-}
-if (
-  firePostresPurchase &&
-  (purchaseIntent?.hasPostres || purchaseIntent?.hasPostresPremium) &&
-  (hasMetaPurchaseFired(['postres_kit']) || hasMetaPurchaseFired(['postres_premium']))
-) {
-  clearCheckoutPending('postres');
-}
+// Never fire Meta Purchase from register. Clear stale pending flags.
+clearCheckoutPending('paletas');
+clearCheckoutPending('postres');
 
 registerForm?.addEventListener('submit', async (event) => {
   event.preventDefault();

@@ -16,6 +16,7 @@ import { sendWelcomeEmailServer } from '../../server/lib/send-welcome-email.js';
 import { bumpAbMetric, normalizeAbVariant } from '../../server/lib/analytics-ab.js';
 import { todayKey } from '../../server/lib/analytics-schema.js';
 import { claimPurchaseTransaction } from '../../server/lib/purchase-idempotency.js';
+import { sendMetaCapiPurchase } from '../../server/lib/meta-capi.js';
 
 function getHottok(req) {
   return (
@@ -332,6 +333,22 @@ export default async function handler(req, res) {
       console.warn('[hotmart] paid sale bump failed', saleErr);
     }
 
+    let metaCapi = null;
+    try {
+      metaCapi = await sendMetaCapiPurchase({
+        product: resolved.product,
+        email: buyer.email,
+        phone: buyer.phone,
+        transaction: productInfo.transaction,
+      });
+      if (!metaCapi.ok && !metaCapi.skipped) {
+        console.warn('[hotmart] Meta CAPI Purchase failed', metaCapi);
+      }
+    } catch (capiErr) {
+      console.warn('[hotmart] Meta CAPI Purchase error', capiErr);
+      metaCapi = { ok: false, error: capiErr?.message || String(capiErr) };
+    }
+
     await logRef.set({
       provider: 'hotmart',
       email: buyer.email,
@@ -345,6 +362,9 @@ export default async function handler(req, res) {
       ab: abVariant,
       emailSent: Boolean(emailResult.ok),
       emailError: emailResult.ok ? null : emailResult.error || null,
+      metaCapiOk: Boolean(metaCapi?.ok),
+      metaCapiSkipped: Boolean(metaCapi?.skipped),
+      metaCapiEventId: metaCapi?.eventId || null,
       createdAt: FieldValue.serverTimestamp(),
     });
 
@@ -357,6 +377,11 @@ export default async function handler(req, res) {
       ab: abVariant || undefined,
       emailSent: Boolean(emailResult.ok),
       emailError: emailResult.ok ? undefined : emailResult.error,
+      metaCapi: metaCapi?.ok
+        ? { ok: true, eventId: metaCapi.eventId }
+        : metaCapi?.skipped
+          ? { ok: false, skipped: true }
+          : { ok: false },
     });
   } catch (error) {
     return res.status(500).json({ error: error?.message || 'Error interno' });

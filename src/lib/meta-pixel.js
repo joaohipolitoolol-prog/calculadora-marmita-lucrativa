@@ -85,45 +85,20 @@ export function trackMetaInitiateCheckout({
 
 /**
  * Fire Purchase once per product id per browser (localStorage).
- * Use on thank-you / upsell / aviso / register?compra=1&src=hotmart.
+ *
+ * DISABLED: thank-you + pending_checkout fired Purchase when people abandoned Hotmart.
+ * That polluted Meta Ads Manager and destroyed campaigns.
+ * Real Purchase → Hotmart webhook → Meta CAPI (server/lib/meta-capi.js).
  */
-export function trackMetaPurchaseOnce({
-  value,
-  currency = 'USD',
-  contentName,
-  contentIds = [],
-  eventId,
-} = {}) {
-  if (!canTrack() || value == null) return false;
-  const key = productSessionKey('fb_purchase', contentIds, contentName);
-  if (alreadyFired(key)) return false;
-
-  const id =
-    eventId ||
-    `${key}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
-
-  markFired(key, id);
-
-  window.fbq(
-    'track',
-    'Purchase',
-    {
-      value: Number(value),
-      currency,
-      content_name: contentName,
-      content_ids: contentIds.length ? contentIds : undefined,
-      content_type: 'product',
-    },
-    { eventID: id }
-  );
-  return true;
+export function trackMetaPurchaseOnce(_opts = {}) {
+  return false;
 }
 
 export function hasMetaPurchaseFired(contentIds = [], contentName = '') {
   return alreadyFired(productSessionKey('fb_purchase', contentIds, contentName));
 }
 
-/** Mark that the user left for Hotmart; unlocks thank-you Purchase in any tab (2h). */
+/** Kept for analytics UX; does NOT unlock Meta Purchase anymore. */
 export function markCheckoutPending(line = 'paletas') {
   storageSet(`pending_purchase_${line}`, String(Date.now()));
 }
