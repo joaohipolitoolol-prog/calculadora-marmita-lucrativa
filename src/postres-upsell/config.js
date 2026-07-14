@@ -1,11 +1,11 @@
-/** Configuración del upsell Postres — editar aquí */
+/** Configuración del upsell Postres, editar aquí */
 
 import { authRegisterPath } from '../login/auth-lines.js';
 
 /** Upsell Pack Premium US$9,97 */
 export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/Y106683338S?off=dq94mmmj';
 
-/** Downsell Mini Pack US$7 — actualiza el link de Hotmart si cambias el precio. */
+/** Downsell Mini Pack US$7, actualiza el link de Hotmart si cambias el precio. */
 export const DOWNSELL_CHECKOUT_URL = 'https://pay.hotmart.com/Y106683338S?off=0dwxzf2m';
 
 export const ACCESS_URL = authRegisterPath('postres', { compra: '1', src: 'hotmart' });

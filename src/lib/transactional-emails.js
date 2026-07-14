@@ -1,5 +1,5 @@
 /**
- * Transactional purchase emails — single source for Resend + admin preview.
+ * Transactional purchase emails, single source for Resend + admin preview.
  * One job: confirm purchase → one photo → one CTA to access.
  */
 
@@ -78,7 +78,7 @@ const PRODUCT_META = {
     lead:
       'Recetas en vaso, precios y mensajes para vender por WhatsApp. Entra con el mismo correo de la compra.',
     hero: '/email/postres-hero.jpg',
-    heroAlt: 'Postres en vaso — fresa, oreo y chocolate',
+    heroAlt: 'Postres en vaso, fresa, oreo y chocolate',
     bullets: [
       'Recetas en vaso listas para fotografiar',
       'Calcula ganancia por porción',
@@ -221,7 +221,7 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
     '',
     `WhatsApp: ${waUrl}`,
     '',
-    `— ${meta.brandLine}`,
+    `, ${meta.brandLine}`,
   ].join('\n');
 
   const bulletsHtml = meta.bullets
@@ -315,7 +315,7 @@ export function buildTransactionalEmail(name = '', siteUrl = DEFAULT_SITE, opts 
                 }
               </p>
               <p style="margin:10px 0 0;text-align:center;font-family:${FONT};font-size:12px;line-height:1.5;color:#8a7a80;">
-                El acceso es en nuestra app — no dentro de Hotmart.
+                El acceso es en nuestra app, no dentro de Hotmart.
               </p>
             </td>
           </tr>

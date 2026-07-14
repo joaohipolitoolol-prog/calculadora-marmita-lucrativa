@@ -1,4 +1,4 @@
-/** Quiz funnel, dwell time, abandon — aggregated in analytics/summary. */
+/** Quiz funnel, dwell time, abandon, aggregated in analytics/summary. */
 
 export const QUIZ_STEP_IDS = [
   'welcome',

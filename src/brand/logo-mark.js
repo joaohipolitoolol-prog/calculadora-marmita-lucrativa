@@ -1,7 +1,7 @@
 import { BRAND_NAME } from '../site/brand.js';
 
 /**
- * Marca — morango premium full-bleed (favicon + PWA + apple-touch).
+ * Marca, morango premium full-bleed (favicon + PWA + apple-touch).
  * O fruto preenche o canvas como ícones top da App Store (sem “adesivo” pequeno).
  */
 export const LOGO_VIEWBOX = '0 0 100 100';

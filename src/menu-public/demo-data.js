@@ -1,4 +1,4 @@
-/** Fixture for /m.html?demo=1 — realistic paletas menu preview */
+/** Fixture for /m.html?demo=1, realistic paletas menu preview */
 export const DEMO_MENU = {
   slug: 'demo',
   published: true,

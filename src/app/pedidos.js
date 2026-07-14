@@ -61,7 +61,7 @@ function statusLabel(id) {
 }
 
 function confirmMsg(pedido, brand, vars) {
-  const raw = `Hola${pedido.cliente ? ` ${pedido.cliente}` : ''}! Confirmo tu pedido: ${pedido.sabores || '[sabores]'} (${pedido.cantidad || '—'}). Total: ${pedido.total || '[precio]'}. Te aviso cuando esté listo. Gracias 😊`;
+  const raw = `Hola${pedido.cliente ? ` ${pedido.cliente}` : ''}! Confirmo tu pedido: ${pedido.sabores || '[sabores]'} (${pedido.cantidad || '-'}). Total: ${pedido.total || '[precio]'}. Te aviso cuando esté listo. Gracias 😊`;
   return applyPlaceholders(raw, {
     ...vars,
     sabores: pedido.sabores || vars.sabores,
@@ -90,7 +90,7 @@ export function renderPedidosCrm(opts = {}) {
           <strong>${escapeHtml(p.cliente || 'Sin nombre')}</strong>
           <span class="pedido-status">${escapeHtml(statusLabel(p.status))}</span>
         </div>
-        <p class="pedido-sabores">${escapeHtml(p.sabores || '—')} · ${escapeHtml(p.cantidad || '1')}</p>
+        <p class="pedido-sabores">${escapeHtml(p.sabores || '-')} · ${escapeHtml(p.cantidad || '1')}</p>
         ${p.total ? `<p class="pedido-total">Total: ${escapeHtml(p.total)}</p>` : ''}
         ${p.nota ? `<p class="pedido-nota">${escapeHtml(p.nota)}</p>` : ''}
         <label class="pedido-status-label">

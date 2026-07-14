@@ -10,7 +10,7 @@ function normalizeBlock(obj, i, premium) {
     .map((s) => s.trim());
   let prep = obj.prep && obj.prep !== 'frío' ? obj.prep : parts[0] || '20 min';
   let cold = obj.congelacion && obj.congelacion !== 'frío' ? obj.congelacion : parts[1] || '';
-  if (!cold || cold === 'frío') cold = '1–2 horas';
+  if (!cold || cold === 'frío') cold = '1-2 horas';
   if (prep.includes('frío')) prep = prep.replace(/\s*\+?\s*frío/i, '').trim() || '20 min';
 
   const out = { ...obj };

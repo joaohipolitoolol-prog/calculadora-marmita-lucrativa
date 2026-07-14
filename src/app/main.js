@@ -374,7 +374,7 @@ function registerPwa() {
         if (!worker) return;
         worker.addEventListener('statechange', () => {
           if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-            showToast('Nueva versión lista — recarga la app');
+            showToast('Nueva versión lista, recarga la app');
           }
         });
       });
@@ -851,7 +851,7 @@ function maybeWelcome() {
     sessionStorage.setItem('paletas_post_purchase', '1');
     showToast('¡Compra confirmada! Empieza por el modo rápido.');
   } else if (sessionStorage.getItem('paletas_demo_welcome') === '1') {
-    showToast('Demo activa — tus datos quedan en este celular.');
+    showToast('Demo activa, tus datos quedan en este celular.');
     sessionStorage.removeItem('paletas_demo_welcome');
   }
 }
@@ -860,7 +860,7 @@ function renderKitPendingBanner() {
   if (hasKitContentAccess()) return '';
   return `
     <div class="kit-pending-banner" role="status">
-      Verificando tu compra — recetas y archivos se desbloquean en minutos.
+      Verificando tu compra, recetas y archivos se desbloquean en minutos.
     </div>
   `;
 }
@@ -893,7 +893,7 @@ function renderPremiumPausedCard() {
     <div class="section-card kit-locked-card premium-paused-card">
       <span class="kit-locked-badge" aria-hidden="true">⏸</span>
       <h2>Premium ${escapeHtml(brand.short)}</h2>
-      <p class="section-text">El contenido premium está temporalmente cerrado. Tu acceso sigue activo — vuelve a intentar más tarde.</p>
+      <p class="section-text">El contenido premium está temporalmente cerrado. Tu acceso sigue activo, vuelve a intentar más tarde.</p>
     </div>
   `;
 }
@@ -937,7 +937,7 @@ watchAuth(async (user) => {
   if (DEV_UNLOCK_ALL_CONTENT && ownedLines.length === 0) {
     ownedLines = [PRODUCT_LINE_BY_ID.paletas, PRODUCT_LINE_BY_ID.postres];
   }
-  // Do not invent Paletas ownership — admin revoke must stick.
+  // Do not invent Paletas ownership, admin revoke must stick.
   activeLine = resolveActiveLine({
     search: window.location.search,
     profile,
@@ -1311,7 +1311,7 @@ async function signOutToLanding() {
 }
 
 function renderDrawer() {
-  // menuWeb is demo-only — hidden from drawer; open via secret control on Perfil
+  // menuWeb is demo-only, hidden from drawer; open via secret control on Perfil
   const drawerOrder = ['home', 'calc', 'kit', 'results'];
   const navItems = drawerOrder
     .map((id) => {
@@ -1536,7 +1536,7 @@ function renderHome() {
   const currency = getCurrency();
   const statusLabel =
     r.status === 'prejuizo'
-      ? 'Revisa tu precio — estás perdiendo'
+      ? 'Revisa tu precio, estás perdiendo'
       : r.status === 'alerta'
         ? 'Puedes mejorar tu margen'
         : `¡Tus ${brand.unitPlural} están dando ganancia!`;
@@ -1576,7 +1576,7 @@ function renderHome() {
             ? `
         <section class="growth-nudge" aria-label="Siguiente paso">
           <strong>¿Publicaste y hay silencio?</strong>
-          <p>Semanas 2–4 te enseñan a salir del círculo de amigos y armar rutina.</p>
+          <p>Semanas 2-4 te enseñan a salir del círculo de amigos y armar rutina.</p>
           <button type="button" class="btn btn-secondary btn-sm" data-open-crecimiento>Abrir Crece</button>
         </section>
       `
@@ -1735,7 +1735,7 @@ function openDocument(id) {
   const doc = getDocById(id);
   if (!doc || !isViewableDoc(doc)) return;
   if (!hasKitContentAccess()) {
-    showToast('Archivo bloqueado — verificando tu compra.');
+    showToast('Archivo bloqueado, verificando tu compra.');
     return;
   }
 
@@ -2497,7 +2497,7 @@ function renderResults() {
     r.status === 'prejuizo'
       ? 'Estás perdiendo dinero'
       : r.status === 'alerta'
-        ? 'Ganancia baja — se puede mejorar'
+        ? 'Ganancia baja, se puede mejorar'
         : `¡Tus ${brand.unitPlural} están dando ganancia!`;
 
   const statusDetail =
@@ -2619,9 +2619,9 @@ function recipeMeta(item) {
     .split('+')
     .map((s) => s.trim());
   return {
-    prep: item.prep || prepFromTime || '—',
-    cold: item.congelacion || coldFromTime || '—',
-    yield: item.rendimiento || item.porciones || '—',
+    prep: item.prep || prepFromTime || '-',
+    cold: item.congelacion || coldFromTime || '-',
+    yield: item.rendimiento || item.porciones || '-',
     tip: item.consejo || item.tip || '',
   };
 }
@@ -2691,7 +2691,7 @@ function renderMenuByWeek(recipes, { premium = false, lineId, audioEnabled = tru
     .map((week, wi) => {
       const dayRange =
         week[0].dia && week[week.length - 1].dia
-          ? ` · Días ${week[0].dia}–${week[week.length - 1].dia}`
+          ? ` · Días ${week[0].dia}-${week[week.length - 1].dia}`
           : '';
       const countLabel = `${week.length} receta${week.length === 1 ? '' : 's'}`;
       const title = premium
@@ -2723,7 +2723,7 @@ function renderMenuByWeek(recipes, { premium = false, lineId, audioEnabled = tru
 
 function renderRecipeListTools(recipeCount, { premium = false, audioEnabled = true } = {}) {
   const audioHint = audioEnabled
-    ? `<p class="menu-list-audio-hint">${ICONS.volume} Modo audio guiado — toca play en una receta</p>`
+    ? `<p class="menu-list-audio-hint">${ICONS.volume} Modo audio guiado, toca play en una receta</p>`
     : `<p class="menu-list-audio-hint menu-list-audio-hint--off">${ICONS.volume} Audio guiado temporalmente no disponible</p>`;
   return `
     <div class="menu-list-tools">
@@ -2834,7 +2834,7 @@ function renderBonus() {
     listHtml = `
       <div class="premium-locked-card">
         <h3>Complemento premium · ${escapeHtml(lineBrand().short)}</h3>
-        <p>${premiumTeaser} — incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
+        <p>${premiumTeaser}, incluidas en <strong>${escapeHtml(kit.upsellName)}</strong>.</p>
         ${renderPremiumUpsell()}
       </div>
     `;
@@ -3122,7 +3122,7 @@ function renderPlan7Dias() {
           )
           .join('')}
       </ol>
-      <p class="section-text plan-next-hint">¿Ya publicaste y hay silencio? Pasa a <button type="button" class="linkish" data-kit-section="crecimiento">Semanas 2–4 · Crece</button>.</p>
+      <p class="section-text plan-next-hint">¿Ya publicaste y hay silencio? Pasa a <button type="button" class="linkish" data-kit-section="crecimiento">Semanas 2-4 · Crece</button>.</p>
       <button type="button" class="btn btn-ghost btn-sm" id="reset-plan">Reiniciar plan</button>
     </div>
   `;
@@ -3273,7 +3273,7 @@ function renderKitAyuda() {
       </details>
       <details class="faq-item">
         <summary>¿Modo rápido vs completo?</summary>
-        <p>El rápido es directo por ${lineBrand().unitSingular}. El completo divide producción, ingredientes, extras y tiempo — ideal cuando quieres precisión total.</p>
+        <p>El rápido es directo por ${lineBrand().unitSingular}. El completo divide producción, ingredientes, extras y tiempo, ideal cuando quieres precisión total.</p>
       </details>
       <details class="faq-item">
         <summary>¿La calculadora garantiza ganancias?</summary>
@@ -3327,7 +3327,7 @@ function renderKitContent() {
     premium: 'Complemento premium',
     tecnicas: 'Técnicas y tips',
     plan: 'Plan de 7 días',
-    crecimiento: 'Semanas 2–4 · Crece',
+    crecimiento: 'Semanas 2-4 · Crece',
     pedidos: 'Pedidos',
     lista: 'Lista de compras',
     checklist: 'Checklist',
@@ -3577,7 +3577,7 @@ function bindEvents() {
   root.querySelectorAll('.file-row.locked').forEach((el) => {
     el.addEventListener('click', (event) => {
       event.preventDefault();
-      showToast('Archivo bloqueado — verificando tu compra.');
+      showToast('Archivo bloqueado, verificando tu compra.');
     });
   });
 
@@ -3760,9 +3760,9 @@ function bindEvents() {
       navigateTo('results');
       showToast(
         currentResults.status === 'prejuizo'
-          ? '¡Pérdida detectada — hora de ajustar!'
+          ? '¡Pérdida detectada, hora de ajustar!'
           : currentResults.status === 'alerta'
-            ? 'Ganancia baja — revisa el precio sugerido'
+            ? 'Ganancia baja, revisa el precio sugerido'
             : '¡Bien! Tus paletas dan ganancia'
       );
     });
@@ -4099,7 +4099,7 @@ function bindEvents() {
 
   document.getElementById('reset-playbooks')?.addEventListener('click', () => {
     savePlaybookProgress(lineBrand().id, currentUser?.uid, {});
-    showToast('Semanas 2–4 reiniciadas.');
+    showToast('Semanas 2-4 reiniciadas.');
     render();
   });
 

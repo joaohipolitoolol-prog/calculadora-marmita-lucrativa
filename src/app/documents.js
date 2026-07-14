@@ -173,7 +173,7 @@ export const PREMIUM_DOWNLOADS = [
   },
 ];
 
-/** Postres — nativo en app + PDF/imprimir opcional */
+/** Postres, nativo en app + PDF/imprimir opcional */
 export const POSTRES_DOWNLOADS = [
   {
     id: 'postres-kit-principal',

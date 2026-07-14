@@ -67,7 +67,7 @@ async function fillCalculator(page) {
   await dismissOverlays(page);
   await page.waitForSelector('#calc-form', { timeout: 15000 });
 
-  // Ensure simple mode (already active by default — only click if not active)
+  // Ensure simple mode (already active by default, only click if not active)
   const simpleBtn = page.locator('[data-mode="simple"]:not(.active)');
   if (await simpleBtn.count()) {
     await simpleBtn.click();

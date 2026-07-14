@@ -1,7 +1,7 @@
 /**
  * One sale → one processed run.
  * Primary key: Hotmart purchase.transaction (same on APPROVED + COMPLETE).
- * Fallback (no transaction): email|product|UTC-day — prevents double webhook
+ * Fallback (no transaction): email|product|UTC-day, prevents double webhook
  * without an id; rare same-day second real purchase of same product would share it.
  */
 
@@ -44,7 +44,7 @@ export async function claimPurchaseTransaction(firestore, {
 }) {
   const id = sanitizeTransactionId(transaction) || fallbackLockId({ email, product });
   if (!id) {
-    // Cannot build any lock key — last resort allow (logged upstream).
+    // Cannot build any lock key, last resort allow (logged upstream).
     return { claim: true, transactionId: null, skippedLock: true };
   }
 

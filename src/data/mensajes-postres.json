@@ -53,7 +53,7 @@
   },
   {
     "categoria": "B) Mensajes de estado / story",
-    "texto": "Postres en vaso caseros — pregunta por disponibilidad"
+    "texto": "Postres en vaso caseros, pregunta por disponibilidad"
   },
   {
     "categoria": "B) Mensajes de estado / story",
@@ -69,7 +69,7 @@
   },
   {
     "categoria": "B) Mensajes de estado / story",
-    "texto": "Quedan pocas unidades — escríbeme"
+    "texto": "Quedan pocas unidades, escríbeme"
   },
   {
     "categoria": "B) Mensajes de estado / story",
@@ -181,7 +181,7 @@
   },
   {
     "categoria": "F) Mensajes para pedidos",
-    "texto": "Perfecto, tu pedido: [sabores] — Total: [precio]. ¿Confirmo?"
+    "texto": "Perfecto, tu pedido: [sabores], Total: [precio]. ¿Confirmo?"
   },
   {
     "categoria": "F) Mensajes para pedidos",

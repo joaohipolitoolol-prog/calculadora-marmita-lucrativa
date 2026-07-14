@@ -1,11 +1,11 @@
 /**
- * Diagnóstico WhatsApp — copy, perguntas e diagnósticos.
+ * Diagnóstico WhatsApp, copy, perguntas e diagnósticos.
  * Cada resposta altera o texto seguinte (personalização real).
  */
 
 import { MAIN_PRICE_LABEL, GUARANTEE_DAYS, KIT_NAME } from './config.js';
 
-/** Perguntas reais — progresso “X de 5” */
+/** Perguntas reais, progresso “X de 5” */
 export const QUESTION_IDS = [
   'q_experience',
   'q_blocker',
@@ -50,7 +50,7 @@ export const LABELS = {
 };
 
 /**
- * 5 diagnósticos posibles — honestos, específicos, sin promesas absurdas.
+ * 5 diagnósticos posibles, honestos, específicos, sin promesas absurdas.
  * El kit se presenta como la solución exacta a ese bloqueo.
  */
 export const DIAGNOSES = {
@@ -82,7 +82,7 @@ export const DIAGNOSES = {
     kitFocus: ['mensajes', 'pedidos'],
     focusLabel: 'Mensajes + primeros pedidos',
     path: [
-      'Elegir 2–3 sabores fáciles',
+      'Elegir 2-3 sabores fáciles',
       'Usar mensajes listos (sin improvisar)',
       'Publicar una oferta clara',
       'Pedir el pedido con naturalidad',
@@ -229,7 +229,7 @@ function experienceTone(exp) {
   };
 }
 
-/** Flujo de pantallas — orden de navegación (~12 pantallas, 5 preguntas) */
+/** Flujo de pantallas, orden de navegación (~12 pantallas, 5 preguntas) */
 export const SCREEN_FLOW = [
   'welcome',
   'q_experience',

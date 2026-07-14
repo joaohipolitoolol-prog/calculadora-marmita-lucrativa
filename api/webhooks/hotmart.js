@@ -96,7 +96,7 @@ async function bumpAbPurchase(firestore, variant) {
   });
 }
 
-/** Paid sales counter (deduped transactions) — not checkout clicks. */
+/** Paid sales counter (deduped transactions), not checkout clicks. */
 async function bumpPaidSale(firestore, { line, product } = {}) {
   const day = todayKey();
   const summaryRef = firestore.doc('analytics/summary');
@@ -266,7 +266,7 @@ export default async function handler(req, res) {
     }
 
     if (claim.skippedLock) {
-      console.warn('[hotmart] processed WITHOUT lock — missing transaction and fallback', {
+      console.warn('[hotmart] processed WITHOUT lock, missing transaction and fallback', {
         email: buyer.email,
         product: resolved.product,
         event,

@@ -1,4 +1,4 @@
-# Diagnóstico WhatsApp — Arquitetura, wireframes e prompts
+# Diagnóstico WhatsApp, Arquitetura, wireframes e prompts
 
 Funil próprio (não é cópia de quiz genérico): o visitante acredita que está **descobrindo o bloqueio** que impede as vendas. No final, o kit aparece como a **solução personalizada** daquele diagnóstico.
 
@@ -74,13 +74,13 @@ welcome
   → offer             (preço + includes + FAQs naturais + CTA checkout)
 ```
 
-Tempo alvo: **2–4 min**.
+Tempo alvo: **2-4 min**.
 
 ---
 
 ## 3. Wireframes (texto)
 
-### W1 — Welcome
+### W1, Welcome
 ```
 [ ambient gradient ]
   (orb rosa + verde)
@@ -93,7 +93,7 @@ Nota: Sin videos · Sin inversión grande · Solo WhatsApp
 microcopy
 ```
 
-### W2–W6 — Perguntas
+### W2-W6, Perguntas
 ```
 [ barra progresso ]
 ícone em tile
@@ -104,23 +104,23 @@ Sub
 ┌ option ┐
 ```
 
-### W7 — Affirm
+### W7, Affirm
 ```
-(check verde grande — pop)
+(check verde grande, pop)
 Título celebração
 Body personalizado
 chip meta
 [ Continuar ]
 ```
 
-### W8 — Loading
+### W8, Loading
 ```
 spinner
 "Armando tu diagnóstico…"
 lista de 4 passos que acendem um a um (done = verde)
 ```
 
-### W9 — Diagnosis
+### W9, Diagnosis
 ```
 badge "Bloqueo principal"
 título do bloqueio
@@ -129,7 +129,7 @@ card "Lo que necesitas"
 [ CTA ]
 ```
 
-### W10 — Offer
+### W10, Offer
 ```
 eyebrow "Tu plan personalizado"
 título (varia por speed)
@@ -142,9 +142,9 @@ nota de fechamento
 
 ---
 
-## 4. Copy — princípios
+## 4. Copy, princípios
 
-- Espanhol LATAM (mulheres 18–50)
+- Espanhol LATAM (mulheres 18-50)
 - Sem mentiras, sem escassez falsa, sem % inventada, sem Pix falso
 - Personalização real: experience/goal/blocker/cooking/WA/speed alteram textos
 - Oferta inevitável: diagnóstico → necessidade → kit como match
@@ -174,14 +174,14 @@ nota de fechamento
 
 ## 6. Animações / microinterações
 
-1. **Stage in/out** — fade + translateY (220–350ms)
-2. **Option select** — borda rosa + check scale + particle burst
-3. **Affirm pop** — badge verde scale
-4. **Loader ring** — spin contínuo
-5. **Load steps** — active → done sequencial (~900ms cada)
-6. **Ambient pulse** — brilho sutil a cada transição
-7. **Orbs welcome** — float lento
-8. **`prefers-reduced-motion`** — tudo desliga
+1. **Stage in/out**, fade + translateY (220-350ms)
+2. **Option select**, borda rosa + check scale + particle burst
+3. **Affirm pop**, badge verde scale
+4. **Loader ring**, spin contínuo
+5. **Load steps**, active → done sequencial (~900ms cada)
+6. **Ambient pulse**, brilho sutil a cada transição
+7. **Orbs welcome**, float lento
+8. **`prefers-reduced-motion`**, tudo desliga
 
 ---
 
@@ -205,13 +205,13 @@ Style lock: clean premium mobile-app aesthetic, soft natural light, airy white s
 subtle pink (#E8437A) and warm brown (#3D2228) accents, WhatsApp green (#25D366) sparingly,
 photoreal product + soft illustrated UI overlays when needed, no clutter, no fake UI text
 gibberish, no watermarks, no logos of other brands, Latin American home kitchen vibe,
-women 25–40 as lifestyle subjects when people appear, shot on iPhone-quality realism,
+women 25-40 as lifestyle subjects when people appear, shot on iPhone-quality realism,
 shallow depth of field, high-end food blog meets Stripe/Apple marketing.
 Negative: neon, dark mode, purple gradients, stock-photo handshakes, luxury mansion,
 fake money stacks, exaggerated luxury cars, crowded collage, comic cartoon, low-res.
 ```
 
-### 8.1 Hero — Diagnóstico
+### 8.1 Hero, Diagnóstico
 
 ```
 Hero square 1080x1080 for Diagnóstico WhatsApp app welcome. Soft cream-pink background
@@ -232,7 +232,7 @@ Feels independent and quiet success, not influencer glam. Shallow DOF, editorial
 business magazine quality. No text.
 ```
 
-### 8.3 Product — kit mockup
+### 8.3 Product, kit mockup
 
 ```
 Flat-lay product mockup on soft white marble with blush shadows: printed recipe cards with
@@ -268,7 +268,7 @@ pink and mint accents on cream background, a soft searching magnifying glass mad
 morphism. Ultra minimal, motion-design still frame, Apple-like. No percentage text.
 ```
 
-### 8.7 Ícones (set consistente — se quiser PNG além dos SVGs)
+### 8.7 Ícones (set consistente, se quiser PNG além dos SVGs)
 
 Para cada ícone (search, chat, calc, recipe, shield, home, clock, gift, rocket, warning):
 
@@ -310,7 +310,7 @@ Subjects:
 ```
 Subtle full-bleed mobile background 1170x2532, soft cream #FFF6F9 base with very faint
 radial blush pink glow top-center and mint whisper bottom-right, almost invisible grain,
-no shapes, no objects — atmosphere only for app chrome. Quiet, expensive, airy.
+no shapes, no objects, atmosphere only for app chrome. Quiet, expensive, airy.
 ```
 
 ### 8.9 Cards de resultado (5 diagnósticos)
@@ -335,7 +335,7 @@ Themes:
 ```
 Premium mobile screenshot mockup of a clean offer screen (blank text areas), soft device
 bezel, floating above cream-pink gradient, tiny kit items (menu, calculator, recipes)
-orbiting softly blurred. Marketing still for ads. No readable lorem ipsum — keep UI
+orbiting softly blurred. Marketing still for ads. No readable lorem ipsum, keep UI
 labels empty or abstract lines.
 ```
 

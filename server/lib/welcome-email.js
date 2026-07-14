@@ -1,5 +1,5 @@
 /**
- * Server re-exports — single source lives in src/lib/transactional-emails.js
+ * Server re-exports, single source lives in src/lib/transactional-emails.js
  */
 export {
   buildTransactionalEmail,

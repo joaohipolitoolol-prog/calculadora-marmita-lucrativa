@@ -1,5 +1,5 @@
 /**
- * Stable WhatsApp number registry — analytics + multi-X support.
+ * Stable WhatsApp number registry, analytics + multi-X support.
  * Swap e164 without hunting string literals across the codebase.
  */
 

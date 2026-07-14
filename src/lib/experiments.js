@@ -1,5 +1,5 @@
 /**
- * A/B experiments — admin-controlled entry split (Paletas quiz vs LP).
+ * A/B experiments, admin-controlled entry split (Paletas quiz vs LP).
  * Firestore: settings/experiments
  */
 

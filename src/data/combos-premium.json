@@ -9,7 +9,7 @@
   {
     "nombre": "Combo Familiar x6",
     "contenido": "6 paletas a elegir, mínimo 2 premium",
-    "precio_guia": "Ticket medio alto — buen margen si incluyes 2 básicas",
+    "precio_guia": "Ticket medio alto, buen margen si incluyes 2 básicas",
     "publico": "Familias y vecinos",
     "mensaje": "Combo familiar: 6 paletas surtidas por [precio]. Ideal para compartir."
   },
@@ -18,7 +18,7 @@
     "contenido": "Caja con 4 cremosas + 2 rellenas premium",
     "precio_guia": "Precio fijo redondo (ej. US$ 12 o R$ 45)",
     "publico": "Pedidos anticipados viernes-sábado",
-    "mensaje": "Caja fin de semana lista — aparta la tuya hoy."
+    "mensaje": "Caja fin de semana lista, aparta la tuya hoy."
   },
   {
     "nombre": "Combo Infantil",
@@ -30,7 +30,7 @@
   {
     "nombre": "Combo Premium",
     "contenido": "3 paletas rellenas o bañadas a elección",
-    "precio_guia": "El más caro del menú — 30-40% sobre unitario",
+    "precio_guia": "El más caro del menú, 30-40% sobre unitario",
     "publico": "Clientes que buscan algo especial",
     "mensaje": "Selección premium: cheesecake, brownie y chocolate belga."
   },
@@ -39,7 +39,7 @@
     "contenido": "2 paletas premium + 1 frutal para compartir",
     "precio_guia": "San Valentín y aniversarios",
     "publico": "Parejas",
-    "mensaje": "Combo dulce para dos — 3 paletas por [precio]."
+    "mensaje": "Combo dulce para dos, 3 paletas por [precio]."
   },
   {
     "nombre": "Combo Oficina",
@@ -58,7 +58,7 @@
   {
     "nombre": "Combo Verano",
     "contenido": "4 frutales + 2 tropicales premium",
-    "precio_guia": "Estacional — enfatiza frescura",
+    "precio_guia": "Estacional, enfatiza frescura",
     "publico": "Días calurosos",
     "mensaje": "Pack verano: lo más refrescante del menú."
   },

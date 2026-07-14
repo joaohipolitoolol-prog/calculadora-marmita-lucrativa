@@ -1,5 +1,5 @@
 /**
- * Product lines — same digital-kit mold, different angle.
+ * Product lines, same digital-kit mold, different angle.
  * Entitlements stay in products.js; this drives branding, funnel URLs, and app UX.
  */
 
@@ -232,7 +232,7 @@ export function premiumStorageKey(lineId = 'paletas') {
   return `kit_premium_${lineId}_v1`;
 }
 
-/** Legacy key used before multi-product — only maps to Paletas. */
+/** Legacy key used before multi-product, only maps to Paletas. */
 export const LEGACY_PREMIUM_STORAGE_KEY = 'paletas_premium';
 
 export function authHomeHref(line) {

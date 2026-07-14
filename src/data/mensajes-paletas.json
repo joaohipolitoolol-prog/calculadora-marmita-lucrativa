@@ -53,7 +53,7 @@
   },
   {
     "categoria": "B) Mensajes de estado / story",
-    "texto": "Paletas caseras — pregunta por disponibilidad"
+    "texto": "Paletas caseras, pregunta por disponibilidad"
   },
   {
     "categoria": "B) Mensajes de estado / story",
@@ -129,7 +129,7 @@
   },
   {
     "categoria": "D) Mensajes para clientes antiguos",
-    "texto": "Gracias por tu pedido anterior. Esta semana preparé [sabor nuevo] — ¿quieres probarlo?"
+    "texto": "Gracias por tu pedido anterior. Esta semana preparé [sabor nuevo], ¿quieres probarlo?"
   },
   {
     "categoria": "D) Mensajes para clientes antiguos",
@@ -177,11 +177,11 @@
   },
   {
     "categoria": "E) Mensajes de últimas unidades",
-    "texto": "Stock limitado — lo que ves es lo que hay. Pregunta por disponibilidad."
+    "texto": "Stock limitado, lo que ves es lo que hay. Pregunta por disponibilidad."
   },
   {
     "categoria": "F) Mensajes para pedidos",
-    "texto": "Perfecto, tu pedido: [sabores] x [cantidad] — Total: [precio]. ¿Confirmo?"
+    "texto": "Perfecto, tu pedido: [sabores] x [cantidad], Total: [precio]. ¿Confirmo?"
   },
   {
     "categoria": "F) Mensajes para pedidos",

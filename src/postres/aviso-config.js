@@ -1,4 +1,4 @@
-/** Página de aviso pós-compra Postres — editar aquí */
+/** Página de aviso pós-compra Postres, editar aquí */
 
 import { getWhatsAppDisplay, getWhatsAppNumber, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
 import { authLoginPath, authRegisterPath } from '../login/auth-lines.js';

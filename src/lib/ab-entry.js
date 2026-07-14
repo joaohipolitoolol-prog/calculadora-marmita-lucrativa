@@ -1,5 +1,5 @@
 /**
- * Client-side Paletas entry A/B — sticky assign + optional redirect to quiz.
+ * Client-side Paletas entry A/B, sticky assign + optional redirect to quiz.
  */
 
 import { trackEvent } from './track.js';

@@ -29,10 +29,10 @@ function byNum(num) {
   }
   r.pasos = [
     'Prepara la base cremosa de chocolate (leche, cacao, azúcar) y cocina hasta espesar. Enfría.',
-    'Vierte en moldes, congela 2 h, inserta palitos y congela hasta firmar (4–6 h).',
+    'Vierte en moldes, congela 2 h, inserta palitos y congela hasta firmar (4-6 h).',
     'Derrite el chocolate para bañar a baño maría. Deja enfriar un poco (tibio, no caliente).',
     'Desmolda, sumerge cada paleta hasta la mitad o completa, deja escurrir sobre papel encerado.',
-    'Vuelve a congelar 20–30 min para fijar el baño antes de empacar.',
+    'Vuelve a congelar 20-30 min para fijar el baño antes de empacar.',
   ];
   r.consejo =
     'Esta es la “chocolate bañada” del kit: úsala en fotos del menú. El baño debe estar tibio o se agrieta.';

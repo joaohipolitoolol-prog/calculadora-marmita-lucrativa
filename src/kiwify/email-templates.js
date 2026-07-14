@@ -7,7 +7,7 @@ import {
 } from '../site/config.js';
 import { BRAND_KIT, BRAND_NAME } from '../site/brand.js';
 
-/** URLs para colar na Kiwify — página de obrigado e emails */
+/** URLs para colar na Kiwify, página de obrigado e emails */
 export const KIWIFY_URLS = {
   accessShort: `${SITE_URL}${REGISTER_PATH}?compra=1&src=email`,
   accessPremiumShort: `${SITE_URL}${REGISTER_PATH}?compra=1&premium=1&src=email`,
@@ -25,12 +25,12 @@ export const KIWIFY_EMAIL_KIT = {
 
 Gracias por tu compra del ${BRAND_KIT}.
 
-PASO 1 — Crea tu cuenta (2 minutos)
+PASO 1, Crea tu cuenta (2 minutos)
 ${KIWIFY_URLS.accessShort}
 
-Usa el mismo correo de esta compra. Verificamos el pago y liberamos tu acceso en minutos — te avisaremos por email cuando esté listo.
+Usa el mismo correo de esta compra. Verificamos el pago y liberamos tu acceso en minutos, te avisaremos por email cuando esté listo.
 
-PASO 2 — Entra al área de miembros
+PASO 2, Entra al área de miembros
 ${KIWIFY_URLS.membros}
 
 Ahí encontrarás PDFs, calculadora, recetas y mensajes para WhatsApp.
@@ -41,9 +41,7 @@ Ahí encontrarás PDFs, calculadora, recetas y mensajes para WhatsApp.
 3. Abre Recetas y elige 3 sabores
 4. En Vender → copia mensajes para WhatsApp
 
-¿Dudas con el acceso? Responde a este correo con tu email de compra.
-
-— ${BRAND_NAME}
+¿Dudas con el acceso? Responde a este correo con tu email de compra., ${BRAND_NAME}
 Prepara · Calcula · Publica`,
 };
 
@@ -61,9 +59,7 @@ Dentro del área de miembros encontrarás los PDFs premium y en la app:
 • 20 recetas premium (pestaña Recetas → 20 premium)
 • 10 combos rentables (pestaña Vender → Combos)
 
-Si aún no creaste tu cuenta del kit principal, el enlace de arriba activa todo junto.
-
-— ${BRAND_NAME}`,
+Si aún no creaste tu cuenta del kit principal, el enlace de arriba activa todo junto., ${BRAND_NAME}`,
 };
 
 export function kiwifyKitEmailHtml() {
@@ -78,7 +74,7 @@ export function kiwifyKitEmailHtml() {
       <p style="font-size:15px;color:#7a655c;line-height:1.5;margin:0;">Recetas, calculadora de precios y mensajes para vender paletas por WhatsApp.</p>
     </td></tr>
     <tr><td style="background:#fff;border-radius:16px;padding:20px;border:1px solid rgba(92,46,31,0.1);">
-      <p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#ff4f8b;margin:0 0 12px;">Paso 1 — Crea tu cuenta</p>
+      <p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#ff4f8b;margin:0 0 12px;">Paso 1, Crea tu cuenta</p>
       <p style="font-size:14px;line-height:1.5;margin:0 0 16px;">Usa el mismo correo de esta compra. Verificamos el pago y te avisamos por email cuando el kit esté listo.</p>
       <p style="text-align:center;margin:0 0 8px;">
         <a href="${KIWIFY_URLS.accessShort}" style="display:inline-block;background:linear-gradient(135deg,#ff4f8b,#ff7a1a);color:#fff;text-decoration:none;font-weight:800;font-size:15px;padding:14px 28px;border-radius:999px;">Crear mi cuenta →</a>
@@ -86,7 +82,7 @@ export function kiwifyKitEmailHtml() {
     </td></tr>
     <tr><td style="height:12px;"></td></tr>
     <tr><td style="background:#fff;border-radius:16px;padding:20px;border:1px solid rgba(92,46,31,0.1);">
-      <p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#ff7a1a;margin:0 0 12px;">Paso 2 — Empieza en el kit</p>
+      <p style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#ff7a1a;margin:0 0 12px;">Paso 2, Empieza en el kit</p>
       <ol style="margin:0;padding-left:20px;font-size:14px;line-height:1.6;color:#5c2e1f;">
         <li>Calcula precios en <strong>modo rápido</strong></li>
         <li>Elige <strong>3 recetas</strong></li>

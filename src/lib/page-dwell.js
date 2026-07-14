@@ -3,7 +3,7 @@
 import { trackEvent } from './track.js';
 
 /**
- * @param {string} pageKey — home | diagnostico | postres
+ * @param {string} pageKey, home | diagnostico | postres
  * @param {{ line?: string, minSeconds?: number }} [opts]
  */
 export function initPageDwell(pageKey, opts = {}) {

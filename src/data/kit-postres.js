@@ -1,5 +1,5 @@
 /**
- * Kit Postres en vaso — conteúdo in-app.
+ * Kit Postres en vaso, conteúdo in-app.
  * Recetas, combos y mensajes vienen de JSON generados por scripts/build-postres-content.mjs.
  */
 
@@ -18,7 +18,7 @@ export const RECETAS_POSTRES = recetasData;
 /** 20 recetas premium */
 export const RECETAS_POSTRES_PREMIUM = recetasPremiumData;
 
-/** 10 combos rentables — complemento premium */
+/** 10 combos rentables, complemento premium */
 export const COMBOS_POSTRES_PREMIUM = combosData;
 
 /** Mensajes WhatsApp del kit base */
@@ -40,7 +40,7 @@ export const PLAN_7_DIAS_POSTRES = [
   {
     dia: 1,
     titulo: 'Elige tus primeros sabores',
-    duracion: '30–45 min',
+    duracion: '30-45 min',
     meta: 'Definir 3 a 5 postres para empezar',
     tareas: [
       'Revisa las recetas del kit',
@@ -51,7 +51,7 @@ export const PLAN_7_DIAS_POSTRES = [
   {
     dia: 2,
     titulo: 'Calcula tus costos',
-    duracion: '20–30 min',
+    duracion: '20-30 min',
     meta: 'Saber cuánto cuesta cada vaso y a qué precio vender',
     tareas: [
       'Abre la Calculadora de Precios',
@@ -62,10 +62,10 @@ export const PLAN_7_DIAS_POSTRES = [
   {
     dia: 3,
     titulo: 'Prepara una pequeña tanda',
-    duracion: '1–2 horas + frío',
+    duracion: '1-2 horas + frío',
     meta: 'Probar que la receta sale bien antes de vender',
     tareas: [
-      'Produce 6–8 vasos de prueba (1–2 sabores)',
+      'Produce 6-8 vasos de prueba (1-2 sabores)',
       'Prueba textura, dulzor y presentación',
       'Ajusta antes de producir más',
     ],
@@ -73,7 +73,7 @@ export const PLAN_7_DIAS_POSTRES = [
   {
     dia: 4,
     titulo: 'Toma fotos y arma tu menú',
-    duracion: '45–60 min',
+    duracion: '45-60 min',
     meta: 'Tener menú y foto listos para publicar',
     tareas: [
       'Fotografía con luz natural y fondo limpio (vaso transparente)',
@@ -84,7 +84,7 @@ export const PLAN_7_DIAS_POSTRES = [
   {
     dia: 5,
     titulo: 'Publica en WhatsApp',
-    duracion: '20–30 min',
+    duracion: '20-30 min',
     meta: 'Que al menos 10 personas vean tu oferta',
     tareas: [
       'Publica tu menú en estado o historia',
@@ -132,7 +132,7 @@ export const LISTA_COMPRAS_POSTRES = {
     'Mantequilla',
   ],
   materiales: [
-    'Vasos transparentes 180–220 ml',
+    'Vasos transparentes 180-220 ml',
     'Cucharitas',
     'Tapas (si entregas)',
     'Etiquetas o stickers',

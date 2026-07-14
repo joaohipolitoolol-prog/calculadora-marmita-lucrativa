@@ -1,5 +1,5 @@
 /**
- * Public GET — Paletas A/B entry config (anonymous LP traffic).
+ * Public GET, Paletas A/B entry config (anonymous LP traffic).
  * No auth. Returns only non-sensitive experiment flags.
  */
 import { getFirebaseAdmin } from '../server/lib/firebase-admin.js';

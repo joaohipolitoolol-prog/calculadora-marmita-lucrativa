@@ -41,7 +41,7 @@ export function renderPlaybooksCrecimiento(opts = {}) {
   return `
     <div class="playbooks-page">
       <div class="section-card">
-        <h2>Semanas 2–4 · Crecer</h2>
+        <h2>Semanas 2-4 · Crecer</h2>
         <p class="section-text">
           El plan de 7 días te hace publicar. Esto te saca del silencio cuando el círculo cercano
           ya vio tu menú y no alcanza para vivir de eso.
@@ -118,7 +118,7 @@ export function renderPlaybooksCrecimiento(opts = {}) {
         `;
       }).join('')}
 
-      <button type="button" class="btn btn-ghost btn-sm" id="reset-playbooks">Reiniciar Semanas 2–4</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="reset-playbooks">Reiniciar Semanas 2-4</button>
     </div>
   `;
 }

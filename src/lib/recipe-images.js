@@ -1,5 +1,5 @@
 /**
- * Clean emoji marker for recipes — no photos / SVGs.
+ * Clean emoji marker for recipes, no photos / SVGs.
  */
 
 const EMOJI_RULES = [

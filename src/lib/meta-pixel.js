@@ -1,4 +1,4 @@
-/** Meta Pixel helpers — InitiateCheckout / Purchase with session dedupe. */
+/** Meta Pixel helpers, InitiateCheckout / Purchase with session dedupe. */
 
 function canTrack() {
   return typeof window !== 'undefined' && typeof window.fbq === 'function';
@@ -103,7 +103,7 @@ export function trackMetaPurchaseOnce({
   return true;
 }
 
-/** Mark that the user left for Hotmart — unlocks URL grants on return. */
+/** Mark that the user left for Hotmart, unlocks URL grants on return. */
 export function markCheckoutPending(line = 'paletas') {
   try {
     sessionStorage.setItem(`pending_purchase_${line}`, String(Date.now()));

@@ -959,7 +959,7 @@ h3 {
   }
 }
 
-/* Lazy sections — desativado para evitar buracos no mobile */
+/* Lazy sections, desativado para evitar buracos no mobile */
 .lazy-section {
   content-visibility: visible;
 }
@@ -2922,7 +2922,7 @@ body:has(.purchase-sticky.visible) {
   opacity: 0.95;
 }
 
-/* Soft continuous pass — light presence, not noise */
+/* Soft continuous pass, light presence, not noise */
 .wa-reviews-track-prints.is-marquee {
   overflow: hidden;
   scroll-snap-type: none;
@@ -3456,7 +3456,7 @@ body:has(.purchase-sticky.visible) {
   font-weight: 800;
 }
 
-/* ===== Secondary button (LP only — evita conflito com app/login) ===== */
+/* ===== Secondary button (LP only, evita conflito com app/login) ===== */
 .trust-kit-card .btn-secondary {
   display: inline-flex;
   align-items: center;

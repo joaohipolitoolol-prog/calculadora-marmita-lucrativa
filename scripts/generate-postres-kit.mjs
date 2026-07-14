@@ -65,7 +65,7 @@ function normalizeRecipe(r, i, premium = false) {
     dia: premium ? undefined : r.dia || i + 1,
     num: premium ? r.num || i + 1 : undefined,
     prep: r.prep || prepPart || '20 min',
-    congelacion: r.congelacion || coldPart || '1–2 horas',
+    congelacion: r.congelacion || coldPart || '1-2 horas',
     rendimiento: r.rendimiento || r.porciones || '8 vasos',
     consejo: r.consejo || r.tip || '',
   };
@@ -155,7 +155,7 @@ writeFileSync(
 <div class="cover"><div class="badge">Menú</div><h1>Menú para WhatsApp</h1><p>Edita precios y copia el bloque.</p></div>
 <article class="card" contenteditable="true">
 <strong>🍨 POSTRES EN VASO</strong><br><br>
-${base.map((r) => `• ${esc(r.nombre)} — $[PRECIO]<br>`).join('')}
+${base.map((r) => `• ${esc(r.nombre)}, $[PRECIO]<br>`).join('')}
 <br>Combos y encargos disponibles.<br>Escríbeme para apartar 💬
 </article>
 <p class="tip">Toca el menú para editar precios, luego selecciona y copia.</p>
@@ -209,8 +209,8 @@ writeFileSync(
 <div class="cover"><div class="badge">Premium</div><h1>Menú premium</h1></div>
 <article class="card" contenteditable="true">
 <strong>✨ POSTRES PREMIUM</strong><br><br>
-${premium.map((r) => `• ${esc(r.nombre)} — $[PRECIO]<br>`).join('')}
-<br>${COMBOS_POSTRES_PREMIUM.map((c) => `• ${esc(c.nombre)} — ${esc(c.precio_guia)}<br>`).join('')}
+${premium.map((r) => `• ${esc(r.nombre)}, $[PRECIO]<br>`).join('')}
+<br>${COMBOS_POSTRES_PREMIUM.map((c) => `• ${esc(c.nombre)}, ${esc(c.precio_guia)}<br>`).join('')}
 </article>
 `
   )

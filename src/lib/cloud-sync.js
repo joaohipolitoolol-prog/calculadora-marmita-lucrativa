@@ -51,7 +51,7 @@ export async function saveCloudCalculator(uid, { draft, checklist }) {
       { merge: true }
     );
   } catch {
-    /* offline or rules — localStorage remains source of truth */
+    /* offline or rules, localStorage remains source of truth */
   }
 }
 

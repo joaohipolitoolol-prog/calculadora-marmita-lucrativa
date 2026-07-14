@@ -1,4 +1,4 @@
-/** Voces femeninas en español — de más natural a fallback */
+/** Voces femeninas en español, de más natural a fallback */
 export const TTS_VOICE_CANDIDATES = [
   { languageCode: 'es-MX', name: 'es-MX-Neural2-A' },
   { languageCode: 'es-US', name: 'es-US-Neural2-A' },

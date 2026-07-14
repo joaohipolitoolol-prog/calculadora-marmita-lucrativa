@@ -8,7 +8,7 @@ import { rememberActiveLine, resolveLineFromSearch, premiumStorageKey, LEGACY_PR
 import { claimPendingPurchases } from './claim-pending.js';
 import { trackEvent } from './track.js';
 
-/** While true, guardAuthPage must not redirect — Auth fires before profile/grants save. */
+/** While true, guardAuthPage must not redirect, Auth fires before profile/grants save. */
 let authBusy = false;
 
 function setAuthBusy(busy) {
@@ -30,7 +30,7 @@ async function claimPendingForUser(user) {
       }
     }
   } catch {
-    // Non-blocking — email link grants / admin can still unlock
+    // Non-blocking, email link grants / admin can still unlock
   }
 }
 
@@ -383,7 +383,7 @@ export function redirectIfAuthenticated(user, target) {
   if (line) rememberActiveLine(line.id);
 
   if (params.get('compra') === '1') {
-    // Existing session hitting purchase URL — merge grants then go to app.
+    // Existing session hitting purchase URL, merge grants then go to app.
     applyPurchaseGrantsFromUrl(user.uid, window.location.search).finally(() => {
       const next = new URLSearchParams();
       next.set('compra', '1');

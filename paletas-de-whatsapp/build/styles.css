@@ -569,7 +569,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   max-width: 28rem;
 }
 
-/* Menú editable — filas con puntos */
+/* Menú editable, filas con puntos */
 .menu-edit {
   max-width: 520px;
   margin: 0 auto;

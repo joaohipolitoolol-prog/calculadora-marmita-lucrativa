@@ -167,7 +167,7 @@ export function normalizeMenuPayload(data = {}) {
   };
 }
 
-/** @deprecated use menu-images.js — kept for any leftover imports */
+/** @deprecated use menu-images.js, kept for any leftover imports */
 export { compressImageFile } from './menu-images.js';
 
 function draftRef(uid, lineId = 'paletas') {
@@ -206,7 +206,7 @@ function writeLocalDraft(uid, draft, lineId = 'paletas') {
   try {
     localStorage.setItem(LOCAL_KEY(uid, lineId), JSON.stringify(draft));
   } catch {
-    /* quota — try without heavy images */
+    /* quota, try without heavy images */
     try {
       const slim = {
         ...draft,

@@ -55,9 +55,9 @@ function coldLabel(lineId) {
 
 export function buildGuidedChunks(item, lineId = 'paletas') {
   const meta = {
-    prep: item.prep || '—',
-    cold: item.congelacion || '—',
-    yield: item.rendimiento || item.porciones || '—',
+    prep: item.prep || '-',
+    cold: item.congelacion || '-',
+    yield: item.rendimiento || item.porciones || '-',
     tip: item.consejo || item.tip || '',
   };
 
@@ -563,7 +563,7 @@ export function setupRecipeNarration({ getRecipeContext, root } = {}) {
   }
 }
 
-/** @deprecated use setupRecipeNarration — evita listeners duplicados */
+/** @deprecated use setupRecipeNarration, evita listeners duplicados */
 export function bindRecipeNarration(root, options = {}) {
   setupRecipeNarration({ ...options, root });
 }

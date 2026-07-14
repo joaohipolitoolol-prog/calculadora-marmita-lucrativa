@@ -792,7 +792,7 @@ h2 {
 }
 
 .compare-card.basic li::before {
-  content: '–';
+  content: '-';
   position: absolute;
   left: 0;
   color: var(--gray);

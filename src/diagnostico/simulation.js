@@ -1,5 +1,5 @@
 /**
- * Simulación estilo Gui — valor del día anclado a ~US$ 1,65/paleta.
+ * Simulación estilo Gui, valor del día anclado a ~US$ 1,65/paleta.
  * Conservadora, varía por respuestas (no es promesa de resultado).
  */
 
@@ -21,7 +21,7 @@ function sessionNoise() {
 
 /**
  * Unidades realistas para un primer día bien publicado (no un día récord).
- * No sube el número por tener un bloqueo — eso era ilógico.
+ * No sube el número por tener un bloqueo, eso era ilógico.
  */
 export function computeDaySimulation(answers = {}) {
   let units = 10;

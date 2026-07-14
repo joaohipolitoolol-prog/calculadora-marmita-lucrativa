@@ -7,24 +7,24 @@ import fechasPremiumData from './fechas-paletas-premium.json';
 import guiaPremiumData from './guia-paletas-premium.json';
 import kitExtrasData from './kit-extras-paletas.json';
 
-/** 30 recetas completas — sincronizadas con content.py / PDF */
+/** 30 recetas completas, sincronizadas con content.py / PDF */
 export const RECETAS_PALETAS = recetasData;
 
-/** 20 recetas premium — complemento digital */
+/** 20 recetas premium, complemento digital */
 export const RECETAS_PREMIUM = recetasPremiumData;
 
-/** 10 combos rentables — complemento premium */
+/** 10 combos rentables, complemento premium */
 export const COMBOS_PREMIUM = combosPremiumData;
 
-/** 60 mensajes — sincronizados con content.py / PDF */
+/** 60 mensajes, sincronizados con content.py / PDF */
 export const MENSAJES_WHATSAPP = mensajesData;
 
-/** Premium — complemento digital */
+/** Premium, complemento digital */
 export const MENSAJES_PREMIUM = mensajesPremiumData;
 export const FECHAS_PREMIUM = fechasPremiumData;
 export const GUIA_PREMIUM = guiaPremiumData;
 
-/** Técnicas, errores y tips — del kit PDF principal */
+/** Técnicas, errores y tips, del kit PDF principal */
 export const KIT_EXTRAS = kitExtrasData;
 
 /** Sincronizado con paletas-de-whatsapp/build/content.py (fuente del PDF) */
@@ -32,7 +32,7 @@ export const PLAN_7_DIAS = [
   {
     dia: 1,
     titulo: 'Elige tus primeras recetas',
-    duracion: '30–45 min',
+    duracion: '30-45 min',
     meta: 'Tener 3 a 5 sabores definidos y lista de compras',
     tareas: [
       'Revisa las 30 recetas del kit',
@@ -43,7 +43,7 @@ export const PLAN_7_DIAS = [
   {
     dia: 2,
     titulo: 'Calcula tus costos',
-    duracion: '20–30 min',
+    duracion: '20-30 min',
     meta: 'Saber cuánto te cuesta cada paleta y a qué precio vender',
     tareas: [
       'Abre la Calculadora de Precios',
@@ -54,7 +54,7 @@ export const PLAN_7_DIAS = [
   {
     dia: 3,
     titulo: 'Prepara una pequeña tanda',
-    duracion: '1–2 horas + congelación',
+    duracion: '1-2 horas + congelación',
     meta: 'Probar que la receta sale bien antes de vender',
     tareas: [
       'Produce solo 6-10 paletas como prueba',
@@ -65,7 +65,7 @@ export const PLAN_7_DIAS = [
   {
     dia: 4,
     titulo: 'Toma fotos y arma tu menú',
-    duracion: '45–60 min',
+    duracion: '45-60 min',
     meta: 'Tener menú y foto listos para publicar',
     tareas: [
       'Fotografía con luz natural y fondo limpio',
@@ -76,7 +76,7 @@ export const PLAN_7_DIAS = [
   {
     dia: 5,
     titulo: 'Publica en WhatsApp',
-    duracion: '20–30 min',
+    duracion: '20-30 min',
     meta: 'Que al menos 10 personas vean tu oferta',
     tareas: [
       'Publica tu menú en estado o historia',
@@ -137,7 +137,7 @@ export const LISTA_COMPRAS = {
   ],
 };
 
-/** Antes de vender — sincronizado con content.py / PDF */
+/** Antes de vender, sincronizado con content.py / PDF */
 export const CHECKLIST_VENTA = [
   'Elegir 3 a 5 sabores para empezar',
   'Comprar ingredientes y materiales',

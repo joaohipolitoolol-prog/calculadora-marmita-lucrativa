@@ -576,7 +576,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   max-width: 28rem;
 }
 
-/* Menú editable — filas con puntos */
+/* Menú editable, filas con puntos */
 .menu-edit {
   max-width: 520px;
   margin: 0 auto;
@@ -791,17 +791,17 @@ function copiarMenu() {
   const n = document.getElementById('negocio').value.trim() || 'Mis paletas';
   const sabores = document.querySelectorAll('#menu-premium .menu-linea-input');
   const combos = document.querySelectorAll('#menu-combos .menu-linea-input');
-  let lineas = ['🍓 *' + n + '* — Menú Premium', '', '*Sabores especiales*'];
+  let lineas = ['🍓 *' + n + '*, Menú Premium', '', '*Sabores especiales*'];
   sabores.forEach(row => {
     const s = row.querySelector('.sabor').value.trim();
     const p = row.querySelector('.precio').value.trim();
-    if (s) lineas.push(p ? `• ${s} — $${p}` : `• ${s}`);
+    if (s) lineas.push(p ? `• ${s}, $${p}` : `• ${s}`);
   });
   lineas.push('', '*Combos*');
   combos.forEach(row => {
     const s = row.querySelector('.sabor').value.trim();
     const p = row.querySelector('.precio').value.trim();
-    if (s) lineas.push(p ? `• ${s} — $${p}` : `• ${s}`);
+    if (s) lineas.push(p ? `• ${s}, $${p}` : `• ${s}`);
   });
   const nota = document.getElementById('nota').value.trim();
   if (nota) lineas.push('', '_' + nota + '_');

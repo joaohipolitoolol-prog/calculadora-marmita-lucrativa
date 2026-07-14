@@ -41,7 +41,7 @@ export function defaultMenuWaDraft(brand, recipes = [], lineId = 'paletas') {
       nota:
         lineId === 'postres'
           ? 'Combos y encargos disponibles.\nEscríbeme para apartar 💬'
-          : '📱 Pedidos por WhatsApp — Disponible hasta agotar stock',
+          : '📱 Pedidos por WhatsApp, Disponible hasta agotar stock',
       rows: emptyRows(count).map((row, i) => ({
         ...row,
         sabor: recipes[i]?.nombre || '',
@@ -138,7 +138,7 @@ export function buildMenuWaText(draft, lineId = 'paletas') {
     const name = String(sabor || '').trim();
     if (!name) return;
     const price = String(precio || '').trim();
-    lines.push(price ? `• ${name} — ${sym}${price}` : `• ${name}`);
+    lines.push(price ? `• ${name}, ${sym}${price}` : `• ${name}`);
   });
   const nota = String(s.nota || '').trim();
   if (nota) lines.push('', nota);

@@ -13,7 +13,7 @@ function buildSlides(brand) {
     {
       icon: 'logo',
       title: kitName,
-      body: `Recetas, precios y mensajes para vender ${units} desde casa — todo en la app.`,
+      body: `Recetas, precios y mensajes para vender ${units} desde casa, todo en la app.`,
       highlight: 'Usa la barra de abajo: Inicio, Precios, Kit y Perfil.',
     },
     {

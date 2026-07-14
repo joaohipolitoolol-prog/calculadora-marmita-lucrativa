@@ -1,5 +1,5 @@
 /**
- * Playbooks Semana 2–4 — qué hacer cuando el círculo cercano ya escuchó
+ * Playbooks Semana 2-4, qué hacer cuando el círculo cercano ya escuchó
  * y WhatsApp se queda en silencio. Compartido Paletas / Postres (copy adapta unidad).
  */
 
@@ -9,9 +9,9 @@ export const PLAYBOOKS_CRECIMIENTO = [
     semana: 2,
     titulo: 'Romper el silencio',
     meta: 'Cuando nadie responde a tu primer menú',
-    duracion: '4–5 días',
+    duracion: '4-5 días',
     porQue:
-      'La mayoría deja de publicar tras 1–2 estados. El silencio no significa que el producto esté mal: significa que pocas personas lo vieron en el momento correcto.',
+      'La mayoría deja de publicar tras 1-2 estados. El silencio no significa que el producto esté mal: significa que pocas personas lo vieron en el momento correcto.',
     tareas: [
       'Publica estado 1 vez al día (misma foto, copy distinto) durante 5 días',
       'Escribe a 10 personas de tu lista (amigos/vecinos) con mensaje personal, no broadcast',
@@ -24,7 +24,7 @@ export const PLAYBOOKS_CRECIMIENTO = [
         id: 's2-personal',
         label: 'Mensaje personal (no estado)',
         texto:
-          'Hola [nombre], ¿cómo estás? Empecé a hacer [producto] caseros esta semana (sabores: [sabores]). Si te provoca, te aparto uno — sin compromiso 😊',
+          'Hola [nombre], ¿cómo estás? Empecé a hacer [producto] caseros esta semana (sabores: [sabores]). Si te provoca, te aparto uno, sin compromiso 😊',
       },
       {
         id: 's2-reenvio',
@@ -77,7 +77,7 @@ export const PLAYBOOKS_CRECIMIENTO = [
         id: 's3-combo',
         label: 'Combo barrio',
         texto:
-          'Combo antojo x3 surtido por [precio] — ideal para probar sin decidir un solo sabor. Entrega en [zona].',
+          'Combo antojo x3 surtido por [precio], ideal para probar sin decidir un solo sabor. Entrega en [zona].',
       },
     ],
     checklistTips: [

@@ -1,5 +1,5 @@
 /**
- * Admin settings — GET (load) + POST (save) via Admin SDK.
+ * Admin settings, GET (load) + POST (save) via Admin SDK.
  * Avoids client Firestore (ad blockers / silent defaults on refresh).
  */
 import { verifyAdminRequest, getFirebaseAdmin, FieldValue } from '../lib/firebase-admin.js';

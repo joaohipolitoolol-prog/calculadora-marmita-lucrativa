@@ -1,5 +1,5 @@
 /**
- * Diagnóstico WhatsApp — motor de UI, estado e navegação.
+ * Diagnóstico WhatsApp, motor de UI, estado e navegação.
  * Cada transição dá feedback; nunca deixa a tela “morta”.
  */
 
@@ -39,7 +39,7 @@ const REDUCED_MOTION =
 
 const QUESTION_SET = new Set(QUESTION_IDS);
 
-/** Every screen starts at the top — window scroll, not only focus. */
+/** Every screen starts at the top, window scroll, not only focus. */
 function scrollQuizToTop() {
   if (typeof window === 'undefined') return;
   const snap = () => {
@@ -145,7 +145,7 @@ export function createDiagnostico(root) {
     } else if (isQuestion) {
       const qIndex = QUESTION_IDS.indexOf(id);
       const step = Math.max(1, qIndex + 1);
-      // Primeira pergunta já ~15% — sensação de avanço imediato
+      // Primeira pergunta já ~15%, sensação de avanço imediato
       pct = step === 1 ? 15 : Math.round((step / totalQ) * 100);
       label = `${step} de ${totalQ}`;
     } else if (id === 'affirm_1' || id === 'q_name') {
@@ -448,9 +448,7 @@ export function createDiagnostico(root) {
     goNext();
   }
 
-  // ——— Render helpers ———
-
-  function renderWelcome(s) {
+  //, -, Render helpers, -, function renderWelcome(s) {
     return `
       <section class="dx-screen dx-welcome" aria-labelledby="dx-title">
         <h1 id="dx-title" class="dx-title dx-title-display">${esc(s.title)}</h1>

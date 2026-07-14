@@ -8,7 +8,7 @@ Usar para generar fotos reales (Midjourney, Flux, Ideogram, etc.). Sustituir los
 Realistic premium food photography of an individual cold dessert in a small transparent container, visible creamy layers, homemade but professional presentation, Latin American dessert aesthetic, natural ingredients, soft warm lighting, clean neutral background (#FFF8F2 / soft beige), realistic texture, appetizing but not artificial, high detail, no text, no logos, no hands with deformities, vertical composition, 4:5
 ```
 
-## 1. Hero: composición (emocional — prioridad LP)
+## 1. Hero: composición (emocional, prioridad LP)
 
 Objetivo: que la persona piense “esto parece caro y yo puedo hacerlo”, no “aquí hay un catálogo de sabores”.
 
@@ -19,7 +19,7 @@ Close-up food photography of a woman's hand holding one mini cold dessert in a c
 Alternativa (mismo mensaje, sin mano si sale mal):
 
 ```
-3/4 angle on a real kitchen counter: one hero mini cold dessert with dripping dulce de leche in the front, 4–5 other cups behind with strawberry, chocolate, Oreo crumbs, lemon, passion fruit; soft lifestyle blur on background utensils, homemade delivery-ready feel, warm natural light, premium but homemade, no text, no logos, wide 3:2
+3/4 angle on a real kitchen counter: one hero mini cold dessert with dripping dulce de leche in the front, 4-5 other cups behind with strawberry, chocolate, Oreo crumbs, lemon, passion fruit; soft lifestyle blur on background utensils, homemade delivery-ready feel, warm natural light, premium but homemade, no text, no logos, wide 3:2
 ```
 
 Legacy / flat catalog (evitar en ads y hero):

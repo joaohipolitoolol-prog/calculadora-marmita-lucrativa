@@ -1,5 +1,5 @@
 /**
- * Server-side entitlement grants — shared by admin ops + future purchase webhooks.
+ * Server-side entitlement grants, shared by admin ops + future purchase webhooks.
  * Kit auto / upsell can be granted here; funnels stay isolated by `line`.
  */
 

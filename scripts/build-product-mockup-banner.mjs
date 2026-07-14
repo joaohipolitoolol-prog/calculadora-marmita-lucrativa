@@ -1,6 +1,6 @@
 /**
- * Premium product mockup — REAL WebApp screens only.
- * Style: Apple / Stripe — devices first, soft atmosphere, no collage cards.
+ * Premium product mockup, REAL WebApp screens only.
+ * Style: Apple / Stripe, devices first, soft atmosphere, no collage cards.
  */
 import { chromium } from 'playwright';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -61,7 +61,7 @@ async function main() {
     overflow: hidden;
   }
 
-  /* Soft out-of-focus paletas — no borders, no cards */
+  /* Soft out-of-focus paletas, no borders, no cards */
   .orb {
     position: absolute;
     border-radius: 50%;
@@ -100,7 +100,7 @@ async function main() {
   }
 
   /* ════════
-     MacBook Pro — Space Gray, front-facing, photographic cues
+     MacBook Pro, Space Gray, front-facing, photographic cues
      ════════════════════════════════════════════════════════ */
   .mb {
     position: absolute;
@@ -194,7 +194,7 @@ async function main() {
   }
 
   /* ════════
-     iPhone 15 Pro — Space Black / Titanium
+     iPhone 15 Pro, Space Black / Titanium
      ════════════════════════════════════════════════════════ */
   .ph {
     position: absolute;

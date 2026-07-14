@@ -13,16 +13,16 @@ function dateLocale() {
 }
 
 export function formatDate(value) {
-  if (!value) return '—';
+  if (!value) return '-';
   const d = value?.toDate ? value.toDate() : new Date(value);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return d.toLocaleDateString(dateLocale(), { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 export function formatDateTime(value) {
-  if (!value) return '—';
+  if (!value) return '-';
   const d = value?.toDate ? value.toDate() : new Date(value);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return d.toLocaleString(dateLocale(), {
     day: '2-digit',
     month: 'short',

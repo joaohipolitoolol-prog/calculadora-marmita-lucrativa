@@ -11,13 +11,13 @@ import {
   getWhatsAppUrl,
 } from '../lib/whatsapp-numbers.js';
 
-/** Link de checkout — Hotmart */
+/** Link de checkout, Hotmart */
 export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y?checkoutMode=10';
 
-/** Página pós-compra — upsell (antes da área de membros) */
+/** Página pós-compra, upsell (antes da área de membros) */
 export const POST_PURCHASE_URL = POST_PURCHASE_UPSELL_URL;
 
-/** WhatsApp suporte pós-compra — registry id: paletas_support */
+/** WhatsApp suporte pós-compra, registry id: paletas_support */
 export const WHATSAPP_NUMBER_ID = 'paletas_support';
 export const WHATSAPP_NUMBER = getWhatsAppNumber(WHATSAPP_NUMBER_ID).e164;
 export const WHATSAPP_DISPLAY = getWhatsAppDisplay(WHATSAPP_NUMBER_ID);
@@ -50,7 +50,7 @@ export const PRODUCT_ICON = '/favicon.svg';
 
 export const META_PIXEL_ID = '1369803401885896';
 
-/** Preço principal em USD — fonte única para LP e pixel */
+/** Preço principal em USD, fonte única para LP e pixel */
 export const MAIN_PRICE = 7.49;
 export const MAIN_PRICE_LABEL = 'US$ 7,49';
 export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 7,49';

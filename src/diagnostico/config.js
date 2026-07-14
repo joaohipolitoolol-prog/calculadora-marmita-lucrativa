@@ -1,4 +1,4 @@
-/** Diagnóstico WhatsApp — config de oferta e tracking */
+/** Diagnóstico WhatsApp, config de oferta e tracking */
 
 export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y?checkoutMode=10';
 
@@ -19,7 +19,7 @@ export const KIT_ITEMS = [
   { id: 'manual', label: 'Manual de inicio', icon: 'book' },
 ];
 
-/** Prints WA — crops só das mensagens (mais leves na página) */
+/** Prints WA, crops só das mensagens (mais leves na página) */
 export const WA_REVIEWS = {
   alejandra: {
     id: 'alejandra',
@@ -58,7 +58,7 @@ export const WA_REVIEWS = {
   },
 };
 
-/** Reviews alinhadas ao bloqueio — uma única fonte de verdade */
+/** Reviews alinhadas ao bloqueio, uma única fonte de verdade */
 export function diagnosisReviewIds(diagnosisId) {
   const map = {
     precio: ['norma', 'luciana'],
@@ -76,7 +76,7 @@ export function reviewsForDiagnosis(diagnosisId) {
     .filter(Boolean);
 }
 
-/** Print no affirm_1 — por experiência (nunca/family = Yadira, não Alejandra) */
+/** Print no affirm_1, por experiência (nunca/family = Yadira, não Alejandra) */
 export function reviewForExperience(experience) {
   if (experience === 'never' || experience === 'family') return WA_REVIEWS.yadira;
   if (experience === 'tried') return WA_REVIEWS.vecinas;

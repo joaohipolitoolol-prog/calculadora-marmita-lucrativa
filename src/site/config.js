@@ -1,4 +1,4 @@
-/** URL canônica do produto — atualizar se mudar domínio */
+/** URL canônica do produto, atualizar se mudar domínio */
 export const SITE_URL = 'https://paletasparawhatsapp.vercel.app';
 
 export const LOGIN_PATH = '/login';

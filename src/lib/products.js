@@ -1,4 +1,4 @@
-/** Product entitlements — maps admin toggles to Firestore profile fields. */
+/** Product entitlements, maps admin toggles to Firestore profile fields. */
 export const PRODUCTS = [
   {
     id: 'paletas_kit',

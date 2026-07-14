@@ -143,7 +143,7 @@ const RANGE_DAYS = {
   all: 30,
 };
 
-/** Last N UTC day keys (YYYY-MM-DD), newest first — avoids Firestore orderBy(__name__) index. */
+/** Last N UTC day keys (YYYY-MM-DD), newest first, avoids Firestore orderBy(__name__) index. */
 function lastDayKeys(n = 14, offset = 0) {
   const keys = [];
   const anchor = todayKey();
@@ -465,7 +465,7 @@ export default async function handler(req, res) {
       useSummaryPeriod,
     );
 
-    // Paid sales (webhook deduped) — not checkout clicks; filter by line when set
+    // Paid sales (webhook deduped), not checkout clicks; filter by line when set
     let salesToday = Number(summary.sales?.today) || 0;
     let salesTotal = Number(summary.sales?.total) || 0;
     if (!useSummaryPeriod && rangeDays.length) {

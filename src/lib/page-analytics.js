@@ -1,4 +1,4 @@
-/** @deprecated Prefer src/lib/track.js — kept for existing imports. */
+/** @deprecated Prefer src/lib/track.js, kept for existing imports. */
 export {
   TRACKED_PAGES,
   trackPageView,

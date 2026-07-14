@@ -1,5 +1,5 @@
 /**
- * Purchase webhook stub — same grant path as Hotmart (normalized body).
+ * Purchase webhook stub, same grant path as Hotmart (normalized body).
  *
  * Auth: Authorization: Bearer <PURCHASE_WEBHOOK_SECRET>
  * Body: { email, product, name?, event? }

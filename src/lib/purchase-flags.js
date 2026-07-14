@@ -53,7 +53,7 @@ export function purchaseFlagsFromSearch(search = typeof window !== 'undefined' ?
   };
 }
 
-/** Organic signup (no purchase query / code) — no product until buy or admin grant. */
+/** Organic signup (no purchase query / code), no product until buy or admin grant. */
 export const DEFAULT_PRODUCT_FLAGS = {
   hasKit: false,
   hasPremium: false,

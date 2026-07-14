@@ -16,7 +16,7 @@ let sharp;
 try {
   sharp = (await import('sharp')).default;
 } catch {
-  console.log('sharp not installed — SVG icons written; run: npm i -D sharp && npm run icons');
+  console.log('sharp not installed, SVG icons written; run: npm i -D sharp && npm run icons');
   process.exit(0);
 }
 

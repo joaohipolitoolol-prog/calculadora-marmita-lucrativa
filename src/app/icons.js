@@ -1,6 +1,6 @@
 import { PRODUCT_ICON } from '../landing/config.js';
 
-/** Ícones SVG inline — stroke, 24×24 */
+/** Ícones SVG inline, stroke, 24×24 */
 const svg = (paths, viewBox = '0 0 24 24') =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 

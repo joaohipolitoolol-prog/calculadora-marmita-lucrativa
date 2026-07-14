@@ -569,7 +569,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   max-width: 28rem;
 }
 
-/* Menú editable — filas con puntos */
+/* Menú editable, filas con puntos */
 .menu-edit {
   max-width: 520px;
   margin: 0 auto;
@@ -763,7 +763,7 @@ tr:nth-child(even) td { background: var(--gris-claro); }
   <div class="menu-modelo" id="menu-simple">
     <h3>🍓 Paletas Caseras de la Semana</h3>
     <div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Nombre del sabor" value="Fresa con crema"><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="1.50"></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Nombre del sabor" value="Mango con limón"><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="1.50"></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Nombre del sabor" value="Chocolate cremoso"><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value="2.00"></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Otro sabor" value=""><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value=""></div><div class="menu-linea menu-linea-input"><input class="sabor" type="text" placeholder="Otro sabor" value=""><span class="menu-dots" aria-hidden="true"></span><input class="precio" type="text" placeholder="0.00" inputmode="decimal" value=""></div>
-    <textarea class="menu-nota" id="nota-menu" rows="2">📱 Pedidos por WhatsApp — Disponible hasta agotar stock</textarea>
+    <textarea class="menu-nota" id="nota-menu" rows="2">📱 Pedidos por WhatsApp, Disponible hasta agotar stock</textarea>
     <button type="button" class="btn-copy" onclick="generarMenu()">Copiar menú para WhatsApp</button>
     <div class="preview-box" id="preview"></div>
   </div>
@@ -817,7 +817,7 @@ function generarMenu() {
   sabores.forEach(row => {
     const s = row.querySelector('.sabor').value.trim();
     const p = row.querySelector('.precio').value.trim();
-    if (s) lineas.push(p ? `• ${s} — $${p}` : `• ${s}`);
+    if (s) lineas.push(p ? `• ${s}, $${p}` : `• ${s}`);
   });
   lineas.push('', document.getElementById('nota-menu').value.trim());
   copiar(lineas.join('\n'), 'preview');

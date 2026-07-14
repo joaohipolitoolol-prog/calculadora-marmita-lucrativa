@@ -30,12 +30,12 @@ let screen = 'menu';
 let editingItemId = null;
 /** Draft of the item being edited in the sheet */
 let itemForm = null;
-/** Category filter on home — 'all' shows everything */
+/** Category filter on home, 'all' shows everything */
 let filterCategoryId = 'all';
 
 const ERROR_MESSAGES = {
   missing_business: 'Escribe el nombre de tu negocio.',
-  invalid_slug: 'El link debe tener 3–32 caracteres (a-z, 0-9, guion).',
+  invalid_slug: 'El link debe tener 3-32 caracteres (a-z, 0-9, guion).',
   invalid_whatsapp: 'WhatsApp inválido. Incluye código de país (ej. 52155…).',
   missing_items: 'Agrega al menos un producto con nombre.',
   slug_taken: 'Ese link ya está en uso. Prueba otro.',
@@ -216,7 +216,7 @@ function renderProductCard(item) {
         </div>
         ${item.description ? `<p class="mw-product-desc">${escapeHtml(item.description)}</p>` : ''}
         <div class="mw-product-foot">
-          <strong class="mw-product-price">${escapeHtml(moneyLabel(item.price) || '—')}</strong>
+          <strong class="mw-product-price">${escapeHtml(moneyLabel(item.price) || '-')}</strong>
           <span class="mw-product-cat">${escapeHtml(categoryName(item.categoryId))}</span>
         </div>
       </div>

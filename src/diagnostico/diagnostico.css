@@ -1,5 +1,5 @@
 /**
- * Diagnóstico WhatsApp — UI estilo app premium (iOS / Duolingo / Stripe)
+ * Diagnóstico WhatsApp, UI estilo app premium (iOS / Duolingo / Stripe)
  * Mobile-first · tokens de marca · microinteracciones con propósito
  */
 
@@ -73,7 +73,7 @@ a {
   flex-direction: column;
 }
 
-/* Ambient soft gradient — always “alive” */
+/* Ambient soft gradient, always “alive” */
 .dx-ambient {
   pointer-events: none;
   position: fixed;
@@ -104,7 +104,7 @@ a {
   padding-bottom: 4px;
 }
 
-/* Welcome: sem barra de progresso — evita “0% / 15 pasos” */
+/* Welcome: sem barra de progresso, evita “0% / 15 pasos” */
 .dx-app.is-welcome .dx-progress-meta,
 .dx-app.is-welcome .dx-progress {
   display: none;
@@ -142,7 +142,7 @@ a {
   box-shadow: 0 0 0 3px rgba(232, 67, 122, 0.18);
 }
 
-/* Toasts WhatsApp — banner no topo, igual notificação de celular */
+/* Toasts WhatsApp, banner no topo, igual notificação de celular */
 .dx-toast-layer {
   position: fixed;
   top: max(8px, env(safe-area-inset-top, 0px));
@@ -1399,7 +1399,7 @@ a {
 }
 
 .dx-obj[open] summary::after {
-  content: '–';
+  content: '-';
 }
 
 .dx-obj p {

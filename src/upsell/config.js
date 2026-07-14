@@ -1,9 +1,9 @@
-/** ═══ Configuración del upsell — editar aquí ═══ */
+/** ═══ Configuración del upsell, editar aquí ═══ */
 
 import { SITE_URL } from '../site/config.js';
 
 /**
- * FLUJO (URLs relativas — funcionan en paletasparawhatsapp.vercel.app):
+ * FLUJO (URLs relativas, funcionan en paletasparawhatsapp.vercel.app):
  * 1. Compra kit → upsell
  * 2. Acepta → checkout Hotmart
  * 3. Rechaza → downsell modal
@@ -13,7 +13,7 @@ import { SITE_URL } from '../site/config.js';
 
 export const UPSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E';
 
-/** Downsell Mini Pack (US$ 7) — actualiza el link de Hotmart si cambias el precio. */
+/** Downsell Mini Pack (US$ 7), actualiza el link de Hotmart si cambias el precio. */
 export const DOWNSELL_CHECKOUT_URL = 'https://pay.hotmart.com/O106646563E?off=16xak8rd';
 
 export const ACCESS_URL = '/cadastrar?compra=1&src=hotmart&line=paletas';

@@ -1,7 +1,7 @@
 [
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-tres-leches",
     "nombre": "Tres leches en vaso",
     "tipo": "Cremoso",
@@ -24,11 +24,11 @@
     "premium": true,
     "num": 1,
     "prep": "40 min",
-    "consejo": "Remoja en 2–3 tandas. Si echas todo de golpe, se desarma."
+    "consejo": "Remoja en 2-3 tandas. Si echas todo de golpe, se desarma."
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-brownie",
     "nombre": "Brownie + crema",
     "tipo": "Cremoso",
@@ -54,7 +54,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-banoffee",
     "nombre": "Banoffee en vaso",
     "tipo": "Cremoso",
@@ -80,7 +80,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-mousse-maracuya-blanco",
     "nombre": "Mousse maracuyá y chocolate blanco",
     "tipo": "Frutal",
@@ -106,7 +106,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-cheesecake-lotus",
     "nombre": "Cheesecake Lotus / Biscoff",
     "tipo": "Cremoso",
@@ -133,7 +133,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-ferrero",
     "nombre": "Ferrero estilo vaso",
     "tipo": "Cremoso",
@@ -151,7 +151,7 @@
       "Derrite chocolate e incorpora a la crema de avellana. Enfría.",
       "Incorpora crema batida y la mitad de las avellanas.",
       "Alterna galleta y crema. Decora con avellana y bombón.",
-      "Frío 2–3 horas."
+      "Frío 2-3 horas."
     ],
     "premium": true,
     "num": 6,
@@ -186,7 +186,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-oreo-premium",
     "nombre": "Oreo extreme",
     "tipo": "Cremoso",
@@ -209,11 +209,11 @@
     "premium": true,
     "num": 8,
     "prep": "30 min",
-    "consejo": "Cobra 20–30% más que el Oreo básico: el ganache se ve y se nota."
+    "consejo": "Cobra 20-30% más que el Oreo básico: el ganache se ve y se nota."
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-lemon-meringue",
     "nombre": "Lemon meringue en vaso",
     "tipo": "Frutal",
@@ -229,7 +229,7 @@
     "pasos": [
       "Cocina yemas + azúcar + jugo a baño María hasta espesar. Agrega mantequilla. Enfría.",
       "Base de galleta → cuajada de limón en vasos.",
-      "Bate merengue a punto firme. Cubre y tuesta con soplete o 1–2 min al grill.",
+      "Bate merengue a punto firme. Cubre y tuesta con soplete o 1-2 min al grill.",
       "Sirve el mismo día."
     ],
     "premium": true,
@@ -239,7 +239,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-choco-lavado",
     "nombre": "Volcán de chocolate frío",
     "tipo": "Cremoso",
@@ -291,7 +291,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-mango-sticky",
     "nombre": "Mango sticky cream",
     "tipo": "Frutal",
@@ -342,7 +342,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-rolon-chocolate",
     "nombre": "Rollo de chocolate y avellana",
     "tipo": "Cremoso",
@@ -367,7 +367,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-passion-cheesecake",
     "nombre": "Cheesecake de maracuyá",
     "tipo": "Frutal",
@@ -392,7 +392,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-snickers",
     "nombre": "Snickers en vaso",
     "tipo": "Cremoso",
@@ -444,7 +444,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-pistacho-frambuesa",
     "nombre": "Pistacho y frambuesa",
     "tipo": "Frutal",
@@ -461,7 +461,7 @@
     "pasos": [
       "Crema de pistacho con queso + azúcar + crema batida.",
       "Base → crema → frambuesas. Repite.",
-      "Decora con pistacho picado. Frío 2–3 horas."
+      "Decora con pistacho picado. Frío 2-3 horas."
     ],
     "premium": true,
     "num": 18,
@@ -470,7 +470,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-cafe-baileys",
     "nombre": "Café crema especial",
     "tipo": "Cremoso",
@@ -487,7 +487,7 @@
     "pasos": [
       "Derrite chocolate. Mezcla con café y Baileys/jarabe.",
       "Incorpora crema batida.",
-      "Monta con base de galleta. Frío 2–3 horas."
+      "Monta con base de galleta. Frío 2-3 horas."
     ],
     "premium": true,
     "num": 19,
@@ -496,7 +496,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-tropical-premium",
     "nombre": "Tropical premium (mango-maracuyá-coco)",
     "tipo": "Frutal",
@@ -518,6 +518,6 @@
     "premium": true,
     "num": 20,
     "prep": "40 min",
-    "consejo": "Enfría cada capa 20–30 min si quieres líneas muy definidas."
+    "consejo": "Enfría cada capa 20-30 min si quieres líneas muy definidas."
   }
 ]

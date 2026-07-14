@@ -131,7 +131,7 @@ writeFileSync(join(root, 'hero', 'hero-composition.svg'), heroSvg());
 writeFileSync(join(root, 'video', 'vsl-poster.svg'), posterSvg());
 writeFileSync(join(root, 'mockups', 'product-stack.svg'), mockupSvg());
 writeFileSync(join(root, 'og-minipostres.svg'), ogSvg());
-// webp placeholder note — real webp after generation; keep svg as og fallback via html
+// webp placeholder note, real webp after generation; keep svg as og fallback via html
 writeFileSync(join(root, 'proofs', '.gitkeep'), '');
 writeFileSync(join(root, 'icons', 'heart.svg'), `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">

@@ -67,7 +67,7 @@ export function compressImageToBlob(file, { maxSide = 720, quality = 0.78 } = {}
   });
 }
 
-/** Legacy helper — data URL for offline/demo only */
+/** Legacy helper, data URL for offline/demo only */
 export async function compressImageFile(file, opts = {}) {
   const blob = await compressImageToBlob(file, opts);
   return new Promise((resolve, reject) => {

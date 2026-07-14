@@ -107,7 +107,7 @@ function getDetailUser() {
 function renderKiwifyContent() {
   if (state.kiwifySubTab === 'kit') {
     return `
-      <p class="admin-hint">Sin código de acceso — el cliente crea cuenta y tú liberas en Usuarios.</p>
+      <p class="admin-hint">Sin código de acceso, el cliente crea cuenta y tú liberas en Usuarios.</p>
       <div class="email-block"><div class="email-block-head"><h3>Asunto (kit)</h3><button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_KIT.subject)}">Copiar</button></div><pre>${escapeHtml(KIWIFY_EMAIL_KIT.subject)}</pre></div>
       <div class="email-block"><div class="email-block-head"><h3>Texto plano (kit)</h3><button type="button" class="admin-btn sm copy-btn" data-copy="${encodeURIComponent(KIWIFY_EMAIL_KIT.plain)}">Copiar</button></div><pre>${escapeHtml(KIWIFY_EMAIL_KIT.plain)}</pre></div>
       <div class="email-block"><div class="email-block-head"><h3>HTML (kit)</h3><button type="button" class="admin-btn sm copy-btn" data-copy-html="kit">Copiar HTML</button></div><pre>Usa Copiar HTML para pegar en Kiwify.</pre></div>`;

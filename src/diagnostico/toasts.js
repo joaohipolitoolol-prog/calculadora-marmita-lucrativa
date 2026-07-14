@@ -1,8 +1,8 @@
 /**
- * Notificações WhatsApp — 1 por tela, abaixo do header, sem overlap.
+ * Notificações WhatsApp, 1 por tela, abaixo do header, sem overlap.
  */
 
-/** Preview de mensagem real — como aparece na notificação do celular */
+/** Preview de mensagem real, como aparece na notificação do celular */
 const PEDIDOS = [
   { who: 'Alejandra', text: 'Hola! me apartas 6 de oreo para mañana?' },
   { who: 'Vecina Carmen', text: 'Vi tu estado, cuánto sale la caja x6?' },
@@ -21,7 +21,7 @@ const PEDIDOS = [
   { who: 'Andrea', text: 'Norma me recomendó, cuánto la docena?' },
 ];
 
-/** Telas com toast — sem competir com loading/diagnosis/offer */
+/** Telas com toast, sem competir com loading/diagnosis/offer */
 const TOAST_SCREENS = new Set([
   'q_experience',
   'q_blocker',
@@ -120,7 +120,7 @@ export function createPedidoToasts(root, { reducedMotion = false } = {}) {
 
   function show(screenId) {
     if (!TOAST_SCREENS.has(screenId)) return count;
-    // 1 notificação por tela — evita double-fire answer+goNext
+    // 1 notificação por tela, evita double-fire answer+goNext
     if (screenId === lastScreen) return count;
     lastScreen = screenId;
 

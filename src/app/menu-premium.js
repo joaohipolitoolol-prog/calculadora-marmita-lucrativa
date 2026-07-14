@@ -51,19 +51,19 @@ export function buildMenuPremiumText(draft, lineId = 'paletas') {
   const sym = getCurrencySymbol();
   const negocio = String(draft.negocio || 'Mi negocio').trim();
   const emoji = lineId === 'postres' ? '🍨' : '🍓';
-  const lines = [`${emoji} *${negocio}* — Menú Premium`, '', '*Sabores especiales*'];
+  const lines = [`${emoji} *${negocio}*, Menú Premium`, '', '*Sabores especiales*'];
   (draft.sabores || []).forEach(({ sabor, precio }) => {
     const name = String(sabor || '').trim();
     if (!name) return;
     const price = String(precio || '').trim();
-    lines.push(price ? `• ${name} — ${sym}${price}` : `• ${name}`);
+    lines.push(price ? `• ${name}, ${sym}${price}` : `• ${name}`);
   });
   lines.push('', '*Combos*');
   (draft.combos || []).forEach(({ sabor, precio }) => {
     const name = String(sabor || '').trim();
     if (!name) return;
     const price = String(precio || '').trim();
-    lines.push(price ? `• ${name} — ${sym}${price}` : `• ${name}`);
+    lines.push(price ? `• ${name}, ${sym}${price}` : `• ${name}`);
   });
   const nota = String(draft.nota || '').trim();
   if (nota) lines.push('', `_${nota}_`);

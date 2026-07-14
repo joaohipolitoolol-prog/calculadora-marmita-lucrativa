@@ -12,7 +12,7 @@ const outDir = join(__dirname, '..', 'src', 'data');
 function recipe(partial) {
   return {
     rendimiento: '8 vasos',
-    congelacion: '1–2 horas',
+    congelacion: '1-2 horas',
     ...partial,
   };
 }
@@ -44,7 +44,7 @@ const RECETAS_BASE = [
     dia: 1,
     prep: '25 min',
     consejo:
-      'Usa vasos de 180–220 ml. Si la crema se ablanda, 10 min en el refrigerador y vuelve a montar.',
+      'Usa vasos de 180-220 ml. Si la crema se ablanda, 10 min en el refrigerador y vuelve a montar.',
   }),
   recipe({
     id: 'postre-oreo',
@@ -66,7 +66,7 @@ const RECETAS_BASE = [
       'Mezcla queso crema + azúcar + vainilla hasta suave. Incorpora la crema batida a picos suaves.',
       'Humedece un poco de migas con leche y coloca base en cada vaso.',
       'Alterna crema y migas. Termina con crema y media Oreo arriba.',
-      'Refrigera 1–2 horas. Vende frío.',
+      'Refrigera 1-2 horas. Vende frío.',
     ],
     dia: 2,
     prep: '20 min',
@@ -105,7 +105,7 @@ const RECETAS_BASE = [
     dificultad: 'Fácil',
     descripcion: 'Ácido-dulce, se ve premium en vaso transparente. Buen contraste en el menú.',
     ingredientes: [
-      'Pulpá de 6–8 maracuyás (o 200 ml pulpa)',
+      'Pulpá de 6-8 maracuyás (o 200 ml pulpa)',
       '1 lata leche condensada (395 g)',
       '200 ml crema de leche',
       '100 g galletas María',
@@ -199,7 +199,7 @@ const RECETAS_BASE = [
     ],
     dia: 7,
     prep: '25 min',
-    consejo: 'Si queda muy ácido, agrega 1–2 cucharadas más de leche condensada.',
+    consejo: 'Si queda muy ácido, agrega 1-2 cucharadas más de leche condensada.',
   }),
   recipe({
     id: 'postre-mango',
@@ -270,11 +270,11 @@ const RECETAS_BASE = [
       'Incorpora crema batida y la mitad del coco rallado.',
       'Base de galleta en vasos → relleno de coco.',
       'Espolvorea coco tostado arriba.',
-      'Refrigera 2–3 horas.',
+      'Refrigera 2-3 horas.',
     ],
     dia: 10,
     prep: '25 min',
-    consejo: 'Tuesta el coco 3–4 min en sartén seca: aroma y color de foto.',
+    consejo: 'Tuesta el coco 3-4 min en sartén seca: aroma y color de foto.',
   }),
   recipe({
     id: 'postre-cafe',
@@ -389,7 +389,7 @@ const RECETAS_BASE = [
       'Ablanda un poco la crema de avellana.',
       'Bate queso + crema; reserva 1/3 y mezcla el resto con la avellana.',
       'Alterna galleta, crema de avellana y crema blanca.',
-      'Decora con avellana picada. Frío 1–2 horas.',
+      'Decora con avellana picada. Frío 1-2 horas.',
     ],
     dia: 15,
     prep: '20 min',
@@ -413,7 +413,7 @@ const RECETAS_BASE = [
       'Cocina arándanos con 2 cucharadas de azúcar 5 min (compota). Enfría.',
       'Mezcla yogur + crema batida + resto de azúcar + vainilla.',
       'Base de galleta → crema → compota. Repite.',
-      'Frío 1–2 horas.',
+      'Frío 1-2 horas.',
     ],
     dia: 16,
     prep: '30 min',
@@ -430,7 +430,7 @@ const RECETAS_BASE = [
       '200 ml crema de leche',
       '80 g azúcar glass',
       '120 ml café espresso frío',
-      '16–20 bizcochos de soletilla (vainillas)',
+      '16-20 bizcochos de soletilla (vainillas)',
       'Cacao en polvo',
     ],
     pasos: [
@@ -441,7 +441,7 @@ const RECETAS_BASE = [
     ],
     dia: 17,
     prep: '35 min',
-    consejo: 'Humedece 1–2 segundos por lado: si se empapan, se desarman en el vaso.',
+    consejo: 'Humedece 1-2 segundos por lado: si se empapan, se desarman en el vaso.',
   }),
   recipe({
     id: 'postre-guayaba',
@@ -455,7 +455,7 @@ const RECETAS_BASE = [
       '150 ml crema de leche',
       '60 g azúcar glass',
       '100 g galletas',
-      '2–3 cucharadas leche (para ablandar guayaba)',
+      '2-3 cucharadas leche (para ablandar guayaba)',
     ],
     pasos: [
       'Ablanda la guayaba con leche a fuego bajo o microondas. Enfría.',
@@ -556,7 +556,7 @@ const RECETAS_BASE = [
       '100 g galletas tipo María o graham',
     ],
     pasos: [
-      'Saltea manzana + azúcar + canela + limón 8–10 min. Enfría.',
+      'Saltea manzana + azúcar + canela + limón 8-10 min. Enfría.',
       'Bate queso + azúcar glass + crema.',
       'Base de galleta → crema → manzana. Repite.',
       'Espolvorea canela. Frío 2 horas.',
@@ -582,7 +582,7 @@ const RECETAS_BASE = [
     pasos: [
       'Derrite chocolate. Enfría a tibio.',
       'Bate crema + azúcar. Incorpora chocolate y extracto de menta.',
-      'Base de galleta → mousse. Frío 2–3 horas.',
+      'Base de galleta → mousse. Frío 2-3 horas.',
       'Decora con menta o cacao.',
     ],
     dia: 23,
@@ -600,13 +600,13 @@ const RECETAS_BASE = [
       '1 lata leche condensada',
       '200 ml crema de leche',
       '100 g galletas',
-      '2–3 cucharadas del almíbar',
+      '2-3 cucharadas del almíbar',
     ],
     pasos: [
       'Licúa la mitad de los duraznos + leche condensada + almíbar.',
       'Incorpora crema batida. Corta el resto en cubos.',
       'Base de galleta → crema → cubos de durazno.',
-      'Frío 1–2 horas.',
+      'Frío 1-2 horas.',
     ],
     dia: 24,
     prep: '20 min',
@@ -628,13 +628,13 @@ const RECETAS_BASE = [
     ],
     pasos: [
       'Haz caramelo con el azúcar y reparte un poco en el fondo de moldes o usa caramelo líquido en el vaso al servir.',
-      'Licúa leches + huevos + vainilla. Vierte en moldes al baño María 45–50 min o hasta cuajar.',
+      'Licúa leches + huevos + vainilla. Vierte en moldes al baño María 45-50 min o hasta cuajar.',
       'Enfría por completo. Desmolda o corta y coloca en vasos con caramelo.',
       'Decora con crema si deseas. Mantén frío.',
     ],
     dia: 25,
     prep: '60 min',
-    congelacion: '3–4 horas',
+    congelacion: '3-4 horas',
     consejo: 'Puedes hacer el flan el día anterior y solo montar en vaso al vender.',
   }),
   recipe({
@@ -668,7 +668,7 @@ const RECETAS_BASE = [
     dificultad: 'Media',
     descripcion: 'Trozos de churro, crema y dulce de leche. Sabor feria en formato vaso.',
     ingredientes: [
-      '8–10 churros (caseros o comprados)',
+      '8-10 churros (caseros o comprados)',
       '250 ml crema de leche',
       '150 g queso crema',
       '80 g azúcar glass',
@@ -703,7 +703,7 @@ const RECETAS_BASE = [
       'Licúa sandía + limón. Cuela si hay mucha fibra.',
       'Mezcla con leche condensada e incorpora crema batida.',
       'Vierte en vasos (con o sin base). Decora con menta.',
-      'Frío 1–2 horas. Consumir el mismo día.',
+      'Frío 1-2 horas. Consumir el mismo día.',
     ],
     dia: 28,
     prep: '20 min',
@@ -729,7 +729,7 @@ const RECETAS_BASE = [
       'Mezcla harina tostada + mantequilla + azúcar morena + vainilla + chispas (masa comestible).',
       'Bate queso + azúcar glass + crema.',
       'Alterna crema y bolitas de cookie dough en el vaso.',
-      'Frío 1–2 horas.',
+      'Frío 1-2 horas.',
     ],
     dia: 29,
     prep: '35 min',
@@ -753,7 +753,7 @@ const RECETAS_BASE = [
       'Reserva frutos enteros para decorar. Pisa ligeramente el resto con 2 cucharadas de azúcar.',
       'Bate queso + resto de azúcar + vainilla + crema.',
       'Capa galleta → crema → frutos. Repite.',
-      'Decora con frutos enteros. Frío 1–2 horas.',
+      'Decora con frutos enteros. Frío 1-2 horas.',
     ],
     dia: 30,
     prep: '25 min',
@@ -785,7 +785,7 @@ const RECETAS_PREMIUM = [
     premium: true,
     num: 1,
     prep: '40 min',
-    consejo: 'Remoja en 2–3 tandas. Si echas todo de golpe, se desarma.',
+    consejo: 'Remoja en 2-3 tandas. Si echas todo de golpe, se desarma.',
   }),
   recipe({
     id: 'postre-brownie',
@@ -902,7 +902,7 @@ const RECETAS_PREMIUM = [
       'Derrite chocolate e incorpora a la crema de avellana. Enfría.',
       'Incorpora crema batida y la mitad de las avellanas.',
       'Alterna galleta y crema. Decora con avellana y bombón.',
-      'Frío 2–3 horas.',
+      'Frío 2-3 horas.',
     ],
     premium: true,
     num: 6,
@@ -957,7 +957,7 @@ const RECETAS_PREMIUM = [
     premium: true,
     num: 8,
     prep: '30 min',
-    consejo: 'Cobra 20–30% más que el Oreo básico: el ganache se ve y se nota.',
+    consejo: 'Cobra 20-30% más que el Oreo básico: el ganache se ve y se nota.',
   }),
   recipe({
     id: 'postre-lemon-meringue',
@@ -975,7 +975,7 @@ const RECETAS_PREMIUM = [
     pasos: [
       'Cocina yemas + azúcar + jugo a baño María hasta espesar. Agrega mantequilla. Enfría.',
       'Base de galleta → cuajada de limón en vasos.',
-      'Bate merengue a punto firme. Cubre y tuesta con soplete o 1–2 min al grill.',
+      'Bate merengue a punto firme. Cubre y tuesta con soplete o 1-2 min al grill.',
       'Sirve el mismo día.',
     ],
     premium: true,
@@ -1192,7 +1192,7 @@ const RECETAS_PREMIUM = [
     pasos: [
       'Crema de pistacho con queso + azúcar + crema batida.',
       'Base → crema → frambuesas. Repite.',
-      'Decora con pistacho picado. Frío 2–3 horas.',
+      'Decora con pistacho picado. Frío 2-3 horas.',
     ],
     premium: true,
     num: 18,
@@ -1216,7 +1216,7 @@ const RECETAS_PREMIUM = [
     pasos: [
       'Derrite chocolate. Mezcla con café y Baileys/jarabe.',
       'Incorpora crema batida.',
-      'Monta con base de galleta. Frío 2–3 horas.',
+      'Monta con base de galleta. Frío 2-3 horas.',
     ],
     premium: true,
     num: 19,
@@ -1245,7 +1245,7 @@ const RECETAS_PREMIUM = [
     premium: true,
     num: 20,
     prep: '40 min',
-    consejo: 'Enfría cada capa 20–30 min si quieres líneas muy definidas.',
+    consejo: 'Enfría cada capa 20-30 min si quieres líneas muy definidas.',
   }),
 ];
 
@@ -1253,7 +1253,7 @@ const COMBOS = [
   {
     nombre: 'Combo degustación',
     contenido: '4 vasos surtidos (fresa, Oreo, maracuyá, chocolate)',
-    precio_guia: 'US$ 6–8',
+    precio_guia: 'US$ 6-8',
     publico: 'Primera compra / regalo',
     mensaje:
       'Combo degustación: 4 postres en vaso surtidos por [PRECIO]. Ideal para probar sabores. ¿Te aparto uno?',
@@ -1261,7 +1261,7 @@ const COMBOS = [
   {
     nombre: 'Pack familiar',
     contenido: '8 vasos (elige hasta 3 sabores)',
-    precio_guia: 'US$ 12–15',
+    precio_guia: 'US$ 12-15',
     publico: 'Familias / fin de semana',
     mensaje:
       'Pack familiar: 8 postres en vaso por [PRECIO]. Eliges hasta 3 sabores. Entrega [DÍA]. ¿Confirmamos?',
@@ -1269,7 +1269,7 @@ const COMBOS = [
   {
     nombre: 'Mini pedido oficina',
     contenido: '12 vasos mismo sabor o mix',
-    precio_guia: 'US$ 18–22',
+    precio_guia: 'US$ 18-22',
     publico: 'Oficinas / encargos',
     mensaje:
       'Hola, armo pedidos de 12 postres en vaso para oficina. Precio [PRECIO]. ¿Qué sabor prefieren?',
@@ -1277,42 +1277,42 @@ const COMBOS = [
   {
     nombre: 'Combo pareja',
     contenido: '2 vasos premium + 1 frutal para compartir',
-    precio_guia: 'US$ 5–7',
+    precio_guia: 'US$ 5-7',
     publico: 'Parejas / aniversarios',
     mensaje: 'Combo dulce para dos: 3 postres en vaso por [PRECIO]. ¿Lo aparto para [FECHA]?',
   },
   {
     nombre: 'Combo infantil',
     contenido: '4 vasos coloridos (vainilla chispas, Oreo, fresa, mango)',
-    precio_guia: 'US$ 6–9',
+    precio_guia: 'US$ 6-9',
     publico: 'Niños / cumpleaños pequeños',
     mensaje: 'Pack infantil: 4 postres en vaso de colores por [PRECIO]. Ideal para peques.',
   },
   {
     nombre: 'Combo premium',
     contenido: '3 vasos premium (tres leches, brownie, cheesecake Lotus)',
-    precio_guia: 'US$ 9–12',
+    precio_guia: 'US$ 9-12',
     publico: 'Clientes que buscan algo especial',
     mensaje: 'Selección premium: tres leches, brownie y Lotus por [PRECIO]. ¿Te lo armo?',
   },
   {
     nombre: 'Combo fin de semana',
     contenido: '6 vasos (4 clásicos + 2 premium)',
-    precio_guia: 'US$ 10–14',
-    publico: 'Pedidos viernes–domingo',
+    precio_guia: 'US$ 10-14',
+    publico: 'Pedidos viernes-domingo',
     mensaje: 'Caja fin de semana: 6 postres en vaso por [PRECIO]. Aparta la tuya hoy.',
   },
   {
     nombre: 'Combo tropical',
     contenido: '4 vasos frutales (mango, maracuyá, piña colada, guanábana)',
-    precio_guia: 'US$ 7–10',
+    precio_guia: 'US$ 7-10',
     publico: 'Días calurosos / verano',
     mensaje: 'Pack tropical: 4 postres frutales en vaso por [PRECIO]. Lo más fresco del menú.',
   },
   {
     nombre: 'Bandeja fiesta',
     contenido: '16 vasos surtidos (hasta 4 sabores)',
-    precio_guia: 'US$ 28–36',
+    precio_guia: 'US$ 28-36',
     publico: 'Fiestas / reuniones',
     mensaje:
       'Bandeja fiesta: 16 postres en vaso surtidos por [PRECIO]. Pedidos con 48 h. ¿Para qué día?',
@@ -1329,7 +1329,7 @@ const COMBOS = [
 const MENSAJES = [
   { categoria: 'Estado / Story', texto: '🍨 Postres en vaso disponibles hoy. Escríbeme para ver sabores y precios.' },
   { categoria: 'Estado / Story', texto: '¿Antojo dulce? Tengo fresa, Oreo, chocolate y maracuyá listos para entregar.' },
-  { categoria: 'Estado / Story', texto: 'Hoy preparé postres en vaso frescos. Quedan pocas unidades — escríbeme antes de que se acaben.' },
+  { categoria: 'Estado / Story', texto: 'Hoy preparé postres en vaso frescos. Quedan pocas unidades, escríbeme antes de que se acaben.' },
   { categoria: 'Estado / Story', texto: 'Postres en vaso hechos en casa, con capas que se ven en la foto. ¿Cuál te gustaría probar?' },
   { categoria: 'Estado / Story', texto: 'Nuevos sabores esta semana 🍓 Pregunta por el menú completo de postres en vaso.' },
   { categoria: 'Promoción', texto: 'Promo de fin de semana: 3 postres en vaso por [PRECIO]. Válido hasta el domingo.' },
@@ -1340,7 +1340,7 @@ const MENSAJES = [
   { categoria: 'Cliente nuevo', texto: 'Hola, gracias por escribir. Te comparto el menú de postres en vaso con sabores y precios 👇' },
   { categoria: 'Cliente nuevo', texto: 'Tenemos cremosos y frutales. ¿Qué tipo te gusta más?' },
   { categoria: 'Cliente nuevo', texto: 'Entrego en [ZONA] o puedes recoger. ¿Cuántos vasos necesitas?' },
-  { categoria: 'Pedido', texto: 'Perfecto, tu pedido: [SABORES] — Total: [PRECIO]. ¿Confirmo?' },
+  { categoria: 'Pedido', texto: 'Perfecto, tu pedido: [SABORES], Total: [PRECIO]. ¿Confirmo?' },
   { categoria: 'Pedido', texto: 'Listo, aparté tus postres. Te aviso cuando estén listos para entregar.' },
   { categoria: 'Pedido', texto: 'Tu pedido está listo para recoger. Estoy en [DIRECCIÓN/LUGAR].' },
   { categoria: 'Cliente antiguo', texto: 'Hola de nuevo 😊 Esta semana tengo sabores nuevos. ¿Te mando el menú?' },
@@ -1352,12 +1352,12 @@ const MENSAJES = [
 const MENSAJES_PREMIUM = [
   { categoria: 'Combos', texto: '🍨 Nuevo en el menú: combos premium de postres en vaso. Pack familiar x8 por [PRECIO]. Escríbeme los sabores.' },
   { categoria: 'Combos', texto: '¿Primera vez? Prueba el Combo degustación: 4 vasos surtidos por [PRECIO]. Incluye un sabor premium.' },
-  { categoria: 'Combos', texto: 'Caja fin de semana disponible — 6 postres cremosos y frutales. Aparta la tuya hoy.' },
+  { categoria: 'Combos', texto: 'Caja fin de semana disponible, 6 postres cremosos y frutales. Aparta la tuya hoy.' },
   { categoria: 'Combos', texto: 'Combo Premium: tres leches, brownie y Lotus. Para quien busca algo especial.' },
-  { categoria: 'Combos', texto: 'Pack infantil con sabores coloridos — ideal para cumpleaños pequeños.' },
+  { categoria: 'Combos', texto: 'Pack infantil con sabores coloridos, ideal para cumpleaños pequeños.' },
   { categoria: 'Especiales', texto: '✨ Edición especial esta semana: [sabor premium]. Cantidad limitada.' },
   { categoria: 'Especiales', texto: 'Nuevo sabor en el menú: [nombre]. Hecho con [ingrediente destacado]. ¿Te aparto?' },
-  { categoria: 'Especiales', texto: 'Postre premium con ganache de chocolate — disponible solo viernes y sábado.' },
+  { categoria: 'Especiales', texto: 'Postre premium con ganache de chocolate, disponible solo viernes y sábado.' },
   { categoria: 'Especiales', texto: 'Pedidos por encargo: elige tus sabores premium y te armo la bandeja.' },
   { categoria: 'Especiales', texto: '¿Te gustó la última? Esta semana repetí [sabor] y agregué [nuevo].' },
   { categoria: 'Fechas', texto: '💝 San Valentín: Combo pareja con postres premium en vaso. Pedidos hasta [fecha].' },
@@ -1365,7 +1365,7 @@ const MENSAJES_PREMIUM = [
   { categoria: 'Fechas', texto: 'Fin de semana dulce: caja surtida lista sábado. Aparta con anticipación.' },
   { categoria: 'Fechas', texto: 'Edición [feriado local]: sabores especiales solo esta semana.' },
   { categoria: 'Fechas', texto: '¿Cumpleaños? Armo tu bandeja con los sabores favoritos del festejado.' },
-  { categoria: 'Valor', texto: 'Postres en vaso artesanales con sabores premium — hechos en casa con ingredientes que puedes conocer.' },
+  { categoria: 'Valor', texto: 'Postres en vaso artesanales con sabores premium, hechos en casa con ingredientes que puedes conocer.' },
   { categoria: 'Valor', texto: 'No es postre de tienda: es receta casera con capas y presentación cuidada.' },
   { categoria: 'Valor', texto: 'Menú actualizado con opciones cremosas, frutales y línea premium.' },
   { categoria: 'Valor', texto: 'Si buscas algo más que lo básico, pregunta por la línea premium de postres en vaso.' },
@@ -1381,7 +1381,7 @@ const FECHAS = [
   {
     fecha: 'Día de la Madre',
     ideas: ['Pack premium x6', 'Tres leches', 'Tarjeta impresa simple', 'Entrega coordinada'],
-    promo: 'Regalo dulce para mamá — caja surtida de postres en vaso.',
+    promo: 'Regalo dulce para mamá, caja surtida de postres en vaso.',
   },
   {
     fecha: 'Día del Niño',
@@ -1391,7 +1391,7 @@ const FECHAS = [
   {
     fecha: 'Fines de semana',
     ideas: ['Combo fin de semana', 'Brownie', 'Publicar viernes por la tarde'],
-    promo: 'Caja lista sábado y domingo — cantidad limitada.',
+    promo: 'Caja lista sábado y domingo, cantidad limitada.',
   },
   {
     fecha: 'Verano / vacaciones',
@@ -1411,7 +1411,7 @@ const FECHAS = [
   {
     fecha: 'Fechas locales',
     ideas: ['Adapta a feriados de tu país', 'Sabores con color temático', 'Historia en WhatsApp'],
-    promo: 'Edición especial [nombre del feriado] — solo esta semana.',
+    promo: 'Edición especial [nombre del feriado], solo esta semana.',
   },
 ];
 
@@ -1419,10 +1419,10 @@ const GUIA = [
   {
     titulo: 'Fotos que venden',
     items: [
-      'Luz natural de lado cerca de una ventana — evita flash directo',
+      'Luz natural de lado cerca de una ventana, evita flash directo',
       'Vaso transparente limpio: las capas son tu mejor anuncio',
       'Fondo claro: madera, mármol o tela neutra',
-      'Muestra topping y cucharita — transmite que está listo para comer',
+      'Muestra topping y cucharita, transmite que está listo para comer',
       'Formato vertical para estados de WhatsApp',
       'Una foto nítida del combo vale más que diez fotos oscuras',
       'Premium: primer plano de ganache, fruta o merengue',
@@ -1450,10 +1450,10 @@ const GUIA = [
   {
     titulo: 'Precios premium',
     items: [
-      'Premium debe costar visiblemente más que básicos (20–40%)',
+      'Premium debe costar visiblemente más que básicos (20-40%)',
       'Combos con precio redondo (US$ 10, US$ 15) facilitan la decisión',
       'Muestra precio unitario y precio combo en el mismo menú',
-      'No regales el premium — el valor percibido baja',
+      'No regales el premium, el valor percibido baja',
     ],
   },
 ];

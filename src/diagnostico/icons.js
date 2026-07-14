@@ -1,4 +1,4 @@
-/** Inline SVG icons — zero network, crisp on retina */
+/** Inline SVG icons, zero network, crisp on retina */
 
 const stroke = {
   fill: 'none',

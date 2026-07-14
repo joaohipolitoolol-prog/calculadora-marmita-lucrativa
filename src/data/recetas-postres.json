@@ -1,7 +1,7 @@
 [
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-fresa",
     "nombre": "Fresa con crema",
     "tipo": "Cremoso",
@@ -25,11 +25,11 @@
     ],
     "dia": 1,
     "prep": "25 min",
-    "consejo": "Usa vasos de 180–220 ml. Si la crema se ablanda, 10 min en el refrigerador y vuelve a montar."
+    "consejo": "Usa vasos de 180-220 ml. Si la crema se ablanda, 10 min en el refrigerador y vuelve a montar."
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-oreo",
     "nombre": "Oreo cremoso",
     "tipo": "Cremoso",
@@ -49,7 +49,7 @@
       "Mezcla queso crema + azúcar + vainilla hasta suave. Incorpora la crema batida a picos suaves.",
       "Humedece un poco de migas con leche y coloca base en cada vaso.",
       "Alterna crema y migas. Termina con crema y media Oreo arriba.",
-      "Refrigera 1–2 horas. Vende frío."
+      "Refrigera 1-2 horas. Vende frío."
     ],
     "dia": 2,
     "prep": "20 min",
@@ -57,7 +57,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-chocolate",
     "nombre": "Chocolate intenso",
     "tipo": "Cremoso",
@@ -85,14 +85,14 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-maracuya",
     "nombre": "Maracuyá",
     "tipo": "Frutal",
     "dificultad": "Fácil",
     "descripcion": "Ácido-dulce, se ve premium en vaso transparente. Buen contraste en el menú.",
     "ingredientes": [
-      "Pulpá de 6–8 maracuyás (o 200 ml pulpa)",
+      "Pulpá de 6-8 maracuyás (o 200 ml pulpa)",
       "1 lata leche condensada (395 g)",
       "200 ml crema de leche",
       "100 g galletas María",
@@ -112,7 +112,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-dulce-leche",
     "nombre": "Dulce de leche",
     "tipo": "Cremoso",
@@ -139,7 +139,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-cheesecake",
     "nombre": "Cheesecake en vaso",
     "tipo": "Cremoso",
@@ -167,7 +167,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-limon",
     "nombre": "Limón cremoso",
     "tipo": "Frutal",
@@ -190,11 +190,11 @@
     ],
     "dia": 7,
     "prep": "25 min",
-    "consejo": "Si queda muy ácido, agrega 1–2 cucharadas más de leche condensada."
+    "consejo": "Si queda muy ácido, agrega 1-2 cucharadas más de leche condensada."
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-mango",
     "nombre": "Mango cremoso",
     "tipo": "Frutal",
@@ -221,7 +221,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-banano-caramelo",
     "nombre": "Banano con caramelo",
     "tipo": "Cremoso",
@@ -248,7 +248,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-coco",
     "nombre": "Coco rayado",
     "tipo": "Cremoso",
@@ -267,15 +267,15 @@
       "Incorpora crema batida y la mitad del coco rallado.",
       "Base de galleta en vasos → relleno de coco.",
       "Espolvorea coco tostado arriba.",
-      "Refrigera 2–3 horas."
+      "Refrigera 2-3 horas."
     ],
     "dia": 10,
     "prep": "25 min",
-    "consejo": "Tuesta el coco 3–4 min en sartén seca: aroma y color de foto."
+    "consejo": "Tuesta el coco 3-4 min en sartén seca: aroma y color de foto."
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-cafe",
     "nombre": "Café latte",
     "tipo": "Cremoso",
@@ -302,7 +302,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-pina-colada",
     "nombre": "Piña colada",
     "tipo": "Frutal",
@@ -328,7 +328,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-red-velvet",
     "nombre": "Red velvet en vaso",
     "tipo": "Cremoso",
@@ -354,7 +354,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-guanabana",
     "nombre": "Guanábana",
     "tipo": "Frutal",
@@ -379,7 +379,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-nutella",
     "nombre": "Nutella / avellana",
     "tipo": "Cremoso",
@@ -396,7 +396,7 @@
       "Ablanda un poco la crema de avellana.",
       "Bate queso + crema; reserva 1/3 y mezcla el resto con la avellana.",
       "Alterna galleta, crema de avellana y crema blanca.",
-      "Decora con avellana picada. Frío 1–2 horas."
+      "Decora con avellana picada. Frío 1-2 horas."
     ],
     "dia": 15,
     "prep": "20 min",
@@ -404,7 +404,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-arandanos",
     "nombre": "Arándanos con yogur",
     "tipo": "Frutal",
@@ -422,7 +422,7 @@
       "Cocina arándanos con 2 cucharadas de azúcar 5 min (compota). Enfría.",
       "Mezcla yogur + crema batida + resto de azúcar + vainilla.",
       "Base de galleta → crema → compota. Repite.",
-      "Frío 1–2 horas."
+      "Frío 1-2 horas."
     ],
     "dia": 16,
     "prep": "30 min",
@@ -430,7 +430,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-tiramisu",
     "nombre": "Tiramisú en vaso",
     "tipo": "Cremoso",
@@ -441,7 +441,7 @@
       "200 ml crema de leche",
       "80 g azúcar glass",
       "120 ml café espresso frío",
-      "16–20 bizcochos de soletilla (vainillas)",
+      "16-20 bizcochos de soletilla (vainillas)",
       "Cacao en polvo"
     ],
     "pasos": [
@@ -452,11 +452,11 @@
     ],
     "dia": 17,
     "prep": "35 min",
-    "consejo": "Humedece 1–2 segundos por lado: si se empapan, se desarman en el vaso."
+    "consejo": "Humedece 1-2 segundos por lado: si se empapan, se desarman en el vaso."
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-guayaba",
     "nombre": "Guayaba con queso",
     "tipo": "Frutal",
@@ -468,7 +468,7 @@
       "150 ml crema de leche",
       "60 g azúcar glass",
       "100 g galletas",
-      "2–3 cucharadas leche (para ablandar guayaba)"
+      "2-3 cucharadas leche (para ablandar guayaba)"
     ],
     "pasos": [
       "Ablanda la guayaba con leche a fuego bajo o microondas. Enfría.",
@@ -482,7 +482,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-pistacho",
     "nombre": "Pistacho cremoso",
     "tipo": "Cremoso",
@@ -508,7 +508,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-mora",
     "nombre": "Mora silvestre",
     "tipo": "Frutal",
@@ -534,7 +534,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-vainilla-chispas",
     "nombre": "Vainilla con chispas",
     "tipo": "Cremoso",
@@ -560,7 +560,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-manzana-canela",
     "nombre": "Manzana y canela",
     "tipo": "Frutal",
@@ -577,7 +577,7 @@
       "100 g galletas tipo María o graham"
     ],
     "pasos": [
-      "Saltea manzana + azúcar + canela + limón 8–10 min. Enfría.",
+      "Saltea manzana + azúcar + canela + limón 8-10 min. Enfría.",
       "Bate queso + azúcar glass + crema.",
       "Base de galleta → crema → manzana. Repite.",
       "Espolvorea canela. Frío 2 horas."
@@ -588,7 +588,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-choco-menta",
     "nombre": "Chocolate menta",
     "tipo": "Cremoso",
@@ -605,7 +605,7 @@
     "pasos": [
       "Derrite chocolate. Enfría a tibio.",
       "Bate crema + azúcar. Incorpora chocolate y extracto de menta.",
-      "Base de galleta → mousse. Frío 2–3 horas.",
+      "Base de galleta → mousse. Frío 2-3 horas.",
       "Decora con menta o cacao."
     ],
     "dia": 23,
@@ -614,7 +614,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-durazno",
     "nombre": "Durazno en almíbar",
     "tipo": "Frutal",
@@ -625,13 +625,13 @@
       "1 lata leche condensada",
       "200 ml crema de leche",
       "100 g galletas",
-      "2–3 cucharadas del almíbar"
+      "2-3 cucharadas del almíbar"
     ],
     "pasos": [
       "Licúa la mitad de los duraznos + leche condensada + almíbar.",
       "Incorpora crema batida. Corta el resto en cubos.",
       "Base de galleta → crema → cubos de durazno.",
-      "Frío 1–2 horas."
+      "Frío 1-2 horas."
     ],
     "dia": 24,
     "prep": "20 min",
@@ -639,7 +639,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "3–4 horas",
+    "congelacion": "3-4 horas",
     "id": "postre-flan",
     "nombre": "Flan napolitano en vaso",
     "tipo": "Cremoso",
@@ -655,7 +655,7 @@
     ],
     "pasos": [
       "Haz caramelo con el azúcar y reparte un poco en el fondo de moldes o usa caramelo líquido en el vaso al servir.",
-      "Licúa leches + huevos + vainilla. Vierte en moldes al baño María 45–50 min o hasta cuajar.",
+      "Licúa leches + huevos + vainilla. Vierte en moldes al baño María 45-50 min o hasta cuajar.",
       "Enfría por completo. Desmolda o corta y coloca en vasos con caramelo.",
       "Decora con crema si deseas. Mantén frío."
     ],
@@ -665,7 +665,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-key-lime",
     "nombre": "Key lime / limón pay",
     "tipo": "Frutal",
@@ -691,14 +691,14 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-churro",
     "nombre": "Churro con dulce de leche",
     "tipo": "Cremoso",
     "dificultad": "Media",
     "descripcion": "Trozos de churro, crema y dulce de leche. Sabor feria en formato vaso.",
     "ingredientes": [
-      "8–10 churros (caseros o comprados)",
+      "8-10 churros (caseros o comprados)",
       "250 ml crema de leche",
       "150 g queso crema",
       "80 g azúcar glass",
@@ -717,7 +717,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-sandia",
     "nombre": "Sandía refrescante",
     "tipo": "Frutal",
@@ -735,7 +735,7 @@
       "Licúa sandía + limón. Cuela si hay mucha fibra.",
       "Mezcla con leche condensada e incorpora crema batida.",
       "Vierte en vasos (con o sin base). Decora con menta.",
-      "Frío 1–2 horas. Consumir el mismo día."
+      "Frío 1-2 horas. Consumir el mismo día."
     ],
     "dia": 28,
     "prep": "20 min",
@@ -743,7 +743,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-cookie-dough",
     "nombre": "Cookie dough",
     "tipo": "Cremoso",
@@ -763,7 +763,7 @@
       "Mezcla harina tostada + mantequilla + azúcar morena + vainilla + chispas (masa comestible).",
       "Bate queso + azúcar glass + crema.",
       "Alterna crema y bolitas de cookie dough en el vaso.",
-      "Frío 1–2 horas."
+      "Frío 1-2 horas."
     ],
     "dia": 29,
     "prep": "35 min",
@@ -771,7 +771,7 @@
   },
   {
     "rendimiento": "8 vasos",
-    "congelacion": "1–2 horas",
+    "congelacion": "1-2 horas",
     "id": "postre-mix-berries",
     "nombre": "Frutos rojos mix",
     "tipo": "Frutal",
@@ -789,7 +789,7 @@
       "Reserva frutos enteros para decorar. Pisa ligeramente el resto con 2 cucharadas de azúcar.",
       "Bate queso + resto de azúcar + vainilla + crema.",
       "Capa galleta → crema → frutos. Repite.",
-      "Decora con frutos enteros. Frío 1–2 horas."
+      "Decora con frutos enteros. Frío 1-2 horas."
     ],
     "dia": 30,
     "prep": "25 min",

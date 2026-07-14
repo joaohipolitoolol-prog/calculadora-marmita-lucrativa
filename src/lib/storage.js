@@ -182,7 +182,7 @@ export async function loadDraftStore(uid) {
   return localStore;
 }
 
-/** @deprecated Prefer loadDraftForLine — returns active/legacy flat draft for bootstrap compat. */
+/** @deprecated Prefer loadDraftForLine, returns active/legacy flat draft for bootstrap compat. */
 export async function loadDraft(uid, lineId = 'paletas') {
   const store = await loadDraftStore(uid);
   return store.byLine[lineId] || store.byLine.paletas || null;

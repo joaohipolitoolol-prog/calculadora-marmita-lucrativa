@@ -105,7 +105,7 @@ function renderPremiumUpsellTeaser(profile) {
         Complemento opcional: 20 recetas premium, combos con precio guía, menú editable, mensajes para fechas especiales y guía de fotos.
       </p>
       <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
-        <strong>Cuándo tiene sentido:</strong> después de vender tus primeros 3–5 sabores básicos y querer subir ticket medio con combos y presentación.
+        <strong>Cuándo tiene sentido:</strong> después de vender tus primeros 3-5 sabores básicos y querer subir ticket medio con combos y presentación.
       </p>
       <a href="/upsell-paletas-premium" style="display:inline-block;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg,#ffc94a,#ff7a1a);color:#3d2218;font-weight:800;text-decoration:none;font-size:13px">Ver complemento premium</a>
     </div>
@@ -119,7 +119,7 @@ function applyKitLocks() {
   const strip = document.createElement('div');
   strip.className = 'kit-pending-strip';
   strip.innerHTML =
-    '<p>⏳ Verificando tu compra — las descargas se desbloquean en minutos. <a href="/app">Abrir calculadora</a></p>';
+    '<p>⏳ Verificando tu compra, las descargas se desbloquean en minutos. <a href="/app">Abrir calculadora</a></p>';
   wrap.prepend(strip);
 
   const badge = document.querySelector('.hero-badge');

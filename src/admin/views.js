@@ -387,7 +387,7 @@ export function renderUsersTable(users, selectedIds, allSelected) {
               </td>
               <td class="user-cell">
                 <strong>${escapeHtml(u.displayName || t('table.noName'))}</strong>
-                <span>${escapeHtml(u.email || '—')}</span>
+                <span>${escapeHtml(u.email || '-')}</span>
               </td>
               <td><div class="admin-pill-row">${renderProductPills(u)}</div></td>
               <td>${renderStatusBadge(u)}</td>
@@ -440,7 +440,7 @@ export function renderUserDrawer(user) {
           <span class="admin-user-avatar lg">${escapeHtml(getUserInitial(user))}</span>
           <div>
             <h2>${escapeHtml(user.displayName || t('table.noName'))}</h2>
-            <p>${escapeHtml(user.email || '—')}</p>
+            <p>${escapeHtml(user.email || '-')}</p>
           </div>
         </div>
         <button type="button" class="admin-icon-btn" data-close-drawer aria-label="${t('drawer.close')}">${ICONS.close}</button>
@@ -451,15 +451,15 @@ export function renderUserDrawer(user) {
         ${
           user.lastGrantSource || user.lastGrantAt
             ? `<div class="admin-drawer-meta-note">
-                <div><span>${t('drawer.grantSource')}:</span> <strong>${escapeHtml(user.lastGrantSource || '—')}</strong></div>
+                <div><span>${t('drawer.grantSource')}:</span> <strong>${escapeHtml(user.lastGrantSource || '-')}</strong></div>
                 <div><span>${t('drawer.grantAt')}:</span> <strong>${formatDateTime(user.lastGrantAt)}</strong></div>
               </div>`
             : ''
         }
         <div class="admin-detail-grid">
           <div><span>UID</span><code>${escapeHtml(user.id)}</code></div>
-          <div><span>${t('drawer.origin')}</span><strong>${escapeHtml(user.registeredFrom || '—')}</strong></div>
-          <div><span>${t('drawer.line')}</span><strong>${escapeHtml(user.registeredLine || user.lastActiveLine || '—')}</strong></div>
+          <div><span>${t('drawer.origin')}</span><strong>${escapeHtml(user.registeredFrom || '-')}</strong></div>
+          <div><span>${t('drawer.line')}</span><strong>${escapeHtml(user.registeredLine || user.lastActiveLine || '-')}</strong></div>
           <div><span>${t('drawer.registered')}</span><strong>${formatDateTime(user.createdAt)}</strong></div>
           <div><span>${t('drawer.lastLogin')}</span><strong>${formatDateTime(user.lastLoginAt)}</strong></div>
         </div>
@@ -615,7 +615,7 @@ export function renderAnalyticsView(analytics, lineFilter = 'all', users = []) {
                         (p) => `
                 <tr>
                   <td><strong>${escapeHtml(p.label)}</strong></td>
-                  <td><code>${escapeHtml(p.path || '—')}</code></td>
+                  <td><code>${escapeHtml(p.path || '-')}</code></td>
                   <td><span class="admin-metric today">${p.today || 0}</span></td>
                   <td><span class="admin-metric">${p.total || 0}</span></td>
                 </tr>`
@@ -639,12 +639,12 @@ export function renderAnalyticsView(analytics, lineFilter = 'all', users = []) {
                   .map(
                     (c) => `
             <div class="admin-traffic-row">
-              <div><strong>${escapeHtml(c.key)}</strong><span>${escapeHtml(c.line || '—')}</span></div>
+              <div><strong>${escapeHtml(c.key)}</strong><span>${escapeHtml(c.line || '-')}</span></div>
               <span class="admin-metric today">${c.today || 0}</span>
             </div>`
                   )
                   .join('')
-              : `<p class="admin-table-empty">—</p>`
+              : `<p class="admin-table-empty">-</p>`
           }
         </div>
       </div>
@@ -657,12 +657,12 @@ export function renderAnalyticsView(analytics, lineFilter = 'all', users = []) {
                   .map(
                     (w) => `
             <div class="admin-traffic-row">
-              <div><strong>${escapeHtml(w.key)}</strong><span>${escapeHtml(w.purpose || w.line || '—')}</span></div>
+              <div><strong>${escapeHtml(w.key)}</strong><span>${escapeHtml(w.purpose || w.line || '-')}</span></div>
               <span class="admin-metric today">${w.today || 0}</span>
             </div>`
                   )
                   .join('')
-              : `<p class="admin-table-empty">—</p>`
+              : `<p class="admin-table-empty">-</p>`
           }
         </div>
       </div>
@@ -693,7 +693,7 @@ function pageMetric(pages, key) {
 }
 
 function renderQuizStepsChart(steps) {
-  if (!steps?.length) return `<p class="admin-table-empty">—</p>`;
+  if (!steps?.length) return `<p class="admin-table-empty">-</p>`;
   return steps
     .map(
       (step, i) => `
@@ -717,7 +717,7 @@ function renderQuizStepsChart(steps) {
 }
 
 function formatLeadWhen(iso) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return escapeHtml(String(iso));
@@ -738,7 +738,7 @@ function formatLeadAnswers(answers = {}) {
   const parts = ['experience', 'blocker', 'channel', 'start', 'victory']
     .map((k) => answers[k])
     .filter(Boolean);
-  return parts.length ? escapeHtml(parts.join(' · ')) : '—';
+  return parts.length ? escapeHtml(parts.join(' · ')) : '-';
 }
 
 export function renderDiagnosticoLeadsTable(leads) {
@@ -753,7 +753,7 @@ export function renderDiagnosticoLeadsTable(leads) {
       return `
       <tr>
         <td>${name}</td>
-        <td><code>${escapeHtml(lead.diagnosisId || '—')}</code></td>
+        <td><code>${escapeHtml(lead.diagnosisId || '-')}</code></td>
         <td class="admin-lead-answers">${formatLeadAnswers(lead.answers)}</td>
         <td>${formatLeadWhen(lead.createdAt)}</td>
       </tr>`;
@@ -1065,12 +1065,12 @@ export function renderFunnelView(
               .map(
                 (c) => `
             <div class="admin-traffic-row">
-              <div><strong>${escapeHtml(c.key)}</strong><span>${escapeHtml(c.line || '—')}</span></div>
+              <div><strong>${escapeHtml(c.key)}</strong><span>${escapeHtml(c.line || '-')}</span></div>
               <span class="admin-metric today">${c.today || 0}</span> / ${c.total || 0}
             </div>`
               )
               .join('')
-          : `<p class="admin-table-empty">—</p>`,
+          : `<p class="admin-table-empty">-</p>`,
         collapsed: true,
       })}
       ${renderCollapsibleCard({
@@ -1083,12 +1083,12 @@ export function renderFunnelView(
               .map(
                 (w) => `
             <div class="admin-traffic-row">
-              <div><strong>${escapeHtml(w.key)}</strong><span>${escapeHtml(w.purpose || w.line || '—')}</span></div>
+              <div><strong>${escapeHtml(w.key)}</strong><span>${escapeHtml(w.purpose || w.line || '-')}</span></div>
               <span class="admin-metric today">${w.today || 0}</span> / ${w.total || 0}
             </div>`
               )
               .join('')
-          : `<p class="admin-table-empty">—</p>`,
+          : `<p class="admin-table-empty">-</p>`,
         collapsed: true,
       })}
     </div>
@@ -1108,7 +1108,7 @@ export function renderFunnelView(
                         (p) => `
                 <tr>
                   <td><strong>${escapeHtml(p.label)}</strong></td>
-                  <td><code>${escapeHtml(p.path || '—')}</code></td>
+                  <td><code>${escapeHtml(p.path || '-')}</code></td>
                   <td><span class="admin-metric today">${p.today || 0}</span></td>
                   <td><span class="admin-metric">${p.total || 0}</span></td>
                 </tr>`
@@ -1195,7 +1195,7 @@ function renderAbEntryCard(abEntry) {
 
 function renderInboxRow(user, kind) {
   const name = escapeHtml(user.displayName || t('table.noName'));
-  const email = escapeHtml(user.email || '—');
+  const email = escapeHtml(user.email || '-');
   let actions = `
     <button type="button" class="admin-btn sm ghost" data-user-view="${user.id}">${t('inbox.open')}</button>
   `;
@@ -1642,10 +1642,10 @@ export function renderEmailsView(
             </div>
           </div>
           <div class="admin-funnel-kpis" style="margin-top:16px">
-            <div class="admin-funnel-kpi"><strong>${stats?.salesUnique24h ?? '—'}</strong><span>${t('emails.statSales')}</span></div>
-            <div class="admin-funnel-kpi"><strong>${stats?.duplicates ?? '—'}</strong><span>${t('emails.statDup')}</span></div>
-            <div class="admin-funnel-kpi"><strong>${stats?.sentOk ?? '—'}</strong><span>${t('emails.statOk')}</span></div>
-            <div class="admin-funnel-kpi"><strong>${stats?.failed ?? '—'}</strong><span>${t('emails.statFail')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.salesUnique24h ?? '-'}</strong><span>${t('emails.statSales')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.duplicates ?? '-'}</strong><span>${t('emails.statDup')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.sentOk ?? '-'}</strong><span>${t('emails.statOk')}</span></div>
+            <div class="admin-funnel-kpi"><strong>${stats?.failed ?? '-'}</strong><span>${t('emails.statFail')}</span></div>
           </div>
         </div>
       </div>
@@ -1678,7 +1678,7 @@ export function renderEmailsView(
                   <tr>
                     <td>${formatDateTime(row.createdAt)}</td>
                     <td>
-                      <strong>${escapeHtml(row.email || '—')}</strong>
+                      <strong>${escapeHtml(row.email || '-')}</strong>
                       ${row.emailError ? `<div class="admin-muted">${escapeHtml(row.emailError)}</div>` : ''}
                     </td>
                     <td>${escapeHtml(productLabel(row.product))}</td>

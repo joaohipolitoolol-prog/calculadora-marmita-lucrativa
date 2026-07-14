@@ -17,7 +17,7 @@
       "Tarjeta impresa simple",
       "Entrega coordinada"
     ],
-    "promo": "Regalo dulce para mamá — caja surtida premium."
+    "promo": "Regalo dulce para mamá, caja surtida premium."
   },
   {
     "fecha": "Día del Niño",
@@ -36,7 +36,7 @@
       "Brownie",
       "Publicar viernes por la tarde"
     ],
-    "promo": "Caja lista sábado y domingo — cantidad limitada."
+    "promo": "Caja lista sábado y domingo, cantidad limitada."
   },
   {
     "fecha": "Verano / vacaciones",
@@ -72,6 +72,6 @@
       "Sabores con bandera o color temático",
       "Historia en WhatsApp"
     ],
-    "promo": "Edición especial [nombre del feriado] — solo esta semana."
+    "promo": "Edición especial [nombre del feriado], solo esta semana."
   }
 ]

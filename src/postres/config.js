@@ -1,4 +1,4 @@
-/** Configuración de la landing Postres en Vaso — editar aquí */
+/** Configuración de la landing Postres en Vaso, editar aquí */
 
 import { getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
 

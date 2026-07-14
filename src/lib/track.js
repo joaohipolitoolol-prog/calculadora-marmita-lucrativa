@@ -1,4 +1,4 @@
-/** First-party analytics client — page views, CTAs, WhatsApp, auth, app opens. */
+/** First-party analytics client, page views, CTAs, WhatsApp, auth, app opens. */
 
 const AB_STORAGE_KEY = 'ab_paletas_entry';
 
