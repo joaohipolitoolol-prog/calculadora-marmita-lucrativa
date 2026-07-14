@@ -117,12 +117,15 @@ export function trackCheckout(tier, extra = {}) {
  * - [data-track="ctaId"] → cta_click
  * - [data-whatsapp] or [data-wa-id] or a[href*="wa.me"] → whatsapp_click
  * - [data-checkout] → checkout_click
+ * Spam-clicks on the same node within 800ms are ignored for first-party events.
  */
 export function bindTrackClicks(defaults = {}) {
   if (typeof document === 'undefined' || document.documentElement.dataset.trackBound === '1') {
     return;
   }
   document.documentElement.dataset.trackBound = '1';
+
+  const lastByEl = new WeakMap();
 
   document.addEventListener(
     'click',
@@ -131,6 +134,11 @@ export function bindTrackClicks(defaults = {}) {
         '[data-track], [data-whatsapp], [data-wa-id], [data-checkout], a[href*="wa.me"]'
       );
       if (!el) return;
+
+      const now = Date.now();
+      const prev = lastByEl.get(el) || 0;
+      if (now - prev < 800) return;
+      lastByEl.set(el, now);
 
       const page = defaults.page || el.dataset.trackPage || undefined;
       const line = defaults.line || el.dataset.line || undefined;

@@ -4,7 +4,7 @@ import { UPSELL_PRICE_USD as PALETAS_PREMIUM_PRICE } from '../upsell/config.js';
 import { UPSELL_PRICE_USD as POSTRES_PREMIUM_PRICE } from '../postres-upsell/config.js';
 import { register, guardAuthPage } from '../lib/auth.js';
 import { BRAND_KIT } from '../site/brand.js';
-import { trackMetaPurchaseOnce, hasCheckoutPending } from '../lib/meta-pixel.js';
+import { trackMetaPurchaseOnce, hasCheckoutPending, clearCheckoutPending } from '../lib/meta-pixel.js';
 import { purchaseFlagsFromSearch } from '../lib/purchase-flags.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { defaultNumberIdForLine, getWhatsAppUrl } from '../lib/whatsapp-numbers.js';
@@ -62,14 +62,17 @@ function shouldFireRegisterPurchase(line) {
   return hasCheckoutPending(line);
 }
 
-if (purchaseFlags?.hasKit && shouldFireRegisterPurchase('paletas')) {
+const firePaletasPurchase = shouldFireRegisterPurchase('paletas');
+const firePostresPurchase = shouldFireRegisterPurchase('postres');
+
+if (purchaseFlags?.hasKit && firePaletasPurchase) {
   trackMetaPurchaseOnce({
     value: MAIN_PRICE,
     contentName: BRAND_KIT,
     contentIds: ['paletas_kit'],
   });
 }
-if (purchaseFlags?.hasPostres && shouldFireRegisterPurchase('postres')) {
+if (purchaseFlags?.hasPostres && firePostresPurchase) {
   trackMetaPurchaseOnce({
     value: POSTRES_PRICE,
     contentName: POSTRES_NAME,
@@ -77,7 +80,7 @@ if (purchaseFlags?.hasPostres && shouldFireRegisterPurchase('postres')) {
   });
 }
 if (purchaseFlags?.hasPremium) {
-  if (shouldFireRegisterPurchase('paletas')) {
+  if (firePaletasPurchase) {
     trackMetaPurchaseOnce({
       value: PALETAS_PREMIUM_PRICE,
       contentName: 'Pack Premium Paletas',
@@ -88,7 +91,7 @@ if (purchaseFlags?.hasPremium) {
   localStorage.setItem('paletas_premium', '1');
 }
 if (purchaseFlags?.hasPostresPremium) {
-  if (shouldFireRegisterPurchase('postres')) {
+  if (firePostresPurchase) {
     trackMetaPurchaseOnce({
       value: POSTRES_PREMIUM_PRICE,
       contentName: 'Pack Premium Postres',
@@ -96,6 +99,14 @@ if (purchaseFlags?.hasPostresPremium) {
     });
   }
   localStorage.setItem('kit_premium_postres_v1', '1');
+}
+
+// Clear pending after all line purchases were considered (Meta still session-deduped by content id).
+if (firePaletasPurchase && (purchaseFlags?.hasKit || purchaseFlags?.hasPremium)) {
+  clearCheckoutPending('paletas');
+}
+if (firePostresPurchase && (purchaseFlags?.hasPostres || purchaseFlags?.hasPostresPremium)) {
+  clearCheckoutPending('postres');
 }
 
 registerForm?.addEventListener('submit', async (event) => {

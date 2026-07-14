@@ -20,6 +20,8 @@ export function canFireThankYouPurchase(line = 'paletas') {
 
 export function bindScrollToOffer(selector = '[data-scroll-offer]') {
   document.querySelectorAll(selector).forEach((link) => {
+    if (link.dataset.scrollOfferBound === '1') return;
+    link.dataset.scrollOfferBound = '1';
     link.addEventListener('click', (e) => {
       const targetId = (link.getAttribute('href') || '#oferta').replace(/^#/, '') || 'oferta';
       const el = document.getElementById(targetId);
@@ -33,6 +35,7 @@ export function bindScrollToOffer(selector = '[data-scroll-offer]') {
 /**
  * Hard buy CTAs only: [data-checkout-offer], [data-checkout-sticky], [data-checkout-hard]
  * Soft hero CTAs must use data-scroll-offer (no data-checkout).
+ * Guards: one listener per link; blocks spam-clicks from opening Hotmart twice.
  */
 export function bindHardCheckoutLinks({
   checkoutUrl,
@@ -51,6 +54,9 @@ export function bindHardCheckoutLinks({
   const taggedUrl = withAttribution(withLineTag);
 
   document.querySelectorAll('[data-checkout-offer], [data-checkout-sticky], [data-checkout-hard]').forEach((link) => {
+    if (link.dataset.checkoutBound === '1') return;
+    link.dataset.checkoutBound = '1';
+
     if (!isSellable || isPlaceholder) {
       link.href = '#oferta';
       link.setAttribute('aria-disabled', 'true');
@@ -81,17 +87,30 @@ export function bindHardCheckoutLinks({
     }
 
     link.addEventListener('click', (e) => {
+      if (link.dataset.checkoutNav === '1') {
+        e.preventDefault();
+        return;
+      }
+      link.dataset.checkoutNav = '1';
+
       markCheckoutPending(line);
       trackMetaInitiateCheckout({
         value: price,
         contentName,
         contentIds,
       });
+
       // Force navigation with fresh attribution for non-paletas funnels.
       if (line === 'postres' || line === 'minipostres') {
         e.preventDefault();
         window.location.href = withAttribution(withLineTag);
+        return;
       }
+
+      // Paletas: allow first navigation; unlock again if user stays on page (popup blocked).
+      window.setTimeout(() => {
+        link.dataset.checkoutNav = '0';
+      }, 2500);
     });
   });
 }

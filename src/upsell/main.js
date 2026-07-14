@@ -71,6 +71,14 @@ document.querySelectorAll('[data-upsell-checkout]').forEach((link) => {
       e.preventDefault();
       return;
     }
+    if (link.dataset.checkoutNav === '1') {
+      e.preventDefault();
+      return;
+    }
+    link.dataset.checkoutNav = '1';
+    window.setTimeout(() => {
+      link.dataset.checkoutNav = '0';
+    }, 2500);
     trackInitiateCheckout(
       UPSELL_CURRENCY === 'BRL' ? UPSELL_PRICE_BRL : UPSELL_PRICE_USD,
       'Pack Premium de Combos para WhatsApp',
@@ -157,7 +165,15 @@ if (downsellModal) {
     link.setAttribute('rel', 'noopener');
     link.dataset.checkout = 'downsell';
     link.dataset.track = link.dataset.track || 'downsell_checkout';
-    link.addEventListener('click', () => {
+    link.addEventListener('click', (e) => {
+      if (link.dataset.checkoutNav === '1') {
+        e.preventDefault();
+        return;
+      }
+      link.dataset.checkoutNav = '1';
+      window.setTimeout(() => {
+        link.dataset.checkoutNav = '0';
+      }, 2500);
       trackInitiateCheckout(DOWNSELL_PRICE_USD, 'Mini Pack de Combos para WhatsApp', [
         'paletas_downsell',
       ]);
