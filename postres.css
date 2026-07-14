@@ -102,10 +102,6 @@
   border-color: rgba(236, 63, 122, 0.16);
 }
 
-.postres-theme .kit-preview-dots button.is-active {
-  background: var(--pink);
-}
-
 /* Product preview + clarity */
 .postres-theme .product-preview {
   padding-top: 28px;
