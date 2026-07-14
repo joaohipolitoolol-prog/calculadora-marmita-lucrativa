@@ -1,6 +1,8 @@
 import { WHATSAPP_PURCHASE_LINK } from '../landing/config.js';
 import { getUserLabel, logout, watchAuth } from '../lib/auth.js';
-import { getUserProfile, hasKitAccess, resolveUserProfile } from '../lib/user-profile.js';
+import { hasKitAccess, resolveUserProfile } from '../lib/user-profile.js';
+import { getAuthAccessToken, kitAssetUrlWithToken } from '../lib/kit-assets.js';
+import { bootstrapUserSession } from '../lib/bootstrap-session.js';
 
 const THEME_KEY = 'paletas-kit-theme';
 const PREMIUM_KEY = 'paletas_premium';
@@ -45,17 +47,19 @@ function hasPremium(profile) {
   return localStorage.getItem(PREMIUM_KEY) === '1';
 }
 
-function renderPremiumSection(profile) {
+function renderPremiumSection(profile, token) {
   if (!hasPremium(profile)) return;
 
   const host = document.getElementById('premium-downloads');
   if (!host) return;
 
+  const href = (path) => kitAssetUrlWithToken(path, token);
+
   host.hidden = false;
   host.innerHTML = `
     <div class="section-label">Complemento premium</div>
     <div class="downloads">
-      <a class="dl-card featured" href="/paletas-premium/produto/Kit_Premium_Paletas.html" target="_blank" rel="noopener" style="--card-accent:#ffc94a">
+      <a class="dl-card featured" href="${href('/paletas-premium/produto/Kit_Premium_Paletas.html')}" target="_blank" rel="noopener" style="--card-accent:#ffc94a">
         <div class="dl-icon">✨</div>
         <div class="dl-info">
           <h3>Kit Premium <span class="dl-tag">20 recetas</span></h3>
@@ -63,27 +67,27 @@ function renderPremiumSection(profile) {
         </div>
         <span class="dl-action">→</span>
       </a>
-      <a class="dl-card" href="/paletas-premium/produto/Combos_Rentables.html" target="_blank" rel="noopener" style="--card-accent:#ff7a1a">
+      <a class="dl-card" href="${href('/paletas-premium/produto/Combos_Rentables.html')}" target="_blank" rel="noopener" style="--card-accent:#ff7a1a">
         <div class="dl-icon">📦</div>
         <div class="dl-info"><h3>Combos Rentables</h3><p>10 ideas con precio guía</p></div>
         <span class="dl-action">→</span>
       </a>
-      <a class="dl-card" href="/paletas-premium/produto/Menu_Premium_Editable.html" target="_blank" rel="noopener" style="--card-accent:#5ecf9a">
+      <a class="dl-card" href="${href('/paletas-premium/produto/Menu_Premium_Editable.html')}" target="_blank" rel="noopener" style="--card-accent:#5ecf9a">
         <div class="dl-icon">📋</div>
         <div class="dl-info"><h3>Menú Premium</h3><p>Copia y pega en WhatsApp</p></div>
         <span class="dl-action">→</span>
       </a>
-      <a class="dl-card" href="/paletas-premium/produto/Mensajes_Premium.html" target="_blank" rel="noopener" style="--card-accent:#a78bfa">
+      <a class="dl-card" href="${href('/paletas-premium/produto/Mensajes_Premium.html')}" target="_blank" rel="noopener" style="--card-accent:#a78bfa">
         <div class="dl-icon">💬</div>
         <div class="dl-info"><h3>Mensajes Premium</h3><p>Combos y fechas especiales</p></div>
         <span class="dl-action">→</span>
       </a>
-      <a class="dl-card" href="/paletas-premium/produto/Fechas_Especiales.html" target="_blank" rel="noopener" style="--card-accent:#60a5fa">
+      <a class="dl-card" href="${href('/paletas-premium/produto/Fechas_Especiales.html')}" target="_blank" rel="noopener" style="--card-accent:#60a5fa">
         <div class="dl-icon">🎉</div>
         <div class="dl-info"><h3>Fechas Especiales</h3><p>Día de la Madre, San Valentín, Navidad…</p></div>
         <span class="dl-action">→</span>
       </a>
-      <a class="dl-card" href="/paletas-premium/produto/Guia_Presentacion.html" target="_blank" rel="noopener" style="--card-accent:#f472b6">
+      <a class="dl-card" href="${href('/paletas-premium/produto/Guia_Presentacion.html')}" target="_blank" rel="noopener" style="--card-accent:#f472b6">
         <div class="dl-icon">📸</div>
         <div class="dl-info"><h3>Guía de Presentación</h3><p>Fotos, empaque y nombres que venden</p></div>
         <span class="dl-action">→</span>
@@ -175,6 +179,7 @@ watchAuth(async (user) => {
   }
 
   const profile = await resolveUserProfile(user);
+  await bootstrapUserSession(user);
   if (profile?.hasPremium) localStorage.setItem(PREMIUM_KEY, '1');
 
   unlockPremiumFromQuery();
@@ -185,7 +190,8 @@ watchAuth(async (user) => {
     applyKitLocks();
   }
 
-  renderPremiumSection(profile);
+  const token = (await getAuthAccessToken()) || '';
+  renderPremiumSection(profile, token);
   renderPremiumUpsellTeaser(profile);
   showFirstVisitGuide();
 

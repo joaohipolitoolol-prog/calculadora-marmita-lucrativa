@@ -11,11 +11,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 
 const JOBS = [
-  ['public/postres/produto/Kit_Postres_en_Vaso.html', 'public/postres/produto/Kit_Postres_en_Vaso.pdf'],
-  ['public/postres/produto/Mensajes_Postres.html', 'public/postres/produto/Mensajes_Postres.pdf'],
-  ['public/postres/produto/Plan_7_Dias_Postres.html', 'public/postres/produto/Plan_7_Dias_Postres.pdf'],
-  ['public/postres/produto/Checklist_Postres.html', 'public/postres/produto/Checklist_Postres.pdf'],
-  ['public/postres-premium/produto/Kit_Premium_Postres.html', 'public/postres-premium/produto/Kit_Premium_Postres.pdf'],
+  ['private-kit/postres/produto/Kit_Postres_en_Vaso.html', 'private-kit/postres/produto/Kit_Postres_en_Vaso.pdf'],
+  ['private-kit/postres/produto/Mensajes_Postres.html', 'private-kit/postres/produto/Mensajes_Postres.pdf'],
+  ['private-kit/postres/produto/Plan_7_Dias_Postres.html', 'private-kit/postres/produto/Plan_7_Dias_Postres.pdf'],
+  ['private-kit/postres/produto/Checklist_Postres.html', 'private-kit/postres/produto/Checklist_Postres.pdf'],
+  ['private-kit/postres-premium/produto/Kit_Premium_Postres.html', 'private-kit/postres-premium/produto/Kit_Premium_Postres.pdf'],
 ];
 
 async function htmlToPdf(browser, htmlRel, pdfRel) {

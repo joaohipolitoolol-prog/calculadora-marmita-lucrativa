@@ -194,10 +194,18 @@ import {
   stopRecipeNarration,
   syncRecipeNarrationUi,
 } from '../lib/recipe-narration.js';
+import { getAuthAccessToken, kitAssetUrlWithToken } from '../lib/kit-assets.js';
 
 const root = document.getElementById('app-root');
 const toastEl = document.getElementById('toast');
 
+/** Firebase ID token for /api/kit-file links (refreshed on auth). */
+let kitAccessToken = '';
+
+function kitHref(path) {
+  if (!path || path === '#') return path || '#';
+  return kitAssetUrlWithToken(path, kitAccessToken);
+}
 let currentUser = LOCAL_USER;
 let inputMode = 'simple';
 let simpleValues = { ...SIMPLE_DEFAULTS };
@@ -833,8 +841,9 @@ function kitExtrasExportHref() {
 
 function renderSectionPdfBtn({ href, id }) {
   if (href) {
+    const secured = kitHref(href);
     const download = href.endsWith('.pdf') ? ' download' : '';
-    return `<a class="lista-pdf-btn" href="${href}"${download} target="_blank" rel="noopener" title="PDF" aria-label="PDF">${ICONS.download}</a>`;
+    return `<a class="lista-pdf-btn" href="${secured}"${download} target="_blank" rel="noopener" title="PDF" aria-label="PDF">${ICONS.download}</a>`;
   }
   return `<button type="button" class="lista-pdf-btn" id="${id}" title="PDF" aria-label="PDF">${ICONS.download}</button>`;
 }
@@ -1012,8 +1021,16 @@ watchAuth(async (user) => {
     return;
   }
 
-  const profile = await resolveUserProfile(user);
+  let profile = await resolveUserProfile(user);
+  try {
+    const { bootstrapUserSession } = await import('../lib/bootstrap-session.js');
+    await bootstrapUserSession(user);
+    profile = (await resolveUserProfile(user)) || profile;
+  } catch {
+    // non-blocking
+  }
   userProfile = profile;
+  kitAccessToken = (await getAuthAccessToken()) || '';
   await loadContentSettings();
   kitUnlocked = hasKitAccess(profile, user);
   ownedLines = ownedLinesFromProfile(profile);
@@ -1913,13 +1930,13 @@ function closeDocument() {
 function renderDocumentDownloadAction(doc) {
   const pdf = hasPdfDownload(doc);
   if (pdf) {
-    return `<a class="btn btn-secondary btn-sm" href="${doc.downloadHref}" download>${ICONS.download}<span>PDF</span></a>`;
+    return `<a class="btn btn-secondary btn-sm" href="${kitHref(doc.downloadHref)}" download>${ICONS.download}<span>PDF</span></a>`;
   }
   if (doc.kind === 'html' || doc.href?.endsWith('.html')) {
     return `<button type="button" class="btn btn-secondary btn-sm" id="doc-print">${ICONS.download}<span>PDF</span></button>`;
   }
   if (doc.downloadHref && doc.downloadHref !== '#') {
-    return `<a class="btn btn-secondary btn-sm" href="${doc.downloadHref}" download>${ICONS.download}<span>Bajar</span></a>`;
+    return `<a class="btn btn-secondary btn-sm" href="${kitHref(doc.downloadHref)}" download>${ICONS.download}<span>Bajar</span></a>`;
   }
   return '';
 }
@@ -1954,7 +1971,7 @@ function renderDocumentView() {
       <iframe
         class="doc-frame"
         title="${escapeHtml(doc.title)}"
-        src="${doc.href}"
+        src="${kitHref(doc.href)}"
         loading="lazy"
       ></iframe>
     </div>
@@ -2065,7 +2082,7 @@ function renderFileRow(file, locked) {
 
   if (file.kind === 'xlsx') {
     return `
-      <a class="file-row${featured}" style="--file-accent:${file.accent}" href="${file.href}" download>
+      <a class="file-row${featured}" style="--file-accent:${file.accent}" href="${kitHref(file.href)}" download>
         <span class="file-icon">${file.icon}</span>
         <span class="file-info">
           <strong>${escapeHtml(file.title)}</strong>
@@ -2989,7 +3006,7 @@ function renderMenuWhatsApp() {
   menuWaDraft = loadMenuWaDraft(currentUser.uid, lineId, brand, recipes);
   return renderMenuWhatsAppView({
     draft: menuWaDraft,
-    exportHref: menuWaExportHref(lineId),
+    exportHref: kitHref(menuWaExportHref(lineId)),
     lineId,
   });
 }
@@ -3157,26 +3174,26 @@ function renderMenuPremium() {
   );
   return renderMenuPremiumView({
     draft: menuPremiumDraft,
-    exportHref: menuPremiumExportHref(lineId),
+    exportHref: kitHref(menuPremiumExportHref(lineId)),
   });
 }
 
 function renderFechasPremium() {
   return renderFechasEspeciales(kitContentForLine().fechasPremium, {
-    exportHref: premiumExportHref('fechas'),
+    exportHref: kitHref(premiumExportHref('fechas')),
   });
 }
 
 function renderGuiaPremium() {
   return renderGuiaPresentacion(kitContentForLine().guiaPremium, {
-    exportHref: premiumExportHref('guia'),
+    exportHref: kitHref(premiumExportHref('guia')),
   });
 }
 
 function renderTecnicasKit() {
   const extras = kitContentForLine().kitExtras;
   if (!extras) return '';
-  return renderKitExtras(extras, { exportHref: kitExtrasExportHref() });
+  return renderKitExtras(extras, { exportHref: kitHref(kitExtrasExportHref()) });
 }
 
 function renderPlan7Dias() {

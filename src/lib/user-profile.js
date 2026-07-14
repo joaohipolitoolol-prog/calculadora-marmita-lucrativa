@@ -1,7 +1,6 @@
 import { db, isFirebaseConfigured } from './firebase.js';
 import { normalizeProfile } from './products.js';
 import {
-  ADMIN_PROFILE_GRANTS,
   isAdminEmail,
   loadAdminAllowlist,
 } from './admin-access.js';
@@ -29,12 +28,6 @@ export async function createUserProfile(
   {
     email,
     displayName,
-    hasKit = false,
-    hasPremium = false,
-    hasPostres = false,
-    hasPostresPremium = false,
-    hasMinipostres = false,
-    hasMinipostresPremium = false,
     registeredFrom = null,
     registeredLine = null,
     premiumPending = null,
@@ -42,26 +35,36 @@ export async function createUserProfile(
 ) {
   if (!isFirebaseConfigured || !db) return null;
 
-  const admin = isAdminEmail(email);
-  const profile = normalizeProfile({
+  const ref = doc(db, 'users', uid);
+  const existing = await getDoc(ref);
+
+  // Never write entitlement fields on merge — Admin SDK owns grants.
+  const base = {
     email: email.trim().toLowerCase(),
     displayName: displayName.trim(),
-    hasKit: Boolean(hasKit) || admin,
-    hasPremium: Boolean(hasPremium),
-    hasPostres: Boolean(hasPostres),
-    hasPostresPremium: Boolean(hasPostresPremium),
-    hasMinipostres: Boolean(hasMinipostres),
-    hasMinipostresPremium: Boolean(hasMinipostresPremium),
-    isAdmin: admin,
     registeredFrom,
     registeredLine,
     premiumPending: premiumPending || { paletas: false, postres: false },
-    createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  });
+  };
 
-  await setDoc(doc(db, 'users', uid), profile, { merge: true });
-  return profile;
+  if (!existing.exists()) {
+    Object.assign(base, {
+      hasKit: false,
+      hasPremium: false,
+      hasPostres: false,
+      hasPostresPremium: false,
+      hasMinipostres: false,
+      hasMinipostresPremium: false,
+      isAdmin: false,
+      createdAt: serverTimestamp(),
+    });
+  }
+
+  // Write only `base` — never run normalizeProfile before setDoc (it forces hasKit:false).
+  await setDoc(ref, base, { merge: true });
+  const snap = await getDoc(ref);
+  return snap.exists() ? normalizeProfile({ id: snap.id, ...snap.data() }) : normalizeProfile(base);
 }
 
 export async function touchUserActivity(uid, extra = {}) {
@@ -108,9 +111,10 @@ export async function listUsers() {
 }
 
 export async function syncAdminFlag(uid, email) {
-  await loadAdminAllowlist();
-  if (!isAdminEmail(email)) return;
-  await updateUserProfile(uid, { ...ADMIN_PROFILE_GRANTS });
+  // Client cannot write isAdmin anymore — server bootstrap stamps allowlisted admins.
+  void uid;
+  void email;
+  return;
 }
 
 export async function ensureUserProfile(user, extra = {}) {

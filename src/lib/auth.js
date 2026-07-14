@@ -1,11 +1,12 @@
 import { auth, isFirebaseConfigured } from './firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import { loadAdminAllowlist } from './admin-access.js';
-import { createUserProfile, isAdminEmail, syncAdminFlag, touchUserActivity, updateUserProfile } from './user-profile.js';
-import { consumeAccessCode, validateAccessCodeFromDb } from './access-codes-db.js';
+import { createUserProfile, isAdminEmail, touchUserActivity } from './user-profile.js';
+import { redeemAccessCode } from './access-codes-db.js';
 import { resolveProductFlags } from './purchase-flags.js';
 import { rememberActiveLine, resolveLineFromSearch, premiumStorageKey, LEGACY_PREMIUM_STORAGE_KEY } from './product-lines.js';
 import { claimPendingPurchases } from './claim-pending.js';
+import { bootstrapUserSession } from './bootstrap-session.js';
 import { trackEvent } from './track.js';
 
 /** While true, guardAuthPage must not redirect, Auth fires before profile/grants save. */
@@ -151,16 +152,13 @@ function grantsFromAccessCode(result) {
   return grants;
 }
 
-async function applyAccessCodeToUser(uid, accessCode) {
+async function applyAccessCodeToUser(_uid, accessCode) {
   if (!accessCode) return null;
 
-  const result = await validateAccessCodeFromDb(accessCode);
-  if (!result.valid) return null;
+  const result = await redeemAccessCode(accessCode);
+  if (!result?.valid || result.deferred) return null;
 
-  const grants = grantsFromAccessCode(result);
-  await updateUserProfile(uid, grants);
-  await consumeAccessCode(result);
-  return grants;
+  return result.grants || grantsFromAccessCode(result);
 }
 
 /** URL never grants products. Real unlock = webhook pending + claim / access code / admin. */
@@ -213,7 +211,7 @@ export async function login(email, password, options = {}) {
     await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
     const result = await signInWithEmailAndPassword(auth, email.trim(), password);
     await loadAdminAllowlist();
-    await syncAdminFlag(result.user.uid, result.user.email);
+    await bootstrapUserSession(result.user);
     await claimPendingForUser(result.user);
     const line = resolveLineFromSearch(search);
     await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
@@ -228,8 +226,6 @@ export async function login(email, password, options = {}) {
 export async function register(name, email, password, options = {}) {
   const search = options.search ?? (typeof window !== 'undefined' ? window.location.search : '');
   rememberLineFromUrl(search);
-  const flags = resolveProductFlags(options, search);
-  const admin = isAdminEmail(email);
   const accessCode = getRegisterAccessCode(options);
   setAuthBusy(true);
 
@@ -240,19 +236,13 @@ export async function register(name, email, password, options = {}) {
       if (users.some((u) => u.email === normalizedEmail)) {
         throw new Error('Este correo ya está registrado.');
       }
-      const user = createDemoUser(name, normalizedEmail, password, flags);
+      const admin = isAdminEmail(email);
+      const user = createDemoUser(name, normalizedEmail, password, resolveProductFlags({}, search));
       if (admin) {
         user.hasKit = true;
         user.isAdmin = true;
       }
-      if (accessCode) {
-        const result = await validateAccessCodeFromDb(accessCode);
-        const grants = grantsFromAccessCode(result);
-        if (grants.hasKit) user.hasKit = true;
-        if (grants.hasPremium) user.hasPremium = true;
-        if (grants.hasPostres) user.hasPostres = true;
-        if (grants.hasPostresPremium) user.hasPostresPremium = true;
-      }
+      if (accessCode) user.hasKit = true;
       users.push(user);
       writeDemoUsers(users);
       setDemoSession(user);
@@ -272,19 +262,23 @@ export async function register(name, email, password, options = {}) {
     const line = resolveLineFromSearch(search);
     const registeredFrom = resolveRegisteredFrom(search, accessCode);
 
+    // Entitlements never written from the client — server (bootstrap / redeem / claim / webhook).
     await createUserProfile(result.user.uid, {
       email: result.user.email,
       displayName: name.trim(),
-      ...flags,
+      hasKit: false,
+      hasPremium: false,
+      hasPostres: false,
+      hasPostresPremium: false,
       registeredFrom,
       registeredLine: line?.id || null,
     });
-    await syncAdminFlag(result.user.uid, result.user.email);
+    await bootstrapUserSession(result.user);
 
     const codeGrants = await applyAccessCodeToUser(result.user.uid, accessCode);
     await claimPendingForUser(result.user);
-    if (codeGrants?.hasPremium || flags.hasPremium) setPremiumLocal('paletas', true);
-    if (codeGrants?.hasPostresPremium || flags.hasPostresPremium) setPremiumLocal('postres', true);
+    if (codeGrants?.hasPremium) setPremiumLocal('paletas', true);
+    if (codeGrants?.hasPostresPremium) setPremiumLocal('postres', true);
 
     await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
     await trackEvent('register', {

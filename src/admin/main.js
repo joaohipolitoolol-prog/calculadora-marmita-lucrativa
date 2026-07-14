@@ -1549,11 +1549,13 @@ watchAuth(async (user) => {
     }
 
     if (!profile?.isAdmin) {
-      await updateUserProfile(user.uid, {
-        email: user.email?.trim().toLowerCase() || '',
-        displayName: user.displayName || '',
-        ...ADMIN_PROFILE_GRANTS,
-      });
+      const { bootstrapUserSession } = await import('../lib/bootstrap-session.js');
+      await bootstrapUserSession(user);
+      profile = await getUserProfile(user.uid);
+      if (!profile?.isAdmin && !DEV_ADMIN_ACCESS) {
+        renderDenied(t('denied.noAdmin'), user);
+        return;
+      }
     }
 
     const allowlist = await loadAdminAllowlist();

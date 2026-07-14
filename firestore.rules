@@ -17,10 +17,32 @@ service cloud.firestore {
       return signedIn() && userDoc().data.isAdmin == true;
     }
 
+    // Entitlements / admin — only Admin SDK or an existing isAdmin client.
+    function privilegedCreateOk() {
+      let d = request.resource.data;
+      return (!('hasKit' in d) || d.hasKit == false)
+        && (!('hasPremium' in d) || d.hasPremium == false)
+        && (!('hasPostres' in d) || d.hasPostres == false)
+        && (!('hasPostresPremium' in d) || d.hasPostresPremium == false)
+        && (!('hasMinipostres' in d) || d.hasMinipostres == false)
+        && (!('hasMinipostresPremium' in d) || d.hasMinipostresPremium == false)
+        && (!('isAdmin' in d) || d.isAdmin == false);
+    }
+
+function privilegedUnchanged() {
+      return request.resource.data.get('hasKit', false) == resource.data.get('hasKit', false)
+        && request.resource.data.get('hasPremium', false) == resource.data.get('hasPremium', false)
+        && request.resource.data.get('hasPostres', false) == resource.data.get('hasPostres', false)
+        && request.resource.data.get('hasPostresPremium', false) == resource.data.get('hasPostresPremium', false)
+        && request.resource.data.get('hasMinipostres', false) == resource.data.get('hasMinipostres', false)
+        && request.resource.data.get('hasMinipostresPremium', false) == resource.data.get('hasMinipostresPremium', false)
+        && request.resource.data.get('isAdmin', false) == resource.data.get('isAdmin', false);
+    }
+
     match /users/{userId} {
       allow read: if isSelf(userId) || isAdmin();
-      allow create: if isSelf(userId);
-      allow update: if isSelf(userId) || isAdmin();
+      allow create: if isSelf(userId) && privilegedCreateOk();
+      allow update: if isAdmin() || (isSelf(userId) && privilegedUnchanged());
       allow delete: if isAdmin();
 
       match /scenarios/{scenarioId} {
@@ -32,9 +54,9 @@ service cloud.firestore {
       }
     }
 
+    // Codes validated server-side (/api/redeem-access-code). Clients never list/guess.
     match /accessCodes/{codeId} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow read, write: if isAdmin();
     }
 
     match /menus/{slug} {

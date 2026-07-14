@@ -1,4 +1,4 @@
-/** Meta Pixel helpers, InitiateCheckout / Purchase with browser dedupe (localStorage). */
+/** Meta Pixel helpers: PageView/custom/InitiateCheckout. Browser Purchase is disabled. */
 
 function canTrack() {
   return typeof window !== 'undefined' && typeof window.fbq === 'function';

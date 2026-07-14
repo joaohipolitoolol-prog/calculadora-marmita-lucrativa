@@ -7,7 +7,8 @@
  *
  * Esta URL só serve para:
  *   - UI (“acabas de comprar, usa el correo de Hotmart”)
- *   - Meta Purchase (ainda exige pending_purchase_* do clique no checkout)
+ *   - limpar pending flags / intent
+ * Purchase no Meta = só webhook Hotmart → CAPI (nunca pelo browser).
  */
 
 export function isPostPurchaseUiIntent(

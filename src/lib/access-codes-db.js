@@ -1,68 +1,68 @@
+import { collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from './firebase.js';
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  increment,
-  query,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-  where,
-} from 'firebase/firestore';
+import { auth } from './firebase.js';
 
 function normalizeCode(code) {
-  return String(code).trim().toLowerCase();
+  return String(code || '')
+    .trim()
+    .toLowerCase();
 }
 
-export async function validateAccessCodeFromDb(code) {
+/**
+ * Redeem access code via server (Admin SDK). Never trusts client Firestore reads.
+ * Requires signed-in user.
+ */
+export async function redeemAccessCode(code) {
   const normalized = normalizeCode(code);
-  const fallback = normalizeCode(import.meta.env.VITE_ACCESS_CODE || 'paletas27');
+  if (!normalized) return { valid: false };
 
-  if (!isFirebaseConfigured || !db) {
-    return normalized === fallback
-      ? { valid: true, type: 'kit', source: 'env' }
-      : { valid: false };
+  if (!isFirebaseConfigured) {
+    return { valid: false, reason: 'Firebase no configurado.' };
   }
 
-  const q = query(
-    collection(db, 'accessCodes'),
-    where('code', '==', normalized),
-    where('active', '==', true)
-  );
-  const snap = await getDocs(q);
+  const user = auth?.currentUser;
+  if (!user?.getIdToken) {
+    return { valid: false, reason: 'Debes iniciar sesión.', deferred: true };
+  }
 
-  if (!snap.empty) {
-    const entry = snap.docs[0];
-    const data = entry.data();
-    const maxUses = data.maxUses;
-    const usedCount = data.usedCount || 0;
-    if (maxUses != null && usedCount >= maxUses) {
-      return { valid: false, reason: 'Código agotado.' };
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch('/api/redeem-access-code', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ code: normalized }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.valid) {
+      return { valid: false, reason: data.error || 'Código inválido.' };
     }
     return {
       valid: true,
       type: data.type || 'kit',
-      id: entry.id,
-      hasPremium: data.type === 'premium' || data.type === 'both' || data.type === 'postres_premium' || data.type === 'postres_both',
-      source: 'firestore',
+      grants: data.grants || null,
+      source: 'api',
+      redeemed: true,
     };
+  } catch {
+    return { valid: false, reason: 'No se pudo validar el código.' };
   }
-
-  if (normalized === fallback) {
-    return { valid: true, type: 'kit', source: 'env' };
-  }
-
-  return { valid: false };
 }
 
-export async function consumeAccessCode(codeResult) {
-  if (!codeResult?.id || !isFirebaseConfigured || !db) return;
-  await updateDoc(doc(db, 'accessCodes', codeResult.id), {
-    usedCount: increment(1),
-    lastUsedAt: serverTimestamp(),
-  });
+/** @deprecated Use redeemAccessCode after signup. Pre-auth cannot verify without leaking codes. */
+export async function validateAccessCodeFromDb(code) {
+  const normalized = normalizeCode(code);
+  if (!normalized) return { valid: false };
+  if (auth?.currentUser) return redeemAccessCode(normalized);
+  // Non-empty only — real check runs after account creation.
+  return { valid: true, type: 'pending', source: 'preauth', deferred: true };
+}
+
+/** Server increments usedCount on redeem. */
+export async function consumeAccessCode() {
+  return;
 }
 
 export async function listAccessCodes() {

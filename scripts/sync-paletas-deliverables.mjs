@@ -180,10 +180,10 @@ for (const [script, out] of builds) {
   console.log(`✓ Built → ${out}`);
 }
 
-// Copy produto → public
+// Copy produto → private-kit (not publicly served)
 const copies = [
-  ['paletas-de-whatsapp/produto', 'public/paletas-de-whatsapp/produto'],
-  ['paletas-premium/produto', 'public/paletas-premium/produto'],
+  ['paletas-de-whatsapp/produto', 'private-kit/paletas-de-whatsapp/produto'],
+  ['paletas-premium/produto', 'private-kit/paletas-premium/produto'],
 ];
 for (const [from, to] of copies) {
   const src = path.join(ROOT, from);

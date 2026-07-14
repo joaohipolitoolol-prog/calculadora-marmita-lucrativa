@@ -90,11 +90,11 @@ function recipeCards(list) {
     .join('');
 }
 
-mkdirSync('public/postres/produto', { recursive: true });
-mkdirSync('public/postres-premium/produto', { recursive: true });
+mkdirSync('private-kit/postres/produto', { recursive: true });
+mkdirSync('private-kit/postres-premium/produto', { recursive: true });
 
 writeFileSync(
-  'public/postres/produto/Kit_Postres_en_Vaso.html',
+  'private-kit/postres/produto/Kit_Postres_en_Vaso.html',
   shell(
     'Kit Principal · Mini Postres Fríos Sin Horno',
     `
@@ -119,7 +119,7 @@ const byCat = MENSAJES_POSTRES.reduce((a, m) => {
 }, {});
 
 writeFileSync(
-  'public/postres/produto/Mensajes_Postres.html',
+  'private-kit/postres/produto/Mensajes_Postres.html',
   shell(
     'Mensajes WhatsApp · Mini Postres',
     `
@@ -135,7 +135,7 @@ ${Object.entries(byCat)
 );
 
 writeFileSync(
-  'public/postres/produto/Plan_7_Dias_Postres.html',
+  'private-kit/postres/produto/Plan_7_Dias_Postres.html',
   shell(
     'Plan 7 días · Mini Postres',
     `
@@ -148,7 +148,7 @@ ${PLAN_7_DIAS_POSTRES.map(
 );
 
 writeFileSync(
-  'public/postres/produto/Checklist_Postres.html',
+  'private-kit/postres/produto/Checklist_Postres.html',
   shell(
     'Checklist · Postres',
     `
@@ -159,7 +159,7 @@ ${CHECKLIST_POSTRES.map((t) => `<label class="check"><input type="checkbox"><spa
 );
 
 writeFileSync(
-  'public/postres/produto/Menu_Editable_Postres.html',
+  'private-kit/postres/produto/Menu_Editable_Postres.html',
   shell(
     'Menú editable · Mini Postres',
     `
@@ -179,7 +179,7 @@ ${base
 );
 
 writeFileSync(
-  'public/postres/produto/Lista_Compras_Postres.html',
+  'private-kit/postres/produto/Lista_Compras_Postres.html',
   shell(
     'Lista de compras · Postres',
     `
@@ -192,7 +192,7 @@ writeFileSync(
 );
 
 writeFileSync(
-  'public/postres-premium/produto/Kit_Premium_Postres.html',
+  'private-kit/postres-premium/produto/Kit_Premium_Postres.html',
   shell(
     'Kit Premium · Postres',
     `
@@ -203,7 +203,7 @@ ${recipeCards(premium)}
 );
 
 writeFileSync(
-  'public/postres-premium/produto/Combos_Rentables_Postres.html',
+  'private-kit/postres-premium/produto/Combos_Rentables_Postres.html',
   shell(
     'Combos · Postres',
     `
@@ -217,7 +217,7 @@ ${COMBOS_POSTRES_PREMIUM.map(
 );
 
 writeFileSync(
-  'public/postres-premium/produto/Menu_Premium_Postres.html',
+  'private-kit/postres-premium/produto/Menu_Premium_Postres.html',
   shell(
     'Menú premium · Postres',
     `
@@ -237,7 +237,7 @@ const byCatPremium = MENSAJES_POSTRES_PREMIUM.reduce((a, m) => {
 }, {});
 
 writeFileSync(
-  'public/postres-premium/produto/Mensajes_Premium_Postres.html',
+  'private-kit/postres-premium/produto/Mensajes_Premium_Postres.html',
   shell(
     'Mensajes premium · Postres',
     `
@@ -253,7 +253,7 @@ ${Object.entries(byCatPremium)
 );
 
 writeFileSync(
-  'public/postres-premium/produto/Fechas_Especiales_Postres.html',
+  'private-kit/postres-premium/produto/Fechas_Especiales_Postres.html',
   shell(
     'Fechas especiales · Postres',
     `
@@ -267,7 +267,7 @@ ${FECHAS_POSTRES_PREMIUM.map(
 );
 
 writeFileSync(
-  'public/postres-premium/produto/Guia_Presentacion_Postres.html',
+  'private-kit/postres-premium/produto/Guia_Presentacion_Postres.html',
   shell(
     'Guía presentación · Postres',
     `

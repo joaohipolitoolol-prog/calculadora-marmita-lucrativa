@@ -36,6 +36,26 @@
       "permanent": true
     },
     {
+      "source": "/paletas-de-whatsapp/entrega",
+      "destination": "/app",
+      "permanent": false
+    },
+    {
+      "source": "/paletas-premium/entrega",
+      "destination": "/app",
+      "permanent": false
+    },
+    {
+      "source": "/postres/entrega",
+      "destination": "/app?line=postres",
+      "permanent": false
+    },
+    {
+      "source": "/postres-premium/entrega",
+      "destination": "/app?line=postres",
+      "permanent": false
+    },
+    {
       "source": "/cadastrar",
       "has": [{ "type": "query", "key": "line", "value": "postres" }],
       "destination": "/postres/cadastrar",

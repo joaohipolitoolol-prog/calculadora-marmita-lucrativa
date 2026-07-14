@@ -1,6 +1,6 @@
 /** Diagnóstico WhatsApp, config de oferta e tracking */
 
-export const CHECKOUT_URL = 'https://pay.hotmart.com/A106645076Y?checkoutMode=10';
+export const CHECKOUT_URL = 'https://pay.hotmart.com/L106739688G';
 
 export const MAIN_PRICE = 7.49;
 export const MAIN_PRICE_LABEL = 'US$ 7,49';

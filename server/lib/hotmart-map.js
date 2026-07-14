@@ -2,7 +2,7 @@
  * Map Hotmart product/offer IDs → internal product codes.
  *
  * Checkout URLs in the app use these Hotmart codes:
- *   Paletas kit     → A106645076Y
+ *   Paletas kit     → L106739688G (legacy A106645076Y)
  *   Paletas premium → O106646563E
  *   Postres kit     → I106646611G
  *   Postres premium → Y106683338S
@@ -14,14 +14,16 @@ import { mapPurchaseProduct } from './grant-entitlements.js';
 
 const DEFAULT_MAP = {
   // numeric product ids (common in webhook data.product.id)
-  '106645076': 'paletas_kit',
+  '106739688': 'paletas_kit',
+  '106645076': 'paletas_kit', // legacy
   '106646563': 'paletas_premium',
   '106646611': 'postres_kit',
   '106683338': 'postres_premium',
   // Legacy Mini checkout: same offer as Postres en Vaso Sin Horno
   '106734353': 'postres_kit',
   // checkout codes as they appear in pay.hotmart.com URLs
-  A106645076Y: 'paletas_kit',
+  L106739688G: 'paletas_kit',
+  A106645076Y: 'paletas_kit', // legacy
   O106646563E: 'paletas_premium',
   I106646611G: 'postres_kit',
   Y106683338S: 'postres_premium',
