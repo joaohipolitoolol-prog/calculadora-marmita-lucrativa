@@ -17,9 +17,11 @@ import {
 } from '../lib/landing-checkout.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { PRODUCT_LINE_BY_ID } from '../lib/product-lines.js';
+import { initKitPreview } from '../lib/kit-preview.js';
 
 trackCurrentPage({ line: 'postres' });
 bindTrackClicks({ page: 'postres', line: 'postres', numberId: WHATSAPP_NUMBER_ID });
+initKitPreview();
 
 const POSTRES_SELLABLE = PRODUCT_LINE_BY_ID.postres?.sellable === true;
 

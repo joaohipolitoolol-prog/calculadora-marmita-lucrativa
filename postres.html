@@ -111,9 +111,30 @@
       </figure>
 
       <div class="hero-flavor-strip" aria-label="Ejemplos de postres del kit">
-        <img src="/minipostres/flavors/fresa.webp" alt="Postre de fresa" width="160" height="160" loading="eager">
-        <img src="/minipostres/flavors/oreo.webp" alt="Postre de Oreo" width="160" height="160" loading="eager">
-        <img src="/minipostres/flavors/chocolate.webp" alt="Postre de chocolate" width="160" height="160" loading="lazy">
+        <figure class="flavor-chip">
+          <img src="/minipostres/flavors/fresa.webp" alt="Postre de fresa" width="160" height="160" loading="eager">
+          <figcaption>Fresa</figcaption>
+        </figure>
+        <figure class="flavor-chip">
+          <img src="/minipostres/flavors/oreo.webp" alt="Postre de Oreo" width="160" height="160" loading="eager">
+          <figcaption>Oreo</figcaption>
+        </figure>
+        <figure class="flavor-chip">
+          <img src="/minipostres/flavors/chocolate.webp" alt="Postre de chocolate" width="160" height="160" loading="lazy">
+          <figcaption>Chocolate</figcaption>
+        </figure>
+        <figure class="flavor-chip">
+          <img src="/minipostres/flavors/maracuya.webp" alt="Postre de maracuyá" width="160" height="160" loading="lazy">
+          <figcaption>Maracuyá</figcaption>
+        </figure>
+        <figure class="flavor-chip">
+          <img src="/minipostres/flavors/limon.webp" alt="Postre de limón" width="160" height="160" loading="lazy">
+          <figcaption>Limón</figcaption>
+        </figure>
+        <figure class="flavor-chip">
+          <img src="/minipostres/flavors/dulce-leche.webp" alt="Postre de dulce de leche" width="160" height="160" loading="lazy">
+          <figcaption>Dulce de leche</figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -135,25 +156,166 @@
     <div class="container">
       <p class="section-label">● Dentro de la aplicación</p>
       <h2 id="preview-title">Así se ve lo que recibes</h2>
-      <p class="section-text">Calculadora, menú, mensajes para WhatsApp y recetas — todo organizado en un solo acceso digital.</p>
+      <p class="section-text">Toca y arrastra. Cada pantalla es una herramienta real del kit.</p>
 
-      <figure class="inside-banner" aria-label="Vista del Kit Digital 3 Bases, 12 Postres">
-        <img
-          src="/postres/kit-inside-cards.webp?v=3"
-          alt="Kit Digital: calculadora, menú con mini postres, mensajes para WhatsApp y recetas en vaso"
-          class="inside-banner__img"
-          width="1200"
-          height="675"
-          loading="lazy"
-        >
-      </figure>
+      <div class="kit-preview" data-kit-preview>
+        <div class="kit-preview-track" data-kit-track>
+          <article class="kit-preview-slide is-active" data-kit-slide>
+            <div class="kit-phone">
+              <div class="kit-phone-bar">
+                <strong>Recetas</strong>
+                <span>Paso a paso</span>
+              </div>
+              <div class="kit-phone-body">
+                <div class="kit-recipe-hero">
+                  <img class="kit-recipe-photo" src="/minipostres/flavors/oreo.webp" alt="Mini postre Oreo listo" width="400" height="300" loading="lazy">
+                  <div class="kit-recipe-meta">
+                    <strong>Oreo</strong>
+                    <span>Sin horno · 8 vasos</span>
+                  </div>
+                </div>
+                <ul class="kit-recipe-steps">
+                  <li><span>1</span> Prepara la base de crema</li>
+                  <li><span>2</span> Monta en vaso sin horno</li>
+                  <li><span>3</span> Decora y lista para ofrecer</li>
+                </ul>
+              </div>
+            </div>
+            <p class="kit-preview-caption">12 recetas en vaso</p>
+          </article>
 
-      <ul class="preview-tags" aria-label="Funciones principales">
-        <li>12 recetas</li>
-        <li>Calculadora</li>
-        <li>Menú</li>
-        <li>Mensajes</li>
-      </ul>
+          <article class="kit-preview-slide" data-kit-slide>
+            <div class="kit-phone" data-mini-calc>
+              <div class="kit-phone-bar">
+                <strong>Calculadora</strong>
+                <span>Interactiva</span>
+              </div>
+              <div class="kit-phone-body">
+                <div class="mini-calc-row">
+                  <label for="mc-postres-price">Precio de venta</label>
+                  <div class="mini-calc-controls">
+                    <button type="button" data-mc-nudge="price" data-mc-step="-0.10" aria-label="Bajar precio">−</button>
+                    <input id="mc-postres-price" type="number" inputmode="decimal" step="0.10" min="0" value="1.60" data-mc-price>
+                    <button type="button" data-mc-nudge="price" data-mc-step="0.10" aria-label="Subir precio">+</button>
+                  </div>
+                </div>
+                <div class="mini-calc-row">
+                  <label for="mc-postres-cost">Costo real</label>
+                  <div class="mini-calc-controls">
+                    <button type="button" data-mc-nudge="cost" data-mc-step="-0.05" aria-label="Bajar costo">−</button>
+                    <input id="mc-postres-cost" type="number" inputmode="decimal" step="0.05" min="0" value="0.70" data-mc-cost>
+                    <button type="button" data-mc-nudge="cost" data-mc-step="0.05" aria-label="Subir costo">+</button>
+                  </div>
+                </div>
+                <div class="mini-calc-result">
+                  <div>
+                    <span>Utilidad</span>
+                    <strong data-mc-profit>US$ 0,90</strong>
+                  </div>
+                  <div>
+                    <span>Margen</span>
+                    <strong data-mc-margin>56%</strong>
+                  </div>
+                </div>
+                <p class="mini-calc-tip">Prueba cambiar el precio. Así calculas antes de publicar.</p>
+              </div>
+            </div>
+            <p class="kit-preview-caption">Calculadora de precios</p>
+          </article>
+
+          <article class="kit-preview-slide" data-kit-slide>
+            <div class="kit-phone">
+              <div class="kit-phone-bar">
+                <strong>Menú WhatsApp</strong>
+                <span>Listo</span>
+              </div>
+              <div class="kit-phone-body">
+                <p class="kit-menu-head">Hoy disponible</p>
+                <ul class="kit-menu-list">
+                  <li>
+                    <img src="/minipostres/flavors/fresa.webp" alt="" width="52" height="52" loading="lazy">
+                    <div class="kit-menu-copy">
+                      <strong>Fresa</strong>
+                      <em>Base crema</em>
+                    </div>
+                    <span>US$ 1,60</span>
+                  </li>
+                  <li>
+                    <img src="/minipostres/flavors/oreo.webp" alt="" width="52" height="52" loading="lazy">
+                    <div class="kit-menu-copy">
+                      <strong>Oreo</strong>
+                      <em>Base crema</em>
+                    </div>
+                    <span>US$ 1,60</span>
+                  </li>
+                  <li>
+                    <img src="/minipostres/flavors/chocolate.webp" alt="" width="52" height="52" loading="lazy">
+                    <div class="kit-menu-copy">
+                      <strong>Chocolate</strong>
+                      <em>Base chocolate</em>
+                    </div>
+                    <span>US$ 1,60</span>
+                  </li>
+                  <li>
+                    <img src="/minipostres/flavors/maracuya.webp" alt="" width="52" height="52" loading="lazy">
+                    <div class="kit-menu-copy">
+                      <strong>Maracuyá</strong>
+                      <em>Base frutal</em>
+                    </div>
+                    <span>US$ 1,60</span>
+                  </li>
+                </ul>
+                <p class="kit-menu-foot">Combo x3 · listo para copiar</p>
+              </div>
+            </div>
+            <p class="kit-preview-caption">Menú claro para publicar</p>
+          </article>
+
+          <article class="kit-preview-slide" data-kit-slide>
+            <div class="kit-phone">
+              <div class="kit-phone-bar">
+                <strong>Mensajes</strong>
+                <span>WhatsApp</span>
+              </div>
+              <div class="kit-phone-body">
+                <div class="kit-wa">
+                  <div class="kit-wa-thread">
+                    <div class="kit-wa-msg kit-wa-out">
+                      <p><strong>Mini postres fríos 🧁</strong>Hoy tengo: Fresa, Oreo y Chocolate. ¿Te antoja alguno?</p>
+                      <time>10:14</time>
+                    </div>
+                    <div class="kit-wa-msg kit-wa-in">
+                      <p>Hola! Me das 3 de Oreo y 2 de fresa? Para hoy en la tarde</p>
+                      <time>10:15</time>
+                    </div>
+                    <div class="kit-wa-msg kit-wa-out">
+                      <p>Listo ✅ Total US$ 8,00. Te los dejo a las 5 pm. ¿Dirección?</p>
+                      <time>10:16</time>
+                    </div>
+                    <div class="kit-wa-msg kit-wa-in">
+                      <p>Perfecto, te mando la ubicación ahora</p>
+                      <time>10:16</time>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="kit-preview-caption">Mensajes para cerrar pedidos</p>
+          </article>
+        </div>
+
+        <div class="kit-preview-nav">
+          <button type="button" data-kit-prev aria-label="Anterior">‹</button>
+          <div class="kit-preview-dots" role="tablist" aria-label="Pantallas del kit">
+            <button type="button" class="is-active" data-kit-dot aria-selected="true" aria-label="Recetas"></button>
+            <button type="button" data-kit-dot aria-selected="false" aria-label="Calculadora"></button>
+            <button type="button" data-kit-dot aria-selected="false" aria-label="Menú"></button>
+            <button type="button" data-kit-dot aria-selected="false" aria-label="Mensajes"></button>
+          </div>
+          <button type="button" data-kit-next aria-label="Siguiente">›</button>
+        </div>
+        <p class="kit-preview-hint">Arrastra o usa las flechas · 4 herramientas</p>
+      </div>
     </div>
   </section>
 
