@@ -96,14 +96,14 @@ export const showExpertSection = false;
 export const showOrderBumps = false;
 export const orderBumpsConfiguredOnCheckout = false;
 
-export const HERO_CTA_LABEL = 'Quiero empezar a ganar';
-export const OFFER_CTA_LABEL = 'Quiero ganar con mini postres ahora';
-export const FINAL_CTA_LABEL = 'Quiero empezar a ganar ahora';
-export const STICKY_CTA_LABEL = 'Empezar a ganar';
+export const HERO_CTA_LABEL = 'Quiero armar mi menú';
+export const OFFER_CTA_LABEL = 'Acceder al material ahora';
+export const FINAL_CTA_LABEL = 'Quiero empezar con las 3 bases';
+export const STICKY_CTA_LABEL = 'Acceder ahora';
 
 export const SITE_ORIGIN = 'https://paletasparawhatsapp.vercel.app';
 export const CANONICAL_URL = `${SITE_ORIGIN}/minipostres`;
-export const OG_IMAGE = `${SITE_ORIGIN}/minipostres/hero/hero-composition.webp?v=1`;
+export const OG_IMAGE = `${SITE_ORIGIN}/minipostres/hero/hero-composition.webp?v=2`;
 
 /**
  * Deliverable modules. status: available | comingSoon | hidden

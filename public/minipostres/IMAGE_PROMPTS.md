@@ -8,7 +8,21 @@ Usar para generar fotos reales (Midjourney, Flux, Ideogram, etc.). Sustituir los
 Realistic premium food photography of an individual cold dessert in a small transparent container, visible creamy layers, homemade but professional presentation, Latin American dessert aesthetic, natural ingredients, soft warm lighting, clean neutral background (#FFF8F2 / soft beige), realistic texture, appetizing but not artificial, high detail, no text, no logos, no hands with deformities, vertical composition, 4:5
 ```
 
-## 1. Hero: composición
+## 1. Hero: composición (emocional — prioridad LP)
+
+Objetivo: que la persona piense “esto parece caro y yo puedo hacerlo”, no “aquí hay un catálogo de sabores”.
+
+```
+Close-up food photography of a woman's hand holding one mini cold dessert in a clear cup in the foreground, caramel or passion fruit drizzle dripping, creamy layers visible, several finished mini desserts in clear cups on a real kitchen counter slightly out of focus behind, homemade packaging ready for delivery nearby (simple lids, no brand logos), warm window light, Latin American home kitchen atmosphere, appetizing and desirable, realistic texture, not catalog flat-lay, not artificial AI catalog look, no text, no logos, wide 3:2
+```
+
+Alternativa (mismo mensaje, sin mano si sale mal):
+
+```
+3/4 angle on a real kitchen counter: one hero mini cold dessert with dripping dulce de leche in the front, 4–5 other cups behind with strawberry, chocolate, Oreo crumbs, lemon, passion fruit; soft lifestyle blur on background utensils, homemade delivery-ready feel, warm natural light, premium but homemade, no text, no logos, wide 3:2
+```
+
+Legacy / flat catalog (evitar en ads y hero):
 
 ```
 Overhead and slight 3/4 angle composition of 8 mini cold desserts in individual transparent cups on a cream surface, visible creamy layers: strawberry, chocolate, Oreo crumbs, lemon zest, dulce de leche drizzle, passion fruit pulp, coconut flakes; homemade premium Latin American aesthetic, soft warm window light, no text, no logos, appetizing realistic food photography, wide 3:2
