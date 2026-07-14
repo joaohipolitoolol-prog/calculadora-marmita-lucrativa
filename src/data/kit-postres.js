@@ -98,7 +98,7 @@ export const PLAN_7_DIAS_POSTRES = [
     duracion: 'Según demanda',
     meta: 'Responder con claridad y anotar cada pedido',
     tareas: [
-      'Anota sabores, cantidad y forma de pago',
+      'Anota cada pedido en Kit → Pedidos (cliente, sabores, total)',
       'Confirma entrega o punto de recogida',
       'Prepara la tanda del día con margen de frío',
     ],

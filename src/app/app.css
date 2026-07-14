@@ -2517,68 +2517,16 @@ body.drawer-open { overflow: hidden; }
   border-left: 4px solid var(--orange);
 }
 
-.menu-item-thumb {
-  flex: 0 0 56px;
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--gray-light);
+.menu-item-emoji {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-}
-
-.menu-item-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.menu-item-thumb--art {
-  background: var(--recipe-wash, #ffe8f0);
-  font-size: 1.45rem;
-  box-shadow: inset 0 0 0 1px rgba(61, 34, 40, 0.06);
-}
-
-.menu-item-hero {
-  margin: 0 0 12px;
-  border-radius: 14px;
-  overflow: hidden;
-  aspect-ratio: 16 / 10;
-  background: var(--gray-light);
-}
-
-.menu-item-hero img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.menu-item-hero--art {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), transparent 55%),
-    var(--recipe-wash, #ffe8f0);
-  border: 1px solid rgba(61, 34, 40, 0.06);
-}
-
-.menu-item-hero-emoji {
-  font-size: 2.4rem;
+  font-size: 1.35rem;
   line-height: 1;
-}
-
-.menu-item-hero-label {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--brown);
-  text-align: center;
-  padding: 0 12px;
+  background: var(--gray-light);
 }
 
 .menu-item-allergens {
@@ -4831,8 +4779,100 @@ button.linkish {
   cursor: pointer;
 }
 
+.pedido-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.pedido-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pedido-form-grid label.span-2 {
+  grid-column: 1 / -1;
+}
+
+.pedido-form-grid input,
+.pedido-status-label select {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  border: 1.5px solid var(--gray-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--brown);
+  background: var(--surface);
+}
+
+.pedidos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pedido-card {
+  border: 1.5px solid var(--gray-border);
+  border-radius: 14px;
+  padding: 12px;
+  background: var(--surface);
+  border-left: 4px solid var(--pink);
+}
+
+.pedido-card.status-confirmado { border-left-color: #2563eb; }
+.pedido-card.status-listo { border-left-color: #d97706; }
+.pedido-card.status-entregado { border-left-color: #16a34a; }
+.pedido-card.status-cancelado { border-left-color: #9ca3af; opacity: 0.85; }
+
+.pedido-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.pedido-status {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brown-mid);
+}
+
+.pedido-sabores,
+.pedido-total,
+.pedido-nota {
+  margin: 0 0 4px;
+  font-size: 0.86rem;
+  color: var(--brown-mid);
+  line-height: 1.4;
+}
+
+.pedido-status-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  text-transform: uppercase;
+}
+
 @media (max-width: 520px) {
-  .msg-vars-card .msg-vars-grid {
+  .msg-vars-card .msg-vars-grid,
+  .pedido-form-grid {
     grid-template-columns: 1fr;
   }
 }

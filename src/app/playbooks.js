@@ -5,6 +5,7 @@ import {
   adaptPlaybookText,
 } from '../data/playbooks-crecimiento.js';
 import { applyPlaceholders } from '../lib/whatsapp-placeholders.js';
+import { markKitLocalEdit } from '../lib/kit-workspace-sync.js';
 
 export function playbookProgressKey(lineId, uid) {
   return `kit_playbooks_${lineId || 'paletas'}_${uid || 'local'}_v1`;
@@ -22,6 +23,7 @@ export function loadPlaybookProgress(lineId, uid) {
 export function savePlaybookProgress(lineId, uid, map) {
   try {
     localStorage.setItem(playbookProgressKey(lineId, uid), JSON.stringify(map || {}));
+    markKitLocalEdit(uid);
   } catch {
     /* ignore */
   }
