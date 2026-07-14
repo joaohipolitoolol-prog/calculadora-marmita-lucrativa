@@ -1,4 +1,4 @@
-import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
+import { verifyAdminRequest, getFirebaseAdmin } from '../lib/firebase-admin.js';
 import { SITE_URL } from '../../src/site/config.js';
 
 function serializeTimestamp(value) {

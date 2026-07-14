@@ -2,8 +2,8 @@
  * Admin settings — GET (load) + POST (save) via Admin SDK.
  * Avoids client Firestore (ad blockers / silent defaults on refresh).
  */
-import { verifyAdminRequest, getFirebaseAdmin, FieldValue } from '../../server/lib/firebase-admin.js';
-import { normalizeExperiments } from '../../server/lib/experiments-config.js';
+import { verifyAdminRequest, getFirebaseAdmin, FieldValue } from '../lib/firebase-admin.js';
+import { normalizeExperiments } from '../lib/experiments-config.js';
 
 const ENABLED_LINES = ['paletas', 'postres'];
 

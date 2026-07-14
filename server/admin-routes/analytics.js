@@ -1,19 +1,19 @@
-import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
-import { PAGE_META, todayKey } from '../../server/lib/analytics-schema.js';
+import { verifyAdminRequest, getFirebaseAdmin } from '../lib/firebase-admin.js';
+import { PAGE_META, todayKey } from '../lib/analytics-schema.js';
 import {
   AB_METRICS,
   AB_VARIANTS,
   emptyAbEntry,
   publicAbEntry,
   rate,
-} from '../../server/lib/analytics-ab.js';
+} from '../lib/analytics-ab.js';
 import {
   QUIZ_STEP_IDS,
   buildStepDropoff,
   publicDwell,
   publicQuizSteps,
-} from '../../server/lib/analytics-funnel.js';
-import { buildInsights } from '../../server/lib/insights.js';
+} from '../lib/analytics-funnel.js';
+import { buildInsights } from '../lib/insights.js';
 
 const KNOWN_LINES = ['paletas', 'postres', 'donuts', 'minipostres'];
 

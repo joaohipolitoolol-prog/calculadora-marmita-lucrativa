@@ -1,4 +1,4 @@
-import { verifyAdminRequest, getFirebaseAdmin } from '../../server/lib/firebase-admin.js';
+import { verifyAdminRequest, getFirebaseAdmin } from '../lib/firebase-admin.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {

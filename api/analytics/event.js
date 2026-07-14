@@ -36,6 +36,8 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || {};
+    // Legacy /api/analytics/pageview clients sent { page } without event.
+    if (!body.event && body.page) body.event = 'page_view';
     const event = sanitizeKey(body.event, 32);
     if (!event || !EVENT_TYPES.has(event)) {
       return res.status(400).json({ error: 'event inválido' });
