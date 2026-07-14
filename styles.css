@@ -4003,59 +4003,66 @@ body:has(.purchase-sticky.visible) {
 /* ===== Kit preview carousel (phone slides) ===== */
 .kit-preview {
   margin: 8px auto 0;
-  max-width: 440px;
+  max-width: 360px;
+  width: 100%;
+  isolation: isolate;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.kit-preview-viewport {
+  overflow-x: clip;
+  overflow-y: visible;
+  width: 100%;
+  background: transparent;
+  touch-action: pan-y;
 }
 
 .kit-preview-track {
   display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  padding: 6px 12px 14px;
-  margin: 0 -12px;
-  scrollbar-width: none;
+  gap: 0;
+  width: 100%;
+  will-change: transform;
   cursor: grab;
-  touch-action: pan-x;
-}
-
-.kit-preview-track::-webkit-scrollbar {
-  display: none;
+  touch-action: none;
+  user-select: none;
 }
 
 .kit-preview-track.is-dragging {
   cursor: grabbing;
-  scroll-behavior: auto;
-  scroll-snap-type: none;
-  user-select: none;
 }
 
 .kit-preview-slide {
-  flex: 0 0 min(100%, calc(100vw - 48px));
-  max-width: 360px;
-  scroll-snap-align: center;
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: none;
   margin: 0;
-  opacity: 0.72;
-  transform: scale(0.97);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  padding: 0;
+  box-sizing: border-box;
+  background: #fff;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .kit-preview-slide.is-active {
   opacity: 1;
-  transform: scale(1);
+  transform: none;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.kit-preview-track.is-dragging .kit-preview-slide,
+.kit-preview-track.is-animating .kit-preview-slide {
+  visibility: visible;
 }
 
 .kit-phone {
-  background: linear-gradient(165deg, #fff 0%, #fff8fb 100%);
-  border: 1px solid rgba(232, 67, 122, 0.16);
+  background: #fff;
+  border: 1px solid rgba(232, 67, 122, 0.14);
   border-radius: 24px;
-  box-shadow:
-    0 18px 40px rgba(42, 23, 18, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: none;
   overflow: hidden;
-  min-height: 0;
+  height: 520px;
   display: flex;
   flex-direction: column;
 }
@@ -4090,9 +4097,11 @@ body:has(.purchase-sticky.visible) {
 .kit-phone-body {
   padding: 14px 14px 16px;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow: hidden;
 }
 
 .kit-preview-caption {
@@ -4101,6 +4110,7 @@ body:has(.purchase-sticky.visible) {
   font-size: 0.92rem;
   font-weight: 800;
   color: var(--brown);
+  min-height: 1.35em;
 }
 
 .kit-preview-hint {
@@ -4233,6 +4243,9 @@ body:has(.purchase-sticky.visible) {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
+  min-height: 0;
+  justify-content: flex-start;
 }
 
 .kit-menu-list li {
@@ -4293,8 +4306,9 @@ body:has(.purchase-sticky.visible) {
   border-radius: 16px;
   padding: 10px;
   flex: 1;
+  min-height: 0;
   display: flex;
-  min-height: 280px;
+  overflow: hidden;
 }
 
 .kit-wa-thread {
@@ -4303,13 +4317,13 @@ body:has(.purchase-sticky.visible) {
   gap: 8px;
   width: 100%;
   justify-content: flex-end;
+  overflow: hidden;
 }
 
 .kit-wa-msg {
   max-width: 92%;
   padding: 9px 11px 6px;
   border-radius: 14px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
 .kit-wa-msg p {
@@ -4349,11 +4363,12 @@ body:has(.purchase-sticky.visible) {
 
 .kit-recipe-hero {
   position: relative;
+  flex-shrink: 0;
 }
 
 .kit-recipe-photo {
   width: 100%;
-  height: 180px;
+  height: 132px;
   object-fit: cover;
   border-radius: 16px;
   border: 1px solid rgba(232, 67, 122, 0.12);
@@ -4384,6 +4399,72 @@ body:has(.purchase-sticky.visible) {
   opacity: 0.9;
 }
 
+.kit-recipe-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.kit-recipe-stats div {
+  background: var(--pink-light);
+  border: 1px solid rgba(232, 67, 122, 0.12);
+  border-radius: 12px;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.kit-recipe-stats em {
+  display: block;
+  font-style: normal;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  margin-bottom: 2px;
+}
+
+.kit-recipe-stats strong {
+  display: block;
+  font-size: 0.84rem;
+  color: var(--brown);
+}
+
+.kit-recipe-ing {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(232, 67, 122, 0.12);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  line-height: 1.35;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.kit-recipe-ing strong {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pink-dark);
+  margin-bottom: 2px;
+}
+
+.kit-recipe-tip {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(232, 67, 122, 0.08);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--brown);
+  text-align: center;
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+
 .kit-recipe-steps {
   list-style: none;
   margin: 0;
@@ -4391,13 +4472,15 @@ body:has(.purchase-sticky.visible) {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
+  min-height: 0;
 }
 
 .kit-recipe-steps li {
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: var(--brown-mid);
   line-height: 1.35;
@@ -4419,12 +4502,11 @@ body:has(.purchase-sticky.visible) {
 
 @media (min-width: 720px) {
   .kit-preview {
-    max-width: 400px;
+    max-width: 360px;
   }
 
-  .kit-preview-slide {
-    flex-basis: 360px;
-    max-width: 360px;
+  .kit-phone {
+    height: 520px;
   }
 }
 

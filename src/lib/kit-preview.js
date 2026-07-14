@@ -1,133 +1,145 @@
-/** Swipeable kit preview carousel (no visible scrollbar) + mini calc. */
+/** Kit preview carousel: equal slides, one-step swipe, no native scroll jumps. */
 
 export function initKitPreview(root = document) {
   root.querySelectorAll('[data-kit-preview]').forEach((preview) => {
     if (preview.dataset.kitBound === '1') return;
     preview.dataset.kitBound = '1';
 
+    const viewport = preview.querySelector('[data-kit-viewport]') || preview;
     const track = preview.querySelector('[data-kit-track]');
     const slides = [...preview.querySelectorAll('[data-kit-slide]')];
-    const dots = [...preview.querySelectorAll('[data-kit-dot]')];
     if (!track || !slides.length) return;
 
     let index = 0;
     let startX = 0;
-    let startScroll = 0;
+    let deltaX = 0;
     let dragging = false;
     let moved = false;
     let pointerId = null;
+    let width = 0;
 
     const clamp = (n) => Math.max(0, Math.min(slides.length - 1, n));
 
-    function slideWidth() {
-      const first = slides[0];
-      if (!first) return track.clientWidth;
-      const style = getComputedStyle(track);
-      const gap = parseFloat(style.columnGap || style.gap || '0') || 0;
-      return first.getBoundingClientRect().width + gap;
+    function measure() {
+      width = viewport.getBoundingClientRect().width || preview.getBoundingClientRect().width || 1;
     }
 
-    function goTo(i, smooth = true) {
-      index = clamp(i);
-      const left = index * slideWidth();
-      track.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' });
-      dots.forEach((dot, di) => {
-        const on = di === index;
-        dot.classList.toggle('is-active', on);
-        dot.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
+    function paint(offsetPx = 0, animate = true) {
+      if (animate) {
+        track.classList.add('is-animating');
+        track.style.transition = 'transform 280ms cubic-bezier(0.22, 1, 0.36, 1)';
+      } else {
+        track.classList.remove('is-animating');
+        track.style.transition = 'none';
+      }
+      track.style.transform = `translate3d(${-(index * width) + offsetPx}px, 0, 0)`;
       slides.forEach((slide, si) => {
-        slide.classList.toggle('is-active', si === index);
+        const on = si === index;
+        slide.classList.toggle('is-active', on);
+        slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+        slide.style.visibility = '';
       });
     }
 
-    function nearestIndex() {
-      const w = slideWidth() || 1;
-      return clamp(Math.round(track.scrollLeft / w));
+    function goTo(i, animate = true) {
+      index = clamp(i);
+      paint(0, animate);
     }
 
-    dots.forEach((dot, di) => {
-      dot.addEventListener('click', () => goTo(di));
+    track.addEventListener('transitionend', (e) => {
+      if (e.target !== track || e.propertyName !== 'transform') return;
+      track.classList.remove('is-animating');
     });
 
-    track.addEventListener(
-      'scroll',
-      () => {
-        if (dragging) return;
-        const next = nearestIndex();
-        if (next !== index) {
-          index = next;
-          dots.forEach((dot, di) => {
-            const on = di === index;
-            dot.classList.toggle('is-active', on);
-            dot.setAttribute('aria-selected', on ? 'true' : 'false');
-          });
-          slides.forEach((slide, si) => {
-            slide.classList.toggle('is-active', si === index);
-          });
-        }
-      },
-      { passive: true }
-    );
+    let startY = 0;
+    let axis = null; // 'x' | 'y' | null
 
-    track.addEventListener('pointerdown', (e) => {
-      if (e.pointerType === 'touch') return; // native inertial scroll
-      if (e.button !== 0) return;
+    function onPointerDown(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (e.target.closest('input, button, a, label')) return;
+
+      measure();
       dragging = true;
       moved = false;
-      pointerId = e.pointerId;
+      axis = null;
+      deltaX = 0;
       startX = e.clientX;
-      startScroll = track.scrollLeft;
+      startY = e.clientY;
+      pointerId = e.pointerId;
       track.classList.add('is-dragging');
+      paint(0, false);
       try {
         track.setPointerCapture(pointerId);
       } catch {
         /* ignore */
       }
-    });
+    }
 
-    track.addEventListener('pointermove', (e) => {
+    function onPointerMove(e) {
       if (!dragging || e.pointerId !== pointerId) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) moved = true;
-      track.scrollLeft = startScroll - dx;
-    });
+      const dy = e.clientY - startY;
 
-    function endDrag(e) {
+      if (!axis) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+        if (axis === 'y') {
+          dragging = false;
+          track.classList.remove('is-dragging');
+          paint(0, true);
+          try {
+            track.releasePointerCapture(pointerId);
+          } catch {
+            /* ignore */
+          }
+          pointerId = null;
+          return;
+        }
+      }
+
+      if (axis !== 'x') return;
+
+      deltaX = dx;
+      if (Math.abs(deltaX) > 6) moved = true;
+
+      let x = deltaX;
+      if ((index === 0 && x > 0) || (index === slides.length - 1 && x < 0)) {
+        x *= 0.35;
+      }
+      paint(x, false);
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function onPointerUp(e) {
       if (!dragging || (e && e.pointerId !== pointerId)) return;
       dragging = false;
       track.classList.remove('is-dragging');
-      goTo(nearestIndex());
+
+      const threshold = Math.min(72, width * 0.18);
+      if (deltaX <= -threshold) goTo(index + 1);
+      else if (deltaX >= threshold) goTo(index - 1);
+      else goTo(index);
+
       pointerId = null;
+      deltaX = 0;
     }
 
-    track.addEventListener('pointerup', endDrag);
-    track.addEventListener('pointercancel', endDrag);
+    track.addEventListener('pointerdown', onPointerDown);
+    track.addEventListener('pointermove', onPointerMove, { passive: false });
+    track.addEventListener('pointerup', onPointerUp);
+    track.addEventListener('pointercancel', onPointerUp);
 
-    track.addEventListener('click', (e) => {
-      if (moved) {
-        e.preventDefault();
-        e.stopPropagation();
-        moved = false;
-      }
-    }, true);
-
-    let touchStartX = 0;
     track.addEventListener(
-      'touchstart',
+      'click',
       (e) => {
-        touchStartX = e.touches[0]?.clientX || 0;
+        if (moved) {
+          e.preventDefault();
+          e.stopPropagation();
+          moved = false;
+        }
       },
-      { passive: true }
+      true
     );
-    track.addEventListener(
-      'touchend',
-      () => {
-        window.setTimeout(() => goTo(nearestIndex()), 40);
-      },
-      { passive: true }
-    );
-    void touchStartX;
 
     preview.querySelectorAll('[data-kit-prev]').forEach((btn) => {
       btn.addEventListener('click', () => goTo(index - 1));
@@ -138,8 +150,16 @@ export function initKitPreview(root = document) {
 
     preview.querySelectorAll('[data-mini-calc]').forEach(initMiniCalc);
 
+    measure();
     goTo(0, false);
-    window.addEventListener('resize', () => goTo(index, false), { passive: true });
+    window.addEventListener(
+      'resize',
+      () => {
+        measure();
+        goTo(index, false);
+      },
+      { passive: true }
+    );
   });
 }
 
@@ -153,8 +173,7 @@ function initMiniCalc(card) {
   const marginEl = card.querySelector('[data-mc-margin]');
   if (!priceEl || !costEl || !profitEl || !marginEl) return;
 
-  const money = (n) =>
-    `US$ ${n.toFixed(2).replace('.', ',')}`;
+  const money = (n) => `US$ ${n.toFixed(2).replace('.', ',')}`;
 
   function render() {
     const price = Number(priceEl.value) || 0;
