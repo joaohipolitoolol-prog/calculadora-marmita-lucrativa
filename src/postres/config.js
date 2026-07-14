@@ -7,7 +7,7 @@ export const CHECKOUT_URL = 'https://pay.hotmart.com/I106646611G?checkoutMode=10
 export const WHATSAPP_NUMBER_ID = 'postres_sales';
 export const WHATSAPP_URL = getWhatsAppUrl(WHATSAPP_NUMBER_ID);
 
-export const PRODUCT_NAME = 'Postres en Vaso para WhatsApp';
+export const PRODUCT_NAME = 'Postres en Vaso Sin Horno';
 export const META_PIXEL_ID = '1369803401885896';
 
 export const MAIN_PRICE = 7.49;

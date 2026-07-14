@@ -58,7 +58,7 @@ export const PRICE_ACCESS_LABEL = `Pago único de ${MAIN_PRICE_LABEL}`;
 
 export const CHECKOUT_URL = env(
   'NEXT_PUBLIC_MINIPOSTRES_CHECKOUT_URL',
-  env('VITE_MINIPOSTRES_CHECKOUT_URL', 'https://pay.hotmart.com/D106734353A?checkoutMode=10')
+  env('VITE_MINIPOSTRES_CHECKOUT_URL', 'https://pay.hotmart.com/I106646611G?checkoutMode=10')
 );
 
 export const VSL_URL = env(
@@ -68,7 +68,7 @@ export const VSL_URL = env(
 
 export const ACCESS_URL = env(
   'NEXT_PUBLIC_MINIPOSTRES_ACCESS_URL',
-  env('VITE_MINIPOSTRES_ACCESS_URL', '/app?line=minipostres')
+  env('VITE_MINIPOSTRES_ACCESS_URL', '/app?line=postres')
 );
 
 export const BUMP_MESSAGES_PRICE = parsePrice(
@@ -102,8 +102,8 @@ export const FINAL_CTA_LABEL = 'Quiero armar mi menú';
 export const STICKY_CTA_LABEL = 'Quiero armar mi menú';
 
 export const SITE_ORIGIN = 'https://paletasparawhatsapp.vercel.app';
-export const CANONICAL_URL = `${SITE_ORIGIN}/minipostres`;
-export const OG_IMAGE = `${SITE_ORIGIN}/minipostres/hero/hero-composition.webp?v=2`;
+export const CANONICAL_URL = `${SITE_ORIGIN}/postres`;
+export const OG_IMAGE = `${SITE_ORIGIN}/postres/og-postres-whatsapp.webp?v=8`;
 
 /**
  * Deliverable modules. status: available | comingSoon | hidden

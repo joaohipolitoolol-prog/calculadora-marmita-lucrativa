@@ -6,7 +6,7 @@
  *   Paletas premium → O106646563E
  *   Postres kit     → I106646611G
  *   Postres premium → Y106683338S
- *   Mini Postres kit → D106734353A
+ *   Mini Postres kit (legacy Hotmart) → D106734353A → grants postres_kit
  *
  * Override via env HOTMART_PRODUCT_MAP (JSON) if Hotmart dashboard IDs differ.
  */
@@ -18,13 +18,14 @@ const DEFAULT_MAP = {
   '106646563': 'paletas_premium',
   '106646611': 'postres_kit',
   '106683338': 'postres_premium',
-  '106734353': 'minipostres_kit',
+  // Legacy Mini checkout: same offer as Postres en Vaso Sin Horno
+  '106734353': 'postres_kit',
   // checkout codes as they appear in pay.hotmart.com URLs
   A106645076Y: 'paletas_kit',
   O106646563E: 'paletas_premium',
   I106646611G: 'postres_kit',
   Y106683338S: 'postres_premium',
-  D106734353A: 'minipostres_kit',
+  D106734353A: 'postres_kit',
 };
 
 function loadEnvMap() {
@@ -42,8 +43,8 @@ function nameHint(name) {
   const n = String(name || '').toLowerCase();
   if (!n) return null;
   const isPremium = /premium|upsell|completo|plus/.test(n);
-  // Mini before generic "postre" (name contains both)
-  if (/mini\s*postre/.test(n)) return isPremium ? 'minipostres_premium' : 'minipostres_kit';
+  // Legacy Mini Hotmart names → Postres kit (unified offer)
+  if (/mini\s*postre/.test(n)) return isPremium ? 'postres_premium' : 'postres_kit';
   const isPostres = /postre/.test(n);
   if (isPostres && isPremium) return 'postres_premium';
   if (isPostres) return 'postres_kit';

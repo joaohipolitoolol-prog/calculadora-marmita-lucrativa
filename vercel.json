@@ -22,11 +22,19 @@
     { "source": "/postresaviso", "destination": "/postres-aviso.html" },
     { "source": "/postres/entrega", "destination": "/postres/entrega.html" },
     { "source": "/postres-premium/entrega", "destination": "/postres-premium/entrega.html" },
-    { "source": "/minipostres", "destination": "/minipostres.html" },
-    { "source": "/minipostres/gracias", "destination": "/minipostres-gracias.html" },
     { "source": "/m/:slug", "destination": "/m.html" }
   ],
   "redirects": [
+    {
+      "source": "/minipostres",
+      "destination": "/postres",
+      "permanent": true
+    },
+    {
+      "source": "/minipostres/gracias",
+      "destination": "/postresaviso",
+      "permanent": true
+    },
     {
       "source": "/cadastrar",
       "has": [{ "type": "query", "key": "line", "value": "postres" }],

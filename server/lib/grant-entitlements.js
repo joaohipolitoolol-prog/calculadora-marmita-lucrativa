@@ -59,8 +59,9 @@ export function mapPurchaseProduct(productCode) {
     paletas_premium: { line: 'paletas', tier: 'premium' },
     postres_kit: { line: 'postres', tier: 'kit' },
     postres_premium: { line: 'postres', tier: 'premium' },
-    minipostres_kit: { line: 'minipostres', tier: 'kit' },
-    minipostres_premium: { line: 'minipostres', tier: 'premium' },
+    // Legacy Mini codes still accepted; grant Postres (unified offer)
+    minipostres_kit: { line: 'postres', tier: 'kit' },
+    minipostres_premium: { line: 'postres', tier: 'premium' },
   };
   return map[code] || null;
 }
