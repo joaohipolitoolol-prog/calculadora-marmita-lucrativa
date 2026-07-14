@@ -33,6 +33,8 @@ export async function createUserProfile(
     hasPremium = false,
     hasPostres = false,
     hasPostresPremium = false,
+    hasMinipostres = false,
+    hasMinipostresPremium = false,
     registeredFrom = null,
     registeredLine = null,
     premiumPending = null,
@@ -48,6 +50,8 @@ export async function createUserProfile(
     hasPremium: Boolean(hasPremium),
     hasPostres: Boolean(hasPostres),
     hasPostresPremium: Boolean(hasPostresPremium),
+    hasMinipostres: Boolean(hasMinipostres),
+    hasMinipostresPremium: Boolean(hasMinipostresPremium),
     isAdmin: admin,
     registeredFrom,
     registeredLine,
@@ -154,7 +158,15 @@ export function hasKitAccess(profile, user) {
   if (!user) return false;
   // Any owned product (or legacy profiles) can enter the app shell.
   if (!profile) return true;
-  return Boolean(profile.hasKit || profile.hasPostres || profile.hasPremium || profile.hasPostresPremium || profile.isAdmin);
+  return Boolean(
+    profile.hasKit ||
+      profile.hasPostres ||
+      profile.hasMinipostres ||
+      profile.hasPremium ||
+      profile.hasPostresPremium ||
+      profile.hasMinipostresPremium ||
+      profile.isAdmin
+  );
 }
 
 export function hasPaletasAccess(profile) {

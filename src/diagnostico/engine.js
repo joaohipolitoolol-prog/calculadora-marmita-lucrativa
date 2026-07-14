@@ -448,7 +448,9 @@ export function createDiagnostico(root) {
     goNext();
   }
 
-  //, -, Render helpers, -, function renderWelcome(s) {
+  // — Render helpers —
+
+  function renderWelcome(s) {
     return `
       <section class="dx-screen dx-welcome" aria-labelledby="dx-title">
         <h1 id="dx-title" class="dx-title dx-title-display">${esc(s.title)}</h1>

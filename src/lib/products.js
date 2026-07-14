@@ -36,6 +36,15 @@ export const PRODUCTS = [
     group: 'postres',
     tier: 'upsell',
   },
+  {
+    id: 'minipostres_kit',
+    field: 'hasMinipostres',
+    label: 'Mini Postres Kit',
+    short: 'Mini',
+    emoji: '🧁',
+    group: 'minipostres',
+    tier: 'main',
+  },
 ];
 
 export const PRODUCT_BY_FIELD = Object.fromEntries(PRODUCTS.map((p) => [p.field, p]));

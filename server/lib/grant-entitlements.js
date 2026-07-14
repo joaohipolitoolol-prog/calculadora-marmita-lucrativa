@@ -8,11 +8,12 @@ import { getFirebaseAdmin, FieldValue } from './firebase-admin.js';
 const LINE_FIELDS = {
   paletas: { kit: 'hasKit', premium: 'hasPremium' },
   postres: { kit: 'hasPostres', premium: 'hasPostresPremium' },
+  minipostres: { kit: 'hasMinipostres', premium: 'hasMinipostresPremium' },
 };
 
 /**
  * @param {string} uid
- * @param {{ line: 'paletas'|'postres', tier: 'kit'|'premium'|'both', source?: string }} opts
+ * @param {{ line: 'paletas'|'postres'|'minipostres', tier: 'kit'|'premium'|'both', source?: string }} opts
  */
 export async function grantEntitlements(uid, opts = {}) {
   if (!uid) throw new Error('uid requerido');
@@ -58,6 +59,8 @@ export function mapPurchaseProduct(productCode) {
     paletas_premium: { line: 'paletas', tier: 'premium' },
     postres_kit: { line: 'postres', tier: 'kit' },
     postres_premium: { line: 'postres', tier: 'premium' },
+    minipostres_kit: { line: 'minipostres', tier: 'kit' },
+    minipostres_premium: { line: 'minipostres', tier: 'premium' },
   };
   return map[code] || null;
 }

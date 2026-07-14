@@ -3,7 +3,7 @@
  *
  * Auth: Authorization: Bearer <PURCHASE_WEBHOOK_SECRET>
  * Body: { email, product, name?, event? }
- *   product = paletas_kit | paletas_premium | postres_kit | postres_premium
+ *   product = paletas_kit | paletas_premium | postres_kit | postres_premium | minipostres_kit
  */
 import {
   findUserUidByEmail,
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     if (!mapped) {
       return res.status(400).json({
         error: 'product inválido',
-        allowed: ['paletas_kit', 'paletas_premium', 'postres_kit', 'postres_premium'],
+        allowed: ['paletas_kit', 'paletas_premium', 'postres_kit', 'postres_premium', 'minipostres_kit'],
       });
     }
 

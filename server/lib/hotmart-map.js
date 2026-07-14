@@ -6,6 +6,7 @@
  *   Paletas premium → O106646563E
  *   Postres kit     → I106646611G
  *   Postres premium → Y106683338S
+ *   Mini Postres kit → D106734353A
  *
  * Override via env HOTMART_PRODUCT_MAP (JSON) if Hotmart dashboard IDs differ.
  */
@@ -17,11 +18,13 @@ const DEFAULT_MAP = {
   '106646563': 'paletas_premium',
   '106646611': 'postres_kit',
   '106683338': 'postres_premium',
+  '106734353': 'minipostres_kit',
   // checkout codes as they appear in pay.hotmart.com URLs
   A106645076Y: 'paletas_kit',
   O106646563E: 'paletas_premium',
   I106646611G: 'postres_kit',
   Y106683338S: 'postres_premium',
+  D106734353A: 'minipostres_kit',
 };
 
 function loadEnvMap() {
@@ -38,8 +41,10 @@ function loadEnvMap() {
 function nameHint(name) {
   const n = String(name || '').toLowerCase();
   if (!n) return null;
-  const isPostres = /postre/.test(n);
   const isPremium = /premium|upsell|completo|plus/.test(n);
+  // Mini before generic "postre" (name contains both)
+  if (/mini\s*postre/.test(n)) return isPremium ? 'minipostres_premium' : 'minipostres_kit';
+  const isPostres = /postre/.test(n);
   if (isPostres && isPremium) return 'postres_premium';
   if (isPostres) return 'postres_kit';
   if (/paleta/.test(n) && isPremium) return 'paletas_premium';

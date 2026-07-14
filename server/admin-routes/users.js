@@ -1,6 +1,6 @@
 import { verifyAdminRequest, getFirebaseAdmin, FieldValue } from '../lib/firebase-admin.js';
 
-const PRODUCT_FIELDS = ['hasKit', 'hasPremium', 'hasPostres', 'hasPostresPremium'];
+const PRODUCT_FIELDS = ['hasKit', 'hasPremium', 'hasPostres', 'hasPostresPremium', 'hasMinipostres'];
 
 function hasPasswordProvider(authUser) {
   return (authUser?.providerData || []).some((p) => p.providerId === 'password');
@@ -42,6 +42,8 @@ function mergeUser(authUser, profile) {
       hasPremium: Boolean(base?.hasPremium),
       hasPostres: Boolean(base?.hasPostres),
       hasPostresPremium: Boolean(base?.hasPostresPremium),
+      hasMinipostres: Boolean(base?.hasMinipostres),
+      hasMinipostresPremium: Boolean(base?.hasMinipostresPremium),
       isAdmin: Boolean(base?.isAdmin),
       registeredFrom: base?.registeredFrom || null,
       registeredLine: base?.registeredLine || null,
@@ -108,6 +110,8 @@ function productFlagsFromBody(products = {}) {
     hasPremium: Boolean(products.paletas_premium),
     hasPostres: Boolean(products.postres_kit),
     hasPostresPremium: Boolean(products.postres_premium),
+    hasMinipostres: Boolean(products.minipostres_kit),
+    hasMinipostresPremium: Boolean(products.minipostres_premium),
   };
 }
 
@@ -190,6 +194,8 @@ async function createUser(firebaseAdmin, body) {
     hasPremium: Boolean(prev.hasPremium) || flags.hasPremium,
     hasPostres: Boolean(prev.hasPostres) || flags.hasPostres,
     hasPostresPremium: Boolean(prev.hasPostresPremium) || flags.hasPostresPremium,
+    hasMinipostres: Boolean(prev.hasMinipostres) || flags.hasMinipostres,
+    hasMinipostresPremium: Boolean(prev.hasMinipostresPremium) || flags.hasMinipostresPremium,
     premiumPending: normalizePremiumPending(prev.premiumPending),
     needsPasswordSetup,
     updatedAt: FieldValue.serverTimestamp(),
@@ -199,7 +205,14 @@ async function createUser(firebaseAdmin, body) {
     profile.createdAt = FieldValue.serverTimestamp();
   }
 
-  if (flags.hasKit || flags.hasPremium || flags.hasPostres || flags.hasPostresPremium) {
+  if (
+    flags.hasKit ||
+    flags.hasPremium ||
+    flags.hasPostres ||
+    flags.hasPostresPremium ||
+    flags.hasMinipostres ||
+    flags.hasMinipostresPremium
+  ) {
     profile.lastGrantSource = linkedExisting ? 'admin_link' : 'admin_manual';
     profile.lastGrantAt = new Date().toISOString();
   }

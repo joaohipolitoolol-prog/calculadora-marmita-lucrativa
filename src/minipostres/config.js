@@ -58,7 +58,7 @@ export const PRICE_ACCESS_LABEL = `Pago único de ${MAIN_PRICE_LABEL}`;
 
 export const CHECKOUT_URL = env(
   'NEXT_PUBLIC_MINIPOSTRES_CHECKOUT_URL',
-  env('VITE_MINIPOSTRES_CHECKOUT_URL', 'https://pay.hotmart.com/COLOCAR_LINK_MINIPOSTRES?checkoutMode=10')
+  env('VITE_MINIPOSTRES_CHECKOUT_URL', 'https://pay.hotmart.com/D106734353A?checkoutMode=10')
 );
 
 export const VSL_URL = env(
@@ -97,9 +97,9 @@ export const showOrderBumps = false;
 export const orderBumpsConfiguredOnCheckout = false;
 
 export const HERO_CTA_LABEL = 'Quiero armar mi menú';
-export const OFFER_CTA_LABEL = 'Acceder al material ahora';
-export const FINAL_CTA_LABEL = 'Quiero empezar con las 3 bases';
-export const STICKY_CTA_LABEL = 'Acceder ahora';
+export const OFFER_CTA_LABEL = 'Quiero armar mi menú';
+export const FINAL_CTA_LABEL = 'Quiero armar mi menú';
+export const STICKY_CTA_LABEL = 'Quiero armar mi menú';
 
 export const SITE_ORIGIN = 'https://paletasparawhatsapp.vercel.app';
 export const CANONICAL_URL = `${SITE_ORIGIN}/minipostres`;
