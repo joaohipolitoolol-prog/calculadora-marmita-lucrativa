@@ -14,9 +14,9 @@ export const MAIN_PRICE = 7.49;
 export const MAIN_PRICE_LABEL = 'US$ 7,49';
 export const PRICE_ACCESS_LABEL = 'Acceso completo por US$ 7,49';
 
-export const HERO_CTA_LABEL = 'Quiero preparar mi primera oferta';
+export const HERO_CTA_LABEL = 'Quiero armar mi menú';
 export const CALC_CTA_LABEL = 'Quiero calcular antes de vender';
-export const OFFER_CTA_LABEL = 'Acceder al kit ahora';
+export const OFFER_CTA_LABEL = 'Quiero armar mi menú';
 export const TRUST_CTA_LABEL = 'Quiero empezar con más claridad';
-export const STICKY_CTA_LABEL = 'Acceder al kit ahora';
+export const STICKY_CTA_LABEL = 'Quiero armar mi menú';
 export const CTA_LABEL = HERO_CTA_LABEL;

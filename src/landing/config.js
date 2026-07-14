@@ -59,18 +59,18 @@ export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
-export const HERO_CTA_LABEL = 'Quiero vender ahora';
+export const HERO_CTA_LABEL = 'Quiero armar mi menú';
 
-export const PRICE_CTA_LABEL = 'Empezar hoy';
+export const PRICE_CTA_LABEL = 'Quiero armar mi menú';
 
 export const CALC_CTA_LABEL = 'Quiero calcular antes de vender';
 
-export const OFFER_CTA_LABEL = 'Quiero vender ahora';
+export const OFFER_CTA_LABEL = 'Quiero armar mi menú';
 
 export const TRUST_CTA_LABEL = 'Quiero empezar con más claridad';
 
-export const STICKY_CTA_LABEL = 'Acceso inmediato';
+export const STICKY_CTA_LABEL = 'Quiero armar mi menú';
 
-export const FINAL_CTA_LABEL = 'Quiero vender ahora';
+export const FINAL_CTA_LABEL = 'Quiero armar mi menú';
 
 export const CTA_LABEL = HERO_CTA_LABEL;
