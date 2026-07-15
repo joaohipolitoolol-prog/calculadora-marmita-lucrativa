@@ -4,6 +4,12 @@ export const PAGE_META = {
   home: { path: '/', label: 'Paletas LP', line: 'paletas' },
   diagnostico: { path: '/diagnostico', label: 'Diagnóstico Quiz', line: 'paletas' },
   postres: { path: '/postres', label: 'Postres LP', line: 'postres' },
+  minipostres: { path: '/minipostres', label: 'Mini Postres LP', line: 'minipostres' },
+  'minipostres-gracias': {
+    path: '/minipostres/gracias',
+    label: 'Mini Postres Gracias',
+    line: 'minipostres',
+  },
   'upsell-paletas': { path: '/upsell-paletas-premium', label: 'Upsell Paletas', line: 'paletas' },
   'upsell-postres': { path: '/postres/upsell', label: 'Upsell Postres', line: 'postres' },
   'aviso-postres': { path: '/postresaviso', label: 'Aviso Postres', line: 'postres' },
@@ -33,7 +39,7 @@ export const EVENT_TYPES = new Set([
 
 export const AB_VARIANTS = new Set(['lp', 'quiz']);
 
-export const LINES = new Set(['paletas', 'postres', 'donuts']);
+export const LINES = new Set(['paletas', 'postres', 'donuts', 'minipostres']);
 
 export function todayKey() {
   return new Date().toISOString().slice(0, 10);

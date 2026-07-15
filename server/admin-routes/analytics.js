@@ -352,6 +352,49 @@ function sumDailyEvent(dayDocs, eventKey) {
   return n;
 }
 
+/** Sum an event for a period; when line is set, prefer eventsByLine (falls back to 0 if missing). */
+function sumDailyEventForLine(dayDocs, eventKey, line) {
+  if (!line || line === 'all') return sumDailyEvent(dayDocs, eventKey);
+  let n = 0;
+  for (const day of dayDocs) {
+    n += Number(day.eventsByLine?.[line]?.[eventKey]) || 0;
+  }
+  return n;
+}
+
+function eventCountFromSummary(summary, eventKey, line, useTotal) {
+  if (line && line !== 'all') {
+    const cell = summary.eventsByLine?.[line]?.[eventKey];
+    if (!cell) return 0;
+    return useTotal ? Number(cell.total) || 0 : Number(cell.today) || 0;
+  }
+  const cell = summary.events?.[eventKey];
+  if (!cell) return 0;
+  return useTotal ? Number(cell.total) || 0 : Number(cell.today) || 0;
+}
+
+function periodEventCount(summary, rangeDays, eventKey, line, useSummaryPeriod) {
+  if (useSummaryPeriod) {
+    return eventCountFromSummary(summary, eventKey, line, true);
+  }
+  let n = sumDailyEventForLine(rangeDays, eventKey, line);
+  if (rangeDays.length <= 1) {
+    const live = eventCountFromSummary(summary, eventKey, line, false);
+    if (live > n) n = live;
+  }
+  return n;
+}
+
+function pageViewsForLineOnDay(day, summaryPages, line) {
+  let n = 0;
+  for (const [pageKey, count] of Object.entries(day.pages || {})) {
+    const pageLine =
+      summaryPages?.[pageKey]?.line || PAGE_META[pageKey]?.line || null;
+    if (pageLine === line) n += Number(count) || 0;
+  }
+  return n;
+}
+
 function sumDailyWhatsapp(dayDocs, summaryWa, line) {
   const keys = new Set([
     ...Object.keys(summaryWa || {}),
@@ -538,7 +581,7 @@ export default async function handler(req, res) {
         line && line !== 'all'
           ? sumCheckoutFromCtas(ctas)
           : sumDailyEvent(rangeDays, 'checkout_click');
-      whatsappPeriod = sumDailyEvent(rangeDays, 'whatsapp_click');
+      whatsappPeriod = whatsapp.reduce((sum, w) => sum + (Number(w.today) || 0), 0);
       abRaw = abEntryFromDays(rangeDays, summary.ab?.paletas?.entry || {});
       quizStepsRaw = quizStepsFromDays(rangeDays, summary.quiz_steps || {});
       dwellRaw = dwellFromDays(rangeDays, summary.dwell || {});
@@ -549,19 +592,21 @@ export default async function handler(req, res) {
     if (useSummaryPeriod && line && line !== 'all') {
       checkoutPeriod = sumCheckoutFromCtas(ctas);
     }
+    if (useSummaryPeriod) {
+      whatsappPeriod = whatsapp.reduce((sum, w) => sum + (Number(w.today) || 0), 0);
+    }
 
     const events = mapCounterObject(summary.events || {});
     const lines = mapCounterObject(summary.lines || {});
     const eventTotal = (key) => events.find((e) => e.key === key)?.total || 0;
-    const eventToday = (key) => events.find((e) => e.key === key)?.today || 0;
 
     const todayTotal = pages.reduce((sum, page) => sum + (page.today || 0), 0);
     const allTimeTotal = pages.reduce((sum, page) => sum + (page.total || 0), 0);
 
     const filteredHistory = allDays.slice(0, 14).map((day) => {
       if (!line || line === 'all') return day;
-      const lineTotal = day.lines?.[line] || 0;
-      return { ...day, total: lineTotal, lineTotal };
+      const pageViews = pageViewsForLineOnDay(day, summary.pages || {}, line);
+      return { ...day, total: pageViews, lineTotal: pageViews };
     });
 
     const abEntry = buildAbPayload(abRaw);
@@ -575,7 +620,10 @@ export default async function handler(req, res) {
       pageViewsToday: todayTotal,
       pageViewsTotal: allTimeTotal,
       whatsappToday: whatsappPeriod,
-      whatsappTotal: eventTotal('whatsapp_click'),
+      whatsappTotal:
+        line && line !== 'all'
+          ? whatsapp.reduce((sum, w) => sum + (Number(w.total) || 0), 0)
+          : eventTotal('whatsapp_click'),
       checkoutToday: checkoutPeriod,
       checkoutTotal:
         line && line !== 'all'
@@ -588,10 +636,10 @@ export default async function handler(req, res) {
           : eventTotal('checkout_click'),
       salesToday,
       salesTotal,
-      ctaToday: eventToday('cta_click'),
-      registerToday: eventToday('register'),
-      loginToday: eventToday('login'),
-      appOpenToday: eventToday('app_open'),
+      ctaToday: periodEventCount(summary, rangeDays, 'cta_click', line, useSummaryPeriod),
+      registerToday: periodEventCount(summary, rangeDays, 'register', line, useSummaryPeriod),
+      loginToday: periodEventCount(summary, rangeDays, 'login', line, useSummaryPeriod),
+      appOpenToday: periodEventCount(summary, rangeDays, 'app_open', line, useSummaryPeriod),
     };
 
     const insights = buildInsights({

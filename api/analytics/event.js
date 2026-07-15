@@ -119,6 +119,14 @@ export default async function handler(req, res) {
             summary.whatsapp[key].today = 0;
           }
         }
+        if (summary.eventsByLine && typeof summary.eventsByLine === 'object') {
+          for (const byEvent of Object.values(summary.eventsByLine)) {
+            if (!byEvent || typeof byEvent !== 'object') continue;
+            for (const cell of Object.values(byEvent)) {
+              if (cell && typeof cell === 'object') cell.today = 0;
+            }
+          }
+        }
         resetAbToday(summary);
         resetFunnelToday(summary);
         if (summary.sales && typeof summary.sales === 'object') {
@@ -139,11 +147,13 @@ export default async function handler(req, res) {
 
       if (!summary.pages) summary.pages = {};
       if (!summary.events) summary.events = {};
+      if (!summary.eventsByLine) summary.eventsByLine = {};
       if (!summary.lines) summary.lines = {};
       if (!summary.ctas) summary.ctas = {};
       if (!summary.whatsapp) summary.whatsapp = {};
       if (!daily.pages) daily.pages = {};
       if (!daily.events) daily.events = {};
+      if (!daily.eventsByLine) daily.eventsByLine = {};
       if (!daily.lines) daily.lines = {};
       if (!daily.ctas) daily.ctas = {};
       if (!daily.whatsapp) daily.whatsapp = {};
@@ -175,6 +185,17 @@ export default async function handler(req, res) {
         summary.lines[line].total = (summary.lines[line].total || 0) + 1;
         summary.lines[line].today = (summary.lines[line].today || 0) + 1;
         bump(daily.lines, line);
+
+        if (!summary.eventsByLine[line]) summary.eventsByLine[line] = {};
+        if (!summary.eventsByLine[line][event]) {
+          summary.eventsByLine[line][event] = { total: 0, today: 0 };
+        }
+        summary.eventsByLine[line][event].total =
+          (summary.eventsByLine[line][event].total || 0) + 1;
+        summary.eventsByLine[line][event].today =
+          (summary.eventsByLine[line][event].today || 0) + 1;
+        if (!daily.eventsByLine[line]) daily.eventsByLine[line] = {};
+        bump(daily.eventsByLine[line], event);
       }
 
       if (event === 'cta_click' && ctaId) {

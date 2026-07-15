@@ -12,6 +12,13 @@ import { trackEvent } from './track.js';
 /** While true, guardAuthPage must not redirect, Auth fires before profile/grants save. */
 let authBusy = false;
 
+/** Map auth events to the matching PAGE_META key for analytics filters. */
+function authTrackPage(kind, lineId) {
+  const isPostresish = lineId === 'postres' || lineId === 'minipostres';
+  if (kind === 'register') return isPostresish ? 'cadastrar-postres' : 'cadastrar';
+  return isPostresish ? 'login-postres' : 'login';
+}
+
 function setAuthBusy(busy) {
   authBusy = Boolean(busy);
   if (typeof document !== 'undefined') {
@@ -196,7 +203,11 @@ export async function login(email, password, options = {}) {
       if (refreshed.hasPremium) setPremiumLocal('paletas', true);
       if (refreshed.hasPostresPremium) setPremiumLocal('postres', true);
       const line = resolveLineFromSearch(search);
-      await trackEvent('login', { page: 'login', line: line?.id || undefined, uid: refreshed.uid });
+      await trackEvent('login', {
+        page: authTrackPage('login', line?.id),
+        line: line?.id || undefined,
+        uid: refreshed.uid,
+      });
       return toPublicUser(refreshed);
     }
 
@@ -215,7 +226,11 @@ export async function login(email, password, options = {}) {
     await claimPendingForUser(result.user);
     const line = resolveLineFromSearch(search);
     await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
-    await trackEvent('login', { page: 'login', line: line?.id || undefined, uid: result.user.uid });
+    await trackEvent('login', {
+      page: authTrackPage('login', line?.id),
+      line: line?.id || undefined,
+      uid: result.user.uid,
+    });
     return result.user;
   } catch (error) {
     setAuthBusy(false);
@@ -249,7 +264,11 @@ export async function register(name, email, password, options = {}) {
       if (user.hasPremium) setPremiumLocal('paletas', true);
       if (user.hasPostresPremium) setPremiumLocal('postres', true);
       const line = resolveLineFromSearch(search);
-      await trackEvent('register', { page: 'cadastrar', line: line?.id || undefined, uid: user.uid });
+      await trackEvent('register', {
+        page: authTrackPage('register', line?.id),
+        line: line?.id || undefined,
+        uid: user.uid,
+      });
       return toPublicUser(user);
     }
 
@@ -282,7 +301,7 @@ export async function register(name, email, password, options = {}) {
 
     await touchUserActivity(result.user.uid, line?.id ? { lastActiveLine: line.id } : {});
     await trackEvent('register', {
-      page: 'cadastrar',
+      page: authTrackPage('register', line?.id),
       line: line?.id || undefined,
       uid: result.user.uid,
     });

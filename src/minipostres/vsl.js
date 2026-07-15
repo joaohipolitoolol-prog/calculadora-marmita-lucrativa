@@ -33,7 +33,11 @@ function fireProgress(prefix, pct, fired) {
   const name = map[pct];
   if (!name) return;
   trackMetaCustom(`${prefix}_${name}`, { percent: pct });
-  trackEvent(`${prefix.toLowerCase()}_vsl`, { page: 'minipostres', line: 'minipostres', percent: pct });
+  trackEvent('cta_click', {
+    page: 'minipostres',
+    line: 'minipostres',
+    ctaId: `vsl_${pct}`,
+  });
 }
 
 /**

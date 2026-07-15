@@ -4024,8 +4024,10 @@ body:has(.purchase-sticky.visible) {
   width: 100%;
   will-change: transform;
   cursor: grab;
-  touch-action: none;
+  /* pan-y keeps page scroll free; JS only locks horizontal after intent */
+  touch-action: pan-y;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .kit-preview-track.is-dragging {

@@ -100,6 +100,7 @@ const STRINGS = {
     'line.all': 'Todas',
     'line.paletas': 'Paletas',
     'line.postres': 'Postres',
+    'line.minipostres': 'Mini Postres',
     'stat.users': 'Usuarios',
     'stat.active': 'Con acceso',
     'stat.pending': 'Pendientes',
@@ -578,6 +579,7 @@ const STRINGS = {
     'line.all': 'Todas',
     'line.paletas': 'Paletas',
     'line.postres': 'Postres',
+    'line.minipostres': 'Mini Postres',
     'stat.users': 'Usuários',
     'stat.active': 'Com acesso',
     'stat.pending': 'Pendentes',
@@ -1029,6 +1031,7 @@ export function getLineFilters() {
     { id: 'all', label: t('line.all') },
     { id: 'paletas', label: t('line.paletas') },
     { id: 'postres', label: t('line.postres') },
+    { id: 'minipostres', label: t('line.minipostres') },
   ];
 }
 

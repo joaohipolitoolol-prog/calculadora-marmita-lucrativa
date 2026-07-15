@@ -33,7 +33,36 @@ const SELLABLE = PRODUCT_LINE_BY_ID.minipostres?.sellable === true;
 
 function fireCustom(name, params = {}) {
   trackMetaCustom(`${analyticsPrefix}_${name}`, params);
-  trackEvent(`minipostres_${name.toLowerCase()}`, { page: pageKey, line, ...params });
+
+  // First-party only uses allowlisted EVENT_TYPES (Meta keeps the custom names).
+  const key = String(name || '').toLowerCase();
+  if (key === 'pageview' || key === 'viewcontent') {
+    // page_view already sent by trackCurrentPage
+    return;
+  }
+  if (key === 'cta_click') {
+    trackEvent('cta_click', {
+      page: pageKey,
+      line,
+      ctaId: sanitizeCtaId(params.cta || 'scroll_offer'),
+    });
+    return;
+  }
+  if (key === 'faqopened') {
+    trackEvent('cta_click', {
+      page: pageKey,
+      line,
+      ctaId: sanitizeCtaId(`faq_${String(params.question || 'open').slice(0, 24)}`),
+    });
+  }
+}
+
+function sanitizeCtaId(raw) {
+  return String(raw || 'cta')
+    .toLowerCase()
+    .replace(/[^a-z0-9_.:/-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 48) || 'cta';
 }
 
 fireCustom('PageView');
