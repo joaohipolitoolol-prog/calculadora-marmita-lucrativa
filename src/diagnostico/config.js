@@ -4,16 +4,16 @@ export const CHECKOUT_URL = 'https://pay.hotmart.com/L106739688G';
 
 export const MAIN_PRICE = 7.49;
 export const MAIN_PRICE_LABEL = 'US$ 7,49';
-export const BRAND = 'Paletas para WhatsApp';
-export const KIT_NAME = 'Kit Paletas para WhatsApp';
+export const BRAND = 'Paletas Heladas Sin Molde';
+export const KIT_NAME = 'Método 2 Bases';
 export const META_PIXEL_ID = '1369803401885896';
 export const GUARANTEE_DAYS = 30;
 
 export const KIT_ITEMS = [
-  { id: 'recetas', label: 'Recetas listas', icon: 'recipe' },
+  { id: 'recetas', label: 'Método 2 Bases', icon: 'recipe' },
   { id: 'precios', label: 'Calculadora de precios', icon: 'calc' },
   { id: 'mensajes', label: 'Mensajes listos', icon: 'chat' },
-  { id: 'menu', label: 'Menú para WhatsApp', icon: 'menu' },
+  { id: 'menu', label: 'Menú de sabores', icon: 'menu' },
   { id: 'proveedores', label: 'Guía de proveedores', icon: 'box' },
   { id: 'pedidos', label: 'Primeros pedidos', icon: 'check' },
   { id: 'manual', label: 'Manual de inicio', icon: 'book' },

@@ -11,8 +11,8 @@ export const ACTIVE_LINE_STORAGE_KEY = 'active_product_line_v1';
 export const PRODUCT_LINES = [
   {
     id: 'paletas',
-    name: 'Paletas para WhatsApp',
-    kitName: 'Kit Digital 2 Bases, Paletas',
+    name: 'Paletas Heladas Sin Molde',
+    kitName: 'Método 2 Bases',
     short: 'Paletas',
     emoji: '🍓',
     unitSingular: 'paleta',

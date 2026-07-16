@@ -59,18 +59,21 @@ export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
-export const HERO_CTA_LABEL = 'Quiero acceder al kit completo';
+export const HERO_CTA_LABEL = 'Quiero ver las recetas';
 
-export const PRICE_CTA_LABEL = 'Quiero acceder al kit completo';
+export const PRICE_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
 export const CALC_CTA_LABEL = 'Quiero calcular antes de vender';
 
-export const OFFER_CTA_LABEL = 'Quiero acceder al kit completo';
+export const OFFER_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
 export const TRUST_CTA_LABEL = 'Quiero empezar con las 2 bases';
 
-export const STICKY_CTA_LABEL = 'Quiero acceder al kit completo';
+export const STICKY_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
-export const FINAL_CTA_LABEL = 'Quiero acceder al kit completo';
+export const FINAL_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
 export const CTA_LABEL = HERO_CTA_LABEL;
+
+export const PRODUCT_NAME = 'Método 2 Bases';
+export const PRODUCT_LINE_NAME = 'Paletas Heladas Sin Molde';

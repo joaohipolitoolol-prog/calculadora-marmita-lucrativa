@@ -1,4 +1,3 @@
-import { BRAND_KIT } from '../site/brand.js';
 import {
   CHECKOUT_URL,
   HERO_CTA_LABEL,
@@ -7,10 +6,10 @@ import {
   OFFER_CTA_LABEL,
   PRICE_ACCESS_LABEL,
   PRICE_CTA_LABEL,
+  PRODUCT_NAME,
   STICKY_CTA_LABEL,
   WHATSAPP_NUMBER_ID,
 } from './config.js';
-import { initDemo } from './demo.js';
 import {
   bindHardCheckoutLinks,
   bindOfferSticky,
@@ -59,7 +58,7 @@ async function boot() {
   bindHardCheckoutLinks({
     checkoutUrl: CHECKOUT_URL,
     price: MAIN_PRICE,
-    contentName: BRAND_KIT,
+    contentName: PRODUCT_NAME,
     contentIds: ['paletas_kit'],
     page: 'home',
     line: 'paletas',
@@ -70,12 +69,6 @@ async function boot() {
   });
 
   bindOfferSticky(document.getElementById('purchase-sticky'));
-
-  try {
-    initDemo();
-  } catch (err) {
-    console.error('[landing] initDemo failed', err);
-  }
 }
 
 boot();
