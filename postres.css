@@ -141,20 +141,22 @@
 }
 
 .postres-theme .hero .subheadline {
-  max-width: 36ch;
+  max-width: 34ch;
   margin-left: auto;
   margin-right: auto;
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   line-height: 1.55;
 }
 
 .postres-theme .hero-bullets {
-  max-width: 28ch;
+  max-width: 32ch;
   margin-bottom: 18px;
+  gap: 10px;
 }
 
 .postres-theme .hero-bullets li {
-  font-size: 0.98rem;
+  font-size: 1.05rem;
+  line-height: 1.4;
 }
 
 .postres-theme .hero-cta-note-secondary {
@@ -195,37 +197,37 @@
 
 @media (max-width: 479px) {
   .postres-theme .hero h1 {
-    font-size: clamp(1.7rem, 7.2vw, 2.15rem);
-    line-height: 1.18;
+    font-size: clamp(1.85rem, 7.6vw, 2.25rem);
+    line-height: 1.16;
   }
 
   .postres-theme .hero .subheadline {
-    font-size: 1rem;
+    font-size: 1.08rem;
   }
 
   .postres-theme .hero-bullets li {
-    font-size: 0.95rem;
+    font-size: 1.02rem;
   }
 
   .postres-theme .btn-large {
-    font-size: 1rem;
+    font-size: 1.05rem;
     padding-inline: 18px;
   }
 
   .postres-theme .preview-tags li {
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     min-height: 34px;
     padding: 7px 12px;
   }
 
   .postres-theme .purchase-sticky-btn {
     max-width: 210px;
-    font-size: 0.8rem;
+    font-size: 0.84rem;
     padding: 11px 10px;
   }
 
   .postres-theme .purchase-sticky-kit {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
   }
 }
 
@@ -392,4 +394,226 @@
   .postres-theme .bonus-two-grid .product-card:last-child:nth-child(odd) {
     grid-column: auto;
   }
+
+  .postres-theme .method-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .postres-theme .mechanism .method-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── LP cleanup: hierarchy + mobile readability ── */
+.postres-theme {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.postres-theme .section {
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+
+.postres-theme .section h2 {
+  font-size: clamp(1.45rem, 5vw, 1.85rem);
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+
+.postres-theme .section-text {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  max-width: 40ch;
+}
+
+.postres-theme .lp-problem,
+.postres-theme .lp-flavors,
+.postres-theme .lp-audience {
+  background: #fff;
+}
+
+.postres-theme .method-grid-3 {
+  margin-top: 22px;
+  gap: 14px;
+}
+
+.postres-theme .method-card {
+  padding: 20px 18px;
+}
+
+.postres-theme .method-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+}
+
+.postres-theme .method-card p {
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.postres-theme .flavor-more {
+  margin: 16px auto 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  max-width: 36ch;
+  line-height: 1.45;
+}
+
+.postres-theme .method-include-list {
+  list-style: none;
+  margin: 22px auto 0;
+  padding: 0;
+  max-width: 42ch;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.postres-theme .method-include-list li {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--brown-mid);
+}
+
+.postres-theme .method-include-list strong {
+  display: block;
+  color: var(--brown);
+  font-size: 1.12rem;
+  margin-bottom: 4px;
+}
+
+.postres-theme .bonus-two-grid .product-card {
+  padding: 22px 20px;
+}
+
+.postres-theme .bonus-two-grid .product-card h3 {
+  font-size: 1.15rem;
+  margin-top: 8px;
+}
+
+.postres-theme .bonus-two-grid .product-card p {
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+
+.postres-theme .calc-bonus-demo {
+  background:
+    radial-gradient(circle at 90% 10%, rgba(236, 63, 122, 0.08) 0%, transparent 42%),
+    #fff;
+  border-top: 1px dashed rgba(236, 63, 122, 0.22);
+}
+
+.postres-theme .bonus-demo-kicker {
+  display: inline-block;
+  margin: 0 auto 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(236, 63, 122, 0.1);
+  color: var(--pink-dark);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: center;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.postres-theme .calc-bonus-demo .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.postres-theme .calc-bonus-demo h2 {
+  text-align: center;
+}
+
+.postres-theme .calc-bonus-demo .demo-widget {
+  margin-top: 18px;
+  box-shadow: none;
+  border: 1px solid rgba(236, 63, 122, 0.16);
+}
+
+.postres-theme .calc-bonus-demo .calc-label,
+.postres-theme .calc-bonus-demo .demo-field span {
+  font-size: 0.95rem;
+}
+
+.postres-theme .calc-bonus-demo .calc-value {
+  font-size: 1.2rem;
+}
+
+.postres-theme .audience-list {
+  list-style: none;
+  margin: 20px auto 0;
+  padding: 0;
+  max-width: 36ch;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.postres-theme .audience-list li {
+  position: relative;
+  padding: 12px 14px 12px 40px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--brown);
+  background: var(--pink-soft);
+  border-radius: 14px;
+}
+
+.postres-theme .audience-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--pink-dark);
+  font-weight: 800;
+}
+
+.postres-theme .access-steps {
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.postres-theme .access-steps strong {
+  font-size: 1.12rem;
+}
+
+.postres-theme .access-steps p {
+  font-size: 1.02rem;
+  line-height: 1.45;
+}
+
+.postres-theme .faq-question {
+  font-size: 1.05rem;
+  line-height: 1.4;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.postres-theme .faq-answer p {
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+.postres-theme .offer-desc,
+.postres-theme .offer-summary li {
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.postres-theme .kit-preview-caption {
+  font-size: 1rem;
+}
+
+.postres-theme .product-card-icon {
+  display: none;
 }

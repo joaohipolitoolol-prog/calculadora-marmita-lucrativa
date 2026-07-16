@@ -14,7 +14,7 @@ export const MAIN_PRICE = 7.49;
 export const MAIN_PRICE_LABEL = 'US$ 7,49';
 export const PRICE_ACCESS_LABEL = 'Acceso completo por solo US$ 7,49';
 
-export const HERO_CTA_LABEL = 'Quiero acceder al Método 3x12';
+export const HERO_CTA_LABEL = 'Quiero ver las 12 recetas';
 export const CALC_CTA_LABEL = 'Quiero calcular antes de vender';
 export const OFFER_CTA_LABEL = 'Quiero acceder al Método 3x12';
 export const TRUST_CTA_LABEL = 'Quiero empezar con las 3 bases';
