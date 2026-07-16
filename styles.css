@@ -4990,7 +4990,7 @@ body:has(.purchase-sticky.visible) {
   }
 }
 
-/* ===== Paletas LP: Método 2 Bases cleanup ===== */
+/* ===== Paletas LP: MÃ©todo 2 Bases cleanup ===== */
 .paletas-lp {
   font-size: 17px;
   line-height: 1.6;
@@ -5008,15 +5008,82 @@ body:has(.purchase-sticky.visible) {
 }
 
 .paletas-lp .section-text {
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   line-height: 1.55;
   max-width: 40ch;
+}
+
+.paletas-lp .hero .subheadline {
+  font-size: 1.08rem;
+  line-height: 1.55;
+  max-width: 38ch;
+}
+
+.paletas-lp .hero-format-note {
+  margin: -6px auto 16px;
+  max-width: 34ch;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--pink-dark);
+}
+
+.paletas-lp .hero-flavor-strip--proof {
+  justify-content: center;
+  margin: 0 auto 20px;
+  padding-bottom: 4px;
+}
+
+.paletas-lp .hero-flavor-strip--proof .flavor-chip {
+  width: 92px;
+}
+
+.paletas-lp .hero-flavor-strip--proof .flavor-chip img {
+  width: 92px;
+  height: 92px;
+}
+
+.paletas-lp .hero-flavor-strip--proof .flavor-chip figcaption {
+  font-size: 0.92rem;
+}
+
+@media (min-width: 480px) {
+  .paletas-lp .hero-flavor-strip--proof .flavor-chip {
+    width: 110px;
+  }
+
+  .paletas-lp .hero-flavor-strip--proof .flavor-chip img {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+.paletas-lp .hero-product-caption {
+  margin-top: 10px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--brown-mid);
 }
 
 .paletas-lp .lp-belief,
 .paletas-lp .lp-flavors,
 .paletas-lp .lp-audience {
   background: #fff;
+}
+
+.paletas-lp .lp-belief .section-text {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.paletas-lp .compare-card h3 {
+  font-size: 1.08rem;
+}
+
+.paletas-lp .compare-card li {
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .paletas-lp .method-grid-2 {
@@ -5052,37 +5119,31 @@ body:has(.purchase-sticky.visible) {
   line-height: 1.45;
 }
 
-.paletas-lp .method-include-list {
-  list-style: none;
+.paletas-lp .include-grid {
   margin: 22px auto 0;
-  padding: 0;
-  max-width: 42ch;
+  max-width: 520px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.paletas-lp .include-item {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.paletas-lp .method-include-list li {
-  font-size: 1.05rem;
-  line-height: 1.5;
-  color: var(--brown-mid);
-}
-
-.paletas-lp .method-include-list strong {
-  display: block;
-  color: var(--brown);
-  font-size: 1.12rem;
-  margin-bottom: 4px;
-}
-
-.paletas-lp .kit-note {
-  max-width: 40ch;
-  margin: 20px auto 0;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--brown-mid);
-  line-height: 1.5;
+  min-height: 72px;
+  padding: 16px 12px;
+  background: var(--pink-soft, #fff0f5);
+  border-radius: 16px;
+  border: 1px solid rgba(232, 67, 122, 0.12);
+}
+
+.paletas-lp .include-item strong {
+  font-size: 1.02rem;
+  line-height: 1.35;
+  color: var(--brown);
+  font-weight: 800;
 }
 
 .paletas-lp .bonus-three-grid .product-card {
@@ -5097,14 +5158,14 @@ body:has(.purchase-sticky.visible) {
 }
 
 .paletas-lp .bonus-three-grid .product-card h3 {
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   margin-top: 4px;
   line-height: 1.3;
 }
 
 .paletas-lp .bonus-three-grid .product-card p {
-  font-size: 0.95rem;
-  line-height: 1.45;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 @media (min-width: 720px) {
@@ -5121,7 +5182,7 @@ body:has(.purchase-sticky.visible) {
   list-style: none;
   margin: 20px auto 0;
   padding: 0;
-  max-width: 36ch;
+  max-width: 38ch;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -5129,10 +5190,10 @@ body:has(.purchase-sticky.visible) {
 
 .paletas-lp .audience-list li {
   position: relative;
-  padding: 12px 14px 12px 40px;
+  padding: 14px 14px 14px 40px;
   font-size: 1.05rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--brown);
   background: var(--pink-soft, #fff0f5);
   border-radius: 14px;
@@ -5140,7 +5201,7 @@ body:has(.purchase-sticky.visible) {
 }
 
 .paletas-lp .audience-list li::before {
-  content: '?';
+  content: '\u2713';
   position: absolute;
   left: 14px;
   top: 50%;
@@ -5166,8 +5227,8 @@ body:has(.purchase-sticky.visible) {
 .paletas-lp .offer-bump-note {
   margin: 16px auto 0;
   max-width: 42ch;
-  font-size: 0.9rem;
-  line-height: 1.45;
+  font-size: 0.95rem;
+  line-height: 1.5;
   color: var(--brown-mid);
   text-align: center;
   font-weight: 600;
@@ -5176,7 +5237,15 @@ body:has(.purchase-sticky.visible) {
 .paletas-lp .offer-desc,
 .paletas-lp .offer-summary li {
   font-size: 1.05rem;
-  line-height: 1.45;
+  line-height: 1.5;
+}
+
+.paletas-lp .guarantee-card p {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  max-width: 42ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .paletas-lp .faq-question {
@@ -5218,7 +5287,7 @@ body:has(.purchase-sticky.visible) {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  max-width: 34ch;
+  max-width: 36ch;
 }
 
 .paletas-lp .hero-bullets {
@@ -5226,6 +5295,11 @@ body:has(.purchase-sticky.visible) {
   margin-right: auto;
   width: fit-content;
   max-width: 32ch;
+}
+
+.paletas-lp .hero-bullets li {
+  font-size: 1.05rem;
+  line-height: 1.45;
 }
 
 .paletas-lp .btn-large {
@@ -5236,8 +5310,8 @@ body:has(.purchase-sticky.visible) {
 }
 
 .paletas-lp .cta-note {
-  font-size: 0.95rem;
-  line-height: 1.45;
+  font-size: 0.98rem;
+  line-height: 1.5;
 }
 
 .paletas-lp .purchase-sticky-btn {
