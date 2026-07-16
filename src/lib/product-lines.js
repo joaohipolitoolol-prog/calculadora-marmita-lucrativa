@@ -35,7 +35,7 @@ export const PRODUCT_LINES = [
   {
     id: 'postres',
     name: 'Mini Postres Fríos Sin Horno',
-    kitName: 'Kit Digital 3 Bases, 12 Postres',
+    kitName: 'Método 3x12',
     short: 'Mini Postres',
     emoji: '🧁',
     unitSingular: 'mini postre',
