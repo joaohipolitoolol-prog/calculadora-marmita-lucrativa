@@ -4115,6 +4115,65 @@ body:has(.purchase-sticky.visible) {
   min-height: 1.35em;
 }
 
+.kit-preview-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.kit-preview-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 67, 122, 0.22);
+  background: #fff;
+  color: var(--pink-dark, #d42e68);
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.kit-preview-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.kit-preview-nav-btn:not(:disabled):active {
+  transform: scale(0.96);
+  background: rgba(232, 67, 122, 0.08);
+}
+
+.kit-preview-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kit-preview-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(232, 67, 122, 0.28);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.kit-preview-dot.is-active {
+  width: 22px;
+  background: var(--pink, #ec3f7a);
+}
+
 .kit-preview-hint {
   margin: 6px 0 0;
   text-align: center;

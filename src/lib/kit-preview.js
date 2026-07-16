@@ -36,6 +36,25 @@ export function initKitPreview(root = document) {
       }
     }
 
+    const prevBtns = [...preview.querySelectorAll('[data-kit-prev]')];
+    const nextBtns = [...preview.querySelectorAll('[data-kit-next]')];
+    const dots = [...preview.querySelectorAll('[data-kit-dot]')];
+
+    function syncNav() {
+      prevBtns.forEach((btn) => {
+        btn.disabled = index <= 0;
+      });
+      nextBtns.forEach((btn) => {
+        btn.disabled = index >= slides.length - 1;
+      });
+      dots.forEach((dot, di) => {
+        const on = di === index;
+        dot.classList.toggle('is-active', on);
+        if (on) dot.setAttribute('aria-current', 'true');
+        else dot.removeAttribute('aria-current');
+      });
+    }
+
     function paint(offsetPx = 0, animate = true) {
       if (animate) {
         track.classList.add('is-animating');
@@ -53,6 +72,7 @@ export function initKitPreview(root = document) {
         slide.setAttribute('aria-hidden', on ? 'false' : 'true');
         slide.style.visibility = '';
       });
+      syncNav();
     }
 
     function goTo(i, animate = true) {
@@ -183,11 +203,17 @@ export function initKitPreview(root = document) {
       true
     );
 
-    preview.querySelectorAll('[data-kit-prev]').forEach((btn) => {
+    prevBtns.forEach((btn) => {
       btn.addEventListener('click', () => goTo(index - 1));
     });
-    preview.querySelectorAll('[data-kit-next]').forEach((btn) => {
+    nextBtns.forEach((btn) => {
       btn.addEventListener('click', () => goTo(index + 1));
+    });
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const i = Number(dot.dataset.kitDot);
+        if (Number.isFinite(i)) goTo(i);
+      });
     });
 
     preview.querySelectorAll('[data-mini-calc]').forEach(initMiniCalc);
