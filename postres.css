@@ -188,6 +188,10 @@
   text-align: left;
 }
 
+.postres-theme .offer-card h2 {
+  text-align: center;
+}
+
 .postres-theme .purchase-sticky-btn {
   max-width: 265px;
   font-size: 0.88rem;
