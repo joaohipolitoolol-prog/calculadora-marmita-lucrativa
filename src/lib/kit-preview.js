@@ -97,10 +97,13 @@ export function initKitPreview(root = document) {
       const dy = e.clientY - startY;
 
       if (!axis) {
-        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+        const ax = Math.abs(dx);
+        const ay = Math.abs(dy);
+        if (ax < 8 && ay < 8) return;
 
-        // Prefer vertical when both move — page scroll must win easily.
-        if (Math.abs(dy) >= Math.abs(dx) * 0.85) {
+        // Decide axis with "vertical must be clearly dominant" rule.
+        // This avoids misclassifying horizontal swipes as vertical (common on phones).
+        if (ay > 24 && ay > ax * 1.2) {
           axis = 'y';
           dragging = false;
           track.classList.remove('is-dragging');
@@ -146,7 +149,7 @@ export function initKitPreview(root = document) {
       if (!wasHorizontal) return;
 
       // One slide only — never skip by distance/velocity.
-      const threshold = Math.min(56, width * 0.16);
+      const threshold = Math.min(60, Math.max(42, width * 0.12));
       if (dx <= -threshold) goTo(index + 1);
       else if (dx >= threshold) goTo(index - 1);
       else goTo(index);
