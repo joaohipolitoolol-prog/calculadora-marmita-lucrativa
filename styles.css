@@ -5201,7 +5201,7 @@ body:has(.purchase-sticky.visible) {
 }
 
 .paletas-lp .audience-list li::before {
-  content: '\u2713';
+  content: '?';
   position: absolute;
   left: 14px;
   top: 50%;
