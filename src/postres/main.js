@@ -9,7 +9,6 @@ import {
   WHATSAPP_NUMBER_ID,
   WHATSAPP_URL,
 } from './config.js';
-import { initDemo } from './demo.js';
 import {
   bindHardCheckoutLinks,
   bindOfferSticky,
@@ -76,8 +75,6 @@ document.querySelectorAll('[data-whatsapp]').forEach((link) => {
   link.setAttribute('rel', 'noopener noreferrer');
   link.setAttribute('target', '_blank');
 });
-
-initDemo();
 
 const sticky = document.getElementById('purchase-sticky');
 if (sticky) {

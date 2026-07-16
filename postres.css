@@ -505,52 +505,6 @@
   line-height: 1.5;
 }
 
-.postres-theme .calc-bonus-demo {
-  background:
-    radial-gradient(circle at 90% 10%, rgba(236, 63, 122, 0.08) 0%, transparent 42%),
-    #fff;
-  border-top: 1px dashed rgba(236, 63, 122, 0.22);
-}
-
-.postres-theme .bonus-demo-kicker {
-  display: inline-block;
-  margin: 0 auto 10px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(236, 63, 122, 0.1);
-  color: var(--pink-dark);
-  font-size: 0.88rem;
-  font-weight: 800;
-  text-align: center;
-  width: fit-content;
-  max-width: 100%;
-}
-
-.postres-theme .calc-bonus-demo .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.postres-theme .calc-bonus-demo h2 {
-  text-align: center;
-}
-
-.postres-theme .calc-bonus-demo .demo-widget {
-  margin-top: 18px;
-  box-shadow: none;
-  border: 1px solid rgba(236, 63, 122, 0.16);
-}
-
-.postres-theme .calc-bonus-demo .calc-label,
-.postres-theme .calc-bonus-demo .demo-field span {
-  font-size: 0.95rem;
-}
-
-.postres-theme .calc-bonus-demo .calc-value {
-  font-size: 1.2rem;
-}
-
 .postres-theme .audience-list {
   list-style: none;
   margin: 20px auto 0;
@@ -594,6 +548,20 @@
 .postres-theme .access-steps p {
   font-size: 1.02rem;
   line-height: 1.45;
+}
+
+.postres-theme .access-steps-tight li > div {
+  font-size: 1.08rem;
+  line-height: 1.4;
+  color: var(--brown-mid);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.postres-theme .access-steps-tight strong {
+  color: var(--brown);
 }
 
 .postres-theme .faq-question {
