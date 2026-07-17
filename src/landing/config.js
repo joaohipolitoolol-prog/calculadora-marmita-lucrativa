@@ -12,7 +12,7 @@ import {
 } from '../lib/whatsapp-numbers.js';
 
 /** Link de checkout, Hotmart */
-export const CHECKOUT_URL = 'https://pay.hotmart.com/L106739688G';
+export const CHECKOUT_URL = 'https://pay.hotmart.com/L106739688G?checkoutMode=10';
 
 /** Página pós-compra, upsell (antes da área de membros) */
 export const POST_PURCHASE_URL = POST_PURCHASE_UPSELL_URL;
