@@ -59,7 +59,7 @@ export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
-export const HERO_CTA_LABEL = 'Quiero ver las recetas';
+export const HERO_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
 export const PRICE_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
@@ -69,7 +69,7 @@ export const OFFER_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
 export const TRUST_CTA_LABEL = 'Quiero empezar con las 2 bases';
 
-export const STICKY_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
+export const STICKY_CTA_LABEL = 'Quiero acceder';
 
 export const FINAL_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
 
