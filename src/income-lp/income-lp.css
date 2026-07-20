@@ -1,0 +1,778 @@
+/* ===== Income LP shared (Paletas + Postres) ===== */
+
+.income-lp {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--brown-mid);
+}
+
+.income-lp .container {
+  max-width: 520px;
+}
+
+@media (min-width: 768px) {
+  .income-lp .container {
+    max-width: 680px;
+  }
+}
+
+/* Announcement */
+.income-announce {
+  background: var(--brown);
+  color: #fff;
+  text-align: center;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+}
+
+/* Section rhythm */
+.income-lp .section {
+  padding: 48px 0;
+}
+
+.income-lp .section--alt {
+  background: #fff;
+}
+
+.income-lp .section--soft {
+  background: var(--cream);
+}
+
+.income-lp .section--tint {
+  background: var(--pink-light);
+}
+
+.income-lp .eyebrow {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pink-dark);
+}
+
+.income-lp .section h2 {
+  font-size: clamp(1.55rem, 5.2vw, 2.05rem);
+  line-height: 1.18;
+  color: var(--brown);
+  max-width: 22ch;
+  margin: 0 auto 12px;
+  text-align: center;
+}
+
+.income-lp .lead {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  max-width: 40ch;
+  margin: 0 auto 18px;
+  text-align: center;
+  color: var(--brown-mid);
+}
+
+.income-lp .lead-wide {
+  max-width: 46ch;
+}
+
+.income-lp .callout {
+  margin: 18px auto 0;
+  max-width: 40ch;
+  padding: 14px 16px;
+  background: #fff;
+  border-left: 4px solid var(--pink);
+  border-radius: 0 12px 12px 0;
+  font-weight: 700;
+  color: var(--brown);
+  font-size: 1.02rem;
+  line-height: 1.4;
+}
+
+.income-lp .note-soft {
+  margin: 16px auto 0;
+  max-width: 42ch;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--brown-mid);
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Hero */
+.income-lp .hero {
+  padding: 28px 0 36px;
+  text-align: center;
+}
+
+.income-lp .hero-eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(232, 67, 122, 0.12);
+  border: 1px solid rgba(232, 67, 122, 0.22);
+  color: var(--pink-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.income-lp .hero h1 {
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  line-height: 1.14;
+  color: var(--brown);
+  max-width: 18ch;
+  margin: 0 auto 12px;
+}
+
+.income-lp .hero .subheadline {
+  font-size: 1.08rem;
+  line-height: 1.5;
+  max-width: 38ch;
+  margin: 0 auto 18px;
+  color: var(--brown-mid);
+}
+
+.income-lp .hero-stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 auto 18px;
+  padding: 0;
+  max-width: 400px;
+}
+
+.income-lp .hero-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 6px;
+  background: #fff;
+  border: 2px solid rgba(226, 31, 109, 0.2);
+  border-radius: 14px;
+}
+
+.income-lp .hero-stats strong {
+  font-size: clamp(1.15rem, 4vw, 1.45rem);
+  color: var(--pink-dark);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.income-lp .hero-stats span {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brown-mid);
+}
+
+.income-lp .hero-bullets {
+  list-style: none;
+  margin: 0 auto 20px;
+  padding: 0;
+  max-width: 34ch;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.income-lp .hero-bullets li {
+  position: relative;
+  padding-left: 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brown);
+  line-height: 1.35;
+}
+
+.income-lp .hero-bullets li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--green-bright, #1f9d55);
+  font-weight: 800;
+}
+
+.income-lp .cta-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.income-lp .btn-primary {
+  background: linear-gradient(135deg, #e21f6d 0%, #b01652 100%);
+  color: #fff;
+  min-height: 52px;
+  font-weight: 800;
+  box-shadow: 0 10px 28px rgba(176, 22, 82, 0.42);
+}
+
+.income-lp .btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.income-lp .btn-large {
+  width: 100%;
+  max-width: 420px;
+  min-height: 52px;
+  font-size: 1.05rem;
+  padding: 14px 20px;
+}
+
+.income-lp .cta-micro {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  line-height: 1.4;
+  text-align: center;
+  max-width: 36ch;
+}
+
+.income-lp .cta-price-note {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--brown-mid);
+  max-width: 36ch;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.income-lp .hero-price {
+  margin-top: 4px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--brown);
+}
+
+/* Visual demo strip */
+.income-lp .demo-flow {
+  list-style: none;
+  margin: 22px auto 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.income-lp .demo-flow-step {
+  background: #fff;
+  border: 1px solid rgba(232, 67, 122, 0.14);
+  border-radius: 16px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.income-lp .demo-flow-step img {
+  display: block;
+  width: 100%;
+  height: 132px;
+  object-fit: cover;
+}
+
+.income-lp .demo-flow-step strong {
+  display: block;
+  padding: 10px 12px 2px;
+  font-size: 1rem;
+  color: var(--brown);
+}
+
+.income-lp .demo-flow-step span {
+  display: block;
+  padding: 0 12px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--brown-mid);
+}
+
+@media (min-width: 640px) {
+  .income-lp .demo-flow {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .income-lp .demo-flow-step img {
+    height: 120px;
+  }
+}
+
+/* Cards grids */
+.income-lp .card-grid {
+  list-style: none;
+  margin: 22px auto 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  max-width: 720px;
+}
+
+.income-lp .card-grid article,
+.income-lp .card-grid > li {
+  background: #fff;
+  border: 1px solid rgba(232, 67, 122, 0.12);
+  border-radius: 16px;
+  padding: 16px 16px 14px;
+  text-align: left;
+}
+
+.income-lp .card-grid h3 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  color: var(--brown);
+}
+
+.income-lp .card-grid p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: var(--brown-mid);
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .income-lp .card-grid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .income-lp .card-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .income-lp .card-grid--4 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 900px) {
+  .income-lp .card-grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Steps */
+.income-lp .steps {
+  list-style: none;
+  margin: 22px auto 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.income-lp .steps li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid var(--gray-border);
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.income-lp .step-num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--brown);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+.income-lp .steps strong {
+  display: block;
+  color: var(--brown);
+  font-size: 1.02rem;
+  margin-bottom: 2px;
+}
+
+.income-lp .steps span {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--brown-mid);
+  font-weight: 600;
+}
+
+/* Mechanism bases */
+.income-lp .bases-grid {
+  margin: 22px auto 0;
+  display: grid;
+  gap: 12px;
+}
+
+.income-lp .base-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 16px;
+  border: 1px solid rgba(232, 67, 122, 0.14);
+  text-align: left;
+}
+
+.income-lp .base-card.is-highlight {
+  border-color: rgba(232, 67, 122, 0.35);
+  background: linear-gradient(180deg, var(--pink-light), #fff 70%);
+}
+
+.income-lp .base-card .method-num {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(232, 67, 122, 0.14);
+  color: var(--pink-dark);
+  font-weight: 800;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.income-lp .base-card h3 {
+  margin: 0 0 6px;
+  color: var(--brown);
+  font-size: 1.1rem;
+}
+
+.income-lp .base-card p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: var(--brown-mid);
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .income-lp .bases-grid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .income-lp .bases-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Pricing cards */
+.income-lp .price-metrics {
+  list-style: none;
+  margin: 20px auto 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-width: 480px;
+}
+
+.income-lp .price-metrics li {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 12px;
+  text-align: center;
+  border: 1px solid rgba(232, 67, 122, 0.14);
+}
+
+.income-lp .price-metrics strong {
+  display: block;
+  font-size: 1.2rem;
+  color: var(--pink-dark);
+  font-weight: 800;
+}
+
+.income-lp .price-metrics span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* WA reviews */
+.income-lp .wa-reviews-head {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.income-lp .wa-reviews-track-prints .wa-review {
+  flex: 0 0 min(260px, 76vw);
+}
+
+.income-lp .wa-reviews-track-prints .wa-review img {
+  border-radius: 14px;
+}
+
+/* Offer */
+.income-lp .offer-card {
+  background: #fff;
+  border: 2px solid rgba(226, 31, 109, 0.28);
+  border-radius: 20px;
+  padding: 22px 18px 20px;
+  box-shadow: 0 14px 36px rgba(120, 40, 72, 0.1);
+}
+
+.income-lp .offer-tag {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(232, 67, 122, 0.12);
+  color: var(--pink-dark);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.income-lp .offer-card h2 {
+  max-width: 20ch;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
+}
+
+.income-lp .offer-desc {
+  text-align: left;
+  margin: 0 0 14px;
+  font-size: 1.02rem;
+  color: var(--brown-mid);
+  font-weight: 600;
+}
+
+.income-lp .offer-summary {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.income-lp .offer-summary li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--brown);
+  line-height: 1.35;
+}
+
+.income-lp .offer-summary li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--green-bright, #1f9d55);
+  font-weight: 800;
+}
+
+.income-lp .offer-price-box {
+  margin: 0 0 14px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 2px solid rgba(226, 31, 109, 0.25);
+  text-align: center;
+}
+
+.income-lp .offer-price-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+  margin-bottom: 4px;
+}
+
+.income-lp .offer-price-value {
+  display: block;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--pink-dark);
+}
+
+.income-lp .offer-price-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--brown-mid);
+}
+
+.income-lp .offer-anchor {
+  margin: 10px 0 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--brown-mid);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.income-lp .offer-guarantee-inline {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: var(--green-light, #e8f5ec);
+  border: 1px solid rgba(37, 165, 90, 0.28);
+  border-radius: 14px;
+}
+
+.income-lp .offer-guarantee-inline strong {
+  display: block;
+  color: var(--green, #25a55a);
+  margin-bottom: 4px;
+}
+
+.income-lp .offer-guarantee-inline p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--brown-mid);
+  font-weight: 600;
+}
+
+/* Guarantee block */
+.income-lp .guarantee-card {
+  text-align: center;
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px 18px;
+  border: 1px solid rgba(232, 67, 122, 0.16);
+}
+
+.income-lp .guarantee-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--pink);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.income-lp .guarantee-card h2 {
+  margin-bottom: 10px;
+}
+
+.income-lp .guarantee-card p {
+  margin: 0 auto 10px;
+  max-width: 42ch;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--brown-mid);
+  font-weight: 600;
+}
+
+/* FAQ */
+.income-lp .faq h2 {
+  margin-bottom: 18px;
+}
+
+.income-lp .faq-question {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--brown);
+  line-height: 1.35;
+}
+
+.income-lp .faq-answer p {
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: var(--brown-mid);
+  font-weight: 600;
+}
+
+/* Final CTA */
+.income-lp .final-cta {
+  text-align: center;
+  padding-bottom: 110px;
+}
+
+.income-lp .final-cta h2 {
+  margin-bottom: 10px;
+}
+
+/* Sticky */
+.income-lp .purchase-sticky {
+  background: rgba(255, 255, 255, 0.97);
+  border-top: 1px solid rgba(232, 67, 122, 0.16);
+  box-shadow: 0 -8px 24px rgba(61, 34, 40, 0.08);
+}
+
+.income-lp .purchase-sticky-btn {
+  font-weight: 800;
+  font-size: 0.86rem;
+  min-height: 48px;
+  white-space: normal;
+  line-height: 1.2;
+  padding: 10px 12px;
+}
+
+.income-lp .flavor-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  margin: 0 auto 16px;
+  justify-content: flex-start;
+  scrollbar-width: none;
+}
+
+.income-lp .flavor-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.income-lp .flavor-chip {
+  flex: 0 0 auto;
+  width: 96px;
+  margin: 0;
+  text-align: center;
+}
+
+.income-lp .flavor-chip img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(232, 67, 122, 0.16);
+}
+
+.income-lp .flavor-chip figcaption {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+@media (min-width: 480px) {
+  .income-lp .flavor-strip {
+    justify-content: center;
+  }
+
+  .income-lp .flavor-chip,
+  .income-lp .flavor-chip img {
+    width: 112px;
+    height: 112px;
+  }
+
+  .income-lp .flavor-chip img {
+    height: 112px;
+  }
+}
+
+/* Mini calc inside cost section */
+.income-lp .cost-demo {
+  margin: 20px auto 0;
+  max-width: 360px;
+}
+
+.income-lp .cost-demo .kit-phone {
+  height: auto;
+  min-height: 0;
+}

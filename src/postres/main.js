@@ -2,6 +2,7 @@ import {
   CHECKOUT_URL,
   HERO_CTA_LABEL,
   MAIN_PRICE,
+  MAIN_PRICE_LABEL,
   OFFER_CTA_LABEL,
   PRICE_ACCESS_LABEL,
   PRODUCT_NAME,
@@ -11,18 +12,19 @@ import {
 } from './config.js';
 import {
   bindHardCheckoutLinks,
-  bindOfferSticky,
   bindScrollToOffer,
 } from '../lib/landing-checkout.js';
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { PRODUCT_LINE_BY_ID } from '../lib/product-lines.js';
 import { initKitPreview } from '../lib/kit-preview.js';
 import { initWaReviewsPrints } from '../lib/wa-reviews.js';
+import { bindIncomeFaq, bindIncomeSticky } from '../income-lp/bind.js';
 
 trackCurrentPage({ line: 'postres' });
 bindTrackClicks({ page: 'postres', line: 'postres', numberId: WHATSAPP_NUMBER_ID });
 initKitPreview();
 initWaReviewsPrints();
+bindIncomeFaq();
 
 const POSTRES_SELLABLE = PRODUCT_LINE_BY_ID.postres?.sellable === true;
 
@@ -31,7 +33,15 @@ function isPlaceholder(url) {
 }
 
 document.querySelectorAll('[data-price]').forEach((el) => {
+  el.textContent = POSTRES_SELLABLE ? MAIN_PRICE_LABEL : 'Próximamente';
+});
+
+document.querySelectorAll('[data-price-access]').forEach((el) => {
   el.textContent = POSTRES_SELLABLE ? PRICE_ACCESS_LABEL : 'Próximamente';
+});
+
+document.querySelectorAll('[data-price-sticky]').forEach((el) => {
+  el.textContent = POSTRES_SELLABLE ? MAIN_PRICE_LABEL : '—';
 });
 
 const logo = document.querySelector('.site-logo');
@@ -84,6 +94,6 @@ if (sticky) {
     sticky.hidden = true;
     sticky.setAttribute('aria-hidden', 'true');
   } else {
-    bindOfferSticky(sticky);
+    bindIncomeSticky(sticky);
   }
 }

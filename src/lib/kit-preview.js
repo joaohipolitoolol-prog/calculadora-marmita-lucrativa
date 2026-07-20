@@ -229,6 +229,9 @@ export function initKitPreview(root = document) {
       { passive: true }
     );
   });
+
+  // Calculadoras fuera del carrusel (secciones de costos en LP)
+  root.querySelectorAll('[data-mini-calc]').forEach(initMiniCalc);
 }
 
 function initMiniCalc(card) {

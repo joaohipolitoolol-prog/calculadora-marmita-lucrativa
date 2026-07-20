@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Empieza a vender paletas desde casa con el Método 2 Bases: 2 bases, hasta 30 sabores, sin moldes especiales. Calcula precios y organiza tu primer menú.">
+  <meta name="description" content="Aprende 2 bases, crea hasta 30 sabores y descubre una ruta práctica para comenzar a vender paletas desde casa.">
   <meta name="keywords" content="método 2 bases, paletas heladas sin molde, vender paletas desde casa, ingreso extra, paletas en vaso, negocio de paletas">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#E8437A">
@@ -11,17 +11,16 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Paletas para WhatsApp">
   <meta property="og:url" content="https://paletasparawhatsapp.vercel.app/">
-  <meta property="og:title" content="Método 2 Bases · Vende paletas con 2 bases y 30 sabores">
-  <meta property="og:description" content="Empieza a generar un ingreso extra vendiendo paletas desde casa. Solo 2 bases, hasta 30 sabores, sin moldes especiales.">
+  <meta property="og:title" content="Método 2 Bases | Aprende a preparar y vender paletas">
+  <meta property="og:description" content="Aprende 2 bases, crea hasta 30 sabores y descubre una ruta práctica para comenzar a vender paletas desde casa.">
   <meta property="og:image" content="https://paletasparawhatsapp.vercel.app/paletas/og-paletas-whatsapp.webp?v=2">
   <meta property="og:image:alt" content="Paletas heladas preparadas con el Método 2 Bases">
   <meta property="og:locale" content="es_LA">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Método 2 Bases · Vende paletas con 2 bases y 30 sabores">
-  <meta name="twitter:description" content="Empieza a vender paletas desde casa con solo 2 bases y hasta 30 sabores, sin moldes especiales.">
+  <meta name="twitter:title" content="Método 2 Bases | Aprende a preparar y vender paletas">
+  <meta name="twitter:description" content="Aprende 2 bases, crea hasta 30 sabores y una ruta práctica para empezar a vender desde casa.">
   <meta name="twitter:image" content="https://paletasparawhatsapp.vercel.app/paletas/og-paletas-whatsapp.webp?v=2">
-  <title>Método 2 Bases · Vende paletas con 2 bases y 30 sabores</title>
-  <!-- A/B entry: redirect sticky/override before paint; gate first visit until assign -->
+  <title>Método 2 Bases | Aprende a preparar y vender paletas</title>
   <style>
     html.ab-pending { background: #fff8fb; }
     html.ab-pending body {
@@ -53,8 +52,6 @@
           document.documentElement.classList.add('ab-ready');
           return;
         }
-        /* sticky=quiz OR first visit: wait for JS + /api/experiments.
-           Do NOT hard-redirect quiz here, experiment may be disabled. */
         document.documentElement.classList.add('ab-pending');
         setTimeout(function () {
           var root = document.documentElement;
@@ -76,17 +73,14 @@
         "url": "https://paletasparawhatsapp.vercel.app/",
         "name": "Paletas para WhatsApp",
         "inLanguage": "es",
-        "description": "Método 2 Bases: empieza a vender paletas heladas desde casa con solo 2 bases y hasta 30 sabores."
+        "description": "Método 2 Bases: una ruta práctica para preparar y comenzar a vender paletas desde casa."
       },
       {
         "@type": "Product",
         "name": "Método 2 Bases · Paletas Heladas Sin Molde",
         "image": "https://paletasparawhatsapp.vercel.app/paletas/og-paletas-whatsapp.webp?v=2",
-        "description": "Método para preparar y vender paletas heladas con solo 2 bases, organizar costos y precios, y comenzar desde casa sin moldes especiales.",
-        "brand": {
-          "@type": "Brand",
-          "name": "Paletas para WhatsApp"
-        },
+        "description": "Método para preparar paletas con 2 bases, organizar costos y precios, y comenzar a vender desde casa sin moldes especiales.",
+        "brand": { "@type": "Brand", "name": "Paletas para WhatsApp" },
         "category": "Emprendimiento / Recetas / Negocio desde casa",
         "offers": {
           "@type": "Offer",
@@ -106,7 +100,6 @@
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1369803401885896');
-    /* PageView only when LP is confirmed (not while gated / before quiz redirect) */
     if (!document.documentElement.classList.contains('ab-pending')) {
       fbq('track', 'PageView');
     }
@@ -117,10 +110,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/src/income-lp/income-lp.css">
 </head>
-<body class="paletas-lp">
+<body class="paletas-lp income-lp">
   <noscript><img height="1" width="1" style="display:none" alt=""
     src="https://www.facebook.com/tr?id=1369803401885896&ev=PageView&noscript=1"></noscript>
+
+  <div class="income-announce" role="note">Una forma simple de comenzar a generar ingresos desde casa</div>
 
   <header class="site-header">
     <div class="container site-header-inner">
@@ -133,426 +129,467 @@
   </header>
 
   <!-- 1. Hero -->
-  <section class="hero">
+  <section class="hero" data-lp-hero>
     <div class="container">
-      <p class="hero-eyebrow">Método 2 Bases · Ingreso extra desde casa</p>
-      <h1>Empieza a vender paletas con solo 2 bases y hasta 30 sabores</h1>
+      <p class="hero-eyebrow">Renta extra desde casa</p>
+      <h1>Aprende 2 bases, crea 30 sabores y empieza a vender paletas sin moldes costosos</h1>
       <p class="subheadline">
-        Sin moldes costosos, sin máquinas especiales y sin adivinar el precio. Un sistema sencillo para preparar tu menú y comenzar a vender, incluso si nunca has hecho paletas.
+        Un método paso a paso para transformar ingredientes simples en paletas atractivas, fáciles de preparar y listas para ofrecer, aunque nunca hayas vendido nada.
       </p>
 
       <ul class="hero-stats" aria-label="Números del método">
         <li><strong>2</strong><span>bases</span></li>
         <li><strong>30</strong><span>sabores</span></li>
-        <li><strong>US$&nbsp;7,49</strong><span>pago único</span></li>
+        <li><strong>Empieza</strong><span>a vender</span></li>
       </ul>
 
-      <ul class="hero-bullets" aria-label="Beneficios del Método 2 Bases">
-        <li>Solo necesitas 2 bases</li>
-        <li>Hasta 30 sabores vendibles</li>
-        <li>Calcula costos y precios</li>
-        <li>Sin horno ni moldes especiales</li>
+      <ul class="hero-bullets" aria-label="Beneficios">
+        <li>Empieza desde cero y con utensilios básicos</li>
+        <li>Crea variedad sin aprender 30 recetas diferentes</li>
+        <li>Organiza costos, precios y presentación</li>
+        <li>Acceso inmediato y pago único</li>
       </ul>
 
-      <p class="hero-menu-label">Sabores que puedes ofrecer en tu menú</p>
-      <div class="hero-flavor-strip hero-flavor-strip--proof" aria-label="Sabores posibles para tu menú">
+      <div class="flavor-strip" aria-label="Sabores del menú">
         <figure class="flavor-chip">
-          <img src="/paletas/hero-paletas-fresas.webp" alt="Paleta de fresa" width="160" height="160" loading="eager" fetchpriority="high">
+          <img src="/paletas/hero-paletas-fresas.webp" alt="Paleta de fresa" width="112" height="112" loading="eager" fetchpriority="high">
           <figcaption>Fresa</figcaption>
         </figure>
         <figure class="flavor-chip">
-          <img src="/paletas/sabor-mango.webp" alt="Paleta de mango" width="160" height="160" loading="eager">
+          <img src="/paletas/sabor-mango.webp" alt="Paleta de mango" width="112" height="112" loading="eager">
           <figcaption>Mango</figcaption>
         </figure>
         <figure class="flavor-chip">
-          <img src="/paletas/sabor-chocolate.webp" alt="Paleta de chocolate" width="160" height="160" loading="eager">
+          <img src="/paletas/sabor-chocolate.webp" alt="Paleta de chocolate" width="112" height="112" loading="eager">
           <figcaption>Chocolate</figcaption>
         </figure>
         <figure class="flavor-chip">
-          <img src="/paletas/sabor-limon-coco.webp" alt="Paleta de limón y coco" width="160" height="160" loading="eager">
+          <img src="/paletas/sabor-limon-coco.webp" alt="Paleta de limón y coco" width="112" height="112" loading="eager">
           <figcaption>Limón / coco</figcaption>
         </figure>
       </div>
 
-      <div class="hero-cta-stack">
-        <a href="#" class="btn btn-primary btn-large" data-checkout-offer>Quiero empezar a vender con las 2 bases</a>
-        <p class="cta-note cta-reassure">Acceso inmediato · Pago único · Sin suscripción</p>
-        <p class="cta-note hero-trust-line">Garantía de 30 días · Menos de US$ 0,25 por sabor</p>
+      <div class="cta-stack hero-cta-stack">
+        <a href="#" class="btn btn-primary btn-large" data-checkout-offer>Quiero empezar a vender paletas</a>
+        <p class="cta-micro">Acceso inmediato · Pago único · Sin suscripción · Garantía de 30 días</p>
+        <p class="hero-price" data-price>US$ 7,49</p>
+        <p class="cta-price-note">Una inversión pequeña para aprender un proceso que puedes repetir cada vez que quieras producir.</p>
       </div>
-
-      <figure class="hero-product-mock" aria-label="Paletas heladas en vasos con palitos">
-        <img src="/paletas/preparacion-vasos.webp" alt="Paletas heladas preparadas en vasos con palitos" class="hero-product-mock__img" width="720" height="480" loading="lazy" onerror="this.src='/paletas/hero-resultado-paletas.webp?v=5'">
-        <figcaption class="hero-product-caption">Producción vendible desde casa: vasos, palitos y espacio en el congelador. Sin moldes profesionales.</figcaption>
-      </figure>
     </div>
   </section>
 
-  <!-- 2. Demo visual: base → sabor -->
-  <section class="section lp-demo" id="demo">
+  <!-- 2. Prueba visual -->
+  <section class="section section--alt" id="producto">
     <div class="container">
-      <p class="section-label">● Así funciona</p>
-      <h2>De 2 bases a un menú listo para vender</h2>
-      <p class="section-text">No aprendes 30 recetas distintas. Dominas la estructura una vez y cambias el sabor.</p>
-      <ol class="demo-flow" aria-label="Del método al producto">
+      <span class="eyebrow">Producto listo para mostrar</span>
+      <h2>Un producto que entra por los ojos y se vende con facilidad</h2>
+      <p class="lead">
+        Las paletas son coloridas, refrescantes y fáciles de mostrar en fotos, estados y mensajes. Con una buena presentación, el producto puede despertar deseo antes de que la persona pregunte el precio.
+      </p>
+      <ol class="demo-flow" aria-label="De la base a la venta">
         <li class="demo-flow-step">
-          <img src="/paletas/preparacion-vasos.webp" alt="Base en vaso" width="200" height="140" loading="lazy">
-          <strong>1. Preparas la base</strong>
-          <span>Frutal o cremosa</span>
+          <img src="/paletas/preparacion-vasos.webp" alt="Base preparada en vasos" width="240" height="140" loading="lazy">
+          <strong>1. Base</strong>
+          <span>Preparación organizada</span>
         </li>
         <li class="demo-flow-step">
-          <img src="/paletas/sabor-mango.webp" alt="Sabor añadido" width="200" height="140" loading="lazy">
-          <strong>2. Añades el sabor</strong>
-          <span>Pocos ingredientes</span>
+          <img src="/paletas/sabor-mango.webp" alt="Sabor de mango" width="240" height="140" loading="lazy">
+          <strong>2. Sabor</strong>
+          <span>Combinación sencilla</span>
         </li>
         <li class="demo-flow-step">
-          <img src="/paletas/hero-paletas-fresas.webp" alt="Paleta lista para vender" width="200" height="140" loading="lazy">
+          <img src="/paletas/hero-paletas-fresas.webp" alt="Paleta terminada" width="240" height="140" loading="lazy">
           <strong>3. Paleta lista</strong>
+          <span>Producto terminado</span>
+        </li>
+        <li class="demo-flow-step">
+          <img src="/paletas/preparacion-vasos.webp" alt="Presentación en vasos para venta" width="240" height="140" loading="lazy">
+          <strong>4. Presentación</strong>
           <span>Lista para ofrecer</span>
         </li>
       </ol>
     </div>
   </section>
 
-  <!-- 3. Problema / contraste -->
-  <section class="section lp-belief" id="problema">
+  <!-- 3. Dor financiera -->
+  <section class="section section--soft" id="problema">
     <div class="container">
-      <p class="section-label">● El problema</p>
-      <h2>No necesitas 30 recetas distintas para empezar a vender</h2>
-      <p class="section-text">
-        Querer un ingreso extra es una cosa. Empezar se complica cuando imaginas moldes caros, precios al ojo y una receta nueva por cada sabor. El Método 2 Bases reduce eso a un sistema repetible.
+      <span class="eyebrow">No te faltan ganas</span>
+      <h2>El problema es no saber qué vender ni cómo empezar</h2>
+      <p class="lead lead-wide">
+        Tal vez quieres ganar un dinero extra, pero cada idea parece exigir demasiado: equipos, experiencia, una inversión alta o meses de preparación.
       </p>
-      <div class="compare-grid">
-        <article class="compare-card compare-card--bad">
-          <h3>Recetas sueltas</h3>
-          <ul>
-            <li>Una receta distinta por sabor</li>
-            <li>Más ingredientes y desperdicio</li>
-            <li>Producción desorganizada</li>
-            <li>Precios sin control de costo</li>
-          </ul>
-        </article>
-        <article class="compare-card compare-card--good">
-          <h3>Método 2 Bases</h3>
-          <ul>
-            <li>2 bases organizadas</li>
-            <li>Hasta 30 sabores vendibles</li>
-            <li>Producción más sencilla</li>
-            <li>Costos y precios calculados</li>
-          </ul>
-        </article>
-      </div>
+      <p class="lead lead-wide">
+        Y cuando encuentras una receta, aparece otro problema: ingredientes diferentes, medidas confusas, pruebas que salen mal y dinero que termina en la basura.
+      </p>
+      <p class="callout">No necesitas comenzar con un negocio perfecto. Necesitas un producto simple y una ruta clara.</p>
     </div>
   </section>
 
-  <!-- 4. Cómo funcionan las bases -->
-  <section class="section mechanism" id="como-funciona">
+  <!-- 4. Inimigo -->
+  <section class="section section--alt" id="enemigo">
     <div class="container">
-      <p class="section-label">● Método 2 Bases</p>
-      <h2>Por qué funcionan las 2 bases</h2>
-      <p class="section-text">Cada base abre una familia de sabores. Dominas las proporciones una vez y evitas mezclas duras, aguadas o llenas de hielo.</p>
-      <div class="method-grid method-grid-2">
-        <article class="method-card">
+      <h2>No es tu culpa si hasta ahora todo parecía complicado</h2>
+      <p class="lead lead-wide">
+        La mayoría intenta comenzar de la forma más difícil: aprendiendo una receta distinta para cada sabor, comprando cosas antes de saber si las necesita y produciendo sin calcular cuánto cuesta cada unidad.
+      </p>
+      <p class="lead">Eso genera desperdicio, inseguridad y miedo de vender.</p>
+      <p class="callout">El enemigo no es tu falta de talento. Es comenzar sin un sistema.</p>
+    </div>
+  </section>
+
+  <!-- 5. Mecanismo -->
+  <section class="section section--tint" id="mecanismo">
+    <div class="container">
+      <span class="eyebrow">Una forma más simple</span>
+      <h2>No necesitas 30 recetas. Necesitas dominar 2 bases.</h2>
+      <p class="lead lead-wide">
+        El Método 2 Bases organiza la preparación alrededor de dos fórmulas principales. A partir de ellas, puedes crear diferentes sabores y combinaciones sin comenzar de cero cada vez.
+      </p>
+      <div class="bases-grid bases-grid--2" aria-label="Las 2 bases">
+        <article class="base-card">
           <span class="method-num">1</span>
           <h3>Base frutal flexible</h3>
-          <p>Punto de partida para fresa, mango, piña, limón y combinaciones frescas. Pensada para textura suave sin cristalizarse.</p>
+          <p>Punto de partida para fresa, mango, limón y combinaciones frescas, con una textura más suave y estable.</p>
         </article>
-        <article class="method-card method-card-highlight">
+        <article class="base-card is-highlight">
           <span class="method-num">2</span>
           <h3>Base cremosa universal</h3>
-          <p>Para chocolate, vainilla, coco, café y combinaciones con crema. Misma estructura, distintos sabores para tu menú.</p>
+          <p>Para chocolate, vainilla, coco, café y combinaciones con crema. Misma estructura, distintos sabores.</p>
         </article>
       </div>
-      <p class="method-closing">
-        Dominas las bases una sola vez. Después cambias pocos ingredientes, amplías el menú y tienes más opciones para vender sin reinventar toda la producción.
-      </p>
+      <div class="card-grid card-grid--4" style="margin-top:18px">
+        <article>
+          <h3>Menos complejidad</h3>
+          <p>Aprendes una estructura clara en lugar de memorizar decenas de procesos.</p>
+        </article>
+        <article>
+          <h3>Menos desperdicio</h3>
+          <p>Trabajas con una preparación más organizada y evitas improvisar cada tanda.</p>
+        </article>
+        <article>
+          <h3>Más variedad para vender</h3>
+          <p>Puedes ofrecer diferentes sabores sin convertir tu cocina en un caos.</p>
+        </article>
+        <article>
+          <h3>Más fácil de repetir</h3>
+          <p>Cuando encuentras lo que funciona, puedes volver a producir con más seguridad.</p>
+        </article>
+      </div>
+      <p class="callout">Las 2 bases no son solo una forma de cocinar. Son una forma de simplificar tu producción.</p>
     </div>
   </section>
 
-  <!-- 5. Jornada hasta la primera venta -->
-  <section class="section product-clear" id="ruta">
+  <!-- 6. Cómo funciona -->
+  <section class="section section--alt" id="como-funciona">
     <div class="container">
-      <p class="section-label">● Tu ruta</p>
-      <h2>De las 2 bases a tu primera venta</h2>
-      <p class="section-text">No compras módulos. Compras la capacidad de producir y ofrecer un menú.</p>
-      <ol class="access-steps access-steps-tight journey-steps">
+      <span class="eyebrow">Paso a paso</span>
+      <h2>De ingredientes simples a un producto listo para ofrecer</h2>
+      <ol class="steps">
         <li>
-          <span class="access-num" aria-hidden="true">1</span>
+          <span class="step-num" aria-hidden="true">1</span>
           <div>
-            <strong>Domina las 2 bases</strong>
-            <span>Proporciones y punto correcto para evitar paletas duras o aguadas.</span>
+            <strong>Aprende las 2 bases</strong>
+            <span>Conoce las proporciones, el orden de preparación y los puntos importantes para obtener una textura agradable.</span>
           </div>
         </li>
         <li>
-          <span class="access-num" aria-hidden="true">2</span>
+          <span class="step-num" aria-hidden="true">2</span>
           <div>
-            <strong>Arma sabores sin 30 recetas</strong>
-            <span>Transforma las bases en hasta 30 sabores cambiando pocos ingredientes.</span>
+            <strong>Transforma las bases en sabores</strong>
+            <span>Utiliza las combinaciones del método para crear variedad sin aprender una receta completamente nueva cada vez.</span>
           </div>
         </li>
         <li>
-          <span class="access-num" aria-hidden="true">3</span>
+          <span class="step-num" aria-hidden="true">3</span>
           <div>
-            <strong>Calcula costo y precio</strong>
-            <span>Usa la calculadora para saber cuánto te cuesta cada paleta y cuánto cobrar.</span>
+            <strong>Organiza la presentación</strong>
+            <span>Monta y presenta las paletas de forma visualmente atractiva, incluso sin moldes costosos.</span>
           </div>
         </li>
         <li>
-          <span class="access-num" aria-hidden="true">4</span>
+          <span class="step-num" aria-hidden="true">4</span>
           <div>
-            <strong>Ofrece tu primer menú</strong>
-            <span>Empieza con pocos sabores y comienza a vender desde casa.</span>
+            <strong>Calcula y empieza a ofrecer</strong>
+            <span>Organiza tus costos, define un precio coherente y comienza a mostrar tu producto a personas cercanas y posibles clientes.</span>
           </div>
         </li>
       </ol>
     </div>
   </section>
 
-  <!-- 6. Qué recibes (resultados) -->
-  <section class="section product-kit" id="vista-previa">
+  <!-- 7. Ruta primeras ventas -->
+  <section class="section section--soft" id="ruta">
     <div class="container">
-      <p class="section-label">● Qué recibes</p>
-      <h2>Todo lo que necesitas para empezar a vender</h2>
-      <div class="include-grid include-grid--six" aria-label="Contenido del método">
-        <article class="include-item"><strong>2 bases</strong><span>para dejar de depender de recetas sueltas</span></article>
-        <article class="include-item"><strong>30 sabores</strong><span>para armar un menú variado</span></article>
-        <article class="include-item"><strong>Calculadora</strong><span>para cobrar con tus números</span></article>
-        <article class="include-item"><strong>Lista de compras</strong><span>para tu primera producción</span></article>
-        <article class="include-item"><strong>Conservación</strong><span>para mantener textura y sabor</span></article>
-        <article class="include-item"><strong>App en el celular</strong><span>para seguir el paso a paso</span></article>
+      <span class="eyebrow">Una ruta clara</span>
+      <h2>De las 2 bases a tus primeras ventas</h2>
+      <p class="lead">
+        No necesitas esperar a tener una marca perfecta. Puedes comenzar pequeño, aprender con cada tanda y mejorar a medida que recibes pedidos.
+      </p>
+      <ol class="steps">
+        <li>
+          <span class="step-num" aria-hidden="true">1</span>
+          <div>
+            <strong>Elige tus primeros sabores</strong>
+            <span>Comienza con una selección pequeña y fácil de producir.</span>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">2</span>
+          <div>
+            <strong>Prepara una tanda organizada</strong>
+            <span>Usa el método para repetir el proceso sin depender de improvisación.</span>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">3</span>
+          <div>
+            <strong>Toma fotos simples y apetitosas</strong>
+            <span>Una buena luz, un fondo limpio y el producto bien presentado ayudan a mostrar lo que vendes.</span>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">4</span>
+          <div>
+            <strong>Ofrece primero a tu red cercana</strong>
+            <span>Estados, grupos, vecinos, familiares y contactos pueden ayudarte a validar tus primeros sabores.</span>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">5</span>
+          <div>
+            <strong>Escucha, ajusta y repite</strong>
+            <span>Descubre qué sabores llaman más la atención y organiza tus próximas producciones.</span>
+          </div>
+        </li>
+      </ol>
+      <p class="note-soft">Los resultados dependen de tus costos, precios, presentación, demanda y esfuerzo de venta.</p>
+    </div>
+  </section>
+
+  <!-- 8. Qué recibes -->
+  <section class="section section--alt" id="recibes">
+    <div class="container">
+      <span class="eyebrow">Todo organizado</span>
+      <h2>Todo lo que necesitas para comenzar con más seguridad</h2>
+      <div class="card-grid card-grid--2">
+        <article>
+          <h3>Las 2 bases paso a paso</h3>
+          <p>El punto de partida para dejar de depender de recetas sueltas.</p>
+        </article>
+        <article>
+          <h3>Hasta 30 sabores y combinaciones</h3>
+          <p>Ideas organizadas para crear variedad y mantener tu oferta atractiva.</p>
+        </article>
+        <article>
+          <h3>Calculadora de costos y precios</h3>
+          <p>Una forma más clara de entender cuánto inviertes y cuánto necesitas cobrar.</p>
+        </article>
+        <article>
+          <h3>Lista de compras</h3>
+          <p>Organiza ingredientes y materiales para tu primera producción.</p>
+        </article>
+        <article>
+          <h3>Guía de conservación</h3>
+          <p>Puntos importantes para mantener textura y sabor después de preparar.</p>
+        </article>
+        <article>
+          <h3>Acceso en la aplicación</h3>
+          <p>Consulta el método desde tu celular mientras produces y organizas tu menú.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- 7. App (calculadora destacada) -->
-  <section class="section product-preview" id="vista-app" aria-labelledby="preview-title">
+  <!-- 9. Costos y precios -->
+  <section class="section section--tint" id="precios">
     <div class="container">
-      <p class="section-label">● En tu celular</p>
-      <h2 id="preview-title">Recetas y precios organizados para vender</h2>
-      <p class="section-text section-text--wide">
-        Consulta las bases, los sabores y la calculadora desde el celular mientras produces. Sin buscar información en archivos sueltos.
+      <span class="eyebrow">No vendas a ciegas</span>
+      <h2>Antes de vender, necesitas saber cuánto cuesta cada paleta</h2>
+      <p class="lead lead-wide">
+        Vender mucho no significa ganar dinero si no conoces tus costos. Por eso, el método te ayuda a mirar ingredientes, rendimiento, costo por unidad y precio de venta de una forma más organizada.
       </p>
-
-      <div class="app-showcase">
-        <div class="app-showcase-visual">
-          <div class="kit-preview" data-kit-preview>
-            <div class="kit-preview-viewport" data-kit-viewport>
-            <div class="kit-preview-track" data-kit-track>
-              <article class="kit-preview-slide is-active" data-kit-slide>
-                <div class="kit-phone">
-                  <div class="kit-phone-bar">
-                    <strong>Método 2 Bases</strong>
-                    <span>Receta</span>
-                  </div>
-                  <div class="kit-phone-body">
-                    <div class="kit-recipe-hero">
-                      <img class="kit-recipe-photo" src="/paletas/hero-paletas-fresas.webp" alt="Paletas heladas de fresa" width="400" height="300" loading="lazy">
-                      <div class="kit-recipe-meta">
-                        <strong>Fresa con crema</strong>
-                        <span>Base cremosa · vasos y palitos</span>
-                      </div>
-                    </div>
-                    <div class="kit-recipe-stats">
-                      <div><em>Rinde</em><strong>10 paletas</strong></div>
-                      <div><em>Prep</em><strong>20 min</strong></div>
-                      <div><em>Nivel</em><strong>Fácil</strong></div>
-                    </div>
-                    <p class="kit-recipe-ing"><strong>Ingredientes</strong> Fresa · leche · crema · azúcar · vasos</p>
-                    <ul class="kit-recipe-steps">
-                      <li><span>1</span> Prepara la base cremosa</li>
-                      <li><span>2</span> Llena vasos e inserta el palito</li>
-                      <li><span>3</span> Congela y listo</li>
-                    </ul>
-                  </div>
-                </div>
-                <p class="kit-preview-caption">Una receta del método</p>
-              </article>
-
-              <article class="kit-preview-slide" data-kit-slide>
-                <div class="kit-phone" data-mini-calc>
-                  <div class="kit-phone-bar">
-                    <strong>Calculadora</strong>
-                    <span>Precios</span>
-                  </div>
-                  <div class="kit-phone-body">
-                    <div class="mini-calc-row">
-                      <label for="mc-paletas-price">Precio de venta</label>
-                      <div class="mini-calc-controls">
-                        <button type="button" data-mc-nudge="price" data-mc-step="-0.10" aria-label="Bajar precio">−</button>
-                        <input id="mc-paletas-price" type="number" inputmode="decimal" step="0.10" min="0" value="2.50" data-mc-price>
-                        <button type="button" data-mc-nudge="price" data-mc-step="0.10" aria-label="Subir precio">+</button>
-                      </div>
-                    </div>
-                    <div class="mini-calc-row">
-                      <label for="mc-paletas-cost">Costo real</label>
-                      <div class="mini-calc-controls">
-                        <button type="button" data-mc-nudge="cost" data-mc-step="-0.05" aria-label="Bajar costo">−</button>
-                        <input id="mc-paletas-cost" type="number" inputmode="decimal" step="0.05" min="0" value="0.85" data-mc-cost>
-                        <button type="button" data-mc-nudge="cost" data-mc-step="0.05" aria-label="Subir costo">+</button>
-                      </div>
-                    </div>
-                    <div class="mini-calc-result">
-                      <div>
-                        <span>Utilidad</span>
-                        <strong data-mc-profit>US$ 1,65</strong>
-                      </div>
-                      <div>
-                        <span>Margen</span>
-                        <strong data-mc-margin>66%</strong>
-                      </div>
-                    </div>
-                    <p class="mini-calc-tip">Incluida para dejar de cobrar a ojo</p>
-                  </div>
-                </div>
-                <p class="kit-preview-caption">Calculadora de costos y precios</p>
-              </article>
-            </div>
-            </div>
-            <div class="kit-preview-nav" aria-label="Cambiar pantalla">
-              <button type="button" class="kit-preview-nav-btn" data-kit-prev aria-label="Pantalla anterior">‹</button>
-              <div class="kit-preview-dots" role="tablist" aria-label="Pantallas">
-                <button type="button" class="kit-preview-dot is-active" data-kit-dot="0" aria-label="Receta" aria-current="true"></button>
-                <button type="button" class="kit-preview-dot" data-kit-dot="1" aria-label="Calculadora"></button>
+      <ul class="price-metrics" aria-label="Ejemplo de la calculadora">
+        <li>
+          <strong>US$ 0,85</strong>
+          <span>Costo ejemplo</span>
+        </li>
+        <li>
+          <strong>US$ 2,50</strong>
+          <span>Precio ejemplo</span>
+        </li>
+        <li>
+          <strong>US$ 1,65</strong>
+          <span>Utilidad ejemplo</span>
+        </li>
+        <li>
+          <strong>66%</strong>
+          <span>Margen ejemplo</span>
+        </li>
+      </ul>
+      <div class="cost-demo" data-mini-calc>
+        <div class="kit-phone" style="height:auto;border-radius:18px;overflow:hidden;border:1px solid rgba(232,67,122,.16);background:#fff">
+          <div class="kit-phone-bar">
+            <strong>Calculadora</strong>
+            <span>Ejemplo</span>
+          </div>
+          <div class="kit-phone-body">
+            <div class="mini-calc-row">
+              <label for="mc-paletas-price">Precio de venta</label>
+              <div class="mini-calc-controls">
+                <button type="button" data-mc-nudge="price" data-mc-step="-0.10" aria-label="Bajar precio">−</button>
+                <input id="mc-paletas-price" type="number" inputmode="decimal" step="0.10" min="0" value="2.50" data-mc-price>
+                <button type="button" data-mc-nudge="price" data-mc-step="0.10" aria-label="Subir precio">+</button>
               </div>
-              <button type="button" class="kit-preview-nav-btn" data-kit-next aria-label="Pantalla siguiente">›</button>
+            </div>
+            <div class="mini-calc-row">
+              <label for="mc-paletas-cost">Costo real</label>
+              <div class="mini-calc-controls">
+                <button type="button" data-mc-nudge="cost" data-mc-step="-0.05" aria-label="Bajar costo">−</button>
+                <input id="mc-paletas-cost" type="number" inputmode="decimal" step="0.05" min="0" value="0.85" data-mc-cost>
+                <button type="button" data-mc-nudge="cost" data-mc-step="0.05" aria-label="Subir costo">+</button>
+              </div>
+            </div>
+            <div class="mini-calc-result">
+              <div>
+                <span>Utilidad</span>
+                <strong data-mc-profit>US$ 1,65</strong>
+              </div>
+              <div>
+                <span>Margen</span>
+                <strong data-mc-margin>66%</strong>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="app-showcase-copy">
-          <ul class="app-feature-list" aria-label="Lo que encuentras en la aplicación">
-            <li>2 bases y 30 sabores paso a paso</li>
-            <li>Calculadora de costos y precios</li>
-            <li>Lista de compras organizada</li>
-            <li>Acceso desde el celular</li>
-          </ul>
-          <a href="#" class="btn btn-primary btn-large" data-checkout-offer>Quiero empezar a vender con las 2 bases</a>
-        </div>
       </div>
+      <p class="note-soft">Estos números son un ejemplo editable. Completa con los precios de tu ciudad. Los valores pueden cambiar según el país, los ingredientes y el lugar de compra.</p>
     </div>
   </section>
 
-  <!-- 8. Pruebas reales WhatsApp -->
+  <!-- 10. Pruebas -->
   <section class="section wa-reviews wa-reviews-prints-only" id="prueba">
     <div class="container">
       <div class="wa-reviews-head">
-        <p class="section-label">● Resultados reales</p>
-        <h2>Mujeres que ya empezaron a vender</h2>
-        <p class="section-text">
-          Prints reales de WhatsApp: primeros pedidos, precios y ventas a vecinas. Sin promesas vacías.
-        </p>
+        <span class="eyebrow">Mujeres reales</span>
+        <h2>Mujeres que dejaron de pensarlo y comenzaron</h2>
+        <p class="lead">No necesitas sentirte completamente preparada para dar el primer paso.</p>
       </div>
     </div>
     <div class="wa-reviews-shell wa-reviews-shell-prints">
       <div class="wa-reviews-track wa-reviews-track-prints" aria-label="Mensajes reales de clientas">
         <figure class="wa-review">
-          <img src="/paletas/reviews/crops/wa-alejandra.webp?v=2" alt="Alejandra: primer pedido de vecinas por WhatsApp" width="190" height="340" loading="lazy" decoding="async">
+          <img src="/paletas/reviews/crops/wa-alejandra.webp?v=2" alt="Alejandra: primer pedido de vecinas por WhatsApp" width="260" height="230" loading="lazy" decoding="async">
         </figure>
         <figure class="wa-review">
-          <img src="/paletas/reviews/crops/wa-yadira.webp?v=2" alt="Yadira: primeros pedidos con mensajes listos" width="190" height="340" loading="lazy" decoding="async">
+          <img src="/paletas/reviews/crops/wa-yadira.webp?v=2" alt="Yadira: primeros pedidos con mensajes listos" width="260" height="230" loading="lazy" decoding="async">
         </figure>
         <figure class="wa-review">
-          <img src="/paletas/reviews/crops/wa-norma.webp?v=2" alt="Norma: precios correctos y pedidos por estado" width="190" height="340" loading="lazy" decoding="async">
+          <img src="/paletas/reviews/crops/wa-norma.webp?v=2" alt="Norma: precios correctos y pedidos por estado" width="260" height="230" loading="lazy" decoding="async">
         </figure>
         <figure class="wa-review">
-          <img src="/paletas/reviews/crops/wa-vecinas.webp?v=2" alt="Mary: menú, calculadora y ventas a vecinas" width="190" height="340" loading="lazy" decoding="async">
+          <img src="/paletas/reviews/crops/wa-vecinas.webp?v=2" alt="Mary: menú, calculadora y ventas a vecinas" width="260" height="230" loading="lazy" decoding="async">
         </figure>
         <figure class="wa-review">
-          <img src="/paletas/reviews/crops/wa-luciana.webp?v=2" alt="Luciana: calculadora para costos y meta de ventas" width="190" height="340" loading="lazy" decoding="async">
+          <img src="/paletas/reviews/crops/wa-luciana.webp?v=2" alt="Luciana: calculadora para costos y meta de ventas" width="260" height="230" loading="lazy" decoding="async">
         </figure>
       </div>
     </div>
   </section>
 
-  <!-- 9. Oferta + precio + garantía -->
-  <section class="section offer" id="oferta">
+  <!-- 11. Oferta -->
+  <section class="section section--soft offer" id="oferta">
     <div class="container">
       <div class="offer-card">
-        <div class="offer-card-body">
-          <span class="offer-tag">Pago único · Acceso inmediato · Sin suscripción</span>
-          <h2>Método 2 Bases para empezar a vender desde casa</h2>
-          <p class="offer-desc">Aprende a transformar 2 preparaciones simples en hasta 30 sabores vendibles, calcula tu precio y organiza tu primer menú.</p>
-          <ul class="offer-summary">
-            <li>2 bases fundamentales para producir sin recetas sueltas</li>
-            <li>Hasta 30 sabores para armar tu menú</li>
-            <li>Calculadora de costos y precios</li>
-            <li>Lista de compras y guía de conservación</li>
-            <li>Acceso inmediato en la aplicación</li>
-          </ul>
-          <div class="offer-price-box">
-            <strong class="offer-price-value" data-price-access>30 sabores por solo US$ 7,49</strong>
-            <span class="offer-price-note">Menos de US$ 0,25 por sabor · Pago único · Sin mensualidades</span>
-          </div>
-          <a href="#" class="btn btn-primary btn-large" data-checkout-offer>Quiero empezar a vender con las 2 bases</a>
-          <p class="cta-note cta-reassure">Pago seguro por Hotmart · Producto 100% digital</p>
-          <div class="offer-guarantee-inline">
-            <strong>Garantía de 30 días</strong>
-            <p>Prueba el Método 2 Bases durante 30 días. Accede al contenido, revisa el proceso y comprueba si es para ti. Si no encuentras el valor prometido, solicita tu reembolso según las condiciones de la plataforma de pago.</p>
-          </div>
-          <p class="offer-bump-note">Durante la compra podrás añadir un kit opcional de mensajes para comenzar a ofrecer tus productos por WhatsApp.</p>
+        <span class="offer-tag">Empieza hoy · Pago único</span>
+        <h2>Método 2 Bases para preparar y vender paletas</h2>
+        <p class="offer-desc">Una ruta práctica para pasar de no saber qué vender a tener un producto listo para ofrecer.</p>
+        <ul class="offer-summary">
+          <li>Las 2 bases explicadas paso a paso</li>
+          <li>Hasta 30 sabores y combinaciones</li>
+          <li>Calculadora de costos y precios</li>
+          <li>Lista de compras y guía de conservación</li>
+          <li>Acceso inmediato en la aplicación</li>
+        </ul>
+        <div class="offer-price-box">
+          <span class="offer-price-label">Todo el método por</span>
+          <strong class="offer-price-value" data-price>US$ 7,49</strong>
+          <span class="offer-price-note">Pago único. Sin mensualidades.</span>
+        </div>
+        <a href="#" class="btn btn-primary btn-large" data-checkout-offer>Quiero empezar a vender paletas</a>
+        <p class="cta-micro" style="margin-top:10px">Acceso inmediato · Pago único · Compra protegida</p>
+        <p class="offer-anchor">Menos de lo que puede costar una tanda desperdiciada por seguir una receta que no funciona.</p>
+        <div class="offer-guarantee-inline">
+          <strong>Garantía de 30 días</strong>
+          <p>Accede al contenido, revisa el proceso y comprueba si el método es adecuado para ti. Si decides que no es lo que esperabas, puedes solicitar el reembolso dentro del plazo y bajo las condiciones de la plataforma de pago.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 10. FAQ -->
-  <section class="section faq">
+  <!-- 12. Garantía -->
+  <section class="section section--alt guarantee-block" id="garantia">
+    <div class="container">
+      <div class="guarantee-card">
+        <div class="guarantee-badge">Garantía de 30 días</div>
+        <h2>Prueba el Método 2 Bases con tranquilidad</h2>
+        <p>Accede al contenido, revisa el proceso y comprueba si el método es adecuado para ti.</p>
+        <p>Si decides que no es lo que esperabas, puedes solicitar el reembolso dentro del plazo y bajo las condiciones reales de la garantía de la plataforma de pago.</p>
+        <a href="#" class="btn btn-primary btn-large" data-checkout-offer data-checkout-custom style="margin-top:14px;max-width:360px">Quiero acceder con garantía</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. FAQ -->
+  <section class="section section--soft faq" id="faq">
     <div class="container">
       <h2>Preguntas frecuentes</h2>
       <div class="faq-list">
         <details class="faq-item" open>
-          <summary class="faq-question">
-            ¿Necesito experiencia para vender?
-            <span class="faq-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="faq-answer"><p>No. El método está pensado para quien empieza: aprendes las 2 bases, eliges sabores y usas la calculadora antes de ofrecer tu primer menú.</p></div>
+          <summary class="faq-question">¿Necesito experiencia para comenzar?<span class="faq-icon" aria-hidden="true">+</span></summary>
+          <div class="faq-answer"><p>No. El método fue pensado para personas que están comenzando y necesitan un proceso organizado. Lo importante es seguir las instrucciones y respetar cada etapa.</p></div>
         </details>
         <details class="faq-item">
-          <summary class="faq-question">
-            ¿Necesito moldes especiales?
-            <span class="faq-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="faq-answer"><p>No. Preparas las paletas en vasos con palitos, sin horno ni moldes profesionales.</p></div>
+          <summary class="faq-question">¿Necesito moldes costosos?<span class="faq-icon" aria-hidden="true">+</span></summary>
+          <div class="faq-answer"><p>No necesitas moldes profesionales para comenzar. Preparas las paletas en vasos con palitos, con utensilios sencillos que probablemente ya tienes en casa.</p></div>
         </details>
         <details class="faq-item">
-          <summary class="faq-question">
-            ¿Cuánto dinero necesito para comenzar?
-            <span class="faq-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="faq-answer"><p>El acceso al método es un pago único de US$ 7,49. El dinero para producir depende de los ingredientes y precios de tu región. La lista de compras y la calculadora te ayudan a organizarlo.</p></div>
+          <summary class="faq-question">¿El acceso es inmediato?<span class="faq-icon" aria-hidden="true">+</span></summary>
+          <div class="faq-answer"><p>Sí. Después de la confirmación del pago, recibes las instrucciones de acceso por email para crear tu cuenta y entrar a la aplicación.</p></div>
         </details>
         <details class="faq-item">
-          <summary class="faq-question">
-            ¿Cómo sabré cuánto cobrar?
-            <span class="faq-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="faq-answer"><p>Con la calculadora de costos y precios registras lo que gastas en cada paleta y defines un precio de venta según tus números.</p></div>
+          <summary class="faq-question">¿Es un pago único?<span class="faq-icon" aria-hidden="true">+</span></summary>
+          <div class="faq-answer"><p>Sí. No es una suscripción y no existen cobros mensuales.</p></div>
         </details>
         <details class="faq-item">
-          <summary class="faq-question">
-            ¿El acceso es inmediato?
-            <span class="faq-icon" aria-hidden="true">+</span>
-          </summary>
-          <div class="faq-answer"><p>Sí. Después del pago recibes el acceso por email para crear tu cuenta y entrar a la aplicación desde el celular o la computadora.</p></div>
+          <summary class="faq-question">¿Puedo hacerlo aunque nunca haya vendido nada?<span class="faq-icon" aria-hidden="true">+</span></summary>
+          <div class="faq-answer"><p>Sí. El método organiza tanto la preparación como los primeros pasos para presentar, calcular y comenzar a ofrecer el producto.</p></div>
         </details>
         <details class="faq-item">
-          <summary class="faq-question">
-            ¿Cómo funciona la garantía?
-            <span class="faq-icon" aria-hidden="true">+</span>
-          </summary>
+          <summary class="faq-question">¿Cuánto puedo ganar?<span class="faq-icon" aria-hidden="true">+</span></summary>
+          <div class="faq-answer"><p>No existe una cantidad garantizada. Tus resultados dependen de tus costos, precios, volumen de producción, presentación, demanda y esfuerzo de venta. El objetivo del método es darte una ruta más clara para comenzar.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">¿Los ingredientes se encuentran en cualquier país?<span class="faq-icon" aria-hidden="true">+</span></summary>
+          <div class="faq-answer"><p>La mayoría de los ingredientes son accesibles, pero la disponibilidad puede variar según tu región. Dentro del método organizas tu lista de compras según lo que encuentres donde vives.</p></div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">¿Cómo funciona la garantía?<span class="faq-icon" aria-hidden="true">+</span></summary>
           <div class="faq-answer"><p>Tienes 30 días para probar el método. Si decides que no es para ti, puedes solicitar el reembolso de acuerdo con las condiciones de la plataforma de pago.</p></div>
         </details>
       </div>
     </div>
   </section>
 
-  <!-- 11. CTA final -->
+  <!-- 14. Cierre -->
   <section class="section final-cta">
     <div class="container">
       <h2>2 bases. 30 sabores. Una ruta clara para empezar a vender.</h2>
-      <div class="final-cta-row">
-        <a href="#" class="btn btn-primary btn-large" data-checkout-offer>Quiero empezar a vender con las 2 bases</a>
+      <p class="lead">No necesitas tener todo resuelto. Solo necesitas una forma simple de comenzar.</p>
+      <div class="cta-stack">
+        <a href="#" class="btn btn-primary btn-large" data-checkout-offer>Quiero empezar a vender paletas</a>
+        <p class="cta-micro">Acceso inmediato · Pago único · Sin suscripción</p>
       </div>
-      <p class="cta-note cta-reassure final-cta-reassure"><strong>US$ 7,49</strong> · Pago único · Garantía 30 días</p>
     </div>
   </section>
 
@@ -562,7 +599,7 @@
         <span class="purchase-sticky-kit">Método 2 Bases</span>
         <strong class="purchase-sticky-price" data-price>US$ 7,49</strong>
       </div>
-      <a href="#" class="btn btn-primary purchase-sticky-btn" data-checkout-sticky>Quiero empezar</a>
+      <a href="#" class="btn btn-primary purchase-sticky-btn" data-checkout-sticky>Quiero empezar a vender paletas</a>
     </div>
   </div>
 

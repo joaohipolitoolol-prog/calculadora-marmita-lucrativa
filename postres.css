@@ -1357,3 +1357,13 @@
 .postres-theme .wa-reviews-shell-prints::after {
   background: linear-gradient(90deg, transparent, var(--cream));
 }
+
+/* Só bolhas (sem frame de celular) */
+.postres-theme .wa-reviews-track-prints .wa-review {
+  flex: 0 0 min(280px, 78vw);
+}
+
+.postres-theme .wa-reviews-track-prints .wa-review img {
+  border-radius: 16px;
+  box-shadow: 0 8px 22px rgba(42, 23, 18, 0.12);
+}
