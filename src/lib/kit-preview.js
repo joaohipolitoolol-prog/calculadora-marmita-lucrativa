@@ -240,30 +240,52 @@ function initMiniCalc(card) {
 
   const priceEl = card.querySelector('[data-mc-price]');
   const costEl = card.querySelector('[data-mc-cost]');
+  const packEl = card.querySelector('[data-mc-pack]');
   const profitEl = card.querySelector('[data-mc-profit]');
   const marginEl = card.querySelector('[data-mc-margin]');
-  if (!priceEl || !costEl || !profitEl || !marginEl) return;
+  const totalCostEl = card.querySelector('[data-mc-cost-total]');
+  if (!priceEl || !profitEl || !marginEl) return;
+  if (!costEl && !packEl) return;
+
+  const parseNum = (el) => {
+    if (!el) return 0;
+    const raw = String(el.value ?? '')
+      .trim()
+      .replace(/\s/g, '')
+      .replace(',', '.');
+    const n = Number(raw);
+    return Number.isFinite(n) ? Math.max(0, n) : 0;
+  };
 
   const money = (n) => `US$ ${n.toFixed(2).replace('.', ',')}`;
+  const fieldVal = (n) => n.toFixed(2);
 
   function render() {
-    const price = Number(priceEl.value) || 0;
-    const cost = Number(costEl.value) || 0;
+    const price = parseNum(priceEl);
+    const ingredients = parseNum(costEl);
+    const pack = parseNum(packEl);
+    const cost = ingredients + pack;
+    if (totalCostEl) totalCostEl.textContent = money(cost);
     const profit = Math.max(0, price - cost);
     const margin = price > 0 ? (profit / price) * 100 : 0;
     profitEl.textContent = money(profit);
     marginEl.textContent = `${margin.toFixed(0)}%`;
   }
 
-  priceEl.addEventListener('input', render);
-  costEl.addEventListener('input', render);
+  [priceEl, costEl, packEl].filter(Boolean).forEach((el) => {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+
   card.querySelectorAll('[data-mc-nudge]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.mcNudge;
-      const field = target === 'price' ? priceEl : costEl;
-      const step = Number(btn.dataset.mcStep) || 0.1;
-      const next = Math.max(0, (Number(field.value) || 0) + step);
-      field.value = next.toFixed(2);
+      const field =
+        target === 'price' ? priceEl : target === 'pack' ? packEl : costEl;
+      if (!field) return;
+      const step = Number(String(btn.dataset.mcStep || '0.1').replace(',', '.')) || 0.1;
+      const next = Math.max(0, parseNum(field) + step);
+      field.value = fieldVal(next);
       render();
     });
   });

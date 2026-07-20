@@ -21,10 +21,12 @@ export const OFFER_CTA_LABEL = 'Quiero empezar a vender postres';
 export const TRUST_CTA_LABEL = 'Quiero empezar a vender postres';
 export const STICKY_CTA_LABEL = 'Quiero empezar a vender postres';
 export const FINAL_CTA_LABEL = 'Quiero empezar a vender postres';
-export const GUARANTEE_CTA_LABEL = 'Quiero acceder con garantía';
-export const SECONDARY_CTA_LABEL = 'Quiero aprender las 3 bases';
+export const GUARANTEE_CTA_LABEL = 'Quiero acceder al Método 3x12';
+export const SECONDARY_CTA_LABEL = 'Quiero acceder al Método 3x12';
 export const CTA_LABEL = HERO_CTA_LABEL;
 
 /** Demo defaults already used in the in-page calculator */
 export const DEMO_UNIT_PRICE = 1.6;
 export const DEMO_UNIT_COST = 0.7;
+export const DEMO_UNIT_INGREDIENTS = 0.45;
+export const DEMO_UNIT_PACK = 0.25;

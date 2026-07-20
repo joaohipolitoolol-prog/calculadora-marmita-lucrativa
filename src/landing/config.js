@@ -72,3 +72,5 @@ export const PRODUCT_LINE_NAME = 'Paletas Heladas Sin Molde';
 /** Demo defaults already used in the in-page calculator (not income promises) */
 export const DEMO_UNIT_PRICE = 2.5;
 export const DEMO_UNIT_COST = 0.85;
+export const DEMO_UNIT_INGREDIENTS = 0.55;
+export const DEMO_UNIT_PACK = 0.3;
