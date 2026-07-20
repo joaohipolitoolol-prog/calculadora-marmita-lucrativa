@@ -17,10 +17,12 @@ import {
 import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { PRODUCT_LINE_BY_ID } from '../lib/product-lines.js';
 import { initKitPreview } from '../lib/kit-preview.js';
+import { initWaReviewsPrints } from '../lib/wa-reviews.js';
 
 trackCurrentPage({ line: 'postres' });
 bindTrackClicks({ page: 'postres', line: 'postres', numberId: WHATSAPP_NUMBER_ID });
 initKitPreview();
+initWaReviewsPrints();
 
 const POSTRES_SELLABLE = PRODUCT_LINE_BY_ID.postres?.sellable === true;
 

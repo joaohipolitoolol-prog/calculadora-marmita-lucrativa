@@ -19,6 +19,7 @@ import { bindTrackClicks, trackCurrentPage } from '../lib/track.js';
 import { initPageDwell } from '../lib/page-dwell.js';
 import { resolvePaletasEntryAb } from '../lib/ab-entry.js';
 import { initKitPreview } from '../lib/kit-preview.js';
+import { initWaReviewsPrints } from '../lib/wa-reviews.js';
 
 async function boot() {
   // A/B entry: may redirect to /diagnostico before painting LP analytics
@@ -29,6 +30,7 @@ async function boot() {
   initPageDwell('home', { line: 'paletas' });
   bindTrackClicks({ page: 'home', line: 'paletas', numberId: WHATSAPP_NUMBER_ID });
   initKitPreview();
+  initWaReviewsPrints();
 
   document.querySelectorAll('[data-price]').forEach((el) => {
     el.textContent = MAIN_PRICE_LABEL;

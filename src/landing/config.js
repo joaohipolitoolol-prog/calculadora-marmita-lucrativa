@@ -53,25 +53,25 @@ export const META_PIXEL_ID = '1369803401885896';
 /** Preço principal em USD, fonte única para LP e pixel */
 export const MAIN_PRICE = 7.49;
 export const MAIN_PRICE_LABEL = 'US$ 7,49';
-export const PRICE_ACCESS_LABEL = 'Acceso completo por solo US$ 7,49';
+export const PRICE_ACCESS_LABEL = '30 sabores por solo US$ 7,49';
 
 export { SITE_URL, LOGIN_URL, MEMBERS_URL };
 
 export const OG_IMAGE = `${SITE_URL}/paletas/og-paletas-whatsapp.webp?v=2`;
 
-export const HERO_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
+export const HERO_CTA_LABEL = 'Quiero empezar a vender con las 2 bases';
 
-export const PRICE_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
+export const PRICE_CTA_LABEL = 'Quiero empezar a vender con las 2 bases';
 
 export const CALC_CTA_LABEL = 'Quiero calcular antes de vender';
 
-export const OFFER_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
+export const OFFER_CTA_LABEL = 'Quiero empezar a vender con las 2 bases';
 
-export const TRUST_CTA_LABEL = 'Quiero empezar con las 2 bases';
+export const TRUST_CTA_LABEL = 'Quiero mi primer menú';
 
-export const STICKY_CTA_LABEL = 'Quiero acceder';
+export const STICKY_CTA_LABEL = 'Quiero empezar';
 
-export const FINAL_CTA_LABEL = 'Quiero acceder al Método 2 Bases';
+export const FINAL_CTA_LABEL = 'Quiero empezar a vender con las 2 bases';
 
 export const CTA_LABEL = HERO_CTA_LABEL;
 
