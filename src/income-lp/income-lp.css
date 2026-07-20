@@ -385,10 +385,15 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--brown);
-  color: #fff;
+  background: var(--pink-dark, #c72e62);
+  color: #fff !important;
   font-weight: 800;
   font-size: 0.88rem;
+  line-height: 1;
+}
+
+.income-lp .steps .step-num {
+  color: #fff !important;
 }
 
 .income-lp .steps strong {
@@ -398,7 +403,8 @@
   margin-bottom: 2px;
 }
 
-.income-lp .steps span {
+/* Only description text — never the step badge */
+.income-lp .steps li > div > span {
   display: block;
   font-size: 0.95rem;
   line-height: 1.45;
@@ -432,11 +438,12 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(232, 67, 122, 0.14);
-  color: var(--pink-dark);
+  background: var(--pink-dark, #c72e62);
+  color: #fff;
   font-weight: 800;
   font-size: 0.85rem;
   margin-bottom: 8px;
+  line-height: 1;
 }
 
 .income-lp .base-card h3 {
@@ -688,14 +695,34 @@
   font-weight: 600;
 }
 
-/* Final CTA */
-.income-lp .final-cta {
+/* Final CTA — light surface (overrides global dark .final-cta) */
+.income-lp .final-cta,
+.income-lp.paletas-lp .final-cta,
+.postres-theme.income-lp .final-cta {
   text-align: center;
-  padding-bottom: 110px;
+  padding: 48px 0 110px;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(232, 67, 122, 0.1) 0%, transparent 45%),
+    linear-gradient(180deg, var(--pink-light, #ffecf3), var(--cream, #fff6f9));
+  color: var(--brown);
 }
 
-.income-lp .final-cta h2 {
+.income-lp .final-cta h2,
+.income-lp .final-cta.section h2,
+.income-lp.paletas-lp .final-cta h2,
+.postres-theme.income-lp .final-cta h2 {
+  color: var(--brown) !important;
   margin-bottom: 10px;
+}
+
+.income-lp .final-cta .lead,
+.income-lp .final-cta .cta-micro,
+.income-lp .final-cta p {
+  color: var(--brown-mid) !important;
+}
+
+.income-lp .final-cta .btn-primary {
+  color: #fff;
 }
 
 /* Sticky */
